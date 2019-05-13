@@ -18,6 +18,7 @@ gROOT.SetBatch(True)
 rng = TRandom3()
 
 ###############################
+# INPUTS
 
 parser = argparse.ArgumentParser(description='root to csv converter')
 parser.add_argument('-i', '--filelistname',
@@ -26,7 +27,7 @@ parser.add_argument('-o', '--outfilename',  default="")
 parser.add_argument('-l', '--level',        default="reco")
 parser.add_argument('-s', '--systematic',   default="nominal")
 parser.add_argument('-p', '--preselection', default='pt250')
-parser.add_argument('-f', '--tranining_fraction', default=1.0)
+parser.add_argument('-f', '--training_fraction', default=1.0)
 
 args = parser.parse_args()
 filelistname = args.filelistname
@@ -34,28 +35,21 @@ outfilename = args.outfilename
 level = args.level
 syst = args.systematic
 preselection = args.preselection
-training_fraction = abs(float(args.tranining_fraction))
+training_fraction = abs(float(args.training_fraction))
 if training_fraction > 1:
     training_fraction = 1.0
 
-dsid = filelistname.split("/")[-1].split('.')[1]
-
-if outfilename == "":
-    fpath = filelistname.split("/")[-1]
-    if "mc16" in fpath:
-        camp = fpath.split('.')[0]
-        dsid = fpath.split('.')[1]
-        outfilename = "ntuples_MC/tree.%s.%s.%s.%s.%s.root" % (
-            camp, dsid, level, preselection, syst)
-    else:
-        dsid = fpath.split('.')[0]
-        outfilename = "ntuples_MC/tree.%s.%s.%s.%s.root" % (
-            dsid, level, preselection, syst)
+# File name without extension I think
+#dsid = filelistname.split("/")[-1].split('.')[1]
+outputfilename = "test.root"
 
 print "INFO: level:              ", level
 print "INFO: preselection:       ", preselection
 print "INFO: training fraction:  ", training_fraction
 print "INFO: output file:        ", outfilename
+
+###############################
+# READ IN TREE
 
 treename = "Delphes"
 

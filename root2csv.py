@@ -28,11 +28,11 @@ def RotateEvent( lep, jets, phi ):
 
     lep_new            = TLorentzVector( lep )
     lep_new.q          = lep.q
-    lep_new.flav       = lep.flav    
+    lep_new.flav       = lep.flav
     lep_new.topoetcone = lep.topoetcone
     lep_new.ptvarcone  = lep.ptvarcone
     lep_new.d0sig      = lep.d0sig
-    
+
     lep_new.RotateZ( phi )
 
     jets_new = []
@@ -58,27 +58,27 @@ def MakeInput( jets, W_had, b_had, t_had, W_lep, b_lep, t_lep ):
     for i in range(len(jets)):
         jet = jets[i]
         sjets[i][0] = jet.Px()/GeV
-        sjets[i][1] = jet.Py()/GeV 
+        sjets[i][1] = jet.Py()/GeV
         sjets[i][2] = jet.Pz()/GeV
         sjets[i][3] = jet.E()/GeV
         sjets[i][4] = jet.M()/GeV
         sjets[i][5] = jet.mv2c10
-    
+
     # Arrays containing W, b quarks and lepton information
     target_W_had = np.zeros( [5] )
     target_b_had = np.zeros( [5] )
     target_t_had = np.zeros( [5] )
     target_W_lep = np.zeros( [5] )
-    target_b_lep = np.zeros( [5] )  
+    target_b_lep = np.zeros( [5] )
     target_t_lep = np.zeros( [5] )
-   
+
     # T Hadron
     target_t_had[0] = t_had.Px()/GeV
     target_t_had[1] = t_had.Py()/GeV
     target_t_had[2] = t_had.Pz()/GeV
     target_t_had[3] = t_had.E()/GeV
     target_t_had[4] = t_had.M()/GeV
-    
+
     # Hadronically Decay W Boson
     target_W_had[0] = W_had.Px()/GeV
     target_W_had[1] = W_had.Py()/GeV
@@ -99,7 +99,7 @@ def MakeInput( jets, W_had, b_had, t_had, W_lep, b_lep, t_lep ):
     target_t_lep[2] = t_lep.Pz()/GeV
     target_t_lep[3] = t_lep.E()/GeV
     target_t_lep[4] = t_lep.M()/GeV
-   
+
     # Leptonically decaying W quark
     target_W_lep[0] = W_lep.Px()/GeV
     target_W_lep[1] = W_lep.Py()/GeV
@@ -117,7 +117,7 @@ def MakeInput( jets, W_had, b_had, t_had, W_lep, b_lep, t_lep ):
     return sjets, target_W_had, target_b_had, target_t_had, target_W_lep, target_b_lep, target_t_lep
 
 ###############################
-# List of file names. Originally, parton + particle level data kept in separate files, so created one tree for each. Will need to change
+# List of file names. Originally, parton + particle level data kept in separate trees, so created one tree for each. Will need to change
 
 # List of filenames
 filelistname = sys.argv[1]
@@ -160,7 +160,7 @@ print("INFO: parton entries found:", n_entries_parton)
 # Slightly confused. My guess is that this indexes this tree by runNumber and eventNumber
 success = tree_parton.BuildIndex( "runNumber", "eventNumber" )
 
-# Cap on number of reconstructed events. 
+# Cap on number of reconstructed events.
 if n_evt_max > 0: n_entries_reco = min( [ n_evt_max, n_entries_reco ] )
 print("INFO: looping over %i reco-level events" % n_entries_reco)
 print("INFO: using data augmentation: rotateZ %ix" % n_data_aug)
@@ -171,7 +171,7 @@ n_good = 0
 # Looping through the reconstructed entries
 for ientry in range(n_entries_reco):
     tree_reco.GetEntry( ientry )
-    
+
     # Printing how far along in the loop we are
     if ( n_entries_reco < 10 ) or ( (ientry+1) % int(float(n_entries_reco)/10.)  == 0 ):
         perc = 100. * ientry / float(n_entries_reco)
@@ -180,10 +180,10 @@ for ientry in range(n_entries_reco):
     # Number of electrons, muons, leptons, jets and bjets (bjet_n set later I presume)
     el_n    = len(tree_reco.el_pt)
     mu_n    = len(tree_reco.mu_pt)
-    lep_n   = el_n + mu_n 
+    lep_n   = el_n + mu_n
     jets_n  = len(tree_reco.jet_pt)
     bjets_n = 0
-    
+
     # If more than one lepton of less than 4 jets, skip
     if lep_n > 1: continue
     if jets_n < 4: continue
@@ -193,7 +193,7 @@ for ientry in range(n_entries_reco):
     if   (el_n == 1) and (mu_n == 0): passed_ejets = True
     elif (el_n == 0) and (mu_n == 1): passed_mujets = True
     else: continue
-    
+
     # Get current event/run number, compare it to the other tree
     mcChannelNumber = tree_reco.mcChannelNumber
     runNumber       = tree_reco.runNumber
@@ -205,7 +205,7 @@ for ientry in range(n_entries_reco):
 
     # If in the other tree the event is not semileptonic, skip it
     if not int(tree_parton.semileptonicEvent) == 1: continue
-    
+
     # Either electron or muon
     lep = TLorentzVector()
     if passed_ejets:
@@ -215,12 +215,12 @@ for ientry in range(n_entries_reco):
 
     met_met = tree_reco.met_met/GeV
     met_phi = tree_reco.met_phi
-    
+
     # Append jets, check prob of being a bjet, and update bjet number
     jets = []
     for i in range(jets_n):
         if i >= n_jets_per_event: break
-        
+
         jets += [ TLorentzVector() ]
         j = jets[-1]
         j.index = i
@@ -232,7 +232,7 @@ for ientry in range(n_entries_reco):
 #    jets.sort( key=lambda jet: jet.mv2c10, reverse=True )
 
     # build truth top quarks
-    
+
     t_had = TLorentzVector()
     t_lep = TLorentzVector()
     W_had = TLorentzVector()
@@ -244,7 +244,7 @@ for ientry in range(n_entries_reco):
                         tree_parton.MC_thad_afterFSR_eta,
                         tree_parton.MC_thad_afterFSR_phi,
                         tree_parton.MC_thad_afterFSR_m )
-    
+
     W_had.SetPtEtaPhiM( tree_parton.MC_W_from_thad_pt,
                         tree_parton.MC_W_from_thad_eta,
                         tree_parton.MC_W_from_thad_phi,
@@ -254,7 +254,7 @@ for ientry in range(n_entries_reco):
                         tree_parton.MC_tlep_afterFSR_eta,
                         tree_parton.MC_tlep_afterFSR_phi,
                         tree_parton.MC_tlep_afterFSR_m )
-    
+
     W_lep.SetPtEtaPhiM( tree_parton.MC_W_from_tlep_pt,
                         tree_parton.MC_W_from_tlep_eta,
                         tree_parton.MC_W_from_tlep_phi,
@@ -281,7 +281,7 @@ for ientry in range(n_entries_reco):
                             tree_parton.MC_b_from_t_eta,
                             tree_parton.MC_b_from_t_phi,
                             tree_parton.MC_b_from_t_m )
-        
+
     # sanity checks
     if (t_had.Pz() == 0.) or (t_had.M() != t_had.M()): continue
     if (t_lep.Pz() == 0.) or (t_lep.M() != t_lep.M()): continue
@@ -289,9 +289,9 @@ for ientry in range(n_entries_reco):
 #       print "WARNING: event (%i,%i) is invalid (semileptonic=%i)" % ( tree_parton.runNumber, tree_parton.eventNumber, tree_parton.semileptonicEvent)
 #       print "t_had (pT,eta,phi,M) = (%.0f,%.2f,%.2f,%.1f) :: t_lep (pT,eta,phi,M) = (%.0f,%.2f,%.2f,%.1f)" % \
 #             (  t_had.Pt()/GeV, t_had.Eta(), t_had.Phi(), t_had.M()/GeV, t_lep.Pt()/GeV, t_lep.Eta(), t_lep.Phi(), t_lep.M()/GeV )
-              
+
     n_good += 1
-   
+
     phi = 0.
     for n in range(n_data_aug+1):
        # rotate f.s.o.
@@ -307,19 +307,19 @@ for ientry in range(n_entries_reco):
        W_lep.RotateZ( phi )
        b_lep.RotateZ( phi )
        t_lep.RotateZ( phi )
-       
+
        # make event wrapper
        sjets, target_W_had, target_b_had, target_t_had, target_W_lep, target_b_lep, target_t_lep = MakeInput( jets, W_had, b_had, t_had, W_lep, b_lep, t_lep )
-   
+
        # write out
        csvwriter.writerow( (
           "%i" % tree_reco.runNumber, "%i" % tree_reco.eventNumber, "%.3f" % weight, "%i" % jets_n, "%i" % bjets_n,
           "%.3f" % lep.Px(),     "%.3f" % lep.Py(),     "%.3f" % lep.Pz(),     "%.3f" % lep.E(),      "%.3f" % met_met,      "%.3f" % met_phi,
-          "%.3f" % sjets[0][0],  "%.3f" % sjets[0][1],  "%.3f" % sjets[0][2],  "%.3f" % sjets[0][3],  "%.3f" % sjets[0][4],  "%.3f" % sjets[0][5], 
-          "%.3f" % sjets[1][0],  "%.3f" % sjets[1][1],  "%.3f" % sjets[1][2],  "%.3f" % sjets[1][3],  "%.3f" % sjets[1][4],  "%.3f" % sjets[1][5], 
+          "%.3f" % sjets[0][0],  "%.3f" % sjets[0][1],  "%.3f" % sjets[0][2],  "%.3f" % sjets[0][3],  "%.3f" % sjets[0][4],  "%.3f" % sjets[0][5],
+          "%.3f" % sjets[1][0],  "%.3f" % sjets[1][1],  "%.3f" % sjets[1][2],  "%.3f" % sjets[1][3],  "%.3f" % sjets[1][4],  "%.3f" % sjets[1][5],
           "%.3f" % sjets[2][0],  "%.3f" % sjets[2][1],  "%.3f" % sjets[2][2],  "%.3f" % sjets[2][3],  "%.3f" % sjets[2][4],  "%.3f" % sjets[2][5],
-          "%.3f" % sjets[3][0],  "%.3f" % sjets[3][1],  "%.3f" % sjets[3][2],  "%.3f" % sjets[3][3],  "%.3f" % sjets[3][4],  "%.3f" % sjets[3][5], 
-          "%.3f" % sjets[4][0],  "%.3f" % sjets[4][1],  "%.3f" % sjets[4][2],  "%.3f" % sjets[4][3],  "%.3f" % sjets[4][4],  "%.3f" % sjets[4][5], 
+          "%.3f" % sjets[3][0],  "%.3f" % sjets[3][1],  "%.3f" % sjets[3][2],  "%.3f" % sjets[3][3],  "%.3f" % sjets[3][4],  "%.3f" % sjets[3][5],
+          "%.3f" % sjets[4][0],  "%.3f" % sjets[4][1],  "%.3f" % sjets[4][2],  "%.3f" % sjets[4][3],  "%.3f" % sjets[4][4],  "%.3f" % sjets[4][5],
           "%.3f" % target_W_had[0], "%.3f" % target_W_had[1], "%.3f" % target_W_had[2], "%.3f" % target_W_had[3], "%.3f" % target_W_had[4],
           "%.3f" % target_W_lep[0], "%.3f" % target_W_lep[1], "%.3f" % target_W_lep[2], "%.3f" % target_W_lep[3], "%.3f" % target_W_lep[4],
           "%.3f" % target_b_had[0], "%.3f" % target_b_had[1], "%.3f" % target_b_had[2], "%.3f" % target_b_had[3], "%.3f" % target_b_had[4],
@@ -330,11 +330,10 @@ for ientry in range(n_entries_reco):
 
        phi = rng.Uniform( -TMath.Pi(), TMath.Pi() )
 
-    
-        
+
+
 outfile.close()
 
 f_good = 100. * n_good / n_entries_reco
 print "INFO: output file:", outfilename
-print "INFO: %i entries written (%.2f %%)" % ( n_good, f_good) 
-
+print "INFO: %i entries written (%.2f %%)" % ( n_good, f_good)
