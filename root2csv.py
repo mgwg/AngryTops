@@ -64,6 +64,7 @@ n_good = 0
 
 # Looping through the reconstructed entries
 for ientry in range(n_entries_reco):
+    ##############################################################
     # Withdraw next event
     tree.GetEntry(ientry)
 
@@ -82,10 +83,11 @@ for ientry in range(n_entries_reco):
     if mu_n != 1: continue
     if jets_n < 4: continue
 
+    ##############################################################
     # Muon vector. Replaced E w/ T
     lep = TLorentzVector()
     lep.SetPtEtaPhiE(
-    lep.tree.GetLeaf("Muon.PT").GetValue(0)/GeV,
+    tree.GetLeaf("Muon.PT").GetValue(0)/GeV,
     tree.GetLeaf("Muon.Eta").GetValue(0),
     tree.GetLeaf("Muon.Phi").GetValue(0),
     tree.GetLeaf("Muon.T").GetValue(0)/GeV)
@@ -113,13 +115,12 @@ for ientry in range(n_entries_reco):
         j.btag = tree.GetLeaf("Jet.BTag").GetValue(i)
         if tree.GetLeaf("Jet.BTag").GetValue(i) > 0.0:
             bjets_n += 1
-    # sort by b-tagging weight?
-#    jets.sort( key=lambda jet: jet.mv2c10, reverse=True )
 
+    ##############################################################
     # Build output data we are trying to predict with RNN
     try:
         indices = GetIndices(tree, ienty)
-    catch Exception as e:
+    except:
         continue
 
     t_had = TLorentzVector()
@@ -151,32 +152,22 @@ for ientry in range(n_entries_reco):
                         tree.GetLeaf("Particle.Phi").GetValue(indices['W_lep']),
                         tree.GetLeaf("Particle.Mass").GetValue(indices['W_lep']))
 
-    # b-quarks ignored...
-    if abs( tree_parton.MC_Wdecay1_from_t_pdgId ) < 10:
-        # t = t_had, tbar = t_lep
-        b_had.SetPtEtaPhiM( tree_parton.MC_b_from_t_pt,
-                            tree_parton.MC_b_from_t_eta,
-                            tree_parton.MC_b_from_t_phi,
-                            tree_parton.MC_b_from_t_m )
-        b_lep.SetPtEtaPhiM( tree_parton.MC_b_from_tbar_pt,
-                            tree_parton.MC_b_from_tbar_eta,
-                            tree_parton.MC_b_from_tbar_phi,
-                            tree_parton.MC_b_from_tbar_m )
-    else:
-        # t = t_lep, tbar = t_had
-        b_had.SetPtEtaPhiM( tree_parton.MC_b_from_tbar_pt,
-                            tree_parton.MC_b_from_tbar_eta,
-                            tree_parton.MC_b_from_tbar_phi,
-                            tree_parton.MC_b_from_tbar_m )
-        b_lep.SetPtEtaPhiM( tree_parton.MC_b_from_t_pt,
-                            tree_parton.MC_b_from_t_eta,
-                            tree_parton.MC_b_from_t_phi,
-                            tree_parton.MC_b_from_t_m )
+    b_had.SetPtEtaPhiM( tree.GetLeaf("Particle.PT").GetValue(indices['b_had']),
+                        tree.GetLeaf("Particle.Eta").GetValue(indices['b_had']),
+                        tree.GetLeaf("Particle.Phi").GetValue(indices['b_had']),
+                        tree.GetLeaf("Particle.Mass").GetValue(indices['b_had']))
+
+    b_lep.SetPtEtaPhiM( tree.GetLeaf("Particle.PT").GetValue(indices['b_lep']),
+                        tree.GetLeaf("Particle.Eta").GetValue(indices['b_lep']),
+                        tree.GetLeaf("Particle.Phi").GetValue(indices['b_lep']),
+                        tree.GetLeaf("Particle.Mass").GetValue(indices['b_lep']))
 
     # sanity checks
     if (t_had.Pz() == 0.) or (t_had.M() != t_had.M()): continue
     if (t_lep.Pz() == 0.) or (t_lep.M() != t_lep.M()): continue
 
+    ##############################################################
+    # Augment Data By Rotating 5 Different Ways
     n_good += 1
 
     phi = 0.
@@ -188,19 +179,19 @@ for ientry in range(n_entries_reco):
 
        for j in jets: j.RotateZ(phi)
 
-       W_had.RotateZ( phi )
-       b_had.RotateZ( phi )
-       t_had.RotateZ( phi )
-       W_lep.RotateZ( phi )
-       b_lep.RotateZ( phi )
-       t_lep.RotateZ( phi )
+       W_had.RotateZ(phi)
+       b_had.RotateZ(phi)
+       t_had.RotateZ(phi)
+       W_lep.RotateZ(phi)
+       b_lep.RotateZ(phi)
+       t_lep.RotateZ(phi)
 
        # make event wrapper
        sjets, target_W_had, target_b_had, target_t_had, target_W_lep, target_b_lep, target_t_lep = MakeInput( jets, W_had, b_had, t_had, W_lep, b_lep, t_lep )
 
        # write out
        csvwriter.writerow( (
-          "%i" % tree_reco.runNumber, "%i" % tree_reco.eventNumber, "%.3f" % weight, "%i" % jets_n, "%i" % bjets_n,
+          "%i" % jets_n, "%i" % bjets_n,
           "%.3f" % lep.Px(),     "%.3f" % lep.Py(),     "%.3f" % lep.Pz(),     "%.3f" % lep.E(),      "%.3f" % met_met,      "%.3f" % met_phi,
           "%.3f" % sjets[0][0],  "%.3f" % sjets[0][1],  "%.3f" % sjets[0][2],  "%.3f" % sjets[0][3],  "%.3f" % sjets[0][4],  "%.3f" % sjets[0][5],
           "%.3f" % sjets[1][0],  "%.3f" % sjets[1][1],  "%.3f" % sjets[1][2],  "%.3f" % sjets[1][3],  "%.3f" % sjets[1][4],  "%.3f" % sjets[1][5],
@@ -218,7 +209,8 @@ for ientry in range(n_entries_reco):
        phi = rng.Uniform( -TMath.Pi(), TMath.Pi() )
 
 
-
+##############################################################
+# Close Program
 outfile.close()
 
 f_good = 100. * n_good / n_entries_reco
