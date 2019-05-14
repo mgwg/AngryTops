@@ -8,7 +8,7 @@ from math import pow, sqrt
 from ROOT import *
 from array import array
 
-from common import *
+#from common import *
 from features import *
 import helper_functions
 import numpy as np
@@ -19,15 +19,17 @@ rng = TRandom3()
 
 ###############################
 # INPUTS
+# Filelistname: List of root tree files
+# Outfilename: Name of the outputfile
 
 parser = argparse.ArgumentParser(description='root to csv converter')
 parser.add_argument('-i', '--filelistname',
-                    default="filelists/delphes.mg5_dijet_ht500.MC.pt250.txt")
-parser.add_argument('-o', '--outfilename',  default="")
-parser.add_argument('-l', '--level',        default="reco")
-parser.add_argument('-s', '--systematic',   default="nominal")
+                    default="/home/fsyed/AngryTops/filelistname") # File uses
+parser.add_argument('-o', '--outfilename',  default="") # Output filename
+parser.add_argument('-l', '--level',        default="reco") # Parton vs. Detector Level
+parser.add_argument('-s', '--systematic',   default="nominal") # Name of output tree
 parser.add_argument('-p', '--preselection', default='pt250')
-parser.add_argument('-f', '--training_fraction', default=1.0)
+parser.add_argument('-f', '--training_fraction', default=1.0) # Fraction of Events Used for Training
 
 args = parser.parse_args()
 filelistname = args.filelistname
@@ -49,7 +51,7 @@ print "INFO: training fraction:  ", training_fraction
 print "INFO: output file:        ", outfilename
 
 ###############################
-# READ IN TREE
+# READ IN TREE AND SELECT BRANCHES
 
 treename = "Delphes"
 
@@ -64,26 +66,30 @@ for fname in f.readlines():
 n_entries = tree.GetEntries()
 print "INFO: entries found:", n_entries
 
-# switch on only useful branches
+# Switch on only useful branches. We are doing Muon only right now.
 branches_active = [
     "Event.Number", "Event.ProcessID", "Event.Weight", "Vertex_size",
-    "Electron.PT", "Muon.PT",
+    "Muon.PT", "Muon.Eta", "Muon.Phi", "MissingET.MET", "MissingET.Phi"
     "Jet.PT", "Jet.Eta", "Jet.Phi", "Jet.T", "Jet.Mass",
     "GenJet.PT", "GenJet.Eta", "GenJet.Phi", "GenJet.T", "GenJet.Mass",
 ]
 tree.SetBranchStatus("*", 0)
 for branch in branches_active:
-    #print "DEBUG: active branch", branch
     tree.SetBranchStatus(branch, 1)
 
-outfile = TFile.Open(outfilename, "RECREATE")
-b_eventNumber = array('l', [0])
-b_weight_mc = array('f', [1.])
-b_mu = array('l', [1])
+###############################
+# CREATE OUTPUT TREE
 
-b_ljet1_pt = array('f', [0.])
-b_ljet1_eta = array('f', [0.])
-b_ljet1_phi = array('f', [0.])
+outfile = TFile.Open(outfilename, "RECREATE")
+
+# BRANCHES OF THE TREE
+b_eventNumber = array('l', [0]) # Event Number
+b_weight_mc = array('f', [1.]) # Weight of Event (What is this?)
+b_mu = array('l', [1]) # What is this?
+
+b_ljet1_pt = array('f', [0.]) # PT for first b jet
+b_ljet1_eta = array('f', [0.]) # ETA for first b jet
+b_ljet1_phi = array('f', [0.]) # Phi for
 b_ljet1_E = array('f', [0.])
 b_ljet1_m = array('f', [0.])
 b_ljet2_pt = array('f', [0.])
@@ -123,29 +129,35 @@ outtree.Branch('jj_dEta', b_jj_dEta, 'jj_dEta/F')
 outtree.Branch('jj_dPhi', b_jj_dPhi, 'jj_dPhi/F')
 outtree.Branch('jj_dR',   b_jj_dR,   'jj_dR/F')
 
-n_good = 0
-ientry = 0
-for ientry in range(n_entries):
+###############################
+# POPULATE OUTPUT TREE
 
+n_good = 0 # Number of entries added
+ientry = 0 # Tree index
+
+for ientry in range(n_entries):
+    # Retrieve Event from tree
     tree.GetEntry(ientry)
 
+    # Print how far along we are
     if (n_entries < 10) or ((ientry+1) % int(float(n_entries)/10.) == 0):
         perc = 100. * ientry / float(n_entries)
         print "INFO: Event %-9i  (%3.0f %%)" % (ientry, perc)
 
+    # Extract Event Weight, Vertex Size (What is this) and number of Jets
     b_weight_mc[0] = tree.GetLeaf("Event.Weight").GetValue(0)
     b_mu[0] = int( tree.GetLeaf("Vertex_size").GetValue(0) )
     ljets_n = tree.GetLeaf("Jet.PT").GetLen()
 
+    # If particle level, recalculate number of Jets
     if level == "ptcl":
         ljets_n = tree.GetLeaf("GenJet.PT").GetLen()
-    else:
-        ljets_n = tree.GetLeaf("Jet.PT").GetLen()
 
-    # do sanity checks first
+    # Cut Event if less than 2 jets
     if ljets_n < 2:
         continue
 
+    # Extract first two jets from tree
     ljet1 = TLorentzVector()
     ljet2 = TLorentzVector()
 
@@ -162,9 +174,6 @@ for ientry in range(n_entries):
             tree.GetLeaf("GenJet.Phi").GetValue(1),
             tree.GetLeaf("GenJet.Mass").GetValue(1))
     else:
-        if tree.GetLeaf("Jet.Mass").GetValue(0) < 0.: continue
-        if tree.GetLeaf("Jet.Mass").GetValue(1) < 0.: continue
-
         ljet1.SetPtEtaPhiM(
             tree.GetLeaf("Jet.PT").GetValue(0),
             tree.GetLeaf("Jet.Eta").GetValue(0),
@@ -181,15 +190,8 @@ for ientry in range(n_entries):
     if ljet1.M() < 0.: continue
     if ljet2.M() < 0.: continue
 
+    # jj is the sum of the first two jets, but I don't know what this means
     jj = ljet1 + ljet2
-
-    # apply further selection cuts?
-#    if jj.M() < 1500.: continue
-    if "ttbar" in dsid:
-       if ljet1.Pt() < 350.: continue
-       if ljet2.Pt() < 350.: continue
-       if ljet1.M() > 500.: continue
-       if ljet2.M() > 500.: continue
 
     b_ljet1_pt[0] = ljet1.Pt()
     b_ljet1_eta[0] = ljet1.Eta()

@@ -132,7 +132,7 @@ n_evt_max = -1
 if len(sys.argv) > 3: n_evt_max = int( sys.argv[3] )
 
 # use data augmentation?
-# What is this?
+# I believe we multiply the size of our data set by 5 by rotating each event 5 different ways
 n_data_aug = 5
 
 # Create csv writer
@@ -165,7 +165,7 @@ if n_evt_max > 0: n_entries_reco = min( [ n_evt_max, n_entries_reco ] )
 print("INFO: looping over %i reco-level events" % n_entries_reco)
 print("INFO: using data augmentation: rotateZ %ix" % n_data_aug)
 
-# What is n_good?
+# Number of events which are actually copied over
 n_good = 0
 
 # Looping through the reconstructed entries
@@ -194,7 +194,8 @@ for ientry in range(n_entries_reco):
     elif (el_n == 0) and (mu_n == 1): passed_mujets = True
     else: continue
 
-    # Get current event/run number, compare it to the other tree
+    # Get current event/run number to get parton level information stored in
+    # parton tree
     mcChannelNumber = tree_reco.mcChannelNumber
     runNumber       = tree_reco.runNumber
     eventNumber     = tree_reco.eventNumber
@@ -285,10 +286,6 @@ for ientry in range(n_entries_reco):
     # sanity checks
     if (t_had.Pz() == 0.) or (t_had.M() != t_had.M()): continue
     if (t_lep.Pz() == 0.) or (t_lep.M() != t_lep.M()): continue
-
-#       print "WARNING: event (%i,%i) is invalid (semileptonic=%i)" % ( tree_parton.runNumber, tree_parton.eventNumber, tree_parton.semileptonicEvent)
-#       print "t_had (pT,eta,phi,M) = (%.0f,%.2f,%.2f,%.1f) :: t_lep (pT,eta,phi,M) = (%.0f,%.2f,%.2f,%.1f)" % \
-#             (  t_had.Pt()/GeV, t_had.Eta(), t_had.Phi(), t_had.M()/GeV, t_lep.Pt()/GeV, t_lep.Eta(), t_lep.Phi(), t_lep.M()/GeV )
 
     n_good += 1
 
