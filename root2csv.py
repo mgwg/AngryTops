@@ -3,7 +3,7 @@ import os, sys
 import csv
 
 import ROOT
-from ROOT.Math import LorentzVector
+from ROOT import TLorentzVector
 from helper_functions import *
 import numpy as np
 
@@ -83,9 +83,9 @@ for ientry in range(n_entries_reco):
     if jets_n < 4: continue
 
     # Muon vector. Replaced E w/ T
-    lep = LorentzVector()
+    lep = TLorentzVector()
     lep.SetPtEtaPhiE(
-    tree.GetLeaf("Muon.PT").GetValue(0)/GeV,
+    lep.tree.GetLeaf("Muon.PT").GetValue(0)/GeV,
     tree.GetLeaf("Muon.Eta").GetValue(0),
     tree.GetLeaf("Muon.Phi").GetValue(0),
     tree.GetLeaf("Muon.T").GetValue(0)/GeV)
@@ -102,7 +102,7 @@ for ientry in range(n_entries_reco):
     for i in range(jets_n):
         if i >= n_jets_per_event: break
 
-        jets += [ LorentzVector() ]
+        jets += [ TLorentzVector() ]
         j = jets[-1]
         j.index = i
         j.SetPtEtaPhiE(
@@ -122,32 +122,34 @@ for ientry in range(n_entries_reco):
     catch Exception as e:
         continue
 
-    t_had = LorentzVector()
-    t_lep = LorentzVector()
-    W_had = LorentzVector()
-    W_lep = LorentzVector()
-    b_had = LorentzVector()
-    b_lep = LorentzVector()
+    t_had = TLorentzVector()
+    t_lep = TLorentzVector()
+    W_had = TLorentzVector()
+    W_lep = TLorentzVector()
+    b_had = TLorentzVector()
+    b_lep = TLorentzVector()
 
-    t_had.SetPtEtaPhiM( tree_parton.MC_thad_afterFSR_pt,
-                        tree_parton.MC_thad_afterFSR_eta,
-                        tree_parton.MC_thad_afterFSR_phi,
-                        tree_parton.MC_thad_afterFSR_m )
+    t_had.SetPtEtaPhiM( tree.GetLeaf("Particle.PT").GetValue(indices['t_had']),
+                        tree.GetLeaf("Particle.Eta").GetValue(indices['t_had']),
+                        tree.GetLeaf("Particle.Phi").GetValue(indices['t_had']),
+                        tree.GetLeaf("Particle.Mass").GetValue(indices['t_had'])
+                        )
 
-    W_had.SetPtEtaPhiM( tree_parton.MC_W_from_thad_pt,
-                        tree_parton.MC_W_from_thad_eta,
-                        tree_parton.MC_W_from_thad_phi,
-                        tree_parton.MC_W_from_thad_m )
+    W_had.SetPtEtaPhiM( tree.GetLeaf("Particle.PT").GetValue(indices['W_had']),
+                        tree.GetLeaf("Particle.Eta").GetValue(indices['W_had']),
+                        tree.GetLeaf("Particle.Phi").GetValue(indices['W_had']),
+                        tree.GetLeaf("Particle.Mass").GetValue(indices['W_had'])
+                        )
 
-    t_lep.SetPtEtaPhiM( tree_parton.MC_tlep_afterFSR_pt,
-                        tree_parton.MC_tlep_afterFSR_eta,
-                        tree_parton.MC_tlep_afterFSR_phi,
-                        tree_parton.MC_tlep_afterFSR_m )
+    t_lep.SetPtEtaPhiM( tree.GetLeaf("Particle.PT").GetValue(indices['t_lep']),
+                        tree.GetLeaf("Particle.Eta").GetValue(indices['t_lep']),
+                        tree.GetLeaf("Particle.Phi").GetValue(indices['t_lep']),
+                        tree.GetLeaf("Particle.Mass").GetValue(indices['t_lep']))
 
-    W_lep.SetPtEtaPhiM( tree_parton.MC_W_from_tlep_pt,
-                        tree_parton.MC_W_from_tlep_eta,
-                        tree_parton.MC_W_from_tlep_phi,
-                        tree_parton.MC_W_from_tlep_m )
+    W_lep.SetPtEtaPhiM( tree.GetLeaf("Particle.PT").GetValue(indices['W_lep']),
+                        tree.GetLeaf("Particle.Eta").GetValue(indices['W_lep']),
+                        tree.GetLeaf("Particle.Phi").GetValue(indices['W_lep']),
+                        tree.GetLeaf("Particle.Mass").GetValue(indices['W_lep']))
 
     # b-quarks ignored...
     if abs( tree_parton.MC_Wdecay1_from_t_pdgId ) < 10:

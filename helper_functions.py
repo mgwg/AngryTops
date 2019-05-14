@@ -1,6 +1,6 @@
 
 import ROOT
-from ROOT.Math import LorentzVector
+from ROOT import TLorentzVector
 from collections import Counter
 from array import array
 from math import pow, sqrt
@@ -305,7 +305,7 @@ def RotateEvent( lep, jets, phi ):
     A rotated LorentzVector
     """
 
-    lep_new            = LorentzVector( lep )
+    lep_new            = TLorentzVector( lep )
     lep_new.q          = lep.q
     lep_new.flav       = lep.flav
     lep_new.topoetcone = lep.topoetcone
@@ -316,7 +316,7 @@ def RotateEvent( lep, jets, phi ):
 
     jets_new = []
     for j in jets:
-        jets_new += [ LorentzVector(j) ]
+        jets_new += [ TLorentzVector(j) ]
         j_new = jets_new[-1]
 
         j_new.mv2c10 = j.mv2c10
