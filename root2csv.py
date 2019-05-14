@@ -33,7 +33,7 @@ filelistname = sys.argv[1]
 
 # Output filename
 outfilename = filelistname.split("/")[-1]
-outfilename = "csv/topreco." + outfilename.replace(".txt", ".%s.csv" % ( syst ) )
+outfilename = "csv/topreco.csv")
 outfile = open( outfilename, "wt" )
 csvwriter = csv.writer( outfile )
 print ("INFO: output file:", outfilename)
