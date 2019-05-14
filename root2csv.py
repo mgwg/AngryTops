@@ -63,7 +63,7 @@ print("INFO: using data augmentation: rotateZ %ix" % n_data_aug)
 n_good = 0
 
 # Looping through the reconstructed entries
-for ientry in range(n_entries_reco):
+for ientry in range(n_entries):
     ##############################################################
     # Withdraw next event
     tree.GetEntry(ientry)
