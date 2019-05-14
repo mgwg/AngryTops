@@ -213,7 +213,7 @@ def MakeInput( jets, W_had, b_had, t_had, W_lep, b_lep, t_lep ):
         sjets[i][2] = jet.Pz()/GeV
         sjets[i][3] = jet.E()/GeV
         sjets[i][4] = jet.M()/GeV
-        sjets[i][5] = jet.mv2c10
+        sjets[i][5] = jet.btag
 
     # OUTPUT DATA FOR RNN
     # Arrays containing W, b quarks and lepton information

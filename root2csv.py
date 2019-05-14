@@ -87,11 +87,13 @@ for ientry in range(n_entries):
     ##############################################################
     # Muon vector. Replaced E w/ T
     lep = TLorentzVector()
-    lep.SetPtEtaPhiE(
-    tree.GetLeaf("Muon.PT").GetValue(0)/GeV,
-    tree.GetLeaf("Muon.Eta").GetValue(0),
-    tree.GetLeaf("Muon.Phi").GetValue(0),
-    tree.GetLeaf("Muon.T").GetValue(0)/GeV)
+    lep.SetPtEtaPhiE( tree.GetLeaf("Muon.PT").GetValue(0)/GeV,
+                      tree.GetLeaf("Muon.Eta").GetValue(0),
+                      tree.GetLeaf("Muon.Phi").GetValue(0),
+                      tree.GetLeaf("Muon.T").GetValue(0)/GeV
+                      )
+    if lep.Pt() < 20: continue # Fail to get a muon passing the threshold
+    if np.abs(lep.Eta()) > 2.5: continue
 
     # Missing Energy values
     met_met = tree.GetLeaf("MissingET.MET").GetValue() / GeV
@@ -104,18 +106,20 @@ for ientry in range(n_entries):
     jets = []
     for i in range(jets_n):
         if i >= n_jets_per_event: break
-
-        jets += [ TLorentzVector() ]
-        j = jets[-1]
-        j.index = i
-        j.SetPtEtaPhiE(
-        tree.GetLeaf("Jet.PT").GetValue(i),
-        tree.GetLeaf("Jet.Eta").GetValue(i),
-        tree.GetLeaf("Jet.Phi").GetValue(i),
-        tree.GetLeaf("Jet.Mass").GetValue(i))
-        j.btag = tree.GetLeaf("Jet.BTag").GetValue(i)
-        if tree.GetLeaf("Jet.BTag").GetValue(i) > 0.0:
-            bjets_n += 1
+        if tree.GetLeaf("Jet.PT").GetValue(i) > 20 or np.abs(tree.GetLeaf("Jet.Eta").GetValue(i)) < 2.5 :
+            jets += [ TLorentzVector() ]
+            j = jets[-1]
+            j.index = i
+            j.SetPtEtaPhiE(
+            tree.GetLeaf("Jet.PT").GetValue(i),
+            tree.GetLeaf("Jet.Eta").GetValue(i),
+            tree.GetLeaf("Jet.Phi").GetValue(i),
+            tree.GetLeaf("Jet.Mass").GetValue(i))
+            j.btag = tree.GetLeaf("Jet.BTag").GetValue(i)
+            if j.btag > 0.0: bjets_n += 1
+    # Cut based on number of passed jets
+    jets_n = len(jets)
+    if jets_n < 4: continue
 
     ##############################################################
     # Build output data we are trying to predict with RNN
@@ -163,13 +167,23 @@ for ientry in range(n_entries):
                         tree.GetLeaf("Particle.Phi").GetValue(indices['b_lep']),
                         tree.GetLeaf("Particle.Mass").GetValue(indices['b_lep']))
 
-    # sanity checks
+    ##############################################################
+    # CUTS USING PARTICLE LEVEL OBJECTS
     if (t_had.Pz() == 0.) or (t_had.M() != t_had.M()): continue
     if (t_lep.Pz() == 0.) or (t_lep.M() != t_lep.M()): continue
+    if W_had.Pt() < 20: continue
+    if W_lep.Pt() < 20: continue
+    if b_had.Pt() < 20: continue
+    if b_had.Pt() < 20: continue
+    if np.abs(W_had.Eta()) > 2.5: continue
+    if np.abs(W_lep.Eta()) > 2.5: continue
+    if np.abs(b_had.Eta()) > 2.5: continue
+    if np.abs(b_lep.Eta()) > 2.5: continue
 
     ##############################################################
     # Augment Data By Rotating 5 Different Ways
     n_good += 1
+    print("Writing new set of 5 rows to csv file")
 
     phi = 0.
     for n in range(n_data_aug+1):
