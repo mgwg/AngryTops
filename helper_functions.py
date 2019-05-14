@@ -258,7 +258,7 @@ def ClassifyTopQuark(tree, entry, t_indices):
         child1 = pids.GetValue(int(d1.GetValue(W_index)))
         child2 = pids.GetValue(int(d2.GetValue(W_index)))
         # Check for leptonic and hadronic decay of W boson
-        if np.min(np.abs(child1), np.abs(child2)) > 10
+        if np.min(np.abs(child1), np.abs(child2)) > 10:
             assert "t_lep" not in t_indices.keys(), "Two leptonic top quarks"
             indices["t_lep"] = t_indices[index]
             indices["W_lep"] = W_index
