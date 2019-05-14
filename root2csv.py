@@ -2,8 +2,9 @@
 import os, sys
 import csv
 
-from ROOT import *
-from helper_functions import MakeInput, RotateEvent
+import ROOT
+from ROOT.Math import LorentzVector
+from helper_functions import *
 import numpy as np
 
 gROOT.SetBatch(True)
@@ -47,18 +48,6 @@ for fname in f.readlines():
    fname = fname.strip()
    tree.AddFile( fname )
 
-# Switch on only useful branches. We are doing Muon only right now.
-# branches_active = [
-#     "Event.Number", "Event.ProcessID", "Event.Weight", "Vertex_size",
-#     "Muon.PT", "Muon.Eta", "Muon.Phi", "MissingET.MET", "MissingET.Phi"
-#     "Jet.PT", "Jet.Eta", "Jet.Phi", "Jet.T", "Jet.Mass",
-#     "GenJet.PT", "GenJet.Eta", "GenJet.Phi", "GenJet.T", "GenJet.Mass",
-#     "Particle.PID",
-# ]
-# tree.SetBranchStatus("*", 0)
-# for branch in branches_active:
-#     tree.SetBranchStatus(branch, 1)
-
 n_entries = tree.GetEntries()
 print("INFO: entries found:", n_entries)
 
@@ -76,56 +65,69 @@ n_good = 0
 # Looping through the reconstructed entries
 for ientry in range(n_entries_reco):
     # Withdraw next event
-    tree_reco.GetEntry(ientry)
+    tree.GetEntry(ientry)
 
     # Printing how far along in the loop we are
-    if ( n_entries_reco < 10 ) or ( (ientry+1) % int(float(n_entries_reco)/10.)  == 0 ):
-        perc = 100. * ientry / float(n_entries_reco)
-        print("INFO: Event %-9i  (%3.0f %%)" % ( ientry, perc ))
+    if (n_entries_reco < 10) or ((ientry+1) % int(float(n_entries)/10.) == 0):
+        perc = 100. * ientry / float(n_entries)
+        print("INFO: Event %-9i  (%3.0f %%)" % (ientry, perc))
 
     # Number of muons, leptons, jets and bjets (bjet_n set later)
-    #el_n    = len(tree_reco.el_pt)
-    mu_n    = len(tree_reco.mu_pt)
-    #lep_n   = el_n + mu_n
-    jets_n  = len(tree_reco.jet_pt)
+    # For now, I am cutting out reactions with electrons, or more than two
+    mu_n = tree.GetLeaf("Muon.PT").GetLen()
+    jets_n  = tree.GetLeaf("Jet.PT").GetLen()
     bjets_n = 0
 
     # If more than one lepton of less than 4 jets, cut
     if mu_n != 1: continue
     if jets_n < 4: continue
 
-    # Muon vector. Will have to manually add electron energy as a constant, since not contained in tree information
-    lep = TLorentzVector()
-    lep.SetPtEtaPhiE( tree_reco.mu_pt[0]/GeV, tree_reco.mu_eta[0], tree_reco.mu_phi[0], tree_reco.mu_e[0]/GeV )
+    # Muon vector. Replaced E w/ T
+    lep = LorentzVector()
+    lep.SetPtEtaPhiE(
+    tree.GetLeaf("Muon.PT").GetValue(0)/GeV,
+    tree.GetLeaf("Muon.Eta").GetValue(0),
+    tree.GetLeaf("Muon.Phi").GetValue(0),
+    tree.GetLeaf("Muon.T").GetValue(0)/GeV)
 
     # Missing Energy values
-    met_met = tree_reco.met_met/GeV
-    met_phi = tree_reco.met_phi
+    met_met = tree.GetLeaf("MissingET.MET").GetValue() / GeV
+    met_phi = tree.GetLeaf("MissingET.Phi").GetValue()
 
     # Append jets, check prob of being a bjet, and update bjet number
     # This is what will be fed into the RNN
+    # Replaced the mv2c10 value with the bjet tag value, as that is what is
+    # recoreded by Delphes
     jets = []
     for i in range(jets_n):
         if i >= n_jets_per_event: break
 
-        jets += [ TLorentzVector() ]
+        jets += [ LorentzVector() ]
         j = jets[-1]
         j.index = i
-        j.SetPtEtaPhiE( tree_reco.jet_pt[i], tree_reco.jet_eta[i], tree_reco.jet_phi[i], tree_reco.jet_e[i] )
-        j.mv2c10 = tree_reco.jet_mv2c10[i]
-        if j.mv2c10 > 0.83: bjets_n += 1
-
+        j.SetPtEtaPhiE(
+        tree.GetLeaf("Jet.PT").GetValue(i),
+        tree.GetLeaf("Jet.Eta").GetValue(i),
+        tree.GetLeaf("Jet.Phi").GetValue(i),
+        tree.GetLeaf("Jet.Mass").GetValue(i))
+        j.btag = tree.GetLeaf("Jet.BTag").GetValue(i)
+        if tree.GetLeaf("Jet.BTag").GetValue(i) > 0.0:
+            bjets_n += 1
     # sort by b-tagging weight?
 #    jets.sort( key=lambda jet: jet.mv2c10, reverse=True )
 
     # Build output data we are trying to predict with RNN
+    try:
+        indices = GetIndices(tree, ienty)
+    catch Exception as e:
+        continue
 
-    t_had = TLorentzVector()
-    t_lep = TLorentzVector()
-    W_had = TLorentzVector()
-    W_lep = TLorentzVector()
-    b_had = TLorentzVector()
-    b_lep = TLorentzVector()
+    t_had = LorentzVector()
+    t_lep = LorentzVector()
+    W_had = LorentzVector()
+    W_lep = LorentzVector()
+    b_had = LorentzVector()
+    b_lep = LorentzVector()
 
     t_had.SetPtEtaPhiM( tree_parton.MC_thad_afterFSR_pt,
                         tree_parton.MC_thad_afterFSR_eta,
