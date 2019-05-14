@@ -69,7 +69,7 @@ for ientry in range(n_entries):
     tree.GetEntry(ientry)
 
     # Printing how far along in the loop we are
-    if (n_entries_reco < 10) or ((ientry+1) % int(float(n_entries)/10.) == 0):
+    if (n_entries < 10) or ((ientry+1) % int(float(n_entries)/10.) == 0):
         perc = 100. * ientry / float(n_entries)
         print("INFO: Event %-9i  (%3.0f %%)" % (ientry, perc))
 
@@ -213,6 +213,6 @@ for ientry in range(n_entries):
 # Close Program
 outfile.close()
 
-f_good = 100. * n_good / n_entries_reco
+f_good = 100. * n_good / n_entries
 print "INFO: output file:", outfilename
 print "INFO: %i entries written (%.2f %%)" % ( n_good, f_good)
