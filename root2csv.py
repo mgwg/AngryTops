@@ -3,7 +3,7 @@ import os, sys
 import csv
 
 import ROOT
-from ROOT import TLorentzVector, gROOT, TRandom3
+from ROOT import TLorentzVector, gROOT, TRandom3, TChain
 from helper_functions import *
 import numpy as np
 
