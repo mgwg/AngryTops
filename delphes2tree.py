@@ -218,6 +218,7 @@ for ientry in range(n_entries):
     outtree.Fill()
     n_good += 1
 
+# Update and save output tree
 outtree.Write()
 outfile.Close()
 

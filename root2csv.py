@@ -1,10 +1,9 @@
 #!/usr/bin/env python
-
 import os, sys
 import csv
-from math import log, exp, sqrt
 
 from ROOT import *
+from helper_functions import MakeInput, RotateEvent
 import numpy as np
 
 gROOT.SetBatch(True)
@@ -12,157 +11,63 @@ gROOT.SetBatch(True)
 from features import *
 
 ###############################
+# CONSTANTS
 
 GeV = 1e3
 TeV = 1e6
 rng = TRandom3()
 
-###############################
+# Artificially increase training data size by 5 by rotating events differently 5 different ways
+n_data_aug = 5
 
-def RotateEvent( lep, jets, phi ):
-    """Takes in TLorentzVector lep, jets and rotates each along the Z axis by an angle phi
-    lep: TLorentzVector containing lepton information
-    jets: Array of TLorentzVectors containing jet information
-    phi: Angle between 0 and 2 pi
-    """
-
-    lep_new            = TLorentzVector( lep )
-    lep_new.q          = lep.q
-    lep_new.flav       = lep.flav
-    lep_new.topoetcone = lep.topoetcone
-    lep_new.ptvarcone  = lep.ptvarcone
-    lep_new.d0sig      = lep.d0sig
-
-    lep_new.RotateZ( phi )
-
-    jets_new = []
-    for j in jets:
-        jets_new += [ TLorentzVector(j) ]
-        j_new = jets_new[-1]
-
-        j_new.mv2c10 = j.mv2c10
-        j_new.index  = j.index
-
-        j_new.RotateZ( phi )
-
-    return lep_new, jets_new
+# What is this?
+n_evt_max = -1
+if len(sys.argv) > 2: n_evt_max = int( sys.argv[2] )
 
 ###############################
-
-def MakeInput( jets, W_had, b_had, t_had, W_lep, b_lep, t_lep ):
-    """Format output, returning a jet matrix (detector level), W, b quark and lepton arrays (particle leve) and t-quark momenta (parton level)
-    """
-    # Populate 5 x 6 matrix of jet foration
-    # Is there possibly a bug here? What format is Px? Is sjets[0][0] = sjets[1][0] = sjets[2][0] = ...
-    sjets = np.zeros( [ n_jets_per_event, n_features_per_jet ] )
-    for i in range(len(jets)):
-        jet = jets[i]
-        sjets[i][0] = jet.Px()/GeV
-        sjets[i][1] = jet.Py()/GeV
-        sjets[i][2] = jet.Pz()/GeV
-        sjets[i][3] = jet.E()/GeV
-        sjets[i][4] = jet.M()/GeV
-        sjets[i][5] = jet.mv2c10
-
-    # Arrays containing W, b quarks and lepton information
-    target_W_had = np.zeros( [5] )
-    target_b_had = np.zeros( [5] )
-    target_t_had = np.zeros( [5] )
-    target_W_lep = np.zeros( [5] )
-    target_b_lep = np.zeros( [5] )
-    target_t_lep = np.zeros( [5] )
-
-    # T Hadron
-    target_t_had[0] = t_had.Px()/GeV
-    target_t_had[1] = t_had.Py()/GeV
-    target_t_had[2] = t_had.Pz()/GeV
-    target_t_had[3] = t_had.E()/GeV
-    target_t_had[4] = t_had.M()/GeV
-
-    # Hadronically Decay W Boson
-    target_W_had[0] = W_had.Px()/GeV
-    target_W_had[1] = W_had.Py()/GeV
-    target_W_had[2] = W_had.Pz()/GeV
-    target_W_had[3] = W_had.E()/GeV
-    target_W_had[4] = W_had.M()/GeV
-
-    # Hadronic b quark
-    target_b_had[0] = b_had.Px()/GeV
-    target_b_had[1] = b_had.Py()/GeV
-    target_b_had[2] = b_had.Pz()/GeV
-    target_b_had[3] = b_had.E()/GeV
-    target_b_had[4] = b_had.M()/GeV
-
-    # Leptonic t quark
-    target_t_lep[0] = t_lep.Px()/GeV
-    target_t_lep[1] = t_lep.Py()/GeV
-    target_t_lep[2] = t_lep.Pz()/GeV
-    target_t_lep[3] = t_lep.E()/GeV
-    target_t_lep[4] = t_lep.M()/GeV
-
-    # Leptonically decaying W quark
-    target_W_lep[0] = W_lep.Px()/GeV
-    target_W_lep[1] = W_lep.Py()/GeV
-    target_W_lep[2] = W_lep.Pz()/GeV
-    target_W_lep[3] = W_lep.E()/GeV
-    target_W_lep[4] = W_lep.M()/GeV
-
-    # Leptonic b quark
-    target_b_lep[0] = b_lep.Px()/GeV
-    target_b_lep[1] = b_lep.Py()/GeV
-    target_b_lep[2] = b_lep.Pz()/GeV
-    target_b_lep[3] = b_lep.E()/GeV
-    target_b_lep[4] = b_lep.M()/GeV
-
-    return sjets, target_W_had, target_b_had, target_t_had, target_W_lep, target_b_lep, target_t_lep
-
-###############################
-# List of file names. Originally, parton + particle level data kept in separate trees, so created one tree for each. Will need to change
+# BUILDING OUTPUTFILE
 
 # List of filenames
 filelistname = sys.argv[1]
 
-syst = "nominal"
-if len(sys.argv) > 2: syst = sys.argv[2]
-
+# Output filename
 outfilename = filelistname.split("/")[-1]
 outfilename = "csv/topreco." + outfilename.replace(".txt", ".%s.csv" % ( syst ) )
-
-n_evt_max = -1
-if len(sys.argv) > 3: n_evt_max = int( sys.argv[3] )
-
-# use data augmentation?
-# I believe we multiply the size of our data set by 5 by rotating each event 5 different ways
-n_data_aug = 5
-
-# Create csv writer
 outfile = open( outfilename, "wt" )
 csvwriter = csv.writer( outfile )
-
 print ("INFO: output file:", outfilename)
 
-treename = "nominal"
+###############################
+# BUILDING OUTPUTFILE
 
 # Not entirely sure how TCHAIN works, but I am guessing the truth/nominal input determines which file it loads in?
-tree_reco   = TChain( treename, treename )
-tree_parton = TChain( "truth", "truth" )
+tree = TChain("Delphes", "Delphes")
 f = open( filelistname, 'r' )
 for fname in f.readlines():
    fname = fname.strip()
-   tree_reco.AddFile( fname )
-   tree_parton.AddFile( fname )
+   tree.AddFile( fname )
 
-n_entries_reco = tree_reco.GetEntries()
-n_entries_parton = tree_parton.GetEntries()
-print("INFO: reco   entries found:", n_entries_reco)
-print("INFO: parton entries found:", n_entries_parton)
+# Switch on only useful branches. We are doing Muon only right now.
+# branches_active = [
+#     "Event.Number", "Event.ProcessID", "Event.Weight", "Vertex_size",
+#     "Muon.PT", "Muon.Eta", "Muon.Phi", "MissingET.MET", "MissingET.Phi"
+#     "Jet.PT", "Jet.Eta", "Jet.Phi", "Jet.T", "Jet.Mass",
+#     "GenJet.PT", "GenJet.Eta", "GenJet.Phi", "GenJet.T", "GenJet.Mass",
+#     "Particle.PID",
+# ]
+# tree.SetBranchStatus("*", 0)
+# for branch in branches_active:
+#     tree.SetBranchStatus(branch, 1)
 
-# Slightly confused. My guess is that this indexes this tree by runNumber and eventNumber
-success = tree_parton.BuildIndex( "runNumber", "eventNumber" )
+n_entries = tree.GetEntries()
+print("INFO: entries found:", n_entries)
+
+###############################
+# LOOPING THROUGH EVENTS
 
 # Cap on number of reconstructed events.
-if n_evt_max > 0: n_entries_reco = min( [ n_evt_max, n_entries_reco ] )
-print("INFO: looping over %i reco-level events" % n_entries_reco)
+if n_evt_max > 0: n_entries = min( [ n_evt_max, n_entries ] )
+print("INFO: looping over %i reco-level events" % n_entries)
 print("INFO: using data augmentation: rotateZ %ix" % n_data_aug)
 
 # Number of events which are actually copied over
@@ -170,54 +75,35 @@ n_good = 0
 
 # Looping through the reconstructed entries
 for ientry in range(n_entries_reco):
-    tree_reco.GetEntry( ientry )
+    # Withdraw next event
+    tree_reco.GetEntry(ientry)
 
     # Printing how far along in the loop we are
     if ( n_entries_reco < 10 ) or ( (ientry+1) % int(float(n_entries_reco)/10.)  == 0 ):
         perc = 100. * ientry / float(n_entries_reco)
         print("INFO: Event %-9i  (%3.0f %%)" % ( ientry, perc ))
 
-    # Number of electrons, muons, leptons, jets and bjets (bjet_n set later I presume)
-    el_n    = len(tree_reco.el_pt)
+    # Number of muons, leptons, jets and bjets (bjet_n set later)
+    #el_n    = len(tree_reco.el_pt)
     mu_n    = len(tree_reco.mu_pt)
-    lep_n   = el_n + mu_n
+    #lep_n   = el_n + mu_n
     jets_n  = len(tree_reco.jet_pt)
     bjets_n = 0
 
-    # If more than one lepton of less than 4 jets, skip
-    if lep_n > 1: continue
+    # If more than one lepton of less than 4 jets, cut
+    if mu_n != 1: continue
     if jets_n < 4: continue
 
-    passed_ejets  = False
-    passed_mujets = False
-    if   (el_n == 1) and (mu_n == 0): passed_ejets = True
-    elif (el_n == 0) and (mu_n == 1): passed_mujets = True
-    else: continue
-
-    # Get current event/run number to get parton level information stored in
-    # parton tree
-    mcChannelNumber = tree_reco.mcChannelNumber
-    runNumber       = tree_reco.runNumber
-    eventNumber     = tree_reco.eventNumber
-    weight          = 1.0
-
-    ientry_parton = tree_parton.GetEntryNumberWithIndex( runNumber, eventNumber )
-    tree_parton.GetEntry( ientry_parton )
-
-    # If in the other tree the event is not semileptonic, skip it
-    if not int(tree_parton.semileptonicEvent) == 1: continue
-
-    # Either electron or muon
+    # Muon vector. Will have to manually add electron energy as a constant, since not contained in tree information
     lep = TLorentzVector()
-    if passed_ejets:
-       lep.SetPtEtaPhiE( tree_reco.el_pt[0]/GeV, tree_reco.el_eta[0], tree_reco.el_phi[0], tree_reco.el_e[0]/GeV )
-    else:
-       lep.SetPtEtaPhiE( tree_reco.mu_pt[0]/GeV, tree_reco.mu_eta[0], tree_reco.mu_phi[0], tree_reco.mu_e[0]/GeV )
+    lep.SetPtEtaPhiE( tree_reco.mu_pt[0]/GeV, tree_reco.mu_eta[0], tree_reco.mu_phi[0], tree_reco.mu_e[0]/GeV )
 
+    # Missing Energy values
     met_met = tree_reco.met_met/GeV
     met_phi = tree_reco.met_phi
 
     # Append jets, check prob of being a bjet, and update bjet number
+    # This is what will be fed into the RNN
     jets = []
     for i in range(jets_n):
         if i >= n_jets_per_event: break
@@ -232,7 +118,7 @@ for ientry in range(n_entries_reco):
     # sort by b-tagging weight?
 #    jets.sort( key=lambda jet: jet.mv2c10, reverse=True )
 
-    # build truth top quarks
+    # Build output data we are trying to predict with RNN
 
     t_had = TLorentzVector()
     t_lep = TLorentzVector()
