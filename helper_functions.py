@@ -246,10 +246,9 @@ def ClassifyTopQuark(tree, entry, t_indices):
     for index in t_indices:
         # One of these will be the W quark, the other will be the b quark.
         d_index1 = TraverseSelfDecay(tree, entry, int(d1.GetValue(index)))
-        d_index2 = TraverseSelfDecay(tree, entry, int(d2.GetValue(index)))
+        d_index2 = TraverseSelfDecay(tree, entry, int(d2.GegtValue(index)))
         assert np.abs(pids.GetValue(d_index1)) == 24 \
-                        or np.abs(pids.GetValue(d_index2)) == 24,
-                        "No W quark found in decay of top quark"
+                        or np.abs(pids.GetValue(d_index2)) == 24, "No W quark found in decay of top quark"
         # Find the children for the W quark
         if np.abs(pids[d_index1]) == 24:
             W_index, b_index = d_index1, d_index2
