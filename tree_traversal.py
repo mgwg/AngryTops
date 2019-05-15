@@ -100,12 +100,12 @@ def ClassifyTopQuark(tree, entry, t_indices):
         # Check for leptonic and hadronic decay of W boson
         if np.min([np.abs(child1), np.abs(child2)]) > 10:
             assert "t_lep" not in indices.keys(), "Two leptonic top quarks"
-            indices["t_lep"] = t_indices[index]
+            indices["t_lep"] = index
             indices["W_lep"] = W_index
             indices["b_lep"] = b_index
         elif np.max([np.abs(child1), np.abs(child2)]) < 10:
             assert "t_had" not in indices.keys(), "Two hadronic top quarks"
-            indices["t_had"] = t_indices[index]
+            indices["t_had"] = index
             indices["W_had"] = W_index
             indices["b_had"] = b_index
         else:
