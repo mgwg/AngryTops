@@ -190,8 +190,9 @@ for ientry in range(n_entries):
     if W_had.Pt() < 20:
         print("Invalid W_had.pt: {}".format(W_had.Pt()))
         continue
-    if W_lep.Pt() < 20: continue
+    if W_lep.Pt() < 20:
         print("Invalid W_lep.pt: {}".format(W_lep.Pt()))
+        continue
     if b_had.Pt() < 20:
         print("Invalid b_had.pt: {}".format(b_had.Pt()))
         continue
@@ -215,7 +216,7 @@ for ientry in range(n_entries):
     # Augment Data By Rotating 5 Different Ways
     n_good += 1
     print("Writing new row to csv file")
-    
+
     # make event wrapper
     sjets, target_W_had, target_b_had, target_t_had, target_W_lep, target_b_lep, target_t_lep = MakeInput( jets, W_had, b_had, t_had, W_lep, b_lep, t_lep )
 
