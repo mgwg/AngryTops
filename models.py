@@ -1,29 +1,15 @@
-import keras
-from keras.models import Model, Sequential
-from keras.layers import Dense, Activation, Input, LSTM, Permute, Reshape, Masking, TimeDistributed, MaxPooling1D, Flatten
-from keras.layers import Lambda
-from keras.layers import Dropout
-from keras.layers import concatenate, maximum, dot, average, add
-from keras.layers.normalization import BatchNormalization
-from keras.layers.advanced_activations import LeakyReLU, PReLU, ELU
-from keras.layers.merge import *
-from keras.optimizers import *
-from keras.regularizers import l2
+from tensorflow import keras
+from tensorflow.keras import layers
 
 from features import *
 
-n_rows_t_lep = -1
-n_cols_t_lep = -1
-n_rows_t_had = -1
-n_cols_t_had = -1
-n_target_features = -1
+n_features_input = 63
+n_target_features = 5
 
 def create_model():
-   inshape_t_lep = ( n_rows_t_lep, n_cols_t_lep )
-   inshape_t_had = ( n_rows_t_had, n_cols_t_had )
+    model = keras.Sequential()
+    model.add(layers.Dense(n_features_input, activation='relu'))
 
-   input_t_lep = Input( shape=inshape_t_lep )
-   input_t_had = Input( shape=inshape_t_had )
 
    x_t_lep = TimeDistributed( Dense(100), input_shape=inshape_t_lep )(input_t_lep)
    x_t_lep = LSTM(  80, return_sequences=True )(x_t_lep)
@@ -54,15 +40,15 @@ def create_model():
 
    return model
 
-   
+
 ################
 
-   
+
 def create_model_rnn():
    inshape   = ( n_rows, n_cols )
 
    print "INFO: building model: input shape:", inshape
-   
+
    input = Input( shape=inshape )
    dropout = 0.00
 
@@ -93,7 +79,7 @@ def create_model_multi():
 
    shape_jets = (n_jets_per_event,n_features_per_jet)
    shape_lep  = (n_features_lepton,)
-   
+
    input_jets = Input( shape=shape_jets, name='input_jets' )
    input_lep  = Input( shape=shape_lep,  name='input_lept' )
 
@@ -143,7 +129,7 @@ def create_model_multi():
    x_W_had = Dense(20, activation="tanh")(x_W_had)
    x_W_had = Dense(10, activation="tanh")(x_W_had)
    x_W_had_out = Dense(3, name="W_had_out")(x_W_had)
-   
+
 #   x_W_had = TimeDistributed( Dense(100), input_shape=shape_jets )(input_jets)
 #   x_W_had = LSTM(  100, return_sequences=True)(x_W_had)
 #   x_W_had = LSTM(   80, return_sequences=True)(x_W_had)
@@ -155,7 +141,7 @@ def create_model_multi():
 
    #x_t_had  = add( [ x_W_had_out, x_b_had_out ] )
    #x_t_had_out = Dense(3, name='t_had_out')(x_t_had)
-   
+
    #x_t_lep  = add( [ x_W_lep_out, x_b_lep_out ] )
    #x_t_lep_out = Dense(3, name='t_lep_out')(x_t_lep)
 
