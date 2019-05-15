@@ -64,7 +64,7 @@ print("INFO: using data augmentation: rotateZ %ix" % n_data_aug)
 n_good = 0
 
 # Looping through the reconstructed entries
-for ientry in range(n_entries):
+for try in range(n_entries):
     ##############################################################
     # Withdraw next event
     tree.GetEntry(ientry)
@@ -134,7 +134,7 @@ for ientry in range(n_entries):
     ##############################################################
     # Build output data we are trying to predict with RNN
     try:
-        indices = GetIndices(tree, ienty)
+        indices = GetIndices(tree, ientry)
     except Exception as e:
         print("Exception thrown when retrieving indices")
         print(e)
