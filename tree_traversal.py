@@ -53,7 +53,7 @@ def GetParticleIndex(tree, entry, pid):
     tree.GetEntry(entry)
     pids = tree.GetLeaf("Particle.PID")
     d1 = tree.GetLeaf("Particle.D1")
-    counts = Counter(pid)
+    counts = Counter(pids)
     index = -1
     # If pid in not in the event
     if pid not in counts.keys():
