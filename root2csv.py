@@ -7,6 +7,7 @@ from ROOT import TLorentzVector, gROOT, TRandom3, TChain
 from tree_traversal import GetIndices
 from helper_functions import *
 import numpy as np
+import traceback
 
 gROOT.SetBatch(True)
 
@@ -138,6 +139,7 @@ for ientry in range(n_entries):
     except Exception as e:
         print("Exception thrown when retrieving indices")
         print(e)
+        print(traceback.format_exc())
         continue
 
     t_had = TLorentzVector()
