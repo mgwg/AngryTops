@@ -1,7 +1,6 @@
 # USE THIS SCRIPT TO FIND LOCATIONS OF PARTICLES IN THE ROOT tree
 import ROOT
 from ROOT import TLorentzVector
-from collections import Counter
 from array import array
 import numpy as np
 
@@ -53,11 +52,7 @@ def GetParticleIndex(tree, entry, pid):
     tree.GetEntry(entry)
     pids = tree.GetLeaf("Particle.PID")
     d1 = tree.GetLeaf("Particle.D1")
-    counts = Counter(pids)
     index = -1
-    # If pid in not in the event
-    if pid not in counts.keys():
-        return -1
     # Loop through pids, update index
     for i in range(pids.GetLen()):
         value = pids.GetValue(i)
