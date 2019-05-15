@@ -20,7 +20,7 @@ TeV = 1e6
 rng = TRandom3()
 
 # Artificially increase training data size by 5 by rotating events differently 5 different ways
-n_data_aug = 5
+n_data_aug = 1
 
 # What is this?
 n_evt_max = -1
@@ -81,8 +81,12 @@ for ientry in range(n_entries):
     bjets_n = 0
 
     # If more than one lepton of less than 4 jets, cut
-    if mu_n != 1: continue
-    if jets_n < 4: continue
+    if mu_n != 1:
+        print("Incorrect number of muons: {}. Applying cuts".format(mu_n))
+        continue
+    if jets_n < 4:
+        print("Missing jets: {}. Applying cuts".format(jets_n))
+        continue
 
     ##############################################################
     # Muon vector. Replaced E w/ T
@@ -92,8 +96,12 @@ for ientry in range(n_entries):
                       tree.GetLeaf("Muon.Phi").GetValue(0),
                       tree.GetLeaf("Muon.T").GetValue(0)/GeV
                       )
-    if lep.Pt() < 20: continue # Fail to get a muon passing the threshold
-    if np.abs(lep.Eta()) > 2.5: continue
+    if lep.Pt() < 20:
+        print("Lepton PT below threshold: {}. Applying cuts".format(lep.Pt()))
+        continue # Fail to get a muon passing the threshold
+    if np.abs(lep.Eta()) > 2.5:
+        print("Lepton Eta value above threshold: {}. Apply cuts".format(lep.Eta()))
+        continue
 
     # Missing Energy values
     met_met = tree.GetLeaf("MissingET.MET").GetValue() / GeV
@@ -119,13 +127,17 @@ for ientry in range(n_entries):
             if j.btag > 0.0: bjets_n += 1
     # Cut based on number of passed jets
     jets_n = len(jets)
-    if jets_n < 4: continue
+    if jets_n < 4:
+        print("Missing jets: {}. Applying cuts".format(jets_n))
+        continue
 
     ##############################################################
     # Build output data we are trying to predict with RNN
     try:
         indices = GetIndices(tree, ienty)
-    except:
+    except Exception as e:
+        print("Exception thrown when retrieving indices")
+        print(e)
         continue
 
     t_had = TLorentzVector()
@@ -169,59 +181,60 @@ for ientry in range(n_entries):
 
     ##############################################################
     # CUTS USING PARTICLE LEVEL OBJECTS
-    if (t_had.Pz() == 0.) or (t_had.M() != t_had.M()): continue
-    if (t_lep.Pz() == 0.) or (t_lep.M() != t_lep.M()): continue
-    if W_had.Pt() < 20: continue
+    if (t_had.Pz() == 0.) or (t_had.M() != t_had.M()):
+        print("Invalid t_had values, P_z = {0}, M = {1}".format(t_had.Pz(), t_had.M()))
+        continue
+    if (t_lep.Pz() == 0.) or (t_lep.M() != t_lep.M()):
+        print("Invalid t_lep values, P_z = {0}, M = {1}".format(t_lep.Pz(), t_lep.M()))
+        continue
+    if W_had.Pt() < 20:
+        print("Invalid W_had.pt: {}".format(W_had.Pt()))
+        continue
     if W_lep.Pt() < 20: continue
-    if b_had.Pt() < 20: continue
-    if b_had.Pt() < 20: continue
-    if np.abs(W_had.Eta()) > 2.5: continue
-    if np.abs(W_lep.Eta()) > 2.5: continue
-    if np.abs(b_had.Eta()) > 2.5: continue
-    if np.abs(b_lep.Eta()) > 2.5: continue
+        print("Invalid W_lep.pt: {}".format(W_lep.Pt()))
+    if b_had.Pt() < 20:
+        print("Invalid b_had.pt: {}".format(b_had.Pt()))
+        continue
+    if b_lep.Pt() < 20:
+        print("Invalid b_lep.pt: {}".format(b_lep.Pt()))
+        continue
+    if np.abs(W_had.Eta()) > 2.5:
+        print("Invalid W_had.eta: {}".format(W_had.Eta()))
+        continue
+    if np.abs(W_lep.Eta()) > 2.5:
+        print("Invalid W_lep.eta: {}".format(W_lep.Eta()))
+        continue
+    if np.abs(b_had.Eta()) > 2.5:
+        print("Invalid b_had.eta: {}".format(b_had.Eta()))
+        continue
+    if np.abs(b_lep.Eta()) > 2.5:
+        print("Invalid b_lep.eta: {}".format(b_lep.Eta()))
+        continue
 
     ##############################################################
     # Augment Data By Rotating 5 Different Ways
     n_good += 1
-    print("Writing new set of 5 rows to csv file")
+    print("Writing new row to csv file")
+    
+    # make event wrapper
+    sjets, target_W_had, target_b_had, target_t_had, target_W_lep, target_b_lep, target_t_lep = MakeInput( jets, W_had, b_had, t_had, W_lep, b_lep, t_lep )
 
-    phi = 0.
-    for n in range(n_data_aug+1):
-       # rotate f.s.o.
-       lep.RotateZ( phi )
-
-       met_phi = TVector2.Phi_mpi_pi( met_phi + phi )
-
-       for j in jets: j.RotateZ(phi)
-
-       W_had.RotateZ(phi)
-       b_had.RotateZ(phi)
-       t_had.RotateZ(phi)
-       W_lep.RotateZ(phi)
-       b_lep.RotateZ(phi)
-       t_lep.RotateZ(phi)
-
-       # make event wrapper
-       sjets, target_W_had, target_b_had, target_t_had, target_W_lep, target_b_lep, target_t_lep = MakeInput( jets, W_had, b_had, t_had, W_lep, b_lep, t_lep )
-
-       # write out
-       csvwriter.writerow( (
-          "%i" % jets_n, "%i" % bjets_n,
-          "%.3f" % lep.Px(),     "%.3f" % lep.Py(),     "%.3f" % lep.Pz(),     "%.3f" % lep.E(),      "%.3f" % met_met,      "%.3f" % met_phi,
-          "%.3f" % sjets[0][0],  "%.3f" % sjets[0][1],  "%.3f" % sjets[0][2],  "%.3f" % sjets[0][3],  "%.3f" % sjets[0][4],  "%.3f" % sjets[0][5],
-          "%.3f" % sjets[1][0],  "%.3f" % sjets[1][1],  "%.3f" % sjets[1][2],  "%.3f" % sjets[1][3],  "%.3f" % sjets[1][4],  "%.3f" % sjets[1][5],
-          "%.3f" % sjets[2][0],  "%.3f" % sjets[2][1],  "%.3f" % sjets[2][2],  "%.3f" % sjets[2][3],  "%.3f" % sjets[2][4],  "%.3f" % sjets[2][5],
-          "%.3f" % sjets[3][0],  "%.3f" % sjets[3][1],  "%.3f" % sjets[3][2],  "%.3f" % sjets[3][3],  "%.3f" % sjets[3][4],  "%.3f" % sjets[3][5],
-          "%.3f" % sjets[4][0],  "%.3f" % sjets[4][1],  "%.3f" % sjets[4][2],  "%.3f" % sjets[4][3],  "%.3f" % sjets[4][4],  "%.3f" % sjets[4][5],
-          "%.3f" % target_W_had[0], "%.3f" % target_W_had[1], "%.3f" % target_W_had[2], "%.3f" % target_W_had[3], "%.3f" % target_W_had[4],
-          "%.3f" % target_W_lep[0], "%.3f" % target_W_lep[1], "%.3f" % target_W_lep[2], "%.3f" % target_W_lep[3], "%.3f" % target_W_lep[4],
-          "%.3f" % target_b_had[0], "%.3f" % target_b_had[1], "%.3f" % target_b_had[2], "%.3f" % target_b_had[3], "%.3f" % target_b_had[4],
-          "%.3f" % target_b_lep[0], "%.3f" % target_b_lep[1], "%.3f" % target_b_lep[2], "%.3f" % target_b_lep[3], "%.3f" % target_b_lep[4],
-          "%.3f" % target_t_had[0], "%.3f" % target_t_had[1], "%.3f" % target_t_had[2], "%.3f" % target_t_had[3], "%.3f" % target_t_had[4],
-          "%.3f" % target_t_lep[0], "%.3f" % target_t_lep[1], "%.3f" % target_t_lep[2], "%.3f" % target_t_lep[3], "%.3f" % target_t_lep[4]
-       ) )
-
-       phi = rng.Uniform( -TMath.Pi(), TMath.Pi() )
+    # write out
+    csvwriter.writerow( (
+    "%i" % jets_n, "%i" % bjets_n,
+    "%.3f" % lep.Px(),     "%.3f" % lep.Py(),     "%.3f" % lep.Pz(),     "%.3f" % lep.E(),      "%.3f" % met_met,      "%.3f" % met_phi,
+    "%.3f" % sjets[0][0],  "%.3f" % sjets[0][1],  "%.3f" % sjets[0][2],  "%.3f" % sjets[0][3],  "%.3f" % sjets[0][4],  "%.3f" % sjets[0][5],
+    "%.3f" % sjets[1][0],  "%.3f" % sjets[1][1],  "%.3f" % sjets[1][2],  "%.3f" % sjets[1][3],  "%.3f" % sjets[1][4],  "%.3f" % sjets[1][5],
+    "%.3f" % sjets[2][0],  "%.3f" % sjets[2][1],  "%.3f" % sjets[2][2],  "%.3f" % sjets[2][3],  "%.3f" % sjets[2][4],  "%.3f" % sjets[2][5],
+    "%.3f" % sjets[3][0],  "%.3f" % sjets[3][1],  "%.3f" % sjets[3][2],  "%.3f" % sjets[3][3],  "%.3f" % sjets[3][4],  "%.3f" % sjets[3][5],
+    "%.3f" % sjets[4][0],  "%.3f" % sjets[4][1],  "%.3f" % sjets[4][2],  "%.3f" % sjets[4][3],  "%.3f" % sjets[4][4],  "%.3f" % sjets[4][5],
+    "%.3f" % target_W_had[0], "%.3f" % target_W_had[1], "%.3f" % target_W_had[2], "%.3f" % target_W_had[3], "%.3f" % target_W_had[4],
+    "%.3f" % target_W_lep[0], "%.3f" % target_W_lep[1], "%.3f" % target_W_lep[2], "%.3f" % target_W_lep[3], "%.3f" % target_W_lep[4],
+    "%.3f" % target_b_had[0], "%.3f" % target_b_had[1], "%.3f" % target_b_had[2], "%.3f" % target_b_had[3], "%.3f" % target_b_had[4],
+    "%.3f" % target_b_lep[0], "%.3f" % target_b_lep[1], "%.3f" % target_b_lep[2], "%.3f" % target_b_lep[3], "%.3f" % target_b_lep[4],
+    "%.3f" % target_t_had[0], "%.3f" % target_t_had[1], "%.3f" % target_t_had[2], "%.3f" % target_t_had[3], "%.3f" % target_t_had[4],
+    "%.3f" % target_t_lep[0], "%.3f" % target_t_lep[1], "%.3f" % target_t_lep[2], "%.3f" % target_t_lep[3], "%.3f" % target_t_lep[4]
+        ) )
 
 
 ##############################################################

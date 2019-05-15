@@ -189,9 +189,7 @@ def RotateEvent( lep, jets, phi ):
     for j in jets:
         jets_new += [ TLorentzVector(j) ]
         j_new = jets_new[-1]
-
-        j_new.mv2c10 = j.mv2c10
-        j_new.index  = j.index
+        j_new.btag = j.btag
 
         j_new.RotateZ( phi )
 
