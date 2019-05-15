@@ -91,10 +91,10 @@ for ientry in range(n_entries):
     ##############################################################
     # Muon vector. Replaced E w/ T
     lep = TLorentzVector()
-    lep.SetPtEtaPhiE( tree.GetLeaf("Muon.PT").GetValue(0)/GeV,
+    lep.SetPtEtaPhiE( tree.GetLeaf("Muon.PT").GetValue(0),
                       tree.GetLeaf("Muon.Eta").GetValue(0),
                       tree.GetLeaf("Muon.Phi").GetValue(0),
-                      tree.GetLeaf("Muon.T").GetValue(0)/GeV
+                      tree.GetLeaf("Muon.T").GetValue(0)
                       )
     if lep.Pt() < 20:
         print("Lepton PT below threshold: {}. Applying cuts".format(lep.Pt()))
@@ -104,7 +104,7 @@ for ientry in range(n_entries):
         continue
 
     # Missing Energy values
-    met_met = tree.GetLeaf("MissingET.MET").GetValue() / GeV
+    met_met = tree.GetLeaf("MissingET.MET").GetValue()
     met_phi = tree.GetLeaf("MissingET.Phi").GetValue()
 
     # Append jets, check prob of being a bjet, and update bjet number
