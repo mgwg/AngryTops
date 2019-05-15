@@ -103,7 +103,7 @@ def ClassifyTopQuark(tree, entry, t_indices):
             indices["t_lep"] = t_indices[index]
             indices["W_lep"] = W_index
             indices["b_lep"] = b_index
-        elif np.max(np.abs(child1), np.abs(child2)) < 10:
+        elif np.max([np.abs(child1), np.abs(child2)]) < 10:
             assert "t_had" not in t_indices.keys(), "Two hadronic top quarks"
             indices["t_had"] = t_indices[index]
             indices["W_had"] = W_index
