@@ -2,7 +2,7 @@
 # BORROWED: From Tensorflow tutorials
 import matplotlib.pyplot as plt
 
-def plot_history(history, key='mse'):
+def plot_history(history, save_dir, key='mse'):
   plt.figure(figsize=(16,10))
 
   val = plt.plot(history.epoch, history.history['val_'+key],
@@ -15,4 +15,5 @@ def plot_history(history, key='mse'):
   plt.legend()
 
   plt.xlim([0,max(history.epoch)])
+  plt.savefig("{}/Training".format(save_dir))
   plt.show()
