@@ -21,7 +21,7 @@ def get_input_output(training_split=0.75, shuff=True):
     # Seperate the input and output columns
     input = df[input_columns].values
     output = df[output_columns].values
-    output = output.reshape(output.shape[0], 5, 6)
+    output = output.reshape(output.shape[0], 6, 5)
     # Seperate training and testing data
     assert 0 < training_split < 1, "Invalid training_split given"
     cut = np.int(np.round(df.shape[0] * training_split))
