@@ -10,7 +10,8 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 ###############################################################################
 # IMPORT MODEL AND LOAD WEIGHTS
-checkpoint_path = "CheckPoints/training_1/cp.ckpt"
+model_dir = 'CheckPoints/training_1'
+checkpoint_path = "{}/cp.ckpt".format(model_dir)
 model = create_simple_model()
 weights = model.load_weights(checkpoint_path)
 
@@ -47,7 +48,7 @@ for i in range(5):
 
 ###############################################################################
 # MAKE PDF FILE COMPARING DIFFERENCES BETWEEN PREDICTIONS AND REAL VALUES
-pp = PdfPages('CheckPoints/training_1/predictions.pdf')
+pp = PdfPages('{}/predictions.pdf'.format(model_dir))
 xaxis = np.arange(0, testing_input.shape[0], 1)
 
 titles = [
