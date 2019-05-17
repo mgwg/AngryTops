@@ -12,10 +12,10 @@ from FormatInputOutput import get_input_output
 ###############################################################################
 # CONSTANTS
 BATCH_SIZE = 32
-EPOCHES = 10
-checkpoint_path = "CheckPoints/training_2/cp.ckpt"
+EPOCHES = 20
+checkpoint_path = "{}/cp.ckpt".format(training_dir)
 checkpoint_dir = os.path.dirname(checkpoint_path)
-save_dir = 'CheckPoints/training_2'
+save_dir = training_dir
 
 ###############################################################################
 # LOADING / PRE-PROCESSING DATA
@@ -24,7 +24,7 @@ print(training_input.shape)
 
 ###############################################################################
 # BUILDING / TRAINING MODEL
-model = create_regularized_model()
+model = create_model3()
 #model.load_weights(checkpoint_path)
 print(model.summary())
 

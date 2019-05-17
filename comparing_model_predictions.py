@@ -10,7 +10,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 ###############################################################################
 # IMPORT MODEL AND LOAD WEIGHTS
-model_dir = 'CheckPoints/training_2'
+model_dir = training_dir
 checkpoint_path = "{}/cp.ckpt".format(model_dir)
 #model = create_simple_model()
 model = create_regularized_model()
