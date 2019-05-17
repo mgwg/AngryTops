@@ -24,7 +24,7 @@ print(training_input.shape)
 
 ###############################################################################
 # BUILDING / TRAINING MODEL
-model = create_model3()
+model = create_model4()
 #model.load_weights(checkpoint_path)
 print(model.summary())
 
