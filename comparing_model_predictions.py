@@ -4,15 +4,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow import keras
-from models import create_simple_model
+from models import *
 from FormatInputOutput import get_input_output
 from matplotlib.backends.backend_pdf import PdfPages
 
 ###############################################################################
 # IMPORT MODEL AND LOAD WEIGHTS
-model_dir = 'CheckPoints/training_1'
+model_dir = 'CheckPoints/training_2'
 checkpoint_path = "{}/cp.ckpt".format(model_dir)
-model = create_simple_model()
+#model = create_simple_model()
+model = create_regularized_model()
 weights = model.load_weights(checkpoint_path)
 
 ###############################################################################
@@ -52,15 +53,15 @@ pp = PdfPages('{}/predictions.pdf'.format(model_dir))
 xaxis = np.arange(0, testing_input.shape[0], 1)
 
 titles = [
-["W_had_Px", "W_had_Py", "W_had_Pz", "W_had_E", "W_had_M"],
-["W_lep_Px", "W_lep_Py", "W_lep_Pz", "W_lep_E", "W_lep_M"],
-["b_had_Px", "b_had_Py", "b_had_Pz", "b_had_E", "b_had_M"],
-["b_lep_Px", "b_lep_Py", "b_lep_Pz", "b_lep_E", "b_lep_M"],
-["t_had_Px", "t_had_Py", "t_had_Pz", "t_had_E", "t_had_M"],
-["t_lep_Px", "t_lep_Py", "t_lep_Pz", "t_lep_E", "t_lep_M"]
+["W_had_Px", "W_had_Py", "W_had_Pz", "W_had_E"],
+["W_lep_Px", "W_lep_Py", "W_lep_Pz", "W_lep_E"],
+["b_had_Px", "b_had_Py", "b_had_Pz", "b_had_E"],
+["b_lep_Px", "b_lep_Py", "b_lep_Pz", "b_lep_E"],
+["t_had_Px", "t_had_Py", "t_had_Pz", "t_had_E"],
+["t_lep_Px", "t_lep_Py", "t_lep_Pz", "t_lep_E"]
 ]
 
-for i in range(5):
+for i in range(4):
     fig, sub = plt.subplots(6, 1, figsize=(8, 18), sharex=True)
     for j in range(6):
             sub[j].scatter(xaxis[:10], testing_output[:10,j,i], color='red', label="True")

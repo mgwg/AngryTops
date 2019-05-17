@@ -9,7 +9,7 @@ def get_input_output(training_split=0.75, shuff=True):
     """
     Return the training and testing data
     Training Data: Array of 36 elements. I am debating reshaping to matrix of (6 x 6)
-    Testing Data: Matrix of Shape (5 x 6)
+    Testing Data: Matrix of Shape (4 x 6)
     """
     df = pd.read_csv("csv/topreco.csv", names=column_names)
     # Drop Unwanted Features
@@ -21,7 +21,7 @@ def get_input_output(training_split=0.75, shuff=True):
     # Seperate the input and output columns
     input = df[input_columns].values
     output = df[output_columns].values
-    output = output.reshape(output.shape[0], 6, 5)
+    output = output.reshape(output.shape[0], 6, 4)
     # Seperate training and testing data
     assert 0 < training_split < 1, "Invalid training_split given"
     cut = np.int(np.round(df.shape[0] * training_split))

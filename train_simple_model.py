@@ -5,14 +5,14 @@ import tensorflow as tf
 from tensorflow import keras
 from features import *
 import os
-from models import create_simple_model
+from models import *
 from plotting_helper import plot_history
 from FormatInputOutput import get_input_output
 
 ###############################################################################
 # CONSTANTS
 BATCH_SIZE = 32
-EPOCHES = 100
+EPOCHES = 10
 checkpoint_path = "CheckPoints/training_2/cp.ckpt"
 checkpoint_dir = os.path.dirname(checkpoint_path)
 save_dir = 'CheckPoints/training_2'
@@ -24,7 +24,7 @@ print(training_input.shape)
 
 ###############################################################################
 # BUILDING / TRAINING MODEL
-model = create_simple_model()
+model = create_regularized_model()
 #model.load_weights(checkpoint_path)
 print(model.summary())
 
@@ -38,7 +38,7 @@ history = model.fit(training_input, training_output,  epochs=EPOCHES,
 ###############################################################################
 # EVALUATING MODEL
 plot_history(history, save_dir)
-test_loss, test_acc = model.evaluate(testing_input, testing_output)
+test_acc = model.evaluate(testing_input, testing_output)
 print('\nTest accuracy:', test_acc)
 
 
