@@ -38,7 +38,7 @@ history = model.fit(training_input, training_output,  epochs=EPOCHES,
                     )
 ###############################################################################
 # EVALUATING MODEL
-plot_history(history)
+plot_history(history, save_dir)
 test_loss, test_acc = model.evaluate(testing_input, testing_output)
 print('\nTest accuracy:', test_acc)
 
