@@ -15,5 +15,5 @@ def plot_history(history, save_dir, key='mse'):
   plt.legend()
 
   plt.xlim([0,max(history.epoch)])
-  plt.savefig("{}/Training.png".format(save_dir))
+  plt.savefig("{}Training.png".format(save_dir))
   plt.show()

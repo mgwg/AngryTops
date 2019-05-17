@@ -9,14 +9,13 @@ from models import create_simple_model
 from plotting_helper import plot_history
 from FormatInputOutput import get_input_output
 
-
 ###############################################################################
 # CONSTANTS
 BATCH_SIZE = 32
 EPOCHES = 100
 checkpoint_path = "CheckPoints/training_1/cp.ckpt"
 checkpoint_dir = os.path.dirname(checkpoint_path)
-save_dir = 'CheckPoints/training_1/'
+save_dir = 'CheckPoints/training_1'
 
 ###############################################################################
 # LOADING / PRE-PROCESSING DATA
