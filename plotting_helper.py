@@ -11,9 +11,9 @@ def plot_history(history, save_dir, key='mse'):
              label=' Train')
 
   plt.xlabel('Epochs')
-  plt.ylabel(key.replace('_',' ').title())
+  plt.ylabel(key)
   plt.legend()
 
   plt.xlim([0,max(history.epoch)])
-  plt.savefig("{}/Training".format(save_dir))
+  plt.savefig("{}/Training.png".format(save_dir))
   plt.show()
