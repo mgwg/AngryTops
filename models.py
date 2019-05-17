@@ -22,6 +22,29 @@ def create_simple_model():
     model.add(layers.SimpleRNN(30, return_sequences=True))
     model.add(layers.Flatten())
     model.add(layers.Dense(30))
+    model.add(layers.Reshape(target_shape=(6,5)))
+
+    optimizer = tf.keras.optimizers.RMSprop()
+    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    return model
+
+################################################################################
+
+def create_regularized_model():
+    """
+    Create a simple RNN with L2 regularizers and dropout layers
+    """
+    # Questions:
+    # 1. Originally there was a TimeDIstributed Layer. I think this was
+    # unceccessary
+    # The return_sequences=True argument ==> Not sure what this does
+    # I simplified the model significantly => Reduced it to one recurrent layer
+    model = keras.Sequential()
+    model.add(layers.Dense(36, activation='relu', input_shape=(36,)))
+    model.add(layers.Reshape(target_shape=(6,6)))
+    model.add(layers.SimpleRNN(30, return_sequences=True))
+    model.add(layers.Flatten())
+    model.add(layers.Dense(30))
     model.add(layers.Reshape(target_shape=(5,6)))
 
     optimizer = tf.keras.optimizers.RMSprop()
