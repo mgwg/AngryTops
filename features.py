@@ -1,3 +1,5 @@
+training_dir = 'CheckPoints/training_3/'
+
 column_names = ["jets_n", "bjets_n",
 "lep.Px", "lep.Py", "lep.Pz", "lep.E", "met_met", "met_phi",
 "jet0 P_x",  "jet0 P_y",  "jet0 P_z",  "jet0 E",  "jet0 M",  "jet0 BTag",
