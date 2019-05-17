@@ -21,7 +21,7 @@ TeV = 1e6
 rng = TRandom3()
 
 # Artificially increase training data size by 5 by rotating events differently 5 different ways
-n_data_aug = 1
+n_data_aug = 5
 
 # What is this?
 n_evt_max = -1

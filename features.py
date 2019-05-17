@@ -1,4 +1,4 @@
-training_dir = 'CheckPoints/training_3/'
+training_dir = 'CheckPoints/training_4'
 
 column_names = ["jets_n", "bjets_n",
 "lep.Px", "lep.Py", "lep.Pz", "lep.E", "met_met", "met_phi",
