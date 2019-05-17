@@ -6,6 +6,7 @@ import tensorflow as tf
 from tensorflow import keras
 from models import create_simple_model
 from FormatInputOutput import get_input_output
+from matplotlib.backends.backend_pdf import PdfPages
 
 ###############################################################################
 # IMPORT MODEL AND LOAD WEIGHTS
@@ -16,24 +17,56 @@ weights = model.load_weights(checkpoint_path)
 ###############################################################################
 # PICK POINTS TO TEST ON
 (training_input, training_output), (testing_input, testing_output) = get_input_output()
-trial_tests = testing_input[-5:]
-trial_targets = testing_output[-5:]
-print(trial_targets)
+indices = np.arange(0, testing_input.shape[0], 1)
+np.random.shuffle(indices)
 
 ###############################################################################
-# USE MODEL TO PREDICT ON THE TRIALS
-predictions = model.predict(trial_tests)
-for i in range(len(trial_tests)):
-    print("{}-th trial point")
+# USE MODEL TO PREDICT ON FIVE RANDOM TRIALS
+predictions = model.predict(testing_input)
+for i in range(5):
+    print("{}-th trial point".format(indices[i]))
     print("W_had:")
-    print("Predicted: {0}\nActual: {1}\n".format(predictions[i][0], trial_targets[i][0]))
+    print("Predicted: {0}\nActual: {1}\n".format(predictions[indices[i]][0],
+    testing_output[indices[i]][0]))
     print("W_lep:")
-    print("Predicted: {0}\nActual: {1}\n".format(predictions[i][1], trial_targets[i][1]))
+    print("Predicted: {0}\nActual: {1}\n".format(predictions[indices[i]][1],
+            testing_output[indices[i]][1]))
     print("b_had:")
-    print("Predicted: {0}\nActual: {1}\n".format(predictions[i][2], trial_targets[i][2]))
+    print("Predicted: {0}\nActual: {1}\n".format(predictions[indices[i]][2],
+            testing_output[indices[i]][2]))
     print("b_lep:")
-    print("Predicted: {0}\nActual: {1}\n".format(predictions[i][3], trial_targets[i][3]))
+    print("Predicted: {0}\nActual: {1}\n".format(predictions[indices[i]][3],
+            testing_output[indices[i]][3]))
     print("t_had:")
-    print("Predicted: {0}\nActual: {1}\n".format(predictions[i][4], trial_targets[i][4]))
+    print("Predicted: {0}\nActual: {1}\n".format(predictions[indices[i]][4],
+            testing_output[indices[i]][4]))
     print("t_lep:")
-    print("Predicted: {0}\nActual: {1}\n".format(predictions[i][5], trial_targets[i][5]))
+    print("Predicted: {0}\nActual: {1}\n".format(predictions[indices[i]][5],
+            testing_output[indices[i]][5]))
+    print("==================================================================")
+
+###############################################################################
+# MAKE PDF FILE COMPARING DIFFERENCES BETWEEN PREDICTIONS AND REAL VALUES
+pp = PdfPages('CheckPoints/training_1/predictions.pdf')
+xaxis = np.arange(0, testing_input.shape[0], 1)
+
+titles = [
+["W_had_Px", "W_had_Py", "W_had_Pz", "W_had_E", "W_had_M"],
+["W_lep_Px", "W_lep_Py", "W_lep_Pz", "W_lep_E", "W_lep_M"],
+["b_had_Px", "b_had_Py", "b_had_Pz", "b_had_E", "b_had_M"],
+["b_lep_Px", "b_lep_Py", "b_lep_Pz", "b_lep_E", "b_lep_M"],
+["t_had_Px", "t_had_Py", "t_had_Pz", "t_had_E", "t_had_M"],
+["t_lep_Px", "t_lep_Py", "t_lep_Pz", "t_lep_E", "t_lep_M"]
+]
+
+for i in range(5):
+    fig, sub = plt.subplots(6, 1, figsize=(8, 18), sharex=True)
+    for j in range(6):
+            sub[j].scatter(xaxis[:10], testing_output[:10,j,i], color='red', label="True")
+            sub[j].scatter(xaxis[:10], predictions[:10,j,i], color='blue', label="Predicted")
+            sub[j].legend()
+            sub[j].set_title(titles[j][i])
+            sub[j].set_xlabel("Point Number")
+            sub[j].set_ylabel("Value [arb]")
+    pp.savefig()
+pp.close()
