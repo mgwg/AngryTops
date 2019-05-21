@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 from features import *
 from sklearn.utils import shuffle
+from sklearn import preprocessing
 
 input_filename = "csv/topreco.csv"
 input_filename = "csv/topreco_augmented1.csv"
