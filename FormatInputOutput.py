@@ -8,7 +8,7 @@ from sklearn.utils import shuffle
 input_filename = "csv/topreco.csv"
 input_filename = "csv/topreco_augmented1.csv"
 
-def get_input_output(training_split=0.75, shuff=True, normalize=False):
+def get_input_output(training_split=0.75, shuff=True, norm=False):
     """
     Return the training and testing data
     Training Data: Array of 36 elements. I am debating reshaping to matrix of (6 x 6)
@@ -25,7 +25,7 @@ def get_input_output(training_split=0.75, shuff=True, normalize=False):
     input = df[input_columns].values
     output = df[output_columns].values
     output = output.reshape(output.shape[0], 6, 4)
-    if normalize:
+    if norm:
         input, output = normalize(input, output)
     # Seperate training and testing data
     assert 0 < training_split < 1, "Invalid training_split given"

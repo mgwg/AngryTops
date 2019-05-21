@@ -19,7 +19,7 @@ save_dir = training_dir
 
 ###############################################################################
 # LOADING / PRE-PROCESSING DATA
-(training_input, training_output), (testing_input, testing_output) = get_input_output(normalize=True)
+(training_input, training_output), (testing_input, testing_output) = get_input_output(norm=True)
 print(training_input.shape)
 
 ###############################################################################
