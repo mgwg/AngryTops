@@ -3,7 +3,7 @@ import os, sys
 import csv
 
 import ROOT
-from ROOT import TLorentzVector, gROOT, TRandom3, TChain
+from ROOT import TLorentzVector, gROOT, TChain
 from tree_traversal import GetIndices
 from helper_functions import *
 import numpy as np
@@ -18,7 +18,6 @@ from features import *
 
 GeV = 1e3
 TeV = 1e6
-rng = TRandom3()
 
 # Artificially increase training data size by 5 by rotating events differently 5 different ways
 n_data_aug = 5
@@ -239,7 +238,8 @@ for ientry in range(n_entries):
         "%.3f" % target_t_had[0], "%.3f" % target_t_had[1], "%.3f" % target_t_had[2], "%.3f" % target_t_had[3], "%.3f" % target_t_had[4],
         "%.3f" % target_t_lep[0], "%.3f" % target_t_lep[1], "%.3f" % target_t_lep[2], "%.3f" % target_t_lep[3], "%.3f" % target_t_lep[4]
             ) )
-    phi = rng.Uniform( -TMath.Pi(), TMath.Pi() )
+        # Change the angle to rotate by
+        phi = np.random.uniform(- np.pi, np.pi)
 
 
 ##############################################################
