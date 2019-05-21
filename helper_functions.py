@@ -165,40 +165,6 @@ def save_training_history( history, filename = "GAN/training_history.root", verb
 ###############################
 # ADDED BY FARDIN
 
-def RotateEvent( lep, jets, phi ):
-    """Takes in LorentzVector lep, jets and rotates each along the Z axis by
-    an angle phi
-    @==========================================================
-    @ Parameters
-    lep: LorentzVector containing lepton information
-    jets: Array of LorentzVectors containing jet information
-    phi: Angle between 0 and 2 pi
-    @==========================================================
-    @ Return
-    A rotated LorentzVector
-    """
-
-    lep_new            = TLorentzVector( lep )
-    lep_new.q          = lep.q
-    lep_new.flav       = lep.flav
-    lep_new.topoetcone = lep.topoetcone
-    lep_new.ptvarcone  = lep.ptvarcone
-    lep_new.d0sig      = lep.d0sig
-
-    lep_new.RotateZ( phi )
-
-    jets_new = []
-    for j in jets:
-        jets_new += [ TLorentzVector(j) ]
-        j_new = jets_new[-1]
-        j_new.btag = j.btag
-
-        j_new.RotateZ( phi )
-
-    return lep_new, jets_new
-
-###############################
-
 def MakeInput( jets, W_had, b_had, t_had, W_lep, b_lep, t_lep ):
     """Format output, returning a jet matrix (detector level), W, b quark and lepton arrays (particle leve) and t-quark momenta (parton level)
     """
