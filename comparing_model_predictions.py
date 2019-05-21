@@ -71,7 +71,7 @@ for i in range(4):
             sub[j].scatter(xaxis[:10], predictions[:10,j,i], color='blue', label="Predicted")
             sub[j].legend()
             sub[j].set_title(titles[j][i])
-            sub[j].set_xlabel("Point Number")
+            sub[j].set_xlabel("Event Number")
             sub[j].set_ylabel("Value [arb]")
     pp.savefig()
 pp.close()
