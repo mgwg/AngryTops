@@ -247,5 +247,5 @@ for ientry in range(n_entries):
 outfile.close()
 
 f_good = 100. * n_good / n_entries
-print "INFO: output file:", outfilename
-print "INFO: %i entries written (%.2f %%)" % ( n_good, f_good)
+print("INFO: output file:", outfilename)
+print("INFO: %i entries written (%.2f %%)" % ( n_good, f_good))
