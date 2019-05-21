@@ -5,7 +5,7 @@ import numpy as np
 from features import *
 from sklearn.utils import shuffle
 
-def get_input_output(training_split=0.75, shuff=True):
+def get_input_output(training_split=0.75, shuff=True, normalize=False):
     """
     Return the training and testing data
     Training Data: Array of 36 elements. I am debating reshaping to matrix of (6 x 6)
@@ -22,6 +22,8 @@ def get_input_output(training_split=0.75, shuff=True):
     input = df[input_columns].values
     output = df[output_columns].values
     output = output.reshape(output.shape[0], 6, 4)
+    if normalize:
+        input, output = normalize(input, output)
     # Seperate training and testing data
     assert 0 < training_split < 1, "Invalid training_split given"
     cut = np.int(np.round(df.shape[0] * training_split))
@@ -30,6 +32,14 @@ def get_input_output(training_split=0.75, shuff=True):
     testing_input = input[cut:]
     testing_output = output[cut:]
     return (training_input, training_output), (testing_input, testing_output)
+
+def normalize(input, output):
+    """Normalize the input and output matrices. Do not normalize the last column
+    of the input matrices (BTAG) as that is a categorical column"""
+    new_input = input.copy()
+    new_input[:,:-1] = preprocessing.scale(input[:,:-1])
+    new_output = preprocessing.scale(output)
+    return new_input, new_output
 
 # Testing to see if this works
 if __name__=='__main__':

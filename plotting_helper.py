@@ -2,16 +2,14 @@
 # BORROWED: From Tensorflow tutorials
 import matplotlib.pyplot as plt
 
-def plot_history(history, save_dir, key='mse'):
+def plot_history(history, save_dir):
   plt.figure(figsize=(16,10))
 
-  val = plt.plot(history.epoch, history.history['val_'+key],
-                 '--', label=' Validation')
-  plt.plot(history.epoch, history.history[key], color=val[0].get_color(),
-             label=' Train')
+  val = plt.plot(history.epoch, history.history['val_loss'], '--', label=' Validation')
+  plt.plot(history.epoch, history.history['loss'], color=val[0].get_color(), label=' Train')
 
   plt.xlabel('Epochs')
-  plt.ylabel(key)
+  plt.ylabel("Loss")
   plt.legend()
 
   plt.xlim([0,max(history.epoch)])
