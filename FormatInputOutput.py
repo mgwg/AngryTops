@@ -5,13 +5,16 @@ import numpy as np
 from features import *
 from sklearn.utils import shuffle
 
+input_filename = "csv/topreco.csv"
+input_filename = "topreco_augmented1.csv"
+
 def get_input_output(training_split=0.75, shuff=True, normalize=False):
     """
     Return the training and testing data
     Training Data: Array of 36 elements. I am debating reshaping to matrix of (6 x 6)
     Testing Data: Matrix of Shape (4 x 6)
     """
-    df = pd.read_csv("csv/topreco.csv", names=column_names)
+    df = pd.read_csv(input_filename, names=column_names)
     # Drop Unwanted Features
     df.drop('jets_n', 1)
     df.drop('bjets_n', 1)

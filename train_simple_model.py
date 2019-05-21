@@ -12,7 +12,7 @@ from FormatInputOutput import get_input_output
 ###############################################################################
 # CONSTANTS
 BATCH_SIZE = 32
-EPOCHES = 1
+EPOCHES = 500
 checkpoint_path = "{}/cp.ckpt".format(training_dir)
 checkpoint_dir = os.path.dirname(checkpoint_path)
 save_dir = training_dir
@@ -35,15 +35,14 @@ history = model.fit(training_input, training_output,  epochs=EPOCHES,
                     batch_size=BATCH_SIZE, validation_split=0.1,
                     callbacks = [cp_callback]
                     )
+
+###############################################################################
+# SAVING MODEL
+model.save('CheckPoints/training_1/simple_model.h5')
+
 ###############################################################################
 # EVALUATING MODEL
 print(history.history.keys())
 plot_history(history, save_dir)
 test_acc = model.evaluate(testing_input, testing_output)
 print('\nTest accuracy:', test_acc)
-
-
-###############################################################################
-# SAVING AND CLOSING PROGRAM
-
-model.save('CheckPoints/training_1/simple_model.h5')
