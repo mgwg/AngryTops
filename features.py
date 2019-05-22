@@ -69,6 +69,11 @@ target_features_t_lep  = [
 "target_t_lep_Px", "target_t_lep_Py", "target_t_lep_Pz", "target_t_lep_E"
 ]
 
+features_event_info = [
+    "runNumber", "eventNumber", "jets_n", "bjets_n",
+]
+
+
 # output_columns = [
 # "target_W_had_Px", "target_W_had_Py", "target_W_had_Pz", "target_W_had_E", "target_W_had_M",
 # "target_W_lep_Px", "target_W_lep_Py", "target_W_lep_Pz", "target_W_lep_E", "target_W_lep_M",
