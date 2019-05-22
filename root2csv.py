@@ -68,6 +68,9 @@ for ientry in range(n_entries):
     ##############################################################
     # Withdraw next event
     tree.GetEntry(ientry)
+    runNumber = tree.GetTreeNumber()
+    eventNumber = tree.GetLeaf("Event.Number").GetValue()
+    weight = tree.GetLeaf("Event.Weight").GetValue()
 
     # Printing how far along in the loop we are
     if (n_entries < 10) or ((ientry+1) % int(float(n_entries)/10.) == 0):
@@ -224,7 +227,7 @@ for ientry in range(n_entries):
 
     # write out
         csvwriter.writerow( (
-        "%i" % jets_n, "%i" % bjets_n,
+        "%i" % runNumber, "%i" % eventNumber, "%.3f" % weight, "%i" % jets_n, "%i" % bjets_n,
         "%.3f" % lep.Px(),     "%.3f" % lep.Py(),     "%.3f" % lep.Pz(),     "%.3f" % (lep.E() * 10e9),      "%.3f" % met_met,      "%.3f" % met_phi,
         "%.3f" % sjets[0][0],  "%.3f" % sjets[0][1],  "%.3f" % sjets[0][2],  "%.3f" % sjets[0][3],  "%.3f" % sjets[0][4],  "%.3f" % sjets[0][5],
         "%.3f" % sjets[1][0],  "%.3f" % sjets[1][1],  "%.3f" % sjets[1][2],  "%.3f" % sjets[1][3],  "%.3f" % sjets[1][4],  "%.3f" % sjets[1][5],
