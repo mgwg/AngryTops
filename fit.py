@@ -22,7 +22,7 @@ m_b = 4.95
 max_momentum = 1000.
 np.set_printoptions( precision=3, suppress=True, linewidth=250 )
 infilename = "csv/topreco_augmented1.csv"
-model_filename  = "CheckPoints/training_1/simple_model.h5"
+model_filename  = "{}/simple_model.h5".format(training_dir)
 if len(sys.argv) > 1: infilename = sys.argv[1]
 
 ################################################################################
