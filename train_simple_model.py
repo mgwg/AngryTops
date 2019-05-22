@@ -12,14 +12,14 @@ from FormatInputOutput import get_input_output
 ###############################################################################
 # CONSTANTS
 BATCH_SIZE = 32
-EPOCHES = 500
+EPOCHES = 5
 checkpoint_path = "{}/cp.ckpt".format(training_dir)
 checkpoint_dir = os.path.dirname(checkpoint_path)
 save_dir = training_dir
 
 ###############################################################################
 # LOADING / PRE-PROCESSING DATA
-(training_input, training_output), (testing_input, testing_output) = get_input_output(norm=True)
+(training_input, training_output), (testing_input, testing_output) = get_input_output()
 print(training_input.shape)
 
 ###############################################################################
