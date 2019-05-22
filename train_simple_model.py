@@ -14,7 +14,6 @@ from FormatInputOutput import get_input_output
 BATCH_SIZE = 32
 EPOCHES = 5
 checkpoint_path = "{}/cp.ckpt".format(training_dir)
-checkpoint_dir = os.path.dirname(checkpoint_path)
 save_dir = training_dir
 
 ###############################################################################
@@ -26,6 +25,7 @@ print(training_input.shape)
 # BUILDING / TRAINING MODEL
 model = create_model5()
 #model.load_weights(checkpoint_path)
+#model = keras.models.load_model("{}/simple_model.h5".format(training_dir))
 print(model.summary())
 
 cp_callback = keras.callbacks.ModelCheckpoint(checkpoint_path,
@@ -38,7 +38,7 @@ history = model.fit(training_input, training_output,  epochs=EPOCHES,
 
 ###############################################################################
 # SAVING MODEL
-model.save('CheckPoints/training_1/simple_model.h5')
+model.save('{}/simple_model.h5'.format(training_dir))
 
 ###############################################################################
 # EVALUATING MODEL

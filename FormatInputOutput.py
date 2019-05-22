@@ -9,7 +9,7 @@ from sklearn import preprocessing
 input_filename = "csv/topreco.csv"
 input_filename = "csv/topreco_augmented1.csv"
 
-def get_input_output(training_split=0.75, shuff=True, norm=True):
+def get_input_output(training_split=0.75, shuff=False, norm=True):
     """
     Return the training and testing data
     Training Data: Array of 36 elements. I am debating reshaping to matrix of (6 x 6)
