@@ -20,7 +20,7 @@ GeV = 1e3
 TeV = 1e6
 
 # Artificially increase training data size by 5 by rotating events differently 5 different ways
-n_data_aug = 5
+n_data_aug = 1
 
 # What is this?
 n_evt_max = -1
@@ -33,8 +33,8 @@ if len(sys.argv) > 2: n_evt_max = int( sys.argv[2] )
 filelistname = sys.argv[1]
 
 # Output filename
-outfilename = filelistname.split("/")[-1]
-outfilename = "csv/topreco_augmented1.csv"
+#outfilename = "csv/topreco_augmented1.csv"
+outfilename = "csv/topreco.csv"
 outfile = open( outfilename, "wt" )
 csvwriter = csv.writer( outfile )
 print ("INFO: output file:", outfilename)
