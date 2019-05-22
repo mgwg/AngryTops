@@ -70,7 +70,7 @@ target_features_t_lep  = [
 ]
 
 features_event_info = [
-    "jets_n", "bjets_n",
+    "runNumber", "eventNumber", "weight", "jets_n", "bjets_n"
 ]
 
 
