@@ -57,7 +57,7 @@ dnn = keras.models.load_model(model_filename)
 print(dnn.summary())
 
 # read in input file
-df = pd.read_csv(infilename, names=column_names)
+data = pd.read_csv(infilename, names=column_names)
 
 X_jets = data[input_features_jets].values
 X_lept = data[input_features_lep].values
