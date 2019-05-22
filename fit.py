@@ -321,7 +321,7 @@ for i in range(n_events):
     b_lep_fitted = MakeP4( y_fitted[i][3],  m_b, max_momentum )
 
     t_lep_true   = MakeP4( y_true_t_lep[i], m_t )
-    t_had_fitted = MakeP4( y_fitted[i][4],  m_b, max_momentum )
+    t_lep_fitted = MakeP4( y_fitted[i][4],  m_b, max_momentum )
 
     t_had_true   = MakeP4( y_true_t_had[i], m_t )
     t_had_fitted = MakeP4( y_fitted[i][4],  m_b, max_momentum )
