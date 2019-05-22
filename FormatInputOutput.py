@@ -7,7 +7,7 @@ from sklearn.utils import shuffle
 from sklearn import preprocessing
 
 input_filename = "csv/topreco.csv"
-input_filename = "csv/topreco_augmented1.csv"
+#input_filename = "csv/topreco_augmented1.csv"
 
 def get_input_output(training_split=0.75, shuff=False, norm=True):
     """
