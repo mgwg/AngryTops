@@ -78,6 +78,7 @@ n_events   = len(event_info)
 print("INFO: fitting ttbar decay chain...")
 y_fitted = dnn.predict(testing_input)
 #y_fitted = y_scaler.inverse_transform( y_fitted )
+print("Shape of predictions: ", y_fitted.shape)
 print("INFO ...done")
 
 ################################################################################
