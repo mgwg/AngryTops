@@ -72,11 +72,12 @@ y_true_t_had = data[target_features_t_had].values
 event_info = data[features_event_info].values
 n_events   = len(event_info)
 (training_input, training_output), (testing_input, testing_output) = get_input_output()
+input = np.r_[training_input, testing_input]
 
 ################################################################################
 # TRAINING MODEL
 print("INFO: fitting ttbar decay chain...")
-y_fitted = dnn.predict(testing_input)
+y_fitted = dnn.predict(input)
 #y_fitted = y_scaler.inverse_transform( y_fitted )
 print("Shape of predictions: ", y_fitted.shape)
 print("INFO ...done")
@@ -307,25 +308,23 @@ for i in range(n_events):
     jets_n  = event_info[i][3]
     bjets_n = event_info[i][4]
 
-    W_lep_true   = MakeP4( y_true_W_lep[i], m_W )
-    W_lep_fitted = MakeP4( y_fitted[0][i],  m_W, max_momentum )
-
     W_had_true   = MakeP4( y_true_W_had[i], m_W )
-    W_had_fitted = MakeP4( y_fitted[1][i],  m_W, max_momentum )
+    W_had_fitted = MakeP4( y_fitted[i][0],  m_W, max_momentum )
 
-    b_lep_true   = MakeP4( y_true_b_lep[i], m_b )
-    b_lep_fitted = MakeP4( y_fitted[2][i],  m_b, max_momentum )
+    W_lep_true   = MakeP4( y_true_W_lep[i], m_W )
+    W_lep_fitted = MakeP4( y_fitted[i][1],  m_W, max_momentum )
 
     b_had_true   = MakeP4( y_true_b_had[i], m_b )
-    b_had_fitted = MakeP4( y_fitted[3][i],  m_b, max_momentum )
+    b_had_fitted = MakeP4( y_fitted[i][2],  m_b, max_momentum )
+
+    b_lep_true   = MakeP4( y_true_b_lep[i], m_b )
+    b_lep_fitted = MakeP4( y_fitted[i][3],  m_b, max_momentum )
 
     t_lep_true   = MakeP4( y_true_t_lep[i], m_t )
-    #t_lep_fitted = MakeP4( y_fitted[4][i],  m_t, max_momentum )
-    t_lep_fitted = W_lep_fitted + b_lep_fitted
+    t_had_fitted = MakeP4( y_fitted[i][4],  m_b, max_momentum )
 
     t_had_true   = MakeP4( y_true_t_had[i], m_t )
-    #t_had_fitted = MakeP4( y_fitted[5][i],  m_t, max_momentum )
-    t_had_fitted = W_had_fitted + b_had_fitted
+    t_had_fitted = MakeP4( y_fitted[i][4],  m_b, max_momentum )
 
     # fill branches
     b_eventNumber[0] = int(event_info[i][0])
