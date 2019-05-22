@@ -14,7 +14,6 @@ from FormatInputOutput import get_input_output
 BATCH_SIZE = 32
 EPOCHES = 5
 checkpoint_path = "{}/cp.ckpt".format(training_dir)
-save_dir = training_dir
 
 ###############################################################################
 # LOADING / PRE-PROCESSING DATA
@@ -37,12 +36,13 @@ history = model.fit(training_input, training_output,  epochs=EPOCHES,
                     )
 
 ###############################################################################
-# SAVING MODEL
+# SAVING MODEL AND TRAINING HISTORY
 model.save('{}/simple_model.h5'.format(training_dir))
-
+for key in history.history.keys():
+    np.savez("{0}/{1}.npz".format(training_dir, key), epoches=history.epoch, loss=history.history[key])
 ###############################################################################
 # EVALUATING MODEL
 print(history.history.keys())
-plot_history(history, save_dir)
+plot_history(history, training_dir)
 test_acc = model.evaluate(testing_input, testing_output)
 print('\nTest accuracy:', test_acc)

@@ -1,11 +1,4 @@
 #!/usr/bin/env python
-
-GeV = 1e3
-TeV = 1e6
-m_t = 172.5
-m_W = 80.4
-m_b = 4.95
-
 import os, sys, time
 import argparse
 
@@ -13,36 +6,38 @@ from ROOT import *
 from array import array
 import cPickle as pickle
 
-
-################
-
-def PrintOut( p4_true, p4_fitted, label ):
-  print "%s :: true=( %4.1f, %3.2f, %3.2f, %4.1f ; %3.1f ) :: fitted=( %4.1f, %3.2f, %3.2f, %4.1f ; %3.1f )" % \
-               ( label,
-                p4_true.Pt(),   p4_true.Rapidity(),   p4_true.Phi(),   p4_true.E(),   p4_true.M(), \
-                p4_fitted.Pt(), p4_fitted.Rapidity(), p4_fitted.Phi(), p4_fitted.E(), p4_fitted.M() )
-
-###############
-
+################################################################################
+# CONSTANTS
+GeV = 1e3
+TeV = 1e6
+m_t = 172.5
+m_W = 80.4
+m_b = 4.95
 infilename = "output/fitted.root"
+ofilename = "output/histograms.root"
 if len(sys.argv) > 1: infilename = sys.argv[1]
 
 
+################################################################################
+# HELPER FUNCTIONS
+def PrintOut( p4_true, p4_fitted, label ):
+  print("%s :: true=( %4.1f, %3.2f, %3.2f, %4.1f ; %3.1f ) :: fitted=( %4.1f, %3.2f, %3.2f, %4.1f ; %3.1f )" % \
+               ( label,
+                p4_true.Pt(),   p4_true.Rapidity(),   p4_true.Phi(),   p4_true.E(),   p4_true.M(), \
+                p4_fitted.Pt(), p4_fitted.Rapidity(), p4_fitted.Phi(), p4_fitted.E(), p4_fitted.M() ))
 
+################################################################################
 # read in input file
 infile = TFile.Open( infilename )
-tree   = infile.Get( "nominal") 
+tree   = infile.Get( "nominal")
 
 # open output file
-ofilename = "output/histograms.root"
 ofile = TFile.Open( ofilename, "recreate" )
 ofile.cd()
 
-#################
-# book histograms
+################################################################################
+# MAKE EMPTY DICTIONARY OF DIFFERENT HISTOGRAMS
 histograms = {}
-
-# basic distributions
 
 # True
 histograms['W_had_px_true']       = TH1F( "W_had_px_true",  ";Hadronic W p_{x} [GeV]", 50, -1000., 1000. )
@@ -154,7 +149,7 @@ histograms['t_lep_phi_fitted']      = TH1F( "t_lep_phi_fitted",  ";Leptonic top 
 histograms['t_lep_E_fitted']        = TH1F( "t_lep_E_fitted",    ";Leptonic top E [GeV]", 50, 0., 500. )
 histograms['t_lep_m_fitted']        = TH1F( "t_lep_m_fitted",    ";Leptonic top m [GeV]", 30, 0., 300. )
 
-# 2D correlations 
+# 2D correlations
 histograms['corr_t_had_pt']    = TH2F( "corr_t_had_pt",      ";True Hadronic top p_{T} [GeV];Fitted Hadronic top p_{T} [GeV]", 50, 0., 500., 50, 0., 500. )
 histograms['corr_t_had_y']     = TH2F( "corr_t_had_y",       ";True Hadronic top y;Fitted Hadronic top y", 25, -5., 5., 25, -5., 5. )
 histograms['corr_t_had_phi']   = TH2F( "corr_t_had_phi",     ";True Hadronic top #phi;Fitted Hadronic top #phi", 16, -3.2, 3.2, 16, -3.2, 3.2 )
@@ -278,7 +273,8 @@ histograms['reso_t_lep_phi'] = TH2F( "reso_t_lep_phi", ";Leptonic top #phi;Lepto
 histograms['reso_t_lep_E']   = TH2F( "reso_t_lep_E",   ";Leptonic top E [GeV];Leptonic t E resolution",     50, -1000., 1000., 100, -2.0, 2.0 )
 histograms['reso_t_lep_m']   = TH2F( "reso_t_lep_m",   ";Leptonic top M [GeV];Leptonic t M resolution",     30, 0., 300., 100, -2.0, 2.0 )
 
-
+################################################################################
+# FORMAT HISTOGRAMS?
 for hname, h in histograms.iteritems():
   h.Sumw2()
   if hname.endswith("true")>-1:
@@ -286,9 +282,11 @@ for hname, h in histograms.iteritems():
     h.SetLineColor(kRed)
     h.SetMarkerStyle(24)
 
+################################################################################
+# POPULATE HISTOGRAMS
 n_events = tree.GetEntries()
 
-print "INFO: starting event loop. Found %i events" % n_events
+print("INFO: starting event loop. Found %i events" % n_events)
 n_good = 0
 # Print out example
 for i in range(n_events):
@@ -297,9 +295,9 @@ for i in range(n_events):
         print "INFO: Event %-9i  (%3.0f %%)" % ( i, perc )
 
     tree.GetEntry( i )
-    
+
     w = tree.weight_mc
-  
+
 
     W_had_true   = TLorentzVector( tree.W_had_px_true, tree.W_had_py_true, tree.W_had_pz_true, tree.W_had_E_true )
     b_had_true   = TLorentzVector( tree.b_had_px_true, tree.b_had_py_true, tree.b_had_pz_true, tree.b_had_E_true )
@@ -318,56 +316,56 @@ for i in range(n_events):
         diff_W_had_px  =  W_had_fitted.Px() - W_had_true.Px()
         diff_W_had_py  =  W_had_fitted.Py() - W_had_true.Py()
         diff_W_had_pz  =  W_had_fitted.Pz() - W_had_true.Pz()
-        diff_W_had_pt  =  W_had_fitted.Pt() - W_had_true.Pt()   
-        diff_W_had_y   =  W_had_fitted.Rapidity() - W_had_true.Rapidity()  
-        diff_W_had_phi =  W_had_fitted.Phi()- W_had_true.Phi() 
-        diff_W_had_E   =  W_had_fitted.E()  - W_had_true.E()   
+        diff_W_had_pt  =  W_had_fitted.Pt() - W_had_true.Pt()
+        diff_W_had_y   =  W_had_fitted.Rapidity() - W_had_true.Rapidity()
+        diff_W_had_phi =  W_had_fitted.Phi()- W_had_true.Phi()
+        diff_W_had_E   =  W_had_fitted.E()  - W_had_true.E()
         diff_W_had_m   =  W_had_fitted.M()  - W_had_true.M()
 
         diff_b_had_px  =  b_had_fitted.Px() - b_had_true.Px()
         diff_b_had_py  =  b_had_fitted.Py() - b_had_true.Py()
         diff_b_had_pz  =  b_had_fitted.Pz() - b_had_true.Pz()
-        diff_b_had_pt  =  b_had_fitted.Pt() - b_had_true.Pt()   
-        diff_b_had_y   =  b_had_fitted.Rapidity() - b_had_true.Rapidity()  
-        diff_b_had_phi =  b_had_fitted.Phi() - b_had_true.Phi() 
-        diff_b_had_E   =  b_had_fitted.E()  - b_had_true.E()   
+        diff_b_had_pt  =  b_had_fitted.Pt() - b_had_true.Pt()
+        diff_b_had_y   =  b_had_fitted.Rapidity() - b_had_true.Rapidity()
+        diff_b_had_phi =  b_had_fitted.Phi() - b_had_true.Phi()
+        diff_b_had_E   =  b_had_fitted.E()  - b_had_true.E()
         diff_b_had_m   =  b_had_fitted.M()  - b_had_true.M()
 
         diff_t_had_px  =  t_had_fitted.Px() - t_had_true.Px()
         diff_t_had_py  =  t_had_fitted.Py() - t_had_true.Py()
         diff_t_had_pz  =  t_had_fitted.Pz() - t_had_true.Pz()
-        diff_t_had_pt  =  t_had_fitted.Pt() - t_had_true.Pt()   
-        diff_t_had_y   =  t_had_fitted.Rapidity() - t_had_true.Rapidity()  
-        diff_t_had_phi =  t_had_fitted.Phi() - t_had_true.Phi() 
-        diff_t_had_E   =  t_had_fitted.E()   - t_had_true.E()   
+        diff_t_had_pt  =  t_had_fitted.Pt() - t_had_true.Pt()
+        diff_t_had_y   =  t_had_fitted.Rapidity() - t_had_true.Rapidity()
+        diff_t_had_phi =  t_had_fitted.Phi() - t_had_true.Phi()
+        diff_t_had_E   =  t_had_fitted.E()   - t_had_true.E()
         diff_t_had_m   =  t_had_fitted.M()   - t_had_true.M()
-        
+
         reso_W_had_px  = diff_W_had_px / W_had_true.Px()
         reso_W_had_py  = diff_W_had_py / W_had_true.Py()
         reso_W_had_pz  = diff_W_had_pz / W_had_true.Pz()
-        reso_W_had_pt  = diff_W_had_pt / W_had_true.Pt()   
-        reso_W_had_y   = diff_W_had_y  / W_had_true.Rapidity()  
-        reso_W_had_phi = diff_W_had_phi / W_had_true.Phi() 
-        reso_W_had_E   = diff_W_had_E / W_had_true.E()   
+        reso_W_had_pt  = diff_W_had_pt / W_had_true.Pt()
+        reso_W_had_y   = diff_W_had_y  / W_had_true.Rapidity()
+        reso_W_had_phi = diff_W_had_phi / W_had_true.Phi()
+        reso_W_had_E   = diff_W_had_E / W_had_true.E()
         reso_W_had_m   = diff_W_had_m / W_had_true.M()
 
         reso_b_had_px  = diff_b_had_px / b_had_true.Px()
         reso_b_had_py  = diff_b_had_py / b_had_true.Py()
         reso_b_had_pz  = diff_b_had_pz / b_had_true.Pz()
-        reso_b_had_pt  = diff_b_had_pt / b_had_true.Pt()   
-        reso_b_had_y   = diff_b_had_y / b_had_true.Rapidity()  
-        reso_b_had_phi = diff_b_had_phi / b_had_true.Phi() 
-        reso_b_had_E   = diff_b_had_E  / b_had_true.E()   
+        reso_b_had_pt  = diff_b_had_pt / b_had_true.Pt()
+        reso_b_had_y   = diff_b_had_y / b_had_true.Rapidity()
+        reso_b_had_phi = diff_b_had_phi / b_had_true.Phi()
+        reso_b_had_E   = diff_b_had_E  / b_had_true.E()
         reso_b_had_m   = diff_b_had_m  / b_had_true.M()
 
         reso_t_had_px  = diff_t_had_px / t_had_true.Px()
         reso_t_had_py  = diff_t_had_py / t_had_true.Py()
         reso_t_had_pz  = diff_t_had_pz  / t_had_true.Pz()
-        reso_t_had_pt  = diff_t_had_pt / t_had_true.Pt()   
-        reso_t_had_y   = diff_t_had_y / t_had_true.Rapidity()  
-        reso_t_had_phi = diff_t_had_phi / t_had_true.Phi() 
-        reso_t_had_E   = diff_t_had_E / t_had_true.E()   
-        reso_t_had_m   = diff_t_had_m  / t_had_true.M()  
+        reso_t_had_pt  = diff_t_had_pt / t_had_true.Pt()
+        reso_t_had_y   = diff_t_had_y / t_had_true.Rapidity()
+        reso_t_had_phi = diff_t_had_phi / t_had_true.Phi()
+        reso_t_had_E   = diff_t_had_E / t_had_true.E()
+        reso_t_had_m   = diff_t_had_m  / t_had_true.M()
     except:
         print "WARNING: invalid hadronic top, skipping event ( rn=%-10i en=%-10i )" % ( tree.runNumber, tree.eventNumber )
         PrintOut( t_had_true, t_had_fitted, "Hadronic top" )
@@ -377,61 +375,63 @@ for i in range(n_events):
         diff_W_lep_px  =  W_lep_fitted.Px() - W_lep_true.Px()
         diff_W_lep_py  =  W_lep_fitted.Py() - W_lep_true.Py()
         diff_W_lep_pz  =  W_lep_fitted.Pz() - W_lep_true.Pz()
-        diff_W_lep_pt  =  W_lep_fitted.Pt() - W_lep_true.Pt()   
-        diff_W_lep_y   =  W_lep_fitted.Rapidity() - W_lep_true.Rapidity()  
-        diff_W_lep_phi =  W_lep_fitted.Phi()- W_lep_true.Phi() 
-        diff_W_lep_E   =  W_lep_fitted.E()  - W_lep_true.E()   
+        diff_W_lep_pt  =  W_lep_fitted.Pt() - W_lep_true.Pt()
+        diff_W_lep_y   =  W_lep_fitted.Rapidity() - W_lep_true.Rapidity()
+        diff_W_lep_phi =  W_lep_fitted.Phi()- W_lep_true.Phi()
+        diff_W_lep_E   =  W_lep_fitted.E()  - W_lep_true.E()
         diff_W_lep_m   =  W_lep_fitted.M()  - W_lep_true.M()
 
         diff_b_lep_px  =  b_lep_fitted.Px() - b_lep_true.Px()
         diff_b_lep_py  =  b_lep_fitted.Py() - b_lep_true.Py()
         diff_b_lep_pz  =  b_lep_fitted.Pz() - b_lep_true.Pz()
-        diff_b_lep_pt  =  b_lep_fitted.Pt() - b_lep_true.Pt()   
-        diff_b_lep_y   =  b_lep_fitted.Rapidity() - b_lep_true.Rapidity()  
-        diff_b_lep_phi =  b_lep_fitted.Phi() - b_lep_true.Phi() 
-        diff_b_lep_E   =  b_lep_fitted.E()  - b_lep_true.E()   
+        diff_b_lep_pt  =  b_lep_fitted.Pt() - b_lep_true.Pt()
+        diff_b_lep_y   =  b_lep_fitted.Rapidity() - b_lep_true.Rapidity()
+        diff_b_lep_phi =  b_lep_fitted.Phi() - b_lep_true.Phi()
+        diff_b_lep_E   =  b_lep_fitted.E()  - b_lep_true.E()
         diff_b_lep_m   =  b_lep_fitted.M()  - b_lep_true.M()
 
         diff_t_lep_px  =  t_lep_fitted.Px() - t_lep_true.Px()
         diff_t_lep_py  =  t_lep_fitted.Py() - t_lep_true.Py()
         diff_t_lep_pz  =  t_lep_fitted.Pz() - t_lep_true.Pz()
-        diff_t_lep_pt  =  t_lep_fitted.Pt() - t_lep_true.Pt()   
-        diff_t_lep_y   =  t_lep_fitted.Rapidity() - t_lep_true.Rapidity()  
-        diff_t_lep_phi =  t_lep_fitted.Phi() - t_lep_true.Phi() 
-        diff_t_lep_E   =  t_lep_fitted.E()   - t_lep_true.E()   
+        diff_t_lep_pt  =  t_lep_fitted.Pt() - t_lep_true.Pt()
+        diff_t_lep_y   =  t_lep_fitted.Rapidity() - t_lep_true.Rapidity()
+        diff_t_lep_phi =  t_lep_fitted.Phi() - t_lep_true.Phi()
+        diff_t_lep_E   =  t_lep_fitted.E()   - t_lep_true.E()
         diff_t_lep_m   =  t_lep_fitted.M()   - t_lep_true.M()
-        
+
         reso_W_lep_px  = diff_W_lep_px / W_lep_true.Px()
         reso_W_lep_py  = diff_W_lep_py / W_lep_true.Py()
         reso_W_lep_pz  = diff_W_lep_pz / W_lep_true.Pz()
-        reso_W_lep_pt  = diff_W_lep_pt / W_lep_true.Pt()   
-        reso_W_lep_y   = diff_W_lep_y  / W_lep_true.Rapidity()  
-        reso_W_lep_phi = diff_W_lep_phi / W_lep_true.Phi() 
-        reso_W_lep_E   = diff_W_lep_E / W_lep_true.E()   
+        reso_W_lep_pt  = diff_W_lep_pt / W_lep_true.Pt()
+        reso_W_lep_y   = diff_W_lep_y  / W_lep_true.Rapidity()
+        reso_W_lep_phi = diff_W_lep_phi / W_lep_true.Phi()
+        reso_W_lep_E   = diff_W_lep_E / W_lep_true.E()
         reso_W_lep_m   = diff_W_lep_m / W_lep_true.M()
 
         reso_b_lep_px  = diff_b_lep_px / b_lep_true.Px()
         reso_b_lep_py  = diff_b_lep_py / b_lep_true.Py()
         reso_b_lep_pz  = diff_b_lep_pz / b_lep_true.Pz()
-        reso_b_lep_pt  = diff_b_lep_pt / b_lep_true.Pt()   
-        reso_b_lep_y   = diff_b_lep_y / b_lep_true.Rapidity()  
-        reso_b_lep_phi = diff_b_lep_phi / b_lep_true.Phi() 
-        reso_b_lep_E   = diff_b_lep_E  / b_lep_true.E()   
+        reso_b_lep_pt  = diff_b_lep_pt / b_lep_true.Pt()
+        reso_b_lep_y   = diff_b_lep_y / b_lep_true.Rapidity()
+        reso_b_lep_phi = diff_b_lep_phi / b_lep_true.Phi()
+        reso_b_lep_E   = diff_b_lep_E  / b_lep_true.E()
         reso_b_lep_m   = diff_b_lep_m  / b_lep_true.M()
 
         reso_t_lep_px  = diff_t_lep_px / t_lep_true.Px()
         reso_t_lep_py  = diff_t_lep_py / t_lep_true.Py()
         reso_t_lep_pz  = diff_t_lep_pz  / t_lep_true.Pz()
-        reso_t_lep_pt  = diff_t_lep_pt / t_lep_true.Pt()   
-        reso_t_lep_y   = diff_t_lep_y / t_lep_true.Rapidity()  
-        reso_t_lep_phi = diff_t_lep_phi / t_lep_true.Phi() 
-        reso_t_lep_E   = diff_t_lep_E / t_lep_true.E()   
-        reso_t_lep_m   = diff_t_lep_m  / t_lep_true.M()  
+        reso_t_lep_pt  = diff_t_lep_pt / t_lep_true.Pt()
+        reso_t_lep_y   = diff_t_lep_y / t_lep_true.Rapidity()
+        reso_t_lep_phi = diff_t_lep_phi / t_lep_true.Phi()
+        reso_t_lep_E   = diff_t_lep_E / t_lep_true.E()
+        reso_t_lep_m   = diff_t_lep_m  / t_lep_true.M()
     except:
         print "WARNING: invalid leptonic top, skipping event ( rn=%-10i en=%-10i )" % ( tree.runNumber, tree.eventNumber )
         PrintOut( t_lep_true, t_lep_fitted, "Leptonic top" )
         continue
 
+################################################################################
+# FILL TREES
     # true
     histograms['W_had_px_true'].Fill(  W_had_true.Px(),  w )
     histograms['W_had_py_true'].Fill(  W_had_true.Py(),  w )
@@ -547,7 +547,7 @@ for i in range(n_events):
     histograms['corr_t_had_phi'].Fill(  t_had_true.Phi(),      t_had_fitted.Phi(), w )
     histograms['corr_t_had_E'].Fill(    t_had_true.E(),        t_had_fitted.E(),   w )
     histograms['corr_t_had_m'].Fill(    t_had_true.M(),        t_had_fitted.M(),   w )
-   
+
     histograms['corr_t_lep_pt'].Fill(  t_lep_true.Pt(),       t_lep_fitted.Pt(),  w )
     histograms['corr_t_lep_y'].Fill(   t_lep_true.Rapidity(), t_lep_fitted.Rapidity(), w )
     histograms['corr_t_lep_phi'].Fill( t_lep_true.Phi(),      t_lep_fitted.Phi(), w )
@@ -581,7 +581,7 @@ for i in range(n_events):
     histograms['diff_t_had_phi'].Fill( diff_t_had_phi, w )
     histograms['diff_t_had_E'].Fill(   diff_t_had_E,   w )
     histograms['diff_t_had_m'].Fill(   diff_t_had_m,   w )
-    
+
     histograms['diff_W_lep_px'].Fill(  diff_W_lep_px,  w )
     histograms['diff_W_lep_py'].Fill(  diff_W_lep_py,  w )
     histograms['diff_W_lep_pz'].Fill(  diff_W_lep_pz,  w )
@@ -608,7 +608,7 @@ for i in range(n_events):
     histograms['diff_t_lep_phi'].Fill( diff_t_lep_phi, w )
     histograms['diff_t_lep_E'].Fill(   diff_t_lep_E,   w )
     histograms['diff_t_lep_m'].Fill(   diff_t_lep_m,   w )
-    
+
     # resolution
     histograms['reso_W_had_px'].Fill(  W_had_true.Px(), reso_W_had_px,  w )
     histograms['reso_W_had_py'].Fill(  W_had_true.Py(), reso_W_had_py,  w )
@@ -665,15 +665,15 @@ for i in range(n_events):
     histograms['reso_t_lep_m'].Fill(   t_lep_true.M(),  reso_t_lep_m,   w )
 
     n_good += 1
-    
+
     if i < 10:
       PrintOut( t_had_true, t_had_fitted, "Hadronic top" )
       PrintOut( t_lep_true, t_lep_fitted, "Leptonic top" )
-      
+
 ofile.Write()
 ofile.Close()
 
-print "Finished. Saved output file:", ofilename
+print("Finished. Saved output file:", ofilename)
 
 f_good = 100. * float( n_good ) / float( n_events )
-print "Good events: %.2f" % f_good
+print("Good events: %.2f" % f_good)

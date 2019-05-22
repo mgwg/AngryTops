@@ -329,7 +329,7 @@ for i in range(n_events):
     # fill branches
     b_eventNumber[0] = int(event_info[i][0])
     b_runNumber[0]   = int(event_info[i][1])
-    #b_weight_mc[0]   = float(event_info[i][2])
+    b_weight_mc[0]   = float(event_info[i][2])
 
     b_W_had_px_true[0]  = W_had_true.Px()
     b_W_had_py_true[0]  = W_had_true.Py()
