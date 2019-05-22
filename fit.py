@@ -90,7 +90,7 @@ ofile.cd()
 b_eventNumber = array( 'l', [ 0 ] )
 b_runNumber   = array( 'i', [ 0 ] )
 b_mcChannelNumber = array( 'i', [ 0 ] )
-b_weight_mc   = array( 'f', [ 0.] )
+#b_weight_mc   = array( 'f', [ 0.] )
 
 b_W_had_px_true   = array( 'f', [ -1.] )
 b_W_had_py_true   = array( 'f', [ -1.] )
@@ -194,7 +194,7 @@ tree = TTree( "nominal", "nominal" )
 tree.Branch( "eventNumber",     b_eventNumber,     'eventNumber/l' )
 tree.Branch( 'runNumber',       b_runNumber,       'runNumber/i' )
 tree.Branch( 'mcChannelNumber', b_mcChannelNumber, 'mcChannelNumber/i' )
-tree.Branch( 'weight_mc',       b_weight_mc,       'weight_mc/F' )
+#tree.Branch( 'weight_mc',       b_weight_mc,       'weight_mc/F' )
 
 tree.Branch( 'W_had_px_true',   b_W_had_px_true,   'W_had_px_true/F' )
 tree.Branch( 'W_had_py_true',   b_W_had_py_true,   'W_had_py_true/F' )
@@ -329,7 +329,7 @@ for i in range(n_events):
     # fill branches
     b_eventNumber[0] = int(event_info[i][0])
     b_runNumber[0]   = int(event_info[i][1])
-    b_weight_mc[0]   = float(event_info[i][2])
+    #b_weight_mc[0]   = float(event_info[i][2])
 
     b_W_had_px_true[0]  = W_had_true.Px()
     b_W_had_py_true[0]  = W_had_true.Py()
