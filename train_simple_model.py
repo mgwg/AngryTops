@@ -23,7 +23,12 @@ print(training_input.shape)
 ###############################################################################
 # BUILDING / TRAINING MODEL
 model = create_model5()
-#model.load_weights(checkpoint_path)
+try:
+    model.load_weights(checkpoint_path)
+    print("Loaded weights from previous training session")
+except as e:
+    print(e)
+    continue
 #model = keras.models.load_model("{}/simple_model.h5".format(training_dir))
 print(model.summary())
 
