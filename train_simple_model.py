@@ -12,7 +12,7 @@ from FormatInputOutput import get_input_output
 ###############################################################################
 # CONSTANTS
 BATCH_SIZE = 32
-EPOCHES = 5
+EPOCHES = 100
 checkpoint_path = "{}/cp.ckpt".format(training_dir)
 
 ###############################################################################

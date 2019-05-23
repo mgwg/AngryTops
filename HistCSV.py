@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from features import column_names
 
-def getRawHists(fname = "csv/topreco.csv")
+def getRawHists(fname = "csv/topreco.csv"):
     df = pd.read_csv(fname, names=column_names)
     columns = df.columns
     shape = df.shape
