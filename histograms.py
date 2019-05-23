@@ -670,6 +670,8 @@ for i in range(n_events):
     if i < 10:
       PrintOut( t_had_true, t_had_fitted, "Hadronic top" )
       PrintOut( t_lep_true, t_lep_fitted, "Leptonic top" )
+for histname in histograms:
+    histograms[histname].Write(histname)
 
 ofile.Write()
 ofile.Close()
