@@ -12,7 +12,7 @@ def draw_contour(attribute_name, treename='fitted.root'):
 
     # Open tree
     ttree = TChain('nominal', 'nominal')
-    ttree.AddFile(treename)
+    ttree.AddFile("{0}/{1}".format(training_dir, treename))
 
     # Draw and save contour plot
     ttree.Draw("{0}_true:{0}_fitted".format(attribute_name), "", "colz")
