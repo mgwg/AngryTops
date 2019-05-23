@@ -13,8 +13,8 @@ TeV = 1e6
 m_t = 172.5
 m_W = 80.4
 m_b = 4.95
-infilename = "output/fitted.root"
-ofilename = "output/histograms.root"
+infilename = "{}/fitted.root".format(training_dir)
+ofilename = "{}/histograms.root".format(training_dir)
 if len(sys.argv) > 1: infilename = sys.argv[1]
 
 
