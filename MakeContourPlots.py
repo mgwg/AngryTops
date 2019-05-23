@@ -1,7 +1,7 @@
 from ROOT import TCanvas, TFile, TProfile, TNtuple, TH1F, TH2F
 from ROOT import gROOT, gBenchmark, gRandom, gSystem, Double
 
-def draw_contour(attribute_name, treename='fitted.root')
+def draw_contour(attribute_name, treename='fitted.root'):
     # Create a new canvas, and customize it.
     c1 = TCanvas( 'c1', 'Dynamic Filling Example', 200, 10, 700, 500 )
     c1.SetFillColor( 42 )
