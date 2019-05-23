@@ -292,7 +292,7 @@ n_good = 0
 for i in range(n_events):
     if ( n_events < 10 ) or ( (i+1) % int(float(n_events)/10.)  == 0 ):
         perc = 100. * i / float(n_events)
-        print "INFO: Event %-9i  (%3.0f %%)" % ( i, perc )
+        print("INFO: Event %-9i  (%3.0f %%)" % ( i, perc ))
 
     tree.GetEntry( i )
 
@@ -367,7 +367,7 @@ for i in range(n_events):
         reso_t_had_E   = diff_t_had_E / t_had_true.E()
         reso_t_had_m   = diff_t_had_m  / t_had_true.M()
     except:
-        print "WARNING: invalid hadronic top, skipping event ( rn=%-10i en=%-10i )" % ( tree.runNumber, tree.eventNumber )
+        print("WARNING: invalid hadronic top, skipping event ( rn=%-10i en=%-10i )" % ( tree.runNumber, tree.eventNumber ))
         PrintOut( t_had_true, t_had_fitted, "Hadronic top" )
         continue
 
@@ -426,7 +426,7 @@ for i in range(n_events):
         reso_t_lep_E   = diff_t_lep_E / t_lep_true.E()
         reso_t_lep_m   = diff_t_lep_m  / t_lep_true.M()
     except:
-        print "WARNING: invalid leptonic top, skipping event ( rn=%-10i en=%-10i )" % ( tree.runNumber, tree.eventNumber )
+        print("WARNING: invalid leptonic top, skipping event ( rn=%-10i en=%-10i )" % ( tree.runNumber, tree.eventNumber ))
         PrintOut( t_lep_true, t_lep_fitted, "Leptonic top" )
         continue
 
