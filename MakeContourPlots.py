@@ -11,12 +11,12 @@ def draw_contour(attribute_name, treename='fitted.root'):
     c1.GetFrame().SetBorderMode( -1 )
 
     # Open tree
-    f = TFile.Open('{0}/{1}'.format(training_dir, treename))
-    ttree = f.Read("nominal")
+    ttree = TChain('nominal', 'nominal')
+    ttree.AddFile(treename)
 
     # Draw and save contour plot
     ttree.Draw("{0}_true:{0}_fitted".format(attribute_name), "", "colz")
     cl.SaveAs("ContourPlots/{}".format(attribute_name))
 
 if __name__=="__main__":
-    draw_contour("W_had_px_fitted")
+    draw_contour("W_had_px")
