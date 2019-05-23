@@ -9,7 +9,7 @@ from sklearn import preprocessing
 input_filename = "csv/topreco.csv"
 #input_filename = "csv/topreco_augmented1.csv"
 
-def get_input_output(training_split=0.75, shuff=False, norm=True):
+def get_input_output(training_split=0.9, shuff=False, norm=True):
     """
     Return the training and testing data
     Training Data: Array of 36 elements. I am debating reshaping to matrix of (6 x 6)
@@ -25,8 +25,8 @@ def get_input_output(training_split=0.75, shuff=False, norm=True):
     # Seperate the input and output columns
     input = df[input_columns].values
     output = df[output_columns].values
-    if norm:
-        input, output = normalize(input, output)
+    # if norm:
+    #     input, output = normalize(input, output)
     output = output.reshape(output.shape[0], 6, 4)
     # Seperate training and testing data
     assert 0 < training_split < 1, "Invalid training_split given"
@@ -48,7 +48,6 @@ def normalize(input, output):
 # Testing to see if this works
 if __name__=='__main__':
     (training_input, training_output), (testing_input, testing_output) = get_input_output()
-    print(training_input.shape)
-    print(training_output.shape)
-    print(testing_input.shape)
-    print(testing_output.shape)
+    print(np.any(np.isnan(training_input)))
+    print(np.any(np.isnan(training_output)))
+    print(training_output[3])
