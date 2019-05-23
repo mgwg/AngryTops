@@ -15,7 +15,7 @@ checkpoint_path = "{}/cp.ckpt".format(model_dir)
 #model = create_simple_model()
 #model = create_regularized_model()
 #model = create_model3()
-model = create_model4()
+model = create_model5()
 print(checkpoint_path)
 weights = model.load_weights(checkpoint_path)
 

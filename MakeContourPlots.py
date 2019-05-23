@@ -4,7 +4,7 @@ from features import *
 
 def draw_contour(attribute_name, treename='fitted.root'):
     # Create a new canvas, and customize it.
-    c1 = TCanvas( 'c1', 'Dynamic Filling Example', 200, 10, 700, 500 )
+    c1 = TCanvas( 'c1', 'Contour Plot for ', attribute_name, 200, 10, 700, 500 )
     c1.SetFillColor( 42 )
     c1.GetFrame().SetFillColor( 21 )
     c1.GetFrame().SetBorderSize( 6 )
@@ -26,7 +26,7 @@ if __name__=="__main__":
     't_had_phi', 'W_lep_px', 'W_lep_py', 'W_lep_pz', 'W_lep_E', 'W_lep_m',
     'W_lep_pt', 'W_lep_y', 'W_lep_phi', 'b_lep_px', 'b_lep_py', 'b_lep_pz',
     'b_lep_E', 'b_lep_m', 'b_lep_pt', 'b_lep_y', 'b_lep_phi', 't_lep_px',
-    't_lep_py', 't_lep_pz', 't_lep_E', 't_lep_m', 't_lep_pt', 't_lep_y', 
+    't_lep_py', 't_lep_pz', 't_lep_E', 't_lep_m', 't_lep_pt', 't_lep_y',
     't_lep_phi']
     for att in attributes:
         draw_contour(att)
