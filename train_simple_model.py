@@ -12,7 +12,7 @@ from FormatInputOutput import get_input_output
 ###############################################################################
 # CONSTANTS
 BATCH_SIZE = 32
-EPOCHES = 1
+EPOCHES = 15
 checkpoint_path = "{}/cp.ckpt".format(training_dir)
 
 ###############################################################################
@@ -26,9 +26,8 @@ model = create_model5()
 try:
     model.load_weights(checkpoint_path)
     print("Loaded weights from previous training session")
-except as e:
+except Exception as e:
     print(e)
-    continue
 #model = keras.models.load_model("{}/simple_model.h5".format(training_dir))
 print(model.summary())
 
