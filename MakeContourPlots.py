@@ -1,4 +1,4 @@
-from ROOT import TCanvas, TFile, TProfile, TNtuple, TH1F, TH2F
+from ROOT import TCanvas, TFile, TProfile, TNtuple, TH1F, TH2F, TChain
 from ROOT import gROOT, gBenchmark, gRandom, gSystem, Double
 from features import *
 
