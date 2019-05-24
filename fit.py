@@ -101,7 +101,7 @@ X_lept = input[0]
 y_true_W_had = true[0]
 y_true_W_lep = true[1]
 y_true_b_had = true[2]
-y_true_t_lep = true[3]
+y_true_b_lep = true[3]
 y_true_t_had = true[4]
 y_true_t_lep = true[5]
 
