@@ -19,7 +19,7 @@ checkpoint_path = "{}/cp.ckpt".format(training_dir)
 ###############################################################################
 # LOADING / PRE-PROCESSING DATA
 (training_input, training_output), (testing_input, testing_output), \
-       (jets_scalar, lep_scalar, output_scalar) = get_input_output()
+       (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) = get_input_output()
 print(training_input.shape)
 
 
@@ -62,4 +62,5 @@ plot_history(history, training_dir)
 test_acc = model.evaluate(testing_input, testing_output)
 print('\nTest accuracy:', test_acc)
 predictions = model.predict(testing_input)
-np.savez("{}/predictions".format(training_dir), input=testing_input, true=testing_output, pred=predictions)
+np.savez("{}/predictions".format(training_dir), input=testing_input,\
+ true=testing_output, pred=predictions, events=event_testing)

@@ -20,6 +20,7 @@ def get_input_output(training_split=0.9, shuff=False):
     if shuff:
         df = shuffle(df)
     # Load jets, leptons and output columns
+    event_info = df[features_event_info].values
     jets = df[input_features_jets].values
     btag = df[btags].values
     btag = btag.reshape(btag.shape[0], btag.shape[1], 1)
@@ -50,8 +51,10 @@ def get_input_output(training_split=0.9, shuff=False):
     training_output = output[:cut]
     testing_input = input[cut:]
     testing_output = output[cut:]
+    event_training = event_info[cut:]
+    event_testing = event_info[:cut]
     return (training_input, training_output), (testing_input, testing_output), \
-           (jets_scalar, lep_scalar, output_scalar)
+           (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing)
 
 def normalize(arr):
     """Normalize the arr with StandardScalar and return the normalized array
@@ -63,7 +66,7 @@ def normalize(arr):
 # Testing to see if this works
 if __name__=='__main__':
     (training_input, training_output), (testing_input, testing_output), \
-           (jets_scalar, lep_scalar, output_scalar) = get_input_output()
+           (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing)= get_input_output()
     print(np.any(np.isnan(training_input)))
     print(np.any(np.isnan(training_output)))
     print(training_output[3])
