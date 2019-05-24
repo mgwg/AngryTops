@@ -77,6 +77,9 @@ jets_mom = jets_scalar.inverse_transform(jets_mom)
 # Recombine input
 jets_mom = jets_mom.reshape(jets_mom.shape[0], 5, 5)
 jets_norm = np.concatenate((jets_mom, btag), axis=2)
+jets_n = np.sum(jets_norm.mean(-1) != 0, axis=-1 )
+bjets_n = btag[:,:,0].sum(axis=-1)
+
 lep = lep.reshape(lep.shape[0], 1, lep.shape[1])
 input = np.concatenate((lep, jets_norm), axis=1)
 input = input.reshape(input.shape[0], 36)
@@ -104,6 +107,7 @@ y_true_t_lep = true[5]
 
 #y_fitted = y_scaler.inverse_transform( y_fitted )
 n_events = true.shape[0]
+w = 1
 print("Shape of tions: ", y_fitted.shape)
 print("INFO ...done")
 
@@ -329,9 +333,10 @@ for i in range(n_events):
         perc = 100. * i / float(n_events)
         print("INFO: Event %-9i  (%3.0f %%)" % ( i, perc ))
 
-    w = event_info[i][2]
-    jets_n  = event_info[i][3]
-    bjets_n = event_info[i][4]
+    #w = event_info[i][2]
+    #w = 1
+    #jets_n  = event_info[i][3]
+    #bjets_n = event_info[i][4]
 
     #  Originally, all of the fitted values had a max-momentum attribute. I
     # removed that. Possibly might induce bug?
