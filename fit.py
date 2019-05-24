@@ -47,7 +47,6 @@ def MakeP4( y, m=0., sf=1.000 ):
 # Load Predictions
 print("INFO: fitting ttbar decay chain...")
 predictions = np.load('{}/predictions.npz'.format(training_dir))
-y_fitted = predictions['output']
 input= predictions['input']
 true = predictions['true']
 y_fitted = predictions['pred']
