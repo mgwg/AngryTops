@@ -2,16 +2,12 @@
 import os, sys, time
 import argparse
 import tensorflow as tf
-from tensorflow import keras
 from ROOT import *
 from array import array
 import cPickle as pickle
 import numpy as np
-import pandas as pd
-from FormatInputOutput import get_input_output
 
 from features import *
-import models
 ################################################################################
 # CONSTANTS
 GeV = 1e3
@@ -48,38 +44,26 @@ def MakeP4( y, m=0., sf=1.000 ):
   return p4
 
 ################################################################################
-# LOAD KERAS MODEL AND CSV FILES
-X_scaler = None
-y_scaler = None
-dnn      = None
-
-dnn = keras.models.load_model(model_filename)
-print(dnn.summary())
-
-# read in input file
-data = pd.read_csv(infilename, names=column_names)
-
-X_jets = data[input_features_jets].values
-X_lept = data[input_features_lep].values
-
-y_true_W_lep = data[target_features_W_lep].values
-y_true_W_had = data[target_features_W_had].values
-y_true_b_lep = data[target_features_b_lep].values
-y_true_b_had = data[target_features_b_had].values
-y_true_t_lep = data[target_features_t_lep].values
-y_true_t_had = data[target_features_t_had].values
-
-event_info = data[features_event_info].values
-n_events   = len(event_info)
-(training_input, training_output), (testing_input, testing_output) = get_input_output()
-input = np.r_[training_input, testing_input]
-
-################################################################################
-# TRAINING MODEL
+# Load Predictions
 print("INFO: fitting ttbar decay chain...")
-y_fitted = dnn.predict(input)
+predictions = np.load('{}/predictions.npz'.format(training_dir))
+y_fitted = predictions['output']
+input= predictions['input']
+true = predictions['true']
+y_fitted = predictions['pred']
+
+# Seperate input and truth arrays so that I don't have to edit the code below
+X_jets = input[1:]
+X_lept = input[0]
+y_true_W_had = true[0]
+y_true_W_lep = true[1]
+y_true_b_had = true[2]
+y_true_t_lep = true[3]
+y_true_t_had = true[4]
+y_true_t_lep = true[5]
+
 #y_fitted = y_scaler.inverse_transform( y_fitted )
-print("Shape of predictions: ", y_fitted.shape)
+print("Shape of tions: ", y_fitted.shape)
 print("INFO ...done")
 
 ################################################################################
