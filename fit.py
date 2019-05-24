@@ -52,11 +52,43 @@ input= predictions['input']
 true = predictions['true']
 y_fitted = predictions['pred']
 
+################################################################################
+# UNDO NORMALIZATIONS
 # Import scalars
 with open( scaler_filename, "rb" ) as file_scaler:
   jets_scalar = pickle.load(jets_scalar)
   lep_scalar = pickle.load(lep_scalar)
   output_scalar = pickle.load(output_scalar)
+
+# Divide up the input
+jets = input.reshape(input.shape[0], 6, 6)
+lep = jets[:,0:]
+lep = lep.reshape(lep.shape[0], 6)
+jets_mom = jets[:,1:,:-1]
+jets_mom = jets_mom.reshape(jets_mom.shape[0], 25)
+btag = jets[:,1:,-1]
+btag = btag.reshape(btag.shape[0], btag.shape[1], 1)
+
+# Rescale each section
+lep = lep_scalar.inverse_transform(lep)
+jets_mom = jets_scalar.inverse_transform(jets_mom)
+
+# Recombine input
+jets_mom = jets_mom.reshape(jets_mom.shape[0], 5, 5)
+jets_norm = np.concatenate((jets_mom, btag), axis=2)
+input = np.concatenate((lep, jets_norm), axis=1)
+input = input.reshape(input.shape[0], 36)
+
+# Rescale the truth array
+true = true.reshape(true.shape[0], 24)
+true = output_scalar.inverse_transform(true)
+true = true.reshape(true.shape[0], 6, 4)
+
+# Rescale the fitted array
+y_fitted = true.reshape(y_fitted .shape[0], 24)
+y_fitted = output_scalar.inverse_transform(y_fitted)
+y_fitted = true.reshape(y_fitted .shape[0], 6, 4)
+################################################################################
 
 # Seperate input and truth arrays so that I don't have to edit the code below
 X_jets = input[1:]
