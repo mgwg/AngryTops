@@ -24,7 +24,7 @@ n_data_aug = 5
 
 # What is this?
 n_evt_max = -1
-if len(sys.argv) > 2: n_evt_max = int( sys.argv[2] )
+#if len(sys.argv) > 2: n_evt_max = int( sys.argv[2] )
 
 ###############################
 # BUILDING OUTPUTFILE
