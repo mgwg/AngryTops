@@ -16,26 +16,30 @@ def get_input_output(training_split=0.9, shuff=False):
     Testing Data: Matrix of Shape (4 x 6)
     """
     df = pd.read_csv(input_filename, names=column_names)
-    # Drop Unwanted Features
-    df.drop('jets_n', 1)
-    df.drop('bjets_n', 1)
     # Shuffle the DataSet
     if shuff:
         df = shuffle(df)
     # Load jets, leptons and output columns
     jets = df[input_features_jets].values
+    btag = df[btags].values
+    btag = btag.reshape(btag.shape[0], btag.shape[1], 1)
     lep = df[input_features_lep].values
     truth = df[output_columns].values
-    btag = jets[:,-1].reshape(jets.shape[0], 1)
 
     # Normalize and retrieve the standard scalar
     # Note: We do not want to normalize the BTag column (the last one) in jets
-    jets_momentum, jets_scalar = normalize(jets[:,:-1])
+    jets_momentum, jets_scalar = normalize(jets)
+    jets_momentum = jets_momentum.reshape(jets.shape[0], 5, 5)
+    jets_norm = np.concatenate((jets_momentum, btag), axis=2)
+
+    # Lepton
     lep_norm, lep_scalar = normalize(lep)
-    jets_norm = np.concatenate((jets_momentum, btag), axis=1)
+    lep_norm = lep_norm.reshape(lep.shape[0], 1, lep.shape[1])
 
     # Combine into input and output arrays of correct shape
+    # For new, we flatten the input. Can change in the future
     input = np.concatenate((lep_norm, jets_norm), axis=1)
+    input = input.reshape(input.shape[0], 36)
     output, output_scalar = normalize(truth)
     output = output.reshape(output.shape[0], 6, 4)
 

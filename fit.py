@@ -52,6 +52,12 @@ input= predictions['input']
 true = predictions['true']
 y_fitted = predictions['pred']
 
+# Import scalars
+with open( scaler_filename, "rb" ) as file_scaler:
+  jets_scalar = pickle.load(jets_scalar)
+  lep_scalar = pickle.load(lep_scalar)
+  output_scalar = pickle.load(output_scalar)
+
 # Seperate input and truth arrays so that I don't have to edit the code below
 X_jets = input[1:]
 X_lept = input[0]
