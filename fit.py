@@ -90,9 +90,9 @@ true = output_scalar.inverse_transform(true)
 true = true.reshape(true.shape[0], 6, 4)
 
 # Rescale the fitted array
-y_fitted = true.reshape(y_fitted .shape[0], 24)
+y_fitted = y_fitted.reshape(y_fitted.shape[0], 24)
 y_fitted = output_scalar.inverse_transform(y_fitted)
-y_fitted = true.reshape(y_fitted .shape[0], 6, 4)
+y_fitted = y_fitted.reshape(y_fitted.shape[0], 6, 4)
 ################################################################################
 
 # Seperate input and truth arrays so that I don't have to edit the code below
