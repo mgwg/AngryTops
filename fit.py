@@ -98,12 +98,12 @@ y_fitted = true.reshape(y_fitted .shape[0], 6, 4)
 # Seperate input and truth arrays so that I don't have to edit the code below
 X_jets = input[1:]
 X_lept = input[0]
-y_true_W_had = true[0]
-y_true_W_lep = true[1]
-y_true_b_had = true[2]
-y_true_b_lep = true[3]
-y_true_t_had = true[4]
-y_true_t_lep = true[5]
+y_true_W_had = true[:,0,:]
+y_true_W_lep = true[:,1,:]
+y_true_b_had = true[:,2,:]
+y_true_b_lep = true[:,3,:]
+y_true_t_had = true[:,4,:]
+y_true_t_lep = true[:,5,:]
 
 #y_fitted = y_scaler.inverse_transform( y_fitted )
 n_events = true.shape[0]
