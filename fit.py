@@ -56,9 +56,9 @@ y_fitted = predictions['pred']
 # Import scalars
 scaler_filename = "{}/scalers.pkl".format(training_dir)
 with open( scaler_filename, "rb" ) as file_scaler:
-  jets_scalar = pickle.load(jets_scalar)
-  lep_scalar = pickle.load(lep_scalar)
-  output_scalar = pickle.load(output_scalar)
+  jets_scalar = pickle.load(file_scaler)
+  lep_scalar = pickle.load(file_scaler)
+  output_scalar = pickle.load(file_scaler)
 
 # Divide up the input
 jets = input.reshape(input.shape[0], 6, 6)
