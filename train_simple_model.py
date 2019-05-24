@@ -12,7 +12,7 @@ from FormatInputOutput import get_input_output
 ###############################################################################
 # CONSTANTS
 BATCH_SIZE = 32
-EPOCHES = 15
+EPOCHES = 1
 checkpoint_path = "{}/cp.ckpt".format(training_dir)
 
 ###############################################################################
@@ -45,8 +45,10 @@ model.save('{}/simple_model.h5'.format(training_dir))
 for key in history.history.keys():
     np.savez("{0}/{1}.npz".format(training_dir, key), epoches=history.epoch, loss=history.history[key])
 ###############################################################################
-# EVALUATING MODEL
+# EVALUATING MODEL AND MAKE PREDICTIONS
 print(history.history.keys())
 plot_history(history, training_dir)
 test_acc = model.evaluate(testing_input, testing_output)
 print('\nTest accuracy:', test_acc)
+predictions = model.predict(testing_input)
+np.savez("predictions: ", input=testing_input, true=testing_output, pred=predictions)
