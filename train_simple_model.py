@@ -50,10 +50,10 @@ for key in history.history.keys():
 
 scaler_filename = "{}/scalers.pkl".format(training_dir)
 with open( scaler_filename, "wb" ) as file_scaler:
-  pickle.dump(jets_scalar, file_scaler)
-  pickle.dump(lep_scalar, file_scaler)
-  pickle.dump(output_scalar, file_scaler)
-print("INFO: scalers saved to file:", scaler_filename)
+  pickle.dump(jets_scalar, file_scaler, protocol=2)
+  pickle.dump(lep_scalar, file_scaler, protocol=2)
+  pickle.dump(output_scalar, file_scaler, protocol=2)
+print("INFO: scalers saved to file:", scaler_filename, protocol=2)
 
 ###############################################################################
 # EVALUATING MODEL AND MAKE PREDICTIONS
