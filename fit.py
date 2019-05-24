@@ -4,8 +4,9 @@ import argparse
 import tensorflow as tf
 from ROOT import *
 from array import array
-import cPickle as pickle
+import pickle
 import numpy as np
+import sklearn.preprocessing
 
 from features import *
 ################################################################################
@@ -62,7 +63,7 @@ with open( scaler_filename, "rb" ) as file_scaler:
 
 # Divide up the input
 jets = input.reshape(input.shape[0], 6, 6)
-lep = jets[:,0:]
+lep = jets[:,0,:]
 lep = lep.reshape(lep.shape[0], 6)
 jets_mom = jets[:,1:,:-1]
 jets_mom = jets_mom.reshape(jets_mom.shape[0], 25)
@@ -76,6 +77,7 @@ jets_mom = jets_scalar.inverse_transform(jets_mom)
 # Recombine input
 jets_mom = jets_mom.reshape(jets_mom.shape[0], 5, 5)
 jets_norm = np.concatenate((jets_mom, btag), axis=2)
+lep = lep.reshape(lep.shape[0], 1, lep.shape[1])
 input = np.concatenate((lep, jets_norm), axis=1)
 input = input.reshape(input.shape[0], 36)
 
