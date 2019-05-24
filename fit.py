@@ -54,6 +54,7 @@ y_fitted = predictions['pred']
 ################################################################################
 # UNDO NORMALIZATIONS
 # Import scalars
+scaler_filename = "{}/scalers.pkl".format(training_dir)
 with open( scaler_filename, "rb" ) as file_scaler:
   jets_scalar = pickle.load(jets_scalar)
   lep_scalar = pickle.load(lep_scalar)
