@@ -22,6 +22,7 @@ checkpoint_path = "{}/cp.ckpt".format(training_dir)
        (jets_scalar, lep_scalar, output_scalar) = get_input_output()
 print(training_input.shape)
 
+
 ###############################################################################
 # BUILDING / TRAINING MODEL
 model = create_model5()
