@@ -8,6 +8,7 @@ import os
 from models import *
 from plotting_helper import plot_history
 from FormatInputOutput import get_input_output
+import pickle
 
 ###############################################################################
 # CONSTANTS
@@ -17,7 +18,8 @@ checkpoint_path = "{}/cp.ckpt".format(training_dir)
 
 ###############################################################################
 # LOADING / PRE-PROCESSING DATA
-(training_input, training_output), (testing_input, testing_output) = get_input_output()
+(training_input, training_output), (testing_input, testing_output), \
+       (jets_scalar, lep_scalar, output_scalar) = get_input_output()
 print(training_input.shape)
 
 ###############################################################################
@@ -40,10 +42,18 @@ history = model.fit(training_input, training_output,  epochs=EPOCHES,
                     )
 
 ###############################################################################
-# SAVING MODEL AND TRAINING HISTORY
+# SAVING MODEL, TRAINING HISTORY AND SCALARS
 model.save('{}/simple_model.h5'.format(training_dir))
 for key in history.history.keys():
     np.savez("{0}/{1}.npz".format(training_dir, key), epoches=history.epoch, loss=history.history[key])
+
+scaler_filename = "{}/scalers.pkl".format(training_dir)
+with open( scaler_filename, "wb" ) as file_scaler:
+  pickle.dump(jets_scalar, file_scaler)
+  pickle.dump(lep_scalar, file_scaler)
+  pickle.dump(output_scalar, file_scaler)
+print("INFO: scalers saved to file:", scaler_filename)
+
 ###############################################################################
 # EVALUATING MODEL AND MAKE PREDICTIONS
 print(history.history.keys())
