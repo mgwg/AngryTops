@@ -172,13 +172,16 @@ def MakeInput( jets, W_had, b_had, t_had, W_lep, b_lep, t_lep ):
     # Populate 5 x 6 matrix of jet foration
     # Is there possibly a bug here? What format is Px? Is sjets[0][0] = sjets[1][0] = sjets[2][0] = ...
     sjets = np.zeros( [ n_jets_per_event, n_features_per_jet ] )
+    # At first, everything was divided by GeV. This shouldn't be the case, as
+    # the Delphes Tree already outputs everything in GeV according to the
+    # documentation
     for i in range(len(jets)):
         jet = jets[i]
-        sjets[i][0] = jet.Px()/GeV
-        sjets[i][1] = jet.Py()/GeV
-        sjets[i][2] = jet.Pz()/GeV
-        sjets[i][3] = jet.E()/GeV
-        sjets[i][4] = jet.M()/GeV
+        sjets[i][0] = jet.Px()
+        sjets[i][1] = jet.Py()
+        sjets[i][2] = jet.Pz()
+        sjets[i][3] = jet.E()
+        sjets[i][4] = jet.M()
         sjets[i][5] = jet.btag
 
     # OUTPUT DATA FOR RNN
@@ -191,45 +194,45 @@ def MakeInput( jets, W_had, b_had, t_had, W_lep, b_lep, t_lep ):
     target_t_lep = np.zeros( [5] )
 
     # T Hadron
-    target_t_had[0] = t_had.Px()/GeV
-    target_t_had[1] = t_had.Py()/GeV
-    target_t_had[2] = t_had.Pz()/GeV
-    target_t_had[3] = t_had.E()/GeV
-    target_t_had[4] = t_had.M()/GeV
+    target_t_had[0] = t_had.Px()
+    target_t_had[1] = t_had.Py()
+    target_t_had[2] = t_had.Pz()
+    target_t_had[3] = t_had.E()
+    target_t_had[4] = t_had.M()
 
     # Hadronically Decay W Boson
-    target_W_had[0] = W_had.Px()/GeV
-    target_W_had[1] = W_had.Py()/GeV
-    target_W_had[2] = W_had.Pz()/GeV
-    target_W_had[3] = W_had.E()/GeV
-    target_W_had[4] = W_had.M()/GeV
+    target_W_had[0] = W_had.Px()
+    target_W_had[1] = W_had.Py()
+    target_W_had[2] = W_had.Pz()
+    target_W_had[3] = W_had.E()
+    target_W_had[4] = W_had.M()
 
     # Hadronic b quark
-    target_b_had[0] = b_had.Px()/GeV
-    target_b_had[1] = b_had.Py()/GeV
-    target_b_had[2] = b_had.Pz()/GeV
-    target_b_had[3] = b_had.E()/GeV
-    target_b_had[4] = b_had.M()/GeV
+    target_b_had[0] = b_had.Px()
+    target_b_had[1] = b_had.Py()
+    target_b_had[2] = b_had.Pz()
+    target_b_had[3] = b_had.E()
+    target_b_had[4] = b_had.M()
 
     # Leptonic t quark
-    target_t_lep[0] = t_lep.Px()/GeV
-    target_t_lep[1] = t_lep.Py()/GeV
-    target_t_lep[2] = t_lep.Pz()/GeV
-    target_t_lep[3] = t_lep.E()/GeV
-    target_t_lep[4] = t_lep.M()/GeV
+    target_t_lep[0] = t_lep.Px()
+    target_t_lep[1] = t_lep.Py()
+    target_t_lep[2] = t_lep.Pz()
+    target_t_lep[3] = t_lep.E()
+    target_t_lep[4] = t_lep.M()
 
     # Leptonically decaying W quark
-    target_W_lep[0] = W_lep.Px()/GeV
-    target_W_lep[1] = W_lep.Py()/GeV
-    target_W_lep[2] = W_lep.Pz()/GeV
-    target_W_lep[3] = W_lep.E()/GeV
-    target_W_lep[4] = W_lep.M()/GeV
+    target_W_lep[0] = W_lep.Px()
+    target_W_lep[1] = W_lep.Py()
+    target_W_lep[2] = W_lep.Pz()
+    target_W_lep[3] = W_lep.E()
+    target_W_lep[4] = W_lep.M()
 
     # Leptonic b quark
-    target_b_lep[0] = b_lep.Px()/GeV
-    target_b_lep[1] = b_lep.Py()/GeV
-    target_b_lep[2] = b_lep.Pz()/GeV
-    target_b_lep[3] = b_lep.E()/GeV
-    target_b_lep[4] = b_lep.M()/GeV
+    target_b_lep[0] = b_lep.Px()
+    target_b_lep[1] = b_lep.Py()
+    target_b_lep[2] = b_lep.Pz()
+    target_b_lep[3] = b_lep.E()
+    target_b_lep[4] = b_lep.M()
 
     return sjets, target_W_had, target_b_had, target_t_had, target_W_lep, target_b_lep, target_t_lep
