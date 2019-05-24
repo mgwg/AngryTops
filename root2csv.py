@@ -33,7 +33,8 @@ if len(sys.argv) > 2: n_evt_max = int( sys.argv[2] )
 filelistname = sys.argv[1]
 
 # Output filename
-outfilename = "csv/topreco_augmented1.csv"
+outfilename = sys.argv[2]
+#outfilename = "csv/topreco_augmented1.csv"
 #outfilename = "csv/topreco.csv"
 outfile = open( outfilename, "wt" )
 csvwriter = csv.writer( outfile )
