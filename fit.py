@@ -103,6 +103,7 @@ y_true_t_had = true[4]
 y_true_t_lep = true[5]
 
 #y_fitted = y_scaler.inverse_transform( y_fitted )
+n_events = true.shape[0]
 print("Shape of tions: ", y_fitted.shape)
 print("INFO ...done")
 
