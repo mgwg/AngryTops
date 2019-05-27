@@ -40,18 +40,17 @@ def DivideByBinWidth(h):
 def SetTH1FStyle( h, color = kBlack, linewidth = 1, fillcolor = 0, fillstyle = 0, markerstyle = 21, markersize = 1.3, fill_alpha = 0 ):
     '''Set the style with a long list of parameters'''
 
-    h.SetLineColor( color )
-    h.SetLineWidth( linewidth )
-    h.SetFillColor( fillcolor )
-    h.SetFillStyle( fillstyle )
-    h.SetMarkerStyle( markerstyle )
-    h.SetMarkerColor( h.GetLineColor() )
-    h.SetMarkerSize( markersize )
+    h.SetLineColor(color)
+    h.SetLineWidth(linewidth)
+    h.SetFillColor(fillcolor)
+    h.SetFillStyle(fillstyle)
+    h.SetMarkerStyle(markerstyle)
+    h.SetMarkerColor(h.GetLineColor())
+    h.SetMarkerSize(markersize)
     if fill_alpha > 0:
        h.SetFillColorAlpha( color, fill_alpha )
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
 def MakeCanvas( npads = 1, side = 800, split = 0.25, padding = 0.00 ):
     # assume that if pads=1 => square plot
