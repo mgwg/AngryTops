@@ -248,8 +248,8 @@ infilename = "{}/histograms.root".format(training_dir)
 infile = TFile.Open(infilename)
 
 # True and fitted leaf
-h_true = infile.Get(hname)
-h_fitted = infile.Get
+h_true = infile.Get(hname_true)
+h_fitted = infile.Get(hame_fitted)
 if h == None:
   print "ERROR: invalid histogram for", obs
 
