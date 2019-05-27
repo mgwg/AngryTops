@@ -252,13 +252,13 @@ for obs in attributes:
     h_true = infile.Get(hname_true)
     h_fitted = infile.Get(hame_fitted)
     if h_true == None:
-    print "ERROR: invalid histogram for", obs
+        print ("ERROR: invalid histogram for", obs)
 
     # Axis titles
     xtitle = h_true.GetXaxis().GetTitle()
     ytitle = h_true.GetYaxis().GetTitle()
     if h_true.Class() == TH2F.Class():
-    h_true = h_true.ProfileX("pfx")
+        h_true = h_true.ProfileX("pfx")
 
     h_true.GetYaxis().SetTitle( ytitle )
     else:
