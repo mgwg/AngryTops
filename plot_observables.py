@@ -310,7 +310,7 @@ for obs in attributes:
     leg.Draw()
 
     KS = h_true.KolmogorovTest( h_fitted )
-    X2 = h_true.Chi2Test( h_fitted, "WW CHI2/NDF" )
+    X2 = h_true.Chi2Test( h_fitted, "UU NORM CHI2/NDF" ) # UU NORM
     l = TLatex()
     l.SetNDC()
     l.SetTextFont(42)
