@@ -329,4 +329,4 @@ gPad.RedrawAxis()
 
 c.cd()
 
-c.SaveAs("{0}/img/{1}.png".format(training_dir, hname))
+c.SaveAs("{0}/img/{1}.png".format(training_dir, obs))
