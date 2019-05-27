@@ -259,11 +259,10 @@ for obs in attributes:
     ytitle = h_true.GetYaxis().GetTitle()
     if h_true.Class() == TH2F.Class():
         h_true = h_true.ProfileX("pfx")
-
-    h_true.GetYaxis().SetTitle( ytitle )
+        h_true.GetYaxis().SetTitle( ytitle )
     else:
-    Normalize(h_true)
-    Normalize(h_fitted)
+        Normalize(h_true)
+        Normalize(h_fitted)
 
     #  DivideByBinWidth( h_GAN )
     #  DivideByBinWidth( h_MC )
