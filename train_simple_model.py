@@ -16,7 +16,7 @@ import pickle
 BATCH_SIZE = 32
 EPOCHES = 50
 if len(sys.argv) > 1:
-    checkpoint_path = "{}/cp.ckpt".format(sys.argv[1])
+    checkpoint_path = "{}/{}/cp.ckpt".format("CheckPoints", sys.argv[1])
     model_num = int(sys.argv[2])
 else:
     checkpoint_path = "{}/cp.ckpt".format(training_dir)
