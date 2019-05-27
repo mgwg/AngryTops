@@ -238,7 +238,7 @@ def DrawRatio( data, prediction, xtitle = "", yrange=[0.4,1.6] ):
 ################################################################################
 
 # The observable to plot
-obs = "ljet1_pt"
+obs = "W_had_pt"
 if len(sys.argv) > 1: obs = sys.argv[1]
 
 # Load the histograms
