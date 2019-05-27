@@ -250,7 +250,7 @@ infile = TFile.Open(infilename)
 # True and fitted leaf
 h_true = infile.Get(hname_true)
 h_fitted = infile.Get(hame_fitted)
-if h == None:
+if h_true == None:
   print "ERROR: invalid histogram for", obs
 
 # Axis titles
