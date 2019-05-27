@@ -256,12 +256,12 @@ if h_true == None:
 # Axis titles
 xtitle = h_true.GetXaxis().GetTitle()
 ytitle = h_true.GetYaxis().GetTitle()
-if h.Class() == TH2F.Class():
-  h = h.ProfileX("pfx")
+if h_true.Class() == TH2F.Class():
+  h_true = h_true.ProfileX("pfx")
 
-  h.GetYaxis().SetTitle( ytitle )
+  h_true.GetYaxis().SetTitle( ytitle )
 else:
-  Normalize(h)
+  Normalize(h_true)
 
 #  DivideByBinWidth( h_GAN )
 #  DivideByBinWidth( h_MC )
