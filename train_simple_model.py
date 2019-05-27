@@ -36,11 +36,14 @@ print(model.summary())
 
 cp_callback = keras.callbacks.ModelCheckpoint(checkpoint_path,
                                             save_weights_only=True, verbose=1)
+try: 
+    history = model.fit(training_input, training_output,  epochs=EPOCHES,
+                        batch_size=BATCH_SIZE, validation_split=0.1,
+                        callbacks = [cp_callback]
+                        )
+except KeyboardInterrupt:
+    print("Training_inerrupted")
 
-history = model.fit(training_input, training_output,  epochs=EPOCHES,
-                    batch_size=BATCH_SIZE, validation_split=0.1,
-                    callbacks = [cp_callback]
-                    )
 
 ###############################################################################
 # SAVING MODEL, TRAINING HISTORY AND SCALARS
