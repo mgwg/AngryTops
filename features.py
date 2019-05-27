@@ -1,4 +1,4 @@
-training_dir = 'CheckPoints/training_scrap'
+training_dir = 'CheckPoints/training_5'
 
 column_names = ["runNumber", "eventNumber", "weight", "jets_n", "bjets_n",
 "lep.Px", "lep.Py", "lep.Pz", "lep.E", "met_met", "met_phi",
