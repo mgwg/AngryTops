@@ -237,97 +237,98 @@ def DrawRatio( data, prediction, xtitle = "", yrange=[0.4,1.6] ):
 
 ################################################################################
 
-# The observable to plot
-obs = "W_had_pt"
-if len(sys.argv) > 1: obs = sys.argv[1]
+# Make a plot for each observable
+for obs in attributes:
+    #obs = "W_had_pt"
+    #if len(sys.argv) > 1: obs = sys.argv[1]
 
-# Load the histograms
-hname_true = "%s_true" % (obs)
-hame_fitted = "%s_fitted" % (obs)
-infilename = "{}/histograms.root".format(training_dir)
-infile = TFile.Open(infilename)
+    # Load the histograms
+    hname_true = "%s_true" % (obs)
+    hame_fitted = "%s_fitted" % (obs)
+    infilename = "{}/histograms.root".format(training_dir)
+    infile = TFile.Open(infilename)
 
-# True and fitted leaf
-h_true = infile.Get(hname_true)
-h_fitted = infile.Get(hame_fitted)
-if h_true == None:
-  print "ERROR: invalid histogram for", obs
+    # True and fitted leaf
+    h_true = infile.Get(hname_true)
+    h_fitted = infile.Get(hame_fitted)
+    if h_true == None:
+    print "ERROR: invalid histogram for", obs
 
-# Axis titles
-xtitle = h_true.GetXaxis().GetTitle()
-ytitle = h_true.GetYaxis().GetTitle()
-if h_true.Class() == TH2F.Class():
-  h_true = h_true.ProfileX("pfx")
+    # Axis titles
+    xtitle = h_true.GetXaxis().GetTitle()
+    ytitle = h_true.GetYaxis().GetTitle()
+    if h_true.Class() == TH2F.Class():
+    h_true = h_true.ProfileX("pfx")
 
-  h_true.GetYaxis().SetTitle( ytitle )
-else:
-  Normalize(h_true)
-  Normalize(h_fitted)
+    h_true.GetYaxis().SetTitle( ytitle )
+    else:
+    Normalize(h_true)
+    Normalize(h_fitted)
 
-#  DivideByBinWidth( h_GAN )
-#  DivideByBinWidth( h_MC )
+    #  DivideByBinWidth( h_GAN )
+    #  DivideByBinWidth( h_MC )
 
-#SetTH1FStyle( h_MC,  color=kBlack, markerstyle=20, markersize=2)
-SetTH1FStyle( h_true,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
-#SetTH1FStyle( h_GAN, color=kRed, fillstyle=1001, fillcolor=kRed-7, linewidth=2, markersize=0, markerstyle=20, fill_alpha=0.4 )
-SetTH1FStyle( h_fitted, color=kBlack, markersize=0, markerstyle=20, linewidth=3 )
+    #SetTH1FStyle( h_MC,  color=kBlack, markerstyle=20, markersize=2)
+    SetTH1FStyle( h_true,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
+    #SetTH1FStyle( h_GAN, color=kRed, fillstyle=1001, fillcolor=kRed-7, linewidth=2, markersize=0, markerstyle=20, fill_alpha=0.4 )
+    SetTH1FStyle( h_fitted, color=kBlack, markersize=0, markerstyle=20, linewidth=3 )
 
-c, pad0, pad1 = MakeCanvas()
+    c, pad0, pad1 = MakeCanvas()
 
-pad0.cd()
+    pad0.cd()
 
-h_true.Draw("h")
-h_fitted.Draw("h same")
+    h_true.Draw("h")
+    h_fitted.Draw("h same")
 
-# if obs in [
-# #     "ljet1_pt", "ljet1_E",
-# #    "ljet1_px", "ljet1_py", "ljet1_pz"
-# #     "ljet2_pt", "ljet2_E",
-# #    "ljet2_px", "ljet2_py", "ljet2_pz",
-# #     "jj_pt", "jj_m", "jj_E",
-#  #    "jj_px", "jj_py", "jj_pz",
-# #     "jj_dR", "jj_dPhi"
-# ]:
-# hmax = 10 * max( [ h_MC.GetMaximum(), h_GAN.GetMaximum() ] )
-#   h_GAN.SetMaximum( hmax )
-#   h_MC.SetMaximum( hmax )
-#   gPad.SetLogy()
-# else:
-hmax = 1.5 * max( [ h_true.GetMaximum(), h_fitted.GetMaximum() ] )
-h_fitted.SetMaximum( hmax )
-h_true.SetMaximum( hmax )
-h_fitted.SetMinimum( 0. )
-h_true.SetMinimum( 0. )
+    # if obs in [
+    # #     "ljet1_pt", "ljet1_E",
+    # #    "ljet1_px", "ljet1_py", "ljet1_pz"
+    # #     "ljet2_pt", "ljet2_E",
+    # #    "ljet2_px", "ljet2_py", "ljet2_pz",
+    # #     "jj_pt", "jj_m", "jj_E",
+    #  #    "jj_px", "jj_py", "jj_pz",
+    # #     "jj_dR", "jj_dPhi"
+    # ]:
+    # hmax = 10 * max( [ h_MC.GetMaximum(), h_GAN.GetMaximum() ] )
+    #   h_GAN.SetMaximum( hmax )
+    #   h_MC.SetMaximum( hmax )
+    #   gPad.SetLogy()
+    # else:
+    hmax = 1.5 * max( [ h_true.GetMaximum(), h_fitted.GetMaximum() ] )
+    h_fitted.SetMaximum( hmax )
+    h_true.SetMaximum( hmax )
+    h_fitted.SetMinimum( 0. )
+    h_true.SetMinimum( 0. )
 
-leg = TLegend( 0.20, 0.90, 0.50, 0.90 )
-leg.SetFillColor(0)
-leg.SetFillStyle(0)
-leg.SetBorderSize(0)
-leg.SetTextFont(42)
-leg.SetTextSize(0.05)
-leg.AddEntry( h_true, "MG5+Py8+Delphes", "f" )
-leg.AddEntry( h_fitted, "fitted", "f" )
-leg.SetY1( leg.GetY1() - 0.05 * leg.GetNRows() )
-leg.Draw()
+    leg = TLegend( 0.20, 0.90, 0.50, 0.90 )
+    leg.SetFillColor(0)
+    leg.SetFillStyle(0)
+    leg.SetBorderSize(0)
+    leg.SetTextFont(42)
+    leg.SetTextSize(0.05)
+    leg.AddEntry( h_true, "MG5+Py8+Delphes", "f" )
+    leg.AddEntry( h_fitted, "fitted", "f" )
+    leg.SetY1( leg.GetY1() - 0.05 * leg.GetNRows() )
+    leg.Draw()
 
-KS = h_true.KolmogorovTest( h_fitted )
-X2 = h_true.Chi2Test( h_fitted, "WW CHI2/NDF" )
-l = TLatex()
-l.SetNDC()
-l.SetTextFont(42)
-l.SetTextColor(kBlack)
-l.DrawLatex( 0.7, 0.85, "KS test: %.2f" % KS )
-l.DrawLatex( 0.7, 0.80, "#chi^{2}/NDF = %.2f" % X2 )
+    KS = h_true.KolmogorovTest( h_fitted )
+    X2 = h_true.Chi2Test( h_fitted, "WW CHI2/NDF" )
+    l = TLatex()
+    l.SetNDC()
+    l.SetTextFont(42)
+    l.SetTextColor(kBlack)
+    l.DrawLatex( 0.7, 0.85, "KS test: %.2f" % KS )
+    l.DrawLatex( 0.7, 0.80, "#chi^{2}/NDF = %.2f" % X2 )
 
-gPad.RedrawAxis()
+    gPad.RedrawAxis()
 
-pad1.cd()
+    pad1.cd()
 
-yrange = [0.4, 1.6]
-frame, tot_unc, ratio = DrawRatio(h_fitted, h_true, xtitle, yrange)
+    yrange = [0.4, 1.6]
+    frame, tot_unc, ratio = DrawRatio(h_fitted, h_true, xtitle, yrange)
 
-gPad.RedrawAxis()
+    gPad.RedrawAxis()
 
-c.cd()
+    c.cd()
 
-c.SaveAs("{0}/img/{1}.png".format(training_dir, obs))
+    c.SaveAs("{0}/img/{1}.png".format(training_dir, obs))
