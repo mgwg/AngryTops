@@ -22,8 +22,8 @@ def create_simple_model():
     model.add(layers.Reshape(target_shape=(6,6)))
     model.add(layers.SimpleRNN(30, return_sequences=True))
     model.add(layers.Flatten())
-    model.add(layers.Dense(30))
-    model.add(layers.Reshape(target_shape=(6,5)))
+    model.add(layers.Dense(24))
+    model.add(layers.Reshape(target_shape=(6,4)))
 
     optimizer = tf.keras.optimizers.RMSprop()
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
