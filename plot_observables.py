@@ -262,6 +262,7 @@ if h_true.Class() == TH2F.Class():
   h_true.GetYaxis().SetTitle( ytitle )
 else:
   Normalize(h_true)
+  Normalize(h_fitted)
 
 #  DivideByBinWidth( h_GAN )
 #  DivideByBinWidth( h_MC )
