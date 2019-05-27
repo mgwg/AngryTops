@@ -5,7 +5,8 @@ import tensorflow as tf
 from tensorflow import keras
 from features import *
 import os
-from models import *
+import sys
+from models import models
 from plotting_helper import plot_history
 from FormatInputOutput import get_input_output
 import pickle
@@ -14,7 +15,12 @@ import pickle
 # CONSTANTS
 BATCH_SIZE = 32
 EPOCHES = 50
-checkpoint_path = "{}/cp.ckpt".format(training_dir)
+if len(sys.argv) > 1:
+    checkpoint_path = "{}/cp.ckpt".format(sys.argv[1])
+    model_num = int(sys.argv[2])
+else:
+    checkpoint_path = "{}/cp.ckpt".format(training_dir)
+    model_num = 0
 
 ###############################################################################
 # LOADING / PRE-PROCESSING DATA
@@ -25,7 +31,7 @@ print(training_input.shape)
 
 ###############################################################################
 # BUILDING / TRAINING MODEL
-model = create_model5()
+model = models[model_num]()
 try:
     model.load_weights(checkpoint_path)
     print("Loaded weights from previous training session")
@@ -36,20 +42,19 @@ print(model.summary())
 
 cp_callback = keras.callbacks.ModelCheckpoint(checkpoint_path,
                                             save_weights_only=True, verbose=1)
-try: 
+try:
     history = model.fit(training_input, training_output,  epochs=EPOCHES,
                         batch_size=BATCH_SIZE, validation_split=0.1,
                         callbacks = [cp_callback]
                         )
 except KeyboardInterrupt:
     print("Training_inerrupted")
+    history = None
 
 
 ###############################################################################
 # SAVING MODEL, TRAINING HISTORY AND SCALARS
 model.save('{}/simple_model.h5'.format(training_dir))
-for key in history.history.keys():
-    np.savez("{0}/{1}.npz".format(training_dir, key), epoches=history.epoch, loss=history.history[key])
 
 scaler_filename = "{}/scalers.pkl".format(training_dir)
 with open( scaler_filename, "wb" ) as file_scaler:
@@ -60,10 +65,15 @@ print("INFO: scalers saved to file:", scaler_filename)
 
 ###############################################################################
 # EVALUATING MODEL AND MAKE PREDICTIONS
-print(history.history.keys())
-plot_history(history, training_dir)
+if history is not None:
+    for key in history.history.keys():
+        np.savez("{0}/{1}.npz".format(training_dir, key), epoches=history.epoch, loss=history.history[key])
+    print(history.history.keys())
+    plot_history(history, training_dir)
+
+# Evaluating model and saving the predictions
 test_acc = model.evaluate(testing_input, testing_output)
 print('\nTest accuracy:', test_acc)
 predictions = model.predict(testing_input)
 np.savez("{}/predictions".format(training_dir), input=testing_input,\
- true=testing_output, pred=predictions, events=event_testing)
+         true=testing_output, pred=predictions, events=event_testing)

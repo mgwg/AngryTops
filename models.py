@@ -145,6 +145,10 @@ def create_model_multi():
    print("INFO: building model: (W_lep,b_lep,t_lep,W_had,b_had,t_had)")
    print("Model not done")
    return
+################################################################################
+# List of all models
+models = [create_simple_model, create_regularized_model, create_model3,
+          create_model4, create_model5]
 
 
    # input_jets = Input( shape=shape_jets, name='input_jets' )
