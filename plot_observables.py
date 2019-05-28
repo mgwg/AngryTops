@@ -5,6 +5,7 @@ from ROOT import *
 import numpy as np
 
 from features import *
+if len(sys.argv) > 1: training_dir = sys.argv[1]
 ################################################################################
 # Set style of plots
 gROOT.LoadMacro("AtlasDocs/AtlasStyle.C")
@@ -115,6 +116,7 @@ def MakeCanvas2( npads = 1, side = 800, padding = 0.00 ):
     pad0.SetFillColor(0)
     pad0.SetFillStyle(4000)
     pad0.SetGridy(1)
+    pad0.SetGridx(1)
     pad0.Draw()
 
     pad0.cd()
@@ -263,13 +265,8 @@ def DrawRatio( data, prediction, xtitle = "", yrange=[0.4,1.6] ):
 
     return frame, tot_unc, ratio
 
-################################################################################
-if len(sys.argv) > 1: training_dir = sys.argv[1]
-infilename = "{}/histograms.root".format(training_dir)
-infile = TFile.Open(infilename)
-
-# Make a plot for each observable
-for obs in attributes:
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def plot_observables(obs):
     # Load the histograms
     hname_true = "%s_true" % (obs)
     hame_fitted = "%s_fitted" % (obs)
@@ -304,21 +301,6 @@ for obs in attributes:
 
     h_true.Draw("h")
     h_fitted.Draw("h same")
-
-    # if obs in [
-    # #     "ljet1_pt", "ljet1_E",
-    # #    "ljet1_px", "ljet1_py", "ljet1_pz"
-    # #     "ljet2_pt", "ljet2_E",
-    # #    "ljet2_px", "ljet2_py", "ljet2_pz",
-    # #     "jj_pt", "jj_m", "jj_E",
-    #  #    "jj_px", "jj_py", "jj_pz",
-    # #     "jj_dR", "jj_dPhi"
-    # ]:
-    # hmax = 10 * max( [ h_MC.GetMaximum(), h_GAN.GetMaximum() ] )
-    #   h_GAN.SetMaximum( hmax )
-    #   h_MC.SetMaximum( hmax )
-    #   gPad.SetLogy()
-    # else:
     hmax = 1.5 * max( [ h_true.GetMaximum(), h_fitted.GetMaximum() ] )
     h_fitted.SetMaximum( hmax )
     h_true.SetMaximum( hmax )
@@ -358,44 +340,99 @@ for obs in attributes:
 
     c.SaveAs("{0}/img/{1}.png".format(training_dir, obs))
 
-# Draw Differences and resonances
-for type in ["diff", "reso"]:
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def plot_residuals(type, obs):
+    hist_name = "{0}_{1}".format(type, obs)
+
+    # True and fitted leaf
+    hist = infile.Get(hist_name)
+    if hist == None:
+        print ("ERROR: invalid histogram for", obs)
+
+    # Axis titles
+    xtitle = hist.GetXaxis().GetTitle()
+    ytitle = hist.GetYaxis().GetTitle()
+    if hist.Class() == TH2F.Class():
+        hist = hist.ProfileX("pfx")
+        hist.GetYaxis().SetTitle( ytitle )
+        hist.GetXaxis().SetTitle( xtitle )
+    else:
+        hist.GetYaxis().SetTitle( ytitle )
+        hist.GetXaxis().SetTitle( xtitle )
+    Normalize(hist)
+
+    SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
+
+    c, pad0 = MakeCanvas2()
+
+    pad0.cd()
+
+    hist.Draw("h")
+
+    hmax = 1.5 * max( [ hist.GetMaximum(), hist.GetMaximum() ] )
+    hmin = 1.5 * min([ hist.GetMaximum(), hist.GetMaximum() ])
+    hist.SetMaximum(hmax)
+    hist.SetMinimum(hmin)
+
+    gPad.RedrawAxis()
+
+    c.cd()
+
+    c.SaveAs("{0}/img/{1}_{2}.png".format(training_dir, type,obs))
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def plot_correlations(hist_name):
+
+    # True and fitted leaf
+    hist = infile.Get(hist_name)
+    if hist == None:
+        print ("ERROR: invalid histogram for", obs)
+
+    # Axis titles
+    xtitle = hist.GetXaxis().GetTitle()
+    ytitle = hist.GetYaxis().GetTitle()
+    if hist.Class() == TH2F.Class():
+        hist = hist.ProfileX("pfx")
+        hist.GetYaxis().SetTitle( ytitle )
+        hist.GetXaxis().SetTitle( xtitle )
+    else:
+        hist.GetYaxis().SetTitle( ytitle )
+        hist.GetXaxis().SetTitle( xtitle )
+    Normalize(hist)
+
+    SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
+
+    c, pad0 = MakeCanvas2()
+
+    pad0.cd()
+
+    hist.Draw("h")
+
+    hmax = 1.5 * max( [ hist.GetMaximum(), hist.GetMaximum() ] )
+    hmin = 1.5 * min([ hist.GetMaximum(), hist.GetMaximum() ])
+    hist.SetMaximum(hmax)
+    hist.SetMinimum(hmin)
+
+    gPad.RedrawAxis()
+
+    c.cd()
+
+    c.SaveAs("{0}/img/{1}_{2}.png".format(training_dir, hist_name))
+
+################################################################################
+if __name__==   "__main__":
+    infilename = "{}/histograms.root".format(training_dir)
+    infile = TFile.Open(infilename)
+
+    # Make a plot for each observable
     for obs in attributes:
-        # Load the histograms
-        hist_name = "{0}_{1}".format(type, obs)
+        plot_observables(obs)
 
-        # True and fitted leaf
-        hist = infile.Get(hist_name)
-        if hist == None:
-            print ("ERROR: invalid histogram for", obs)
+    # Draw Differences and resonances
+    for type in ["diff", "reso"]:
+        for obs in attributes:
+            plot_residuals(type, diff)
 
-        # Axis titles
-        xtitle = hist.GetXaxis().GetTitle()
-        ytitle = hist.GetYaxis().GetTitle()
-        if hist.Class() == TH2F.Class():
-            hist = hist.ProfileX("pfx")
-            hist.GetYaxis().SetTitle( ytitle )
-            hist.GetXaxis().SetTitle( xtitle )
-        else:
-            hist.GetYaxis().SetTitle( ytitle )
-            hist.GetXaxis().SetTitle( xtitle )
-        #Normalize(hist)
-
-        SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
-
-        c, pad0 = MakeCanvas2()
-
-        pad0.cd()
-
-        hist.Draw("h")
-
-        hmax = 1.5 * max( [ hist.GetMaximum(), hist.GetMaximum() ] )
-        hmin = 1.5 * min([ hist.GetMaximum(), hist.GetMaximum() ])
-        hist.SetMaximum(hmax)
-        hist.SetMinimum(hmin)
-
-        gPad.RedrawAxis()
-
-        c.cd()
-
-        c.SaveAs("{0}/img/{1}_{2}.png".format(training_dir, type,obs))
+    # Draw 2D Correlations
+    for corr in corr_2d:
+        plot_correlations(corr)
