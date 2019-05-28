@@ -387,7 +387,6 @@ def plot_correlations(hist_name):
     # Axis titles
     xtitle = hist.GetXaxis().GetTitle()
     ytitle = hist.GetYaxis().GetTitle()
-    if hist.Class() == TH2F.Class():
     hist.GetYaxis().SetTitle( ytitle )
     hist.GetXaxis().SetTitle( xtitle )
     Normalize(hist)
