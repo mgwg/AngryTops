@@ -350,7 +350,7 @@ for type in ["diff", "reso"]:
         else:
             hist.GetYaxis().SetTitle( ytitle )
             hist.GetXaxis().SetTitle( xtitle )
-        Normalize(hist)
+        #Normalize(hist)
 
         SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
 
@@ -361,27 +361,9 @@ for type in ["diff", "reso"]:
         hist.Draw("h")
 
         hmax = 1.5 * max( [ hist.GetMaximum(), hist.GetMaximum() ] )
-        hist.SetMaximum( hmax )
-        hist.SetMaximum( hmax )
-        hist.SetMinimum( 0. )
-        hist.SetMinimum( 0. )
-
-        leg = TLegend( 0.20, 0.90, 0.50, 0.90 )
-        leg.SetFillColor(0)
-        leg.SetFillStyle(0)
-        leg.SetBorderSize(0)
-        leg.SetTextFont(42)
-        leg.SetTextSize(0.05)
-        leg.AddEntry( h_true, "MG5+Py8", "f" )
-        leg.AddEntry( h_fitted, "fitted", "f" )
-        leg.SetY1( leg.GetY1() - 0.05 * leg.GetNRows() )
-        leg.Draw()
-
-        gPad.RedrawAxis()
-
-        pad1.cd()
-
-        yrange = [0.4, 1.6]
+        hmin = 1.5 * min([ hist.GetMaximum(), hist.GetMaximum() ])
+        hist.SetMaximum(hmax)
+        hist.SetMinimum(hmin)
 
         gPad.RedrawAxis()
 
