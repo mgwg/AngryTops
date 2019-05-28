@@ -417,7 +417,7 @@ def plot_correlations(hist_name):
 
     c.cd()
 
-    c.SaveAs("{0}/img/{1}_{2}.png".format(training_dir, hist_name))
+    c.SaveAs("{0}/img/{1}.png".format(training_dir, hist_name))
 
 ################################################################################
 if __name__==   "__main__":
