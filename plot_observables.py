@@ -69,7 +69,7 @@ def MakeCanvas( npads = 1, side = 800, split = 0.25, padding = 0.00 ):
     pad0 = TPad( "pad0","pad0",0, split+padding,1,1,0,0,0 )
     pad0.SetLeftMargin( 0.18 ) #0.16
     pad0.SetRightMargin( 0.05 )
-    pad0.SetBottomMargin( 0. )
+    pad0.SetBottomMargin( 0.01 )
     #pad0.SetTopMargin( 0.14 )
     pad0.SetTopMargin( 0.07 ) #0.05
     pad0.SetFillColor(0)
@@ -90,6 +90,33 @@ def MakeCanvas( npads = 1, side = 800, split = 0.25, padding = 0.00 ):
 
     pad0.cd()
     return c, pad0, pad1
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+def MakeCanvas2( npads = 1, side = 800, padding = 0.00 ):
+    # Makes simpler plot
+    y_padding = side * padding
+
+    height_tot = y_plot + npads * ( y_ratio + y_padding )
+    height_tot = int(height_tot)
+
+    c = TCanvas( "Histogram", side, height_tot )
+    c.SetFrameFillStyle(4000)
+    c.SetFillColor(0)
+
+    pad0 = TPad( "pad0","pad0",0, split+padding,1,1,0,0,0 )
+    pad0.SetLeftMargin( 0.18 ) #0.16
+    pad0.SetRightMargin( 0.05 )
+    #pad0.SetTopMargin( 0.14 )
+    pad0.SetTopMargin( 0.07 ) #0.05
+    pad0.SetBottomMargin(0.5)
+    pad0.SetFillColor(0)
+    pad0.SetFillStyle(4000)
+    pad0.SetGridy(1)
+    pad0.Draw()
+
+    pad0.cd()
+    return c, pad0
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -354,7 +381,7 @@ for type in ["diff", "reso"]:
 
         SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
 
-        c, pad0, pad1 = MakeCanvas()
+        c, pad0 = MakeCanvas2()
 
         pad0.cd()
 
