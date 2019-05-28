@@ -11,6 +11,8 @@ from plotting_helper import plot_history
 from FormatInputOutput import get_input_output
 import pickle
 
+print(tf.__version__)
+
 ###############################################################################
 # CONSTANTS
 BATCH_SIZE = 32
