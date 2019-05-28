@@ -235,7 +235,7 @@ def DrawRatio( data, prediction, xtitle = "", yrange=[0.4,1.6] ):
     return frame, tot_unc, ratio
 
 ################################################################################
-
+if len(sys.argv) > 1: training_dir = sys.argv[1]
 # Make a plot for each observable
 for obs in attributes:
     #obs = "W_had_pt"
