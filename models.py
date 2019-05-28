@@ -8,7 +8,7 @@ from features import *
 n_features_input = 6
 n_target_features = 6
 
-def create_simple_model():
+def model0():
     """
     Create a simple RNN with one recurrent layer
     """
@@ -31,7 +31,7 @@ def create_simple_model():
 
 ################################################################################
 
-def create_regularized_model():
+def model1():
     """
     Create a simple RNN with L2 regularizers and dropout layers
     """
@@ -52,7 +52,7 @@ def create_regularized_model():
 
 ################################################################################
 
-def create_model3():
+def model2():
     """
     Create a simple RNN with L2 regularizers and dropout layers
     """
@@ -72,7 +72,7 @@ def create_model3():
 
 ################################################################################
 
-def create_model4():
+def model3():
     """
     Create a simple RNN with L2 regularizers and dropout layers
     """
@@ -90,7 +90,7 @@ def create_model4():
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
-def create_model5():
+def model4():
     """
     Create a simple RNN with L2 regularizers and dropout layers
     """
@@ -114,41 +114,152 @@ def create_model5():
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
-################################################################################
+def model5():
+    """
+    Create a simple RNN with one recurrent layer
+    """
+    # Questions:
+    # 1. Originally there was a TimeDIstributed Layer. I think this was
+    # unceccessary
+    # The return_sequences=True argument ==> Not sure what this does
+    # I simplified the model significantly => Reduced it to one recurrent layer
+    model = keras.Sequential()
+    model.add(layers.Dense(36, activation='relu', input_shape=(36,)))
+    model.add(layers.Reshape(target_shape=(6,6)))
+    model.add(layers.LSTM(30, return_sequences=True))
+    model.add(layers.Flatten())
+    model.add(layers.Dense(24))
+    model.add(layers.Reshape(target_shape=(6,4)))
 
-def create_model_rnn():
-   inshape   = (6, 6)
+    optimizer = tf.keras.optimizers.RMSprop()
+    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    return model
 
-   print("INFO: building model: input shape: {}".format(inshape))
+def model6():
+    """
+    Create a simple RNN with one recurrent layer
+    """
+    # Questions:
+    # 1. Originally there was a TimeDIstributed Layer. I think this was
+    # unceccessary
+    # The return_sequences=True argument ==> Not sure what this does
+    # I simplified the model significantly => Reduced it to one recurrent layer
+    model = keras.Sequential()
+    model.add(layers.Dense(36, activation='relu', input_shape=(36,)))
+    model.add(layers.Reshape(target_shape=(6,6)))
+    model.add(layers.SimpleRNN(30, return_sequences=True))
+    model.add(layers.SimpleRNN(30, return_sequences=True))
+    model.add(layers.Flatten())
+    model.add(layers.Dense(24))
+    model.add(layers.Reshape(target_shape=(6,4)))
 
-   input = Input( shape=inshape )
-   dropout = 0.01
-   model = keras.Sequential()
+    optimizer = tf.keras.optimizers.RMSprop()
+    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    return model
 
-   model.add(layers.TimeDistributed( Dense(100), input_shape=inshape))
-   model.add(layers.LSTM(80, return_sequences=True))
-   model.add(layers.LSTM(80, return_sequences=True))
-   model.add(layers.LSTM(80, return_sequences=True))
-   model.add(layers.LSTM(50, return_sequences=True))
-   model.add(layers.LSTM(50, return_sequences=True))
-   model.add(layers.LSTM(50, return_sequences=True))
-   model.add(layers.Dense(36))
-   model.add(layers.Reshape(target_shape=(5,6)))
+def model7():
+    """
+    Create a simple RNN with one recurrent layer
+    """
+    # Questions:
+    # 1. Originally there was a TimeDIstributed Layer. I think this was
+    # unceccessary
+    # The return_sequences=True argument ==> Not sure what this does
+    # I simplified the model significantly => Reduced it to one recurrent layer
+    model = keras.Sequential()
+    model.add(layers.Dense(36, activation='relu', input_shape=(36,)))
+    model.add(layers.Reshape(target_shape=(6,6)))
+    model.add(layers.SimpleRNN(100, return_sequences=True))
+    model.add(layers.Flatten())
+    model.add(layers.Dense(24))
+    model.add(layers.Reshape(target_shape=(6,4)))
 
-   model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    optimizer = tf.keras.optimizers.RMSprop()
+    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    return model
 
-   return model
+def model8():
+    """
+    Create a simple RNN with one recurrent layer
+    """
+    # Questions:
+    # 1. Originally there was a TimeDIstributed Layer. I think this was
+    # unceccessary
+    # The return_sequences=True argument ==> Not sure what this does
+    # I simplified the model significantly => Reduced it to one recurrent layer
+    model = keras.Sequential()
+    model.add(layers.Dense(36, activation='relu', input_shape=(36,)))
+    model.add(layers.Reshape(target_shape=(6,6)))
+    model.add(layers.SimpleRNN(100, return_sequences=True))
+    model.add(layers.SimpleRNN(100, return_sequences=True))
+    model.add(layers.Flatten())
+    model.add(layers.Dense(24))
+    model.add(layers.Reshape(target_shape=(6,4)))
 
-################################################################################
+    optimizer = tf.keras.optimizers.RMSprop()
+    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    return model
 
-def create_model_multi():
-   print("INFO: building model: (W_lep,b_lep,t_lep,W_had,b_had,t_had)")
-   print("Model not done")
-   return
+def model9():
+    """
+    Create a simple RNN with one recurrent layer
+    """
+    # Questions:
+    # 1. Originally there was a TimeDIstributed Layer. I think this was
+    # unceccessary
+    # The return_sequences=True argument ==> Not sure what this does
+    # I simplified the model significantly => Reduced it to one recurrent layer
+    model = keras.Sequential()
+    model.add(layers.Dense(36, activation='relu', input_shape=(36,)))
+    model.add(layers.Reshape(target_shape=(6,6)))
+    model.add(layers.SimpleRNN(30, return_sequences=True), kernel_regularizer=l2(0.01))
+    model.add(layers.Flatten())
+    model.add(layers.Dense(24))
+    model.add(layers.Reshape(target_shape=(6,4)))
+
+    optimizer = tf.keras.optimizers.RMSprop()
+    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    return model
+
 ################################################################################
 # List of all models
-models = [create_simple_model, create_regularized_model, create_model3,
-          create_model4, create_model5]
+models = [model0, model1, model2, model3, model4, model5, model6, model7,
+            model8, model9]
+################################################################################
+
+
+# ################################################################################
+#
+# def create_model_rnn():
+#    inshape   = (6, 6)
+#
+#    print("INFO: building model: input shape: {}".format(inshape))
+#
+#    input = Input( shape=inshape )
+#    dropout = 0.01
+#    model = keras.Sequential()
+#
+#    model.add(layers.TimeDistributed( Dense(100), input_shape=inshape))
+#    model.add(layers.LSTM(80, return_sequences=True))
+#    model.add(layers.LSTM(80, return_sequences=True))
+#    model.add(layers.LSTM(80, return_sequences=True))
+#    model.add(layers.LSTM(50, return_sequences=True))
+#    model.add(layers.LSTM(50, return_sequences=True))
+#    model.add(layers.LSTM(50, return_sequences=True))
+#    model.add(layers.Dense(36))
+#    model.add(layers.Reshape(target_shape=(5,6)))
+#
+#    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+#
+#    return model
+#
+# ################################################################################
+#
+# def create_model_multi():
+#    print("INFO: building model: (W_lep,b_lep,t_lep,W_had,b_had,t_had)")
+#    print("Model not done")
+#    return
+# ################################################################################
 
 
    # input_jets = Input( shape=shape_jets, name='input_jets' )
