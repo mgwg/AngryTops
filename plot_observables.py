@@ -352,7 +352,6 @@ def plot_residuals(type, obs):
     # Axis titles
     xtitle = hist.GetXaxis().GetTitle()
     ytitle = hist.GetYaxis().GetTitle()
-    hist = hist.ProfileX("pfx")
     hist.GetYaxis().SetTitle( ytitle )
     hist.GetXaxis().SetTitle( xtitle )
     Normalize(hist)
