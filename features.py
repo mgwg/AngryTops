@@ -1,4 +1,4 @@
-training_dir = 'CheckPoints/training_5'
+training_dir = 'CheckPoints/training_scrap'
 
 column_names = ["runNumber", "eventNumber", "weight", "jets_n", "bjets_n",
 "lep.Px", "lep.Py", "lep.Pz", "lep.E", "met_met", "met_phi",
@@ -86,6 +86,22 @@ attributes = ['W_had_px', 'W_had_py', 'W_had_pz', 'W_had_E', 'W_had_m',
 'b_lep_E', 'b_lep_m', 'b_lep_pt', 'b_lep_y', 'b_lep_phi', 't_lep_px',
 't_lep_py', 't_lep_pz', 't_lep_E', 't_lep_m', 't_lep_pt', 't_lep_y',
 't_lep_phi']
+
+corr_2d = ['corr_t_had_pt', 'corr_t_had_y', 'corr_t_had_phi', 'corr_t_had_E',
+           'corr_t_had_m', 'corr_t_lep_pt', 'corr_t_lep_y', 'corr_t_lep_phi',
+           'corr_t_lep_E', 'corr_t_lep_m']
+
+# residuals = ['diff_W_had_px', 'diff_W_had_py', 'diff_W_had_pz', 'diff_W_had_pt',
+# 'diff_W_had_y', 'diff_W_had_phi', 'diff_W_had_E', 'diff_W_had_m',
+# 'diff_b_had_px', 'diff_b_had_py', 'diff_b_had_pz', 'diff_b_had_pt',
+# 'diff_b_had_y', 'diff_b_had_phi', 'diff_b_had_E', 'diff_b_had_m',
+# 'diff_t_had_px', 'diff_t_had_py', 'diff_t_had_pz', 'diff_t_had_pt',
+# 'diff_t_had_y', 'diff_t_had_phi', 'diff_t_had_E', 'diff_t_had_m',
+# 'diff_W_lep_px', 'diff_W_lep_py', 'diff_W_lep_pz', 'diff_W_lep_pt', 'diff_W_lep_y',
+# 'diff_W_lep_phi', 'diff_W_lep_E', 'diff_W_lep_m', 'diff_b_lep_px',
+# 'diff_b_lep_py', 'diff_b_lep_pz', 'diff_b_lep_pt', 'diff_b_lep_y', 'diff_b_lep_phi',
+# 'diff_b_lep_E', 'diff_b_lep_m']
+
 
 
 # output_columns = [

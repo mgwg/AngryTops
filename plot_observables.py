@@ -236,16 +236,14 @@ def DrawRatio( data, prediction, xtitle = "", yrange=[0.4,1.6] ):
 
 ################################################################################
 if len(sys.argv) > 1: training_dir = sys.argv[1]
+infilename = "{}/histograms.root".format(training_dir)
+infile = TFile.Open(infilename)
+
 # Make a plot for each observable
 for obs in attributes:
-    #obs = "W_had_pt"
-    #if len(sys.argv) > 1: obs = sys.argv[1]
-
     # Load the histograms
     hname_true = "%s_true" % (obs)
     hame_fitted = "%s_fitted" % (obs)
-    infilename = "{}/histograms.root".format(training_dir)
-    infile = TFile.Open(infilename)
 
     # True and fitted leaf
     h_true = infile.Get(hname_true)
@@ -304,7 +302,7 @@ for obs in attributes:
     leg.SetBorderSize(0)
     leg.SetTextFont(42)
     leg.SetTextSize(0.05)
-    leg.AddEntry( h_true, "MG5+Py8+Delphes", "f" )
+    leg.AddEntry( h_true, "MG5+Py8", "f" )
     leg.AddEntry( h_fitted, "fitted", "f" )
     leg.SetY1( leg.GetY1() - 0.05 * leg.GetNRows() )
     leg.Draw()
@@ -330,3 +328,60 @@ for obs in attributes:
     c.cd()
 
     c.SaveAs("{0}/img/{1}.png".format(training_dir, obs))
+
+# Draw Differences and resonances
+for type in ["diff", "reso"]:
+    for obs in attributes:
+        # Load the histograms
+        hist_name = "{0}_{1}".format(type, obs)
+
+        # True and fitted leaf
+        hist = infile.Get(hist_name)
+        if hist == None:
+            print ("ERROR: invalid histogram for", obs)
+
+        # Axis titles
+        xtitle = hist.GetXaxis().GetTitle()
+        ytitle = hist.GetYaxis().GetTitle()
+        if hist.Class() == TH2F.Class():
+            hist = hist.ProfileX("pfx")
+            hist.GetYaxis().SetTitle( ytitle )
+        else:
+            Normalize(hist)
+
+        SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
+
+        c, pad0, pad1 = MakeCanvas()
+
+        pad0.cd()
+
+        hist.Draw("h")
+
+        hmax = 1.5 * max( [ hist.GetMaximum(), hist.GetMaximum() ] )
+        hist.SetMaximum( hmax )
+        hist.SetMaximum( hmax )
+        hist.SetMinimum( 0. )
+        hist.SetMinimum( 0. )
+
+        leg = TLegend( 0.20, 0.90, 0.50, 0.90 )
+        leg.SetFillColor(0)
+        leg.SetFillStyle(0)
+        leg.SetBorderSize(0)
+        leg.SetTextFont(42)
+        leg.SetTextSize(0.05)
+        leg.AddEntry( h_true, "MG5+Py8", "f" )
+        leg.AddEntry( h_fitted, "fitted", "f" )
+        leg.SetY1( leg.GetY1() - 0.05 * leg.GetNRows() )
+        leg.Draw()
+
+        gPad.RedrawAxis()
+
+        pad1.cd()
+
+        yrange = [0.4, 1.6]
+
+        gPad.RedrawAxis()
+
+        c.cd()
+
+        c.SaveAs("{0}/img/{1}_{2}.png".format(training_dir, type,obs))
