@@ -69,7 +69,7 @@ def MakeCanvas( npads = 1, side = 800, split = 0.25, padding = 0.00 ):
     pad0 = TPad( "pad0","pad0",0, split+padding,1,1,0,0,0 )
     pad0.SetLeftMargin( 0.18 ) #0.16
     pad0.SetRightMargin( 0.05 )
-    pad0.SetBottomMargin( 0.01 )
+    pad0.SetBottomMargin( 0.02 )
     #pad0.SetTopMargin( 0.14 )
     pad0.SetTopMargin( 0.07 ) #0.05
     pad0.SetFillColor(0)
@@ -95,6 +95,8 @@ def MakeCanvas( npads = 1, side = 800, split = 0.25, padding = 0.00 ):
 
 def MakeCanvas2( npads = 1, side = 800, padding = 0.00 ):
     # Makes simpler plot
+    y_plot    = side * ( 1. - ( + padding ) )
+    y_ratio   = side
     y_padding = side * padding
 
     height_tot = y_plot + npads * ( y_ratio + y_padding )
@@ -104,7 +106,7 @@ def MakeCanvas2( npads = 1, side = 800, padding = 0.00 ):
     c.SetFrameFillStyle(4000)
     c.SetFillColor(0)
 
-    pad0 = TPad( "pad0","pad0",0, split+padding,1,1,0,0,0 )
+    pad0 = TPad( "pad0","pad0",0, padding,1,1,0,0,0 )
     pad0.SetLeftMargin( 0.18 ) #0.16
     pad0.SetRightMargin( 0.05 )
     #pad0.SetTopMargin( 0.14 )
