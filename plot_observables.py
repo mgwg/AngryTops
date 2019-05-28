@@ -431,7 +431,7 @@ if __name__==   "__main__":
     # Draw Differences and resonances
     for type in ["diff", "reso"]:
         for obs in attributes:
-            plot_residuals(type, diff)
+            plot_residuals(type, obs)
 
     # Draw 2D Correlations
     for corr in corr_2d:
