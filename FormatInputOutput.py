@@ -6,8 +6,8 @@ from features import *
 from sklearn.utils import shuffle
 import sklearn.preprocessing
 
-input_filename = "csv/topreco.csv"
-#input_filename = "csv/topreco_augmented1.csv"
+#input_filename = "csv/topreco.csv"
+input_filename = "csv/topreco_augmented1.csv"
 
 def get_input_output(training_split=0.9, shuff=False):
     """
