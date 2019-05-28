@@ -352,13 +352,9 @@ def plot_residuals(type, obs):
     # Axis titles
     xtitle = hist.GetXaxis().GetTitle()
     ytitle = hist.GetYaxis().GetTitle()
-    if hist.Class() == TH2F.Class():
-        hist = hist.ProfileX("pfx")
-        hist.GetYaxis().SetTitle( ytitle )
-        hist.GetXaxis().SetTitle( xtitle )
-    else:
-        hist.GetYaxis().SetTitle( ytitle )
-        hist.GetXaxis().SetTitle( xtitle )
+    hist = hist.ProfileX("pfx")
+    hist.GetYaxis().SetTitle( ytitle )
+    hist.GetXaxis().SetTitle( xtitle )
     Normalize(hist)
 
     SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
@@ -392,12 +388,8 @@ def plot_correlations(hist_name):
     xtitle = hist.GetXaxis().GetTitle()
     ytitle = hist.GetYaxis().GetTitle()
     if hist.Class() == TH2F.Class():
-        hist = hist.ProfileX("pfx")
-        hist.GetYaxis().SetTitle( ytitle )
-        hist.GetXaxis().SetTitle( xtitle )
-    else:
-        hist.GetYaxis().SetTitle( ytitle )
-        hist.GetXaxis().SetTitle( xtitle )
+    hist.GetYaxis().SetTitle( ytitle )
+    hist.GetXaxis().SetTitle( xtitle )
     Normalize(hist)
 
     SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
