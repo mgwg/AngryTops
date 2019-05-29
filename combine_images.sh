@@ -6,5 +6,6 @@ cd ..
 
 # RUN THE FOLLOWING CODE IN AN IPYTHON SHELL
 #import os
+#from features import *
 #for att in attributes:
 #    os.system('./combine_images.sh {}'.format(att))
