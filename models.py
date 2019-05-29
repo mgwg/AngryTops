@@ -234,7 +234,6 @@ def model10():
 
     # Jets Branch
     x_jets = Reshape(target_shape=(5,6))(input_jets)
-    x_jets = Dense(30)(x_jets)
     x_jets = LSTM(6, return_sequences=True)(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
 
@@ -242,15 +241,14 @@ def model10():
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
 
     # Apply some more layers to combined data set
-    final = Reshape(target_shape=(6,6))(combined)
-    final = LSTM(4, return_sequences=True)(final)
+    final = LSTM(4, return_sequences=True)(combined)
 
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
 
     optimizer = tf.keras.optimizers.RMSprop()
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
-    
+
     return model
 
 
