@@ -349,11 +349,6 @@ def plot_residuals(type, obs):
     if hist == None:
         print ("ERROR: invalid histogram for", obs)
 
-    # Axis titles
-    xtitle = hist.GetXaxis().GetTitle()
-    ytitle = hist.GetYaxis().GetTitle()
-    hist.GetYaxis().SetTitle( ytitle )
-    hist.GetXaxis().SetTitle( xtitle )
     Normalize(hist)
 
     SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
@@ -383,11 +378,6 @@ def plot_correlations(hist_name):
     if hist == None:
         print ("ERROR: invalid histogram for", obs)
 
-    # Axis titles
-    xtitle = hist.GetXaxis().GetTitle()
-    ytitle = hist.GetYaxis().GetTitle()
-    hist.GetYaxis().SetTitle( ytitle )
-    hist.GetXaxis().SetTitle( xtitle )
     Normalize(hist)
 
     SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
