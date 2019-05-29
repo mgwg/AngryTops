@@ -16,7 +16,7 @@ print(tf.__version__)
 ###############################################################################
 # CONSTANTS
 BATCH_SIZE = 32
-EPOCHES = 100
+EPOCHES = 30
 if len(sys.argv) > 1:
     training_dir = "CheckPoints/{}".format(sys.argv[1])
     print("Saving files in: {}".format(training_dir))
