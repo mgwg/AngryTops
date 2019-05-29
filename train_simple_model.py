@@ -51,6 +51,14 @@ try:
                         batch_size=BATCH_SIZE, validation_split=0.1,
                         callbacks = [cp_callback]
                         )
+except ValueError:
+    print("Detected invalid input shape. Assuming model is multi-input")
+    training_input = [training_input[:,:6], training_input[:,6:]]
+    testing_input = [testing_input[:,:6], testing_input[:,6:]]
+    history = model.fit(training_input, training_output,  epochs=EPOCHES,
+                        batch_size=BATCH_SIZE, validation_split=0.1,
+                        callbacks = [cp_callback]
+                        )
 except KeyboardInterrupt:
     print("Training_inerrupted")
     history = None
