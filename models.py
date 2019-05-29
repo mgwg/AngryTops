@@ -212,7 +212,7 @@ def model9():
     model = keras.Sequential()
     model.add(layers.Dense(36, activation='relu', input_shape=(36,)))
     model.add(layers.Reshape(target_shape=(6,6)))
-    model.add(layers.SimpleRNN(30, return_sequences=True), kernel_regularizer=l2(0.01))
+    model.add(layers.SimpleRNN(30, return_sequences=True, kernel_regularizer=l2(0.01)))
     model.add(layers.Flatten())
     model.add(layers.Dense(24))
     model.add(layers.Reshape(target_shape=(6,4)))
@@ -300,3 +300,7 @@ models = [model0, model1, model2, model3, model4, model5, model6, model7,
    #                        #x_t_lep_out, x_t_had_out] )
    #
    # model.compile( optimizer='adam', loss='mean_squared_error' )
+
+if __name__ == "__main__":
+    for model in models:
+        model()
