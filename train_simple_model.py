@@ -16,7 +16,7 @@ print(tf.__version__)
 ###############################################################################
 # CONSTANTS
 BATCH_SIZE = 32
-EPOCHES = 100
+EPOCHES = 30
 if len(sys.argv) > 1:
     training_dir = "CheckPoints/{}".format(sys.argv[1])
     print("Saving files in: {}".format(training_dir))
@@ -47,6 +47,14 @@ print(model.summary())
 cp_callback = keras.callbacks.ModelCheckpoint(checkpoint_path,
                                             save_weights_only=True, verbose=1)
 try:
+    history = model.fit(training_input, training_output,  epochs=EPOCHES,
+                        batch_size=BATCH_SIZE, validation_split=0.1,
+                        callbacks = [cp_callback]
+                        )
+except ValueError:
+    print("Detected invalid input shape. Assuming model is multi-input")
+    training_input = [training_input[:,:6], training_input[:,6:]]
+    testing_input = [testing_input[:,:6], testing_input[:,6:]]
     history = model.fit(training_input, training_output,  epochs=EPOCHES,
                         batch_size=BATCH_SIZE, validation_split=0.1,
                         callbacks = [cp_callback]
