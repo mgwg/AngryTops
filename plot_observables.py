@@ -362,7 +362,7 @@ def plot_residuals(type, obs):
 
     pad0.cd()
 
-    hist.Draw("h")
+    hist.Draw()
 
     hmax = 1.5 * max( [ hist.GetMaximum(), hist.GetMaximum() ] )
     hmin = 1.5 * min([ hist.GetMaximum(), hist.GetMaximum() ])
@@ -396,7 +396,7 @@ def plot_correlations(hist_name):
 
     pad0.cd()
 
-    hist.Draw("h")
+    hist.Draw()
 
     hmax = 1.5 * max( [ hist.GetMaximum(), hist.GetMaximum() ] )
     hmin = 1.5 * min([ hist.GetMaximum(), hist.GetMaximum() ])
