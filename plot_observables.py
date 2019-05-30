@@ -341,8 +341,8 @@ def plot_observables(obs):
     c.SaveAs("{0}/img/{1}.png".format(training_dir, obs))
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def plot_residuals(type, obs):
-    hist_name = "{0}_{1}".format(type, obs)
+def plot_residuals(obs):
+    hist_name = "diff_{0}".format(obs)
 
     # True and fitted leaf
     hist = infile.Get(hist_name)
@@ -372,7 +372,7 @@ def plot_residuals(type, obs):
 
     c.cd()
 
-    c.SaveAs("{0}/img/{1}_{2}.png".format(training_dir, type,obs))
+    c.SaveAs("{0}/img/diff_{1}.png".format(training_dir,obs))
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def plot_correlations(hist_name):
@@ -405,6 +405,17 @@ def plot_correlations(hist_name):
 
     c.SaveAs("{0}/img/{1}.png".format(training_dir, hist_name))
 
+def plot_profile(hist_name):
+    hist = infile.Get(hist_name)
+    if hist == None:
+        print ("ERROR: invalid histogram for", obs)
+    hist = hist.ProfileX("hist_pfx")
+    SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
+    c = TCanvas()
+    c.cd()
+    hist.Draw()
+    c.SaveAs("{0}/img/reso_{1}.png".format(training_dir,obs))
+
 ################################################################################
 if __name__==   "__main__":
     infilename = "{}/histograms.root".format(training_dir)
@@ -415,9 +426,11 @@ if __name__==   "__main__":
         plot_observables(obs)
 
     # Draw Differences and resonances
-    for type in ["diff", "reso"]:
-        for obs in attributes:
-            plot_residuals(type, obs)
+    for obs in attributes:
+        plot_residuals(obs)
+        plot_profile(obs)
+
+
 
     # Draw 2D Correlations
     for corr in corr_2d:
