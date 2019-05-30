@@ -290,7 +290,7 @@ def model11():
 
     return model
 
-def model_adam():
+def model12():
     """
     Create a simple RNN with one recurrent layer
     """
@@ -313,7 +313,7 @@ def model_adam():
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
-def model_rms():
+def model13():
     """
     Create a simple RNN with one recurrent layer
     """
