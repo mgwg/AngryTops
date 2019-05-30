@@ -13,7 +13,7 @@ import pickle
 
 print(tf.__version__)
 
-def train_model(model_num, BATCH_SIZE=32, EPOCHES=30, train_dir=training_dir):
+def train_model(model_num, BATCH_SIZE=32, EPOCHES=30, train_dir=training_dir, learn_rate=0.001):
 ###############################################################################
     # CONSTANTS
     train_dir = "CheckPoints/{}".format(train_dir)
@@ -29,7 +29,7 @@ def train_model(model_num, BATCH_SIZE=32, EPOCHES=30, train_dir=training_dir):
 
 ###############################################################################
     # BUILDING / TRAINING MODEL
-    model = models[model_num]()
+    model = models[model_num](learn_rate)
     try:
         model.load_weights(checkpoint_path)
         print("Loaded weights from previous training session")
@@ -88,4 +88,8 @@ def train_model(model_num, BATCH_SIZE=32, EPOCHES=30, train_dir=training_dir):
              true=testing_output, pred=predictions, events=event_testing)
 
 if __name__ == "__main__":
-    train_model(int(sys.argv[2])t, train_dir=sys.argv[1])
+    if len(sys.argv) == 3:
+        train_model(int(sys.argv[2]), train_dir=sys.argv[1])
+    elif len(sys.argv) == 4:
+        train_model(int(sys.argv[2]), train_dir=sys.argv[1],
+                    learn_rate = np.float(sys.argv[3]))

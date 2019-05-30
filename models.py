@@ -9,7 +9,7 @@ from features import *
 n_features_input = 6
 n_target_features = 6
 
-def model0():
+def model0(learn_rate):
     """
     Create a simple RNN with one recurrent layer
     """
@@ -26,13 +26,13 @@ def model0():
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.RMSprop()
+    optimizer = tf.keras.optimizers.RMSprop(learning_rate=learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
 ################################################################################
 
-def model1():
+def model1(learn_rate):
     """
     Create a simple RNN with L2 regularizers and dropout
     """
@@ -46,14 +46,14 @@ def model1():
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.RMSprop()
+    optimizer = tf.keras.optimizers.RMSprop(learning_rate=learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
 
 ################################################################################
 
-def model2():
+def model2(learn_rate):
     """
     Create a simple RNN with L2 regularizers and dropout layers
     """
@@ -67,13 +67,13 @@ def model2():
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.RMSprop()
+    optimizer = tf.keras.optimizers.RMSprop(learning_rate=learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
 ################################################################################
 
-def model3():
+def model3(learn_rate):
     """
     Create a simple RNN with L2 regularizers and dropout layers
     """
@@ -87,11 +87,11 @@ def model3():
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.RMSprop()
+    optimizer = tf.keras.optimizers.RMSprop(learning_rate=learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
-def model4():
+def model4(learn_rate):
     """
     Create a simple RNN with L2 regularizers and dropout layers
     """
@@ -111,11 +111,11 @@ def model4():
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.RMSprop()
+    optimizer = tf.keras.optimizers.RMSprop(learning_rate=learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
-def model5():
+def model5(learn_rate):
     """
     Create a simple RNN with one recurrent layer
     """
@@ -132,11 +132,11 @@ def model5():
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.RMSprop()
+    optimizer = tf.keras.optimizers.RMSprop(learning_rate=learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
-def model6():
+def model6(learn_rate):
     """
     Create a simple RNN with one recurrent layer
     """
@@ -154,11 +154,11 @@ def model6():
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.RMSprop()
+    optimizer = tf.keras.optimizers.RMSprop(learning_rate=learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
-def model7():
+def model7(learn_rate):
     """
     Create a simple RNN with one recurrent layer
     """
@@ -175,11 +175,11 @@ def model7():
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.RMSprop()
+    optimizer = tf.keras.optimizers.RMSprop(learning_rate=learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
-def model8():
+def model8(learn_rate):
     """
     Create a simple RNN with one recurrent layer
     """
@@ -197,11 +197,11 @@ def model8():
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.RMSprop()
+    optimizer = tf.keras.optimizers.RMSprop(learning_rate=learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
-def model9():
+def model9(learn_rate):
     """
     Create a simple RNN with one recurrent layer
     """
@@ -218,11 +218,11 @@ def model9():
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.RMSprop()
+    optimizer = tf.keras.optimizers.RMSprop(learning_rate=learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
-def model10():
+def model10(learn_rate):
     """Seperate the inputs for jets and leps"""
     input_jets = Input(shape = (30,), name="input_jets")
     input_lep = Input(shape=(6,), name="input_lep")
@@ -251,12 +251,12 @@ def model10():
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
 
-    optimizer = tf.keras.optimizers.RMSprop()
+    optimizer = tf.keras.optimizers.RMSprop(learning_rate=learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
 
     return model
 
-def model11():
+def model11(learn_rate):
     """Seperate the inputs for jets and leps"""
     input_jets = Input(shape = (30,), name="input_jets")
     input_lep = Input(shape=(6,), name="input_lep")
@@ -285,12 +285,12 @@ def model11():
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
 
-    optimizer = tf.keras.optimizers.RMSprop()
+    optimizer = tf.keras.optimizers.RMSprop(learning_rate=learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
 
     return model
 
-def model12():
+def model12(learn_rate):
     """
     Create a simple RNN with one recurrent layer
     """
@@ -309,11 +309,11 @@ def model12():
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.Adam()
+    optimizer = tf.keras.optimizers.Adam(learning_rate=learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
-def model13():
+def model13(learn_rate):
     """
     Create a simple RNN with one recurrent layer
     """
@@ -332,7 +332,33 @@ def model13():
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.RMSprop()
+    optimizer = tf.keras.optimizers.RMSprop(learning_rate=learn_rate)
+    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    return model
+
+def model14(learn_rate):
+    """
+    Create a simple RNN with one recurrent layer
+    """
+    # Questions:
+    # 1. Originally there was a TimeDIstributed Layer. I think this was
+    # unceccessary
+    # The return_sequences=True argument ==> Not sure what this does
+    # I simplified the model significantly => Reduced it to one recurrent layer
+    model = keras.Sequential()
+    model.add(Dense(36, activation='relu', input_shape=(36,)))
+    model.add(BatchNormalization())
+    model.add(Reshape(target_shape=(6,6)))
+    model.add(LSTM(50, return_sequences=True))
+    model.add(LSTM(50, return_sequences=True))
+    model.add(LSTM(50, return_sequences=True))
+    model.add(BatchNormalization())
+    model.add(Flatten())
+    model.add(Dense(24))
+    model.add(Dense(24))
+    model.add(Reshape(target_shape=(6,4)))
+
+    optimizer = tf.keras.optimizers.Adam(learning_rate=learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
@@ -340,7 +366,7 @@ def model13():
 ################################################################################
 # List of all models
 models = [model0, model1, model2, model3, model4, model5, model6, model7,
-            model8, model9, model10, model11]
+            model8, model9, model10, model11, model12, model13]
 ################################################################################
 
 if __name__ == "__main__":
