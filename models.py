@@ -228,20 +228,25 @@ def model10():
     input_lep = Input(shape=(6,), name="input_lep")
 
     # Lepton Branch
-    x_lep = Dense(6, activation='linear')(input_lep)
-    x_lep = Reshape(target_shape=(1,6))(x_lep)
+    x_lep = Dense(10, activation='relu')(input_lep)
+    x_lep = Dense(8, activation='relu')(input_lep)
+    x_lep = Dense(8, activation='relu')(x_lep)
+    x_lep = Reshape(target_shape=(1,8))(x_lep)
     x_lep = keras.Model(inputs=input_lep, outputs=x_lep)
 
     # Jets Branch
     x_jets = Reshape(target_shape=(5,6))(input_jets)
-    x_jets = LSTM(6, return_sequences=True)(x_jets)
+    x_jets = LSTM(10, return_sequences=True)(x_jets)
+    x_jets = LSTM(8, return_sequences=True)(x_jets)
+    x_jets = Dense(8, activation="relu")(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
 
     # Combine them
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
 
     # Apply some more layers to combined data set
-    final = LSTM(4, return_sequences=True)(combined)
+    final = LSTM(6, return_sequences=True)(combined)
+    final = Dense(4, activation="linear")(final)
 
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
@@ -257,13 +262,16 @@ def model11():
     input_lep = Input(shape=(6,), name="input_lep")
 
     # Lepton Branch
-    x_lep = Dense(6, activation='linear')(input_lep)
+    x_lep = Dense(10, activation='relu')(input_lep)
+    x_lep = Dense(10, activation='relu')(input_lep)
+    x_lep = Dense(6, activation='relu')(x_lep)
     x_lep = Reshape(target_shape=(1,6))(x_lep)
     x_lep = keras.Model(inputs=input_lep, outputs=x_lep)
 
     # Jets Branch
     x_jets = Reshape(target_shape=(5,6))(input_jets)
-    x_jets = LSTM(6, return_sequences=True)(x_jets)
+    x_jets = LSTM(10, return_sequences=True)(x_jets)
+    x_jets = LSTM(10, return_sequences=True)(x_jets)
     x_jets = Dense(6, activation="relu")(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
 
@@ -272,7 +280,7 @@ def model11():
 
     # Apply some more layers to combined data set
     final = LSTM(6, return_sequences=True)(combined)
-    final = Dense(4, activation="relu")(final)
+    final = Dense(4, activation="linear")(final)
 
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)

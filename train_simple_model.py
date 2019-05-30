@@ -13,84 +13,79 @@ import pickle
 
 print(tf.__version__)
 
+def train_model(model_num, BATCH_SIZE=32, EPOCHES=30, train_dir=training_dir):
 ###############################################################################
-# CONSTANTS
-BATCH_SIZE = 32
-EPOCHES = 30
-if len(sys.argv) > 1:
-    training_dir = "CheckPoints/{}".format(sys.argv[1])
-    print("Saving files in: {}".format(training_dir))
-    checkpoint_path = "{}/{}/cp.ckpt".format("CheckPoints", sys.argv[1])
-    model_num = int(sys.argv[2])
-else:
-    checkpoint_path = "{}/cp.ckpt".format(training_dir)
-    model_num = 0
+    # CONSTANTS
+    train_dir = "CheckPoints/{}".format(train_dir)
+    print("Saving files in: {}".format(train_dir))
+    checkpoint_path = "{}/cp.ckpt".format(train_dir)
 
 ###############################################################################
-# LOADING / PRE-PROCESSING DATA
-(training_input, training_output), (testing_input, testing_output), \
-       (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) = get_input_output()
-testing_input_original = testing_input.copy()
-print(training_input.shape)
-
+    # LOADING / PRE-PROCESSING DATA
+    (training_input, training_output), (testing_input, testing_output), \
+           (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) = get_input_output()
+    testing_input_original = testing_input.copy()
+    print(training_input.shape)
 
 ###############################################################################
-# BUILDING / TRAINING MODEL
-model = models[model_num]()
-try:
-    model.load_weights(checkpoint_path)
-    print("Loaded weights from previous training session")
-except Exception as e:
-    print(e)
-#model = keras.models.load_model("{}/simple_model.h5".format(training_dir))
-print(model.summary())
-
-cp_callback = keras.callbacks.ModelCheckpoint(checkpoint_path,
-                                            save_weights_only=True, verbose=1)
-try:
-    history = model.fit(training_input, training_output,  epochs=EPOCHES,
-                        batch_size=BATCH_SIZE, validation_split=0.1,
-                        callbacks = [cp_callback]
-                        )
-except ValueError:
-    print("Detected invalid input shape. Assuming model is multi-input")
+    # BUILDING / TRAINING MODEL
+    model = models[model_num]()
     try:
-        training_input = [training_input[:,:6], training_input[:,6:]]
-        testing_input = [testing_input[:,:6], testing_input[:,6:]]
+        model.load_weights(checkpoint_path)
+        print("Loaded weights from previous training session")
+    except Exception as e:
+        print(e)
+    #model = keras.models.load_model("{}/simple_model.h5".format(train_dir))
+    print(model.summary())
+
+    cp_callback = keras.callbacks.ModelCheckpoint(checkpoint_path,
+                                                save_weights_only=True, verbose=1)
+    try:
         history = model.fit(training_input, training_output,  epochs=EPOCHES,
-                        batch_size=BATCH_SIZE, validation_split=0.1,
-                        callbacks = [cp_callback]
-                        )
+                            batch_size=BATCH_SIZE, validation_split=0.1,
+                            callbacks = [cp_callback]
+                            )
+    except ValueError:
+        print("Detected invalid input shape. Assuming model is multi-input")
+        try:
+            training_input = [training_input[:,:6], training_input[:,6:]]
+            testing_input = [testing_input[:,:6], testing_input[:,6:]]
+            history = model.fit(training_input, training_output,  epochs=EPOCHES,
+                            batch_size=BATCH_SIZE, validation_split=0.1,
+                            callbacks = [cp_callback]
+                            )
+        except KeyboardInterrupt:
+            print("Training_inerrupted")
+            history = None
     except KeyboardInterrupt:
         print("Training_inerrupted")
         history = None
-except KeyboardInterrupt:
-    print("Training_inerrupted")
-    history = None
-
 
 ###############################################################################
-# SAVING MODEL, TRAINING HISTORY AND SCALARS
-model.save('{}/simple_model.h5'.format(training_dir))
+    # SAVING MODEL, TRAINING HISTORY AND SCALARS
+    model.save('{}/simple_model.h5'.format(train_dir))
 
-scaler_filename = "{}/scalers.pkl".format(training_dir)
-with open( scaler_filename, "wb" ) as file_scaler:
-  pickle.dump(jets_scalar, file_scaler, protocol=2)
-  pickle.dump(lep_scalar, file_scaler, protocol=2)
-  pickle.dump(output_scalar, file_scaler, protocol=2)
-print("INFO: scalers saved to file:", scaler_filename)
+    scaler_filename = "{}/scalers.pkl".format(train_dir)
+    with open( scaler_filename, "wb" ) as file_scaler:
+      pickle.dump(jets_scalar, file_scaler, protocol=2)
+      pickle.dump(lep_scalar, file_scaler, protocol=2)
+      pickle.dump(output_scalar, file_scaler, protocol=2)
+    print("INFO: scalers saved to file:", scaler_filename)
 
 ###############################################################################
-# EVALUATING MODEL AND MAKE PREDICTIONS
-if history is not None:
-    for key in history.history.keys():
-        np.savez("{0}/{1}.npz".format(training_dir, key), epoches=history.epoch, loss=history.history[key])
-    print(history.history.keys())
-    plot_history(history, training_dir)
+    # EVALUATING MODEL AND MAKE PREDICTIONS
+    if history is not None:
+        for key in history.history.keys():
+            np.savez("{0}/{1}.npz".format(train_dir, key), epoches=history.epoch, loss=history.history[key])
+        print(history.history.keys())
+        plot_history(history, train_dir)
 
-# Evaluating model and saving the predictions
-test_acc = model.evaluate(testing_input, testing_output)
-print('\nTest accuracy:', test_acc)
-predictions = model.predict(testing_input)
-np.savez("{}/predictions".format(training_dir), input=testing_input_original,\
-         true=testing_output, pred=predictions, events=event_testing)
+    # Evaluating model and saving the predictions
+    test_acc = model.evaluate(testing_input, testing_output)
+    print('\nTest accuracy:', test_acc)
+    predictions = model.predict(testing_input)
+    np.savez("{}/predictions".format(train_dir), input=testing_input_original,\
+             true=testing_output, pred=predictions, events=event_testing)
+
+if __name__ == "__main__":
+    train_model(int(sys.argv[2])t, train_dir=sys.argv[1])
