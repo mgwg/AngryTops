@@ -349,7 +349,9 @@ def plot_residuals(type, obs):
     if hist == None:
         print ("ERROR: invalid histogram for", obs)
 
-    Normalize(hist)
+    #Normalize(hist)
+    if hist.Class() == TH2F.Class():
+        hist = hist.ProfileX("hist_pfx")
 
     SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
 
@@ -380,24 +382,24 @@ def plot_correlations(hist_name):
     if hist == None:
         print ("ERROR: invalid histogram for", obs)
 
-    Normalize(hist)
+    #Normalize(hist)
 
     #SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
 
-    c, pad0 = MakeCanvas2()
+    c = TCanvas()
 
-    pad0.cd()
-    hist.GetXaxis().SetNdivisions(508)
-    hist.GetXaxis().SetLabelSize( 0.032 )
-    hist.GetYaxis().SetLabelSize( 0.032 )
-    hist.Draw()
+    #pad0.cd()
+    #hist.GetXaxis().SetNdivisions(508)
+    #hist.GetXaxis().SetLabelSize( 0.032 )
+    #hist.GetYaxis().SetLabelSize( 0.032 )
+    hist.Draw("colz")
 
-    hmax = 1.5 * max( [ hist.GetMaximum(), hist.GetMaximum() ] )
-    hmin = 1.5 * min([ hist.GetMaximum(), hist.GetMaximum() ])
-    hist.SetMaximum(hmax)
-    hist.SetMinimum(hmin)
+    #hmax = 1.5 * max( [ hist.GetMaximum(), hist.GetMaximum() ] )
+    #hmin = 1.5 * min([ hist.GetMaximum(), hist.GetMaximum() ])
+    #hist.SetMaximum(hmax)
+    #hist.SetMinimum(hmin)
 
-    gPad.RedrawAxis()
+    #gPad.RedrawAxis()
 
     c.cd()
 
