@@ -406,7 +406,7 @@ def plot_correlations(hist_name):
     c.SaveAs("{0}/img/{1}.png".format(training_dir, hist_name))
 
 def plot_profile(hist_name):
-    hist = infile.Get(hist_name)
+    hist_name = "reso_{0}".format(obs)
     if hist == None:
         print ("ERROR: invalid histogram for", obs)
     hist = hist.ProfileX("hist_pfx")
@@ -429,8 +429,6 @@ if __name__==   "__main__":
     for obs in attributes:
         plot_residuals(obs)
         plot_profile(obs)
-
-
 
     # Draw 2D Correlations
     for corr in corr_2d:
