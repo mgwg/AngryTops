@@ -405,8 +405,9 @@ def plot_correlations(hist_name):
 
     c.SaveAs("{0}/img/{1}.png".format(training_dir, hist_name))
 
-def plot_profile(hist_name):
+def plot_profile(obs):
     hist_name = "reso_{0}".format(obs)
+    hist = infile.Get(hist_name)
     if hist == None:
         print ("ERROR: invalid histogram for", obs)
     hist = hist.ProfileX("hist_pfx")
