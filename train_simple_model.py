@@ -30,6 +30,7 @@ else:
 # LOADING / PRE-PROCESSING DATA
 (training_input, training_output), (testing_input, testing_output), \
        (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) = get_input_output()
+testing_input_original = testing_input.copy()
 print(training_input.shape)
 
 
@@ -87,5 +88,8 @@ if history is not None:
 test_acc = model.evaluate(testing_input, testing_output)
 print('\nTest accuracy:', test_acc)
 predictions = model.predict(testing_input)
-np.savez("{}/predictions".format(training_dir), input=testing_input,\
+try:
+    np.savez("{}/predictions".format(training_dir), input=testing_input_original,\
          true=testing_output, pred=predictions, events=event_testing)
+except
+    training_dir = np.
