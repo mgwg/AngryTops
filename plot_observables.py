@@ -356,7 +356,9 @@ def plot_residuals(type, obs):
     c, pad0 = MakeCanvas2()
 
     pad0.cd()
-
+    hist.GetXaxis().SetNdivisions(508)
+    hist.GetXaxis().SetLabelSize( 0.032 )
+    hist.GetYaxis().SetLabelSize( 0.032 )
     hist.Draw()
 
     hmax = 1.5 * max( [ hist.GetMaximum(), hist.GetMaximum() ] )
@@ -380,12 +382,14 @@ def plot_correlations(hist_name):
 
     Normalize(hist)
 
-    SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
+    #SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
 
     c, pad0 = MakeCanvas2()
 
     pad0.cd()
-
+    hist.GetXaxis().SetNdivisions(508)
+    hist.GetXaxis().SetLabelSize( 0.032 )
+    hist.GetYaxis().SetLabelSize( 0.032 )
     hist.Draw()
 
     hmax = 1.5 * max( [ hist.GetMaximum(), hist.GetMaximum() ] )
