@@ -311,7 +311,7 @@ def model12(learn_rate):
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.Adam(learning_rate=learn_rate)
+    optimizer = tf.keras.optimizers.RMSProp(learning_rate=learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
@@ -339,7 +339,7 @@ def model13(learn_rate):
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.RMSProp(learning_rate=learn_rate)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
