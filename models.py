@@ -1,7 +1,7 @@
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.layers import *
-from tensorflow.keras.regularizers import l2
+from tensorflow.keras.regularizers import *
 
 
 from features import *
@@ -301,10 +301,12 @@ def model12(learn_rate):
     # I simplified the model significantly => Reduced it to one recurrent layer
     model = keras.Sequential()
     model.add(Dense(36, activation='relu', input_shape=(36,)))
+    model.add(BatchNormalization())
     model.add(Reshape(target_shape=(6,6)))
     model.add(LSTM(50, return_sequences=True))
     model.add(LSTM(50, return_sequences=True))
     model.add(LSTM(50, return_sequences=True))
+    model.add(BatchNormalization())
     model.add(Flatten())
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
@@ -324,41 +326,20 @@ def model13(learn_rate):
     # I simplified the model significantly => Reduced it to one recurrent layer
     model = keras.Sequential()
     model.add(Dense(36, activation='relu', input_shape=(36,)))
+    model.add(BatchNormalization())
     model.add(Reshape(target_shape=(6,6)))
-    model.add(LSTM(50, return_sequences=True))
-    model.add(LSTM(50, return_sequences=True))
-    model.add(LSTM(50, return_sequences=True))
+    model.add(LSTM(50, return_sequences=True, kernel_regularizer=l2(0.01),
+                    recurrent_regularizer=l2(0.01), bias_regularizer=l2(0.01)))
+    model.add(LSTM(50, return_sequences=True, kernel_regularizer=l2(0.01),
+                    recurrent_regularizer=l2(0.01), bias_regularizer=l2(0.01)))
+    model.add(LSTM(50, return_sequences=True, kernel_regularizer=l2(0.01),
+                    recurrent_regularizer=l2(0.01), bias_regularizer=l2(0.01)))
+    model.add(BatchNormalization())
     model.add(Flatten())
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
     optimizer = tf.keras.optimizers.RMSprop(learning_rate=learn_rate)
-    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
-    return model
-
-def model14(learn_rate):
-    """
-    Create a simple RNN with one recurrent layer
-    """
-    # Questions:
-    # 1. Originally there was a TimeDIstributed Layer. I think this was
-    # unceccessary
-    # The return_sequences=True argument ==> Not sure what this does
-    # I simplified the model significantly => Reduced it to one recurrent layer
-    model = keras.Sequential()
-    model.add(Dense(36, activation='relu', input_shape=(36,)))
-    model.add(BatchNormalization())
-    model.add(Reshape(target_shape=(6,6)))
-    model.add(LSTM(50, return_sequences=True))
-    model.add(LSTM(50, return_sequences=True))
-    model.add(LSTM(50, return_sequences=True))
-    model.add(BatchNormalization())
-    model.add(Flatten())
-    model.add(Dense(24))
-    model.add(Dense(24))
-    model.add(Reshape(target_shape=(6,4)))
-
-    optimizer = tf.keras.optimizers.Adam(learning_rate=learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 

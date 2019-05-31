@@ -3,26 +3,26 @@
 import matplotlib.pyplot as plt
 
 def plot_history(history, save_dir):
-  plt.figure(figsize=(16,10))
+    plt.figure(figsize=(16,10))
 
-  # Plot just the los in a seperate plot
-  val = plt.plot(history.epoch, history.history['val_loss'], '--', label=' Validation')
-  plt.plot(history.epoch, history.history['loss'], color=val[0].get_color(), label=' Train')
+    # Plot just the los in a seperate plot
+    val = plt.plot(history.epoch, history.history['val_loss'], '--', label=' Validation')
+    plt.plot(history.epoch, history.history['loss'], color=val[0].get_color(), label=' Train')
 
-  plt.xlabel('Epochs')
-  plt.ylabel("Loss")
-  plt.legend()
+    plt.xlabel('Epochs')
+    plt.ylabel("Loss")
+    plt.legend()
 
-  plt.xlim([0,max(history.epoch)])
-  plt.savefig("{}/Training.png".format(save_dir))
-  plt.clf()
+    plt.xlim([0,max(history.epoch)])
+    plt.savefig("{}/Training.png".format(save_dir))
+    plt.clf()
 
-  # Plot all of the keys in history
-  plt.figure(figsize=(16,10))
-  for key in history.history.keys():
-      plt.plot(history.epoch, history.history[key], label=key)
-  plt.xlabel('Epochs')
-  plt.legend()
-  plt.xlim([0,max(history.epoch)])
+    # Plot all of the keys in history
+    plt.figure(figsize=(16,10))
+    for key in history.history.keys():
+        plt.plot(history.epoch, history.history[key], label=key)
+    plt.xlabel('Epochs')
+    plt.legend()
+    plt.xlim([0,max(history.epoch)])
 
-  plt.savefig("{}/Training_AllKeys.png".format(save_dir))
+    plt.savefig("{}/Training_AllKeys.png".format(save_dir))
