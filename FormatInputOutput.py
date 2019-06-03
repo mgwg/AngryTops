@@ -56,10 +56,13 @@ def get_input_output(training_split=0.9, shuff=False):
     return (training_input, training_output), (testing_input, testing_output), \
            (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing)
 
-def normalize(arr):
+def normalize(arr, type="minmax"):
     """Normalize the arr with StandardScalar and return the normalized array
     and the scalar"""
-    scalar = sklearn.preprocessing.StandardScaler()
+    if type == "standard":
+        scalar = sklearn.preprocessing.StandardScaler()
+    else:
+        scalar = sklearn.preprocessing.MinMaxScalar()
     new_arr = scalar.fit_transform(arr)
     return new_arr, scalar
 
