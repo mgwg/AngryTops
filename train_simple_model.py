@@ -12,6 +12,7 @@ from FormatInputOutput import get_input_output
 import pickle
 
 print(tf.__version__)
+print(tf.test.gpu_device_name())
 
 def train_model(model_num, BATCH_SIZE=32, EPOCHES=30, train_dir=training_dir, learn_rate=0.001):
 ###############################################################################
