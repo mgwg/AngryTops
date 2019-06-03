@@ -13,11 +13,6 @@ def model0(learn_rate):
     """
     Create a simple RNN with one recurrent layer
     """
-    # Questions:
-    # 1. Originally there was a TimeDIstributed Layer. I think this was
-    # unceccessary
-    # The return_sequences=True argument ==> Not sure what this does
-    # I simplified the model significantly => Reduced it to one recurrent layer
     model = keras.Sequential()
     model.add(Dense(36, activation='relu', input_shape=(36,)))
     model.add(Reshape(target_shape=(6,6)))
