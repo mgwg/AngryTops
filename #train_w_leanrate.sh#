@@ -1,4 +1,4 @@
-/usr/bin/env bash
+!/usr/bin/env bash
 source /home/fsyed/.bashrc
 source /home/fsyed/tf/bin/activate
 
