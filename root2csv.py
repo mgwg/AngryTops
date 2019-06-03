@@ -21,7 +21,7 @@ TeV = 1e6
 # Artificially increase training data size by 5 by rotating events differently 5 different ways
 n_data_aug = 1
 if len(sys.argv) > 3:
-    n_data_aug = sys.argv[3]
+    n_data_aug = int(sys.argv[3])
 
 # Maximum number of entries
 n_evt_max = -1
