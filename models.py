@@ -21,7 +21,7 @@ def model0(learn_rate):
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.Adam(learning_rate=learn_rate)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
@@ -41,7 +41,7 @@ def model1(learn_rate):
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.Adam(learning_rate=learn_rate)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
@@ -62,7 +62,7 @@ def model2(learn_rate):
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.Adam(learning_rate=learn_rate)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
@@ -82,7 +82,7 @@ def model3(learn_rate):
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.Adam(learning_rate=learn_rate)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
@@ -106,7 +106,7 @@ def model4(learn_rate):
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.Adam(learning_rate=learn_rate)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
@@ -127,7 +127,7 @@ def model5(learn_rate):
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.Adam(learning_rate=learn_rate)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
@@ -149,7 +149,7 @@ def model6(learn_rate):
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.Adam(learning_rate=learn_rate)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
@@ -170,7 +170,7 @@ def model7(learn_rate):
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.Adam(learning_rate=learn_rate)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
@@ -192,7 +192,7 @@ def model8(learn_rate):
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.Adam(learning_rate=learn_rate)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
@@ -213,7 +213,7 @@ def model9(learn_rate):
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.Adam(learning_rate=learn_rate)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
@@ -246,7 +246,7 @@ def model10(learn_rate):
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
 
-    optimizer = tf.keras.optimizers.Adam(learning_rate=learn_rate)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
 
     return model
@@ -280,7 +280,7 @@ def model11(learn_rate):
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
 
-    optimizer = tf.keras.optimizers.Adam(learning_rate=learn_rate)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
 
     return model
@@ -306,7 +306,7 @@ def model12(learn_rate):
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.RMSProp(learning_rate=learn_rate)
+    optimizer = tf.keras.optimizers.RMSProp(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
@@ -334,7 +334,7 @@ def model13(learn_rate):
     model.add(Dense(24))
     model.add(Reshape(target_shape=(6,4)))
 
-    optimizer = tf.keras.optimizers.Adam(learning_rate=learn_rate)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
