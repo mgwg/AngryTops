@@ -15,14 +15,15 @@ from features import *
 
 ###############################
 # CONSTANTS
-
 GeV = 1e3
 TeV = 1e6
 
 # Artificially increase training data size by 5 by rotating events differently 5 different ways
-n_data_aug = 5
+n_data_aug = 1
+if len(sys.argv) > 3:
+    n_data_aug = sys.argv[3]
 
-# What is this?
+# Maximum number of entries
 n_evt_max = -1
 #if len(sys.argv) > 2: n_evt_max = int( sys.argv[2] )
 
@@ -221,6 +222,9 @@ for ientry in range(n_entries):
     # Augment Data By Rotating 5 Different Ways
     n_good += 1
     phi = 0
+    # Set the phi angle of the lepton to zero
+    if len(sys.argv) > 4:
+        phi = -1 * lep.Phi()
     print("Writing new row to csv file")
     for i in range(n_data_aug):
     # make event wrapper
@@ -228,19 +232,19 @@ for ientry in range(n_entries):
 
     # write out
         csvwriter.writerow( (
-        "%i" % runNumber, "%i" % eventNumber, "%.3f" % weight, "%i" % jets_n, "%i" % bjets_n,
-        "%.3f" % lep.Px(),     "%.3f" % lep.Py(),     "%.3f" % lep.Pz(),     "%.3f" % (lep.E() * 10e9),      "%.3f" % met_met,      "%.3f" % met_phi,
-        "%.3f" % sjets[0][0],  "%.3f" % sjets[0][1],  "%.3f" % sjets[0][2],  "%.3f" % sjets[0][3],  "%.3f" % sjets[0][4],  "%.3f" % sjets[0][5],
-        "%.3f" % sjets[1][0],  "%.3f" % sjets[1][1],  "%.3f" % sjets[1][2],  "%.3f" % sjets[1][3],  "%.3f" % sjets[1][4],  "%.3f" % sjets[1][5],
-        "%.3f" % sjets[2][0],  "%.3f" % sjets[2][1],  "%.3f" % sjets[2][2],  "%.3f" % sjets[2][3],  "%.3f" % sjets[2][4],  "%.3f" % sjets[2][5],
-        "%.3f" % sjets[3][0],  "%.3f" % sjets[3][1],  "%.3f" % sjets[3][2],  "%.3f" % sjets[3][3],  "%.3f" % sjets[3][4],  "%.3f" % sjets[3][5],
-        "%.3f" % sjets[4][0],  "%.3f" % sjets[4][1],  "%.3f" % sjets[4][2],  "%.3f" % sjets[4][3],  "%.3f" % sjets[4][4],  "%.3f" % sjets[4][5],
-        "%.3f" % target_W_had[0], "%.3f" % target_W_had[1], "%.3f" % target_W_had[2], "%.3f" % target_W_had[3], "%.3f" % target_W_had[4],
-        "%.3f" % target_W_lep[0], "%.3f" % target_W_lep[1], "%.3f" % target_W_lep[2], "%.3f" % target_W_lep[3], "%.3f" % target_W_lep[4],
-        "%.3f" % target_b_had[0], "%.3f" % target_b_had[1], "%.3f" % target_b_had[2], "%.3f" % target_b_had[3], "%.3f" % target_b_had[4],
-        "%.3f" % target_b_lep[0], "%.3f" % target_b_lep[1], "%.3f" % target_b_lep[2], "%.3f" % target_b_lep[3], "%.3f" % target_b_lep[4],
-        "%.3f" % target_t_had[0], "%.3f" % target_t_had[1], "%.3f" % target_t_had[2], "%.3f" % target_t_had[3], "%.3f" % target_t_had[4],
-        "%.3f" % target_t_lep[0], "%.3f" % target_t_lep[1], "%.3f" % target_t_lep[2], "%.3f" % target_t_lep[3], "%.3f" % target_t_lep[4]
+        "%i" % runNumber, "%i" % eventNumber, "%.5f" % weight, "%i" % jets_n, "%i" % bjets_n,
+        "%.5f" % lep.Px(),     "%.5f" % lep.Py(),     "%.5f" % lep.Pz(),     "%.5f" % (lep.E() * 10e9),      "%.5f" % met_met,      "%.5f" % met_phi,
+        "%.5f" % sjets[0][0],  "%.5f" % sjets[0][1],  "%.5f" % sjets[0][2],  "%.5f" % sjets[0][3],  "%.5f" % sjets[0][4],  "%.5f" % sjets[0][5],
+        "%.5f" % sjets[1][0],  "%.5f" % sjets[1][1],  "%.5f" % sjets[1][2],  "%.5f" % sjets[1][3],  "%.5f" % sjets[1][4],  "%.5f" % sjets[1][5],
+        "%.5f" % sjets[2][0],  "%.5f" % sjets[2][1],  "%.5f" % sjets[2][2],  "%.5f" % sjets[2][3],  "%.5f" % sjets[2][4],  "%.5f" % sjets[2][5],
+        "%.5f" % sjets[3][0],  "%.5f" % sjets[3][1],  "%.5f" % sjets[3][2],  "%.5f" % sjets[3][3],  "%.5f" % sjets[3][4],  "%.5f" % sjets[3][5],
+        "%.5f" % sjets[4][0],  "%.5f" % sjets[4][1],  "%.5f" % sjets[4][2],  "%.5f" % sjets[4][3],  "%.5f" % sjets[4][4],  "%.5f" % sjets[4][5],
+        "%.5f" % target_W_had[0], "%.5f" % target_W_had[1], "%.5f" % target_W_had[2], "%.5f" % target_W_had[3], "%.5f" % target_W_had[4],
+        "%.5f" % target_W_lep[0], "%.5f" % target_W_lep[1], "%.5f" % target_W_lep[2], "%.5f" % target_W_lep[3], "%.5f" % target_W_lep[4],
+        "%.5f" % target_b_had[0], "%.5f" % target_b_had[1], "%.5f" % target_b_had[2], "%.5f" % target_b_had[3], "%.5f" % target_b_had[4],
+        "%.5f" % target_b_lep[0], "%.5f" % target_b_lep[1], "%.5f" % target_b_lep[2], "%.5f" % target_b_lep[3], "%.5f" % target_b_lep[4],
+        "%.5f" % target_t_had[0], "%.5f" % target_t_had[1], "%.5f" % target_t_had[2], "%.5f" % target_t_had[3], "%.5f" % target_t_had[4],
+        "%.5f" % target_t_lep[0], "%.5f" % target_t_lep[1], "%.5f" % target_t_lep[2], "%.5f" % target_t_lep[3], "%.5f" % target_t_lep[4]
             ) )
         # Change the angle to rotate by
         phi = np.random.uniform(- np.pi, np.pi)
