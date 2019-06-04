@@ -7,9 +7,9 @@ from sklearn.utils import shuffle
 import sklearn.preprocessing
 
 #input_filename = "csv/topreco.csv"
-input_filename = "csv/topreco_augmented1.csv"
+#input_filename = "csv/topreco_augmented1.csv"
 
-def get_input_output(training_split=0.9, shuff=False):
+def get_input_output(input_filename="csv/topreco_augmented1.csv", training_split=0.9, shuff=False):
     """
     Return the training and testing data
     Training Data: Array of 36 elements. I am debating reshaping to matrix of (6 x 6)

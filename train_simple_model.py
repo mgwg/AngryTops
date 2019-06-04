@@ -14,7 +14,7 @@ import pickle
 print(tf.__version__)
 print(tf.test.gpu_device_name())
 
-def train_model(model_num, BATCH_SIZE=32, EPOCHES=30, train_dir=training_dir, learn_rate=0.001):
+def train_model(model_num, csv_file="csv/topreco.csv", BATCH_SIZE=32, EPOCHES=30, train_dir=training_dir, learn_rate=0.001):
 ###############################################################################
     # CONSTANTS
     train_dir = "CheckPoints/{}".format(train_dir)
@@ -75,12 +75,6 @@ def train_model(model_num, BATCH_SIZE=32, EPOCHES=30, train_dir=training_dir, le
 
 ###############################################################################
     # EVALUATING MODEL AND MAKE PREDICTIONS
-    if history is not None:
-        for key in history.history.keys():
-            np.savez("{0}/{1}.npz".format(train_dir, key), epoches=history.epoch, loss=history.history[key])
-        print(history.history.keys())
-        plot_history(history, train_dir)
-
     # Evaluating model and saving the predictions
     test_acc = model.evaluate(testing_input, testing_output)
     print('\nTest accuracy:', test_acc)
@@ -88,9 +82,17 @@ def train_model(model_num, BATCH_SIZE=32, EPOCHES=30, train_dir=training_dir, le
     np.savez("{}/predictions".format(train_dir), input=testing_input_original,\
              true=testing_output, pred=predictions, events=event_testing)
 
+    if history is not None:
+        for key in history.history.keys():
+            np.savez("{0}/{1}.npz".format(train_dir, key), epoches=history.epoch, loss=history.history[key])
+        print(history.history.keys())
+        plot_history(history, train_dir)
+
 if __name__ == "__main__":
     if len(sys.argv) == 3:
         train_model(int(sys.argv[2]), train_dir=sys.argv[1])
     elif len(sys.argv) == 4:
-        train_model(int(sys.argv[2]), train_dir=sys.argv[1],
-                    learn_rate = np.float(sys.argv[3]))
+        train_model(int(sys.argv[2]), train_dir=sys.argv[1], csv_file=sys.argv[3])
+    elif len(sys.argv) == 5:
+        train_model(int(sys.argv[2]), train_dir=sys.argv[1], csv_file=sys.argv[3],
+                    learn_rate = np.float(sys.argv[4]))

@@ -1,6 +1,6 @@
 #!/bin/bash
 cd CheckPoints
-convert */img/$1.png +append All/$1.png
+convert */img/$1.png +append $2/$1.png
 cd ..
 
 
@@ -8,4 +8,4 @@ cd ..
 #import os
 #from features import *
 #for att in attributes:
-#    os.system('./combine_images.sh {}'.format(att))
+#    os.system('./combine_images.sh {} {}'.format(att, filename))
