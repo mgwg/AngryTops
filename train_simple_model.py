@@ -14,7 +14,8 @@ import pickle
 print(tf.__version__)
 print(tf.test.gpu_device_name())
 
-def train_model(model_num, csv_file="csv/topreco.csv", BATCH_SIZE=32, EPOCHES=30, train_dir=training_dir, learn_rate=0.001):
+def train_model(model_num, csv_file="csv/topreco.csv", BATCH_SIZE=32, EPOCHES=30,\
+                    train_dir=training_dir, learn_rate=0.001, scaling="minmax"):
 ###############################################################################
     # CONSTANTS
     train_dir = "CheckPoints/{}".format(train_dir)
@@ -24,7 +25,7 @@ def train_model(model_num, csv_file="csv/topreco.csv", BATCH_SIZE=32, EPOCHES=30
 ###############################################################################
     # LOADING / PRE-PROCESSING DATA
     (training_input, training_output), (testing_input, testing_output), \
-           (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) = get_input_output()
+           (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) = get_input_output(type="minmax")
     testing_input_original = testing_input.copy()
     print(training_input.shape)
 
@@ -96,3 +97,6 @@ if __name__ == "__main__":
     elif len(sys.argv) == 5:
         train_model(int(sys.argv[2]), train_dir=sys.argv[1], csv_file=sys.argv[3],
                     learn_rate = np.float(sys.argv[4]))
+    elif len(sys.argv) == 6:
+        train_model(int(sys.argv[2]), train_dir=sys.argv[1], csv_file=sys.argv[3],
+                    learn_rate = np.float(sys.argv[4]), scaling=sys.argv[5])
