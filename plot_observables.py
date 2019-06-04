@@ -239,13 +239,13 @@ def DrawRatio( data, prediction, xtitle = "", yrange=[0.4,1.6] ):
     frame.GetXaxis().SetNdivisions(508)
     frame.GetYaxis().SetNdivisions(504)
 
-    frame.GetXaxis().SetLabelSize( 0.7 )
-    frame.GetXaxis().SetTitleSize( 0.7 )
+    frame.GetXaxis().SetLabelSize( 0.07 )
+    frame.GetXaxis().SetTitleSize( 0.07 )
     frame.GetXaxis().SetTitleOffset( 1.2 )
 
-    frame.GetYaxis().SetLabelSize( 0.7 )
+    frame.GetYaxis().SetLabelSize( 0.07 )
     frame.GetYaxis().SetTitle( "#frac{FITTED}{MC}" )
-    frame.GetYaxis().SetTitleSize( 0.7 )
+    frame.GetYaxis().SetTitleSize( 0.07 )
     frame.GetYaxis().SetTitleOffset( 0.5 )
 
     frame.GetXaxis().SetTitle( xtitle )
@@ -359,9 +359,9 @@ def plot_residuals(obs):
 
     pad0.cd()
     hist.GetXaxis().SetNdivisions(508)
-    hist.GetXaxis().SetLabelSize( 0.7 )
-    hist.GetXaxis().SetTitleSize(0.7)
-    hist.GetYaxis().SetLabelSize( 0.7 )
+    hist.GetXaxis().SetLabelSize( 0.07 )
+    hist.GetXaxis().SetTitleSize(0.07)
+    hist.GetYaxis().SetLabelSize( 0.07 )
     hist.Draw()
 
     hmax = 1.5 * max( [ hist.GetMaximum(), hist.GetMaximum() ] )
@@ -400,7 +400,7 @@ def plot_correlations(hist_name):
     l.SetNDC()
     l.SetTextFont(42)
     l.SetTextColor(kBlack)
-    l.DrawLatex( 0.7, 0.85, "Corr Coeff: %.2f" % corr )
+    l.DrawLatex( 0.7, 0.8, "Corr Coeff: %.2f" % corr )
 
     gPad.RedrawAxis()
 
