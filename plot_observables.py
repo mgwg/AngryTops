@@ -359,9 +359,9 @@ def plot_residuals(obs):
 
     pad0.cd()
     hist.GetXaxis().SetNdivisions(508)
-    hist.GetXaxis().SetLabelSize( 0.15 )
-    hist.GetXaxis().SetTitleSize(0.15)
-    hist.GetYaxis().SetLabelSize( 0.15 )
+    #hist.GetXaxis().SetLabelSize( 0.015 )
+    #hist.GetXaxis().SetTitleSize(0.015)
+    #hist.GetYaxis().SetLabelSize( 0.015 )
     hist.Draw()
 
     hmax = 1.5 * max( [ hist.GetMaximum(), hist.GetMaximum() ] )
