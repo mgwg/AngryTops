@@ -395,12 +395,14 @@ def plot_correlations(hist_name):
     #hist.GetYaxis().SetLabelSize( 0.032 )
     hist.Draw("colz")
 
-    #hmax = 1.5 * max( [ hist.GetMaximum(), hist.GetMaximum() ] )
-    #hmin = 1.5 * min([ hist.GetMaximum(), hist.GetMaximum() ])
-    #hist.SetMaximum(hmax)
-    #hist.SetMinimum(hmin)
+    corr = hist.GetCorrelationFactor()
+    l = TLatex()
+    l.SetNDC()
+    l.SetTextFont(42)
+    l.SetTextColor(kBlack)
+    l.DrawLatex( 0.7, 0.85, "Corr Coeff: %.2f" % corr )
 
-    #gPad.RedrawAxis()
+    gPad.RedrawAxis()
 
     c.cd()
 
