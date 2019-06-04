@@ -91,12 +91,12 @@ def train_model(model_num, csv_file="csv/topreco.csv", BATCH_SIZE=32, EPOCHES=30
 
 if __name__ == "__main__":
     if len(sys.argv) == 3:
-        train_model(int(sys.argv[2]), train_dir=sys.argv[1])
+        train_model(int(sys.argv[1]), train_dir=sys.argv[2])
     elif len(sys.argv) == 4:
-        train_model(int(sys.argv[2]), train_dir=sys.argv[1], csv_file=sys.argv[3])
+        train_model(int(sys.argv[1]), train_dir=sys.argv[2], csv_file=sys.argv[3])
     elif len(sys.argv) == 5:
-        train_model(int(sys.argv[2]), train_dir=sys.argv[1], csv_file=sys.argv[3],
+        train_model(int(sys.argv[1]), train_dir=sys.argv[2], csv_file=sys.argv[3],
                     learn_rate = np.float(sys.argv[4]))
     elif len(sys.argv) == 6:
-        train_model(int(sys.argv[2]), train_dir=sys.argv[1], csv_file=sys.argv[3],
+        train_model(int(sys.argv[1]), train_dir=sys.argv[2], csv_file=sys.argv[3],
                     learn_rate = np.float(sys.argv[4]), scaling=sys.argv[5])
