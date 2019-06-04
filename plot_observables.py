@@ -400,7 +400,7 @@ def plot_correlations(hist_name):
     l.SetNDC()
     l.SetTextFont(42)
     l.SetTextColor(kBlack)
-    l.DrawLatex( 0.7, 0.8, "Corr Coeff: %.2f" % corr )
+    l.DrawLatex( 0.7, -0.8, "Corr Coeff: %.2f" % corr )
 
     gPad.RedrawAxis()
 
