@@ -239,13 +239,13 @@ def DrawRatio( data, prediction, xtitle = "", yrange=[0.4,1.6] ):
     frame.GetXaxis().SetNdivisions(508)
     frame.GetYaxis().SetNdivisions(504)
 
-    frame.GetXaxis().SetLabelSize( 0.07 )
-    frame.GetXaxis().SetTitleSize( 0.07 )
+    frame.GetXaxis().SetLabelSize( 0.15 )
+    frame.GetXaxis().SetTitleSize( 0.15 )
     frame.GetXaxis().SetTitleOffset( 1.2 )
 
-    frame.GetYaxis().SetLabelSize( 0.07 )
+    frame.GetYaxis().SetLabelSize( 0.15 )
     frame.GetYaxis().SetTitle( "#frac{FITTED}{MC}" )
-    frame.GetYaxis().SetTitleSize( 0.07 )
+    frame.GetYaxis().SetTitleSize( 0.15 )
     frame.GetYaxis().SetTitleOffset( 0.5 )
 
     frame.GetXaxis().SetTitle( xtitle )
@@ -359,9 +359,9 @@ def plot_residuals(obs):
 
     pad0.cd()
     hist.GetXaxis().SetNdivisions(508)
-    hist.GetXaxis().SetLabelSize( 0.07 )
-    hist.GetXaxis().SetTitleSize(0.07)
-    hist.GetYaxis().SetLabelSize( 0.07 )
+    hist.GetXaxis().SetLabelSize( 0.15 )
+    hist.GetXaxis().SetTitleSize(0.15)
+    hist.GetYaxis().SetLabelSize( 0.15 )
     hist.Draw()
 
     hmax = 1.5 * max( [ hist.GetMaximum(), hist.GetMaximum() ] )
