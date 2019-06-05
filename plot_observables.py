@@ -306,6 +306,7 @@ def plot_observables(obs):
     h_true.SetMaximum( hmax )
     h_fitted.SetMinimum( 0. )
     h_true.SetMinimum( 0. )
+    h_true.SetTitle(title)
 
     leg = TLegend( 0.20, 0.90, 0.50, 0.90 )
     leg.SetFillColor(0)
