@@ -163,6 +163,24 @@ histograms['corr_t_lep_phi']   = TH2F( "corr_t_lep_phi",    ";True Leptonic top 
 histograms['corr_t_lep_E']     = TH2F( "corr_t_lep_E",      ";True Leptonic top E [GeV];Fitted Leptonic top E [GeV]", 50, 0., 500., 50, 0., 500. )
 histograms['corr_t_lep_m']     = TH2F( "corr_t_lep_m",      ";True Leptonic top m [GeV];Fitted Leptonic top m [GeV]", 25, 170., 175., 20, 150., 250. )
 
+histograms['corr_b_lep_pt']    = TH2F( "corr_b_lep_pt",     ";True Leptonic bot p_{T} [GeV];Fitted Leptonic bot p_{T} [GeV]", 50, 0., 500., 50, 0., 500. )
+histograms['corr_b_lep_y']     = TH2F( "corr_b_lep_y",      ";True Leptonic bot y;Fitted Leptonic bot y", 25, -5., 5., 25, -5., 5. )
+histograms['corr_b_lep_phi']   = TH2F( "corr_b_lep_phi",    ";True Leptonic bot #phi;Fitted Leptonic bot #phi", 16, -3.2, 3.2, 16, -3.2, 3.2 )
+histograms['corr_b_lep_E']     = TH2F( "corr_b_lep_E",      ";True Leptonic bot E [GeV];Fitted Leptonic bot E [GeV]", 50, 0., 500., 50, 0., 500. )
+histograms['corr_b_lep_m']     = TH2F( "corr_b_lep_m",      ";True Leptonic bot m [GeV];Fitted Leptonic bot m [GeV]", 25, 170., 175., 20, 150., 250. )
+
+histograms['corr_b_had_pt']    = TH2F( "corr_b_had_pt",      ";True Hadronic bot p_{T} [GeV];Fitted Hadronic bot p_{T} [GeV]", 50, 0., 500., 50, 0., 500. )
+histograms['corr_b_had_y']     = TH2F( "corr_b_had_y",       ";True Hadronic bot y;Fitted Hadronic bot y", 25, -5., 5., 25, -5., 5. )
+histograms['corr_b_had_phi']   = TH2F( "corr_b_had_phi",     ";True Hadronic bot #phi;Fitted Hadronic bot #phi", 16, -3.2, 3.2, 16, -3.2, 3.2 )
+histograms['corr_b_had_E']     = TH2F( "corr_b_had_E",       ";True Hadronic bot E [GeV];Fitted Hadronic bot E [GeV]", 50, 0., 500., 50, 0., 500. )
+histograms['corr_b_had_m']     = TH2F( "corr_b_had_m",       ";True Hadronic bot m [GeV];Fitted Hadronic bot m [GeV]", 25, 170., 175., 20, 150., 250. )
+
+histograms['corr_W_had_pt']    = TH2F( "corr_W_had_pt",      ";True Hadronic W p_{T} [GeV];Fitted Hadronic top p_{T} [GeV]", 50, 0., 500., 50, 0., 500. )
+histograms['corr_W_had_y']     = TH2F( "corr_W_had_y",       ";True Hadronic W y;Fitted Hadronic top y", 25, -5., 5., 25, -5., 5. )
+histograms['corr_W_had_phi']   = TH2F( "corr_W_had_phi",     ";True Hadronic W #phi;Fitted Hadronic top #phi", 16, -3.2, 3.2, 16, -3.2, 3.2 )
+histograms['corr_W_had_E']     = TH2F( "corr_W_had_E",       ";True Hadronic W E [GeV];Fitted Hadronic top E [GeV]", 50, 0., 500., 50, 0., 500. )
+histograms['corr_W_had_m']     = TH2F( "corr_W_had_m",       ";True Hadronic W m [GeV];Fitted Hadronic top m [GeV]", 25, 170., 175., 20, 150., 250. )
+
 # residuals
 histograms['diff_W_had_px']       = TH1F( "diff_W_had_px",  ";Hadronic W p_{x} [GeV]", 50, -500., 500. )
 histograms['diff_W_had_py']       = TH1F( "diff_W_had_py",  ";Hadronic W p_{y} [GeV]", 50, -500., 500. )
@@ -554,6 +572,30 @@ for i in range(n_events):
     histograms['corr_t_lep_phi'].Fill( t_lep_true.Phi(),      t_lep_fitted.Phi(), w )
     histograms['corr_t_lep_E'].Fill(   t_lep_true.E(),        t_lep_fitted.E(),   w )
     histograms['corr_t_lep_m'].Fill(   t_lep_true.M(),        t_lep_fitted.M(),   w )
+
+    histograms['corr_W_lep_pt'].Fill(  W_lep_true.Pt(),       W_lep_fitted.Pt(),  w )
+    histograms['corr_W_lep_y'].Fill(   W_lep_true.Rapidity(), W_lep_fitted.Rapidity(), w )
+    histograms['corr_W_lep_phi'].Fill( W_lep_true.Phi(),      W_lep_fitted.Phi(), w )
+    histograms['corr_W_lep_E'].Fill(   W_lep_true.E(),        W_lep_fitted.E(),   w )
+    histograms['corr_W_lep_m'].Fill(   W_lep_true.M(),        W_lep_fitted.M(),   w )
+
+    histograms['corr_W_had_pt'].Fill(  W_had_true.Pt(),       W_had_fitted.Pt(),  w )
+    histograms['corr_W_had_y'].Fill(   W_had_true.Rapidity(), W_had_fitted.Rapidity(), w )
+    histograms['corr_W_had_phi'].Fill( W_had_true.Phi(),      W_had_fitted.Phi(), w )
+    histograms['corr_W_had_E'].Fill(   W_had_true.E(),        W_had_fitted.E(),   w )
+    histograms['corr_W_had_m'].Fill(   W_had_true.M(),        W_had_fitted.M(),   w )
+
+    histograms['corr_b_lep_pt'].Fill(  b_lep_true.Pt(),       b_lep_fitted.Pt(),  w )
+    histograms['corr_b_lep_y'].Fill(   b_lep_true.Rapidity(), b_lep_fitted.Rapidity(), w )
+    histograms['corr_b_lep_phi'].Fill( b_lep_true.Phi(),      b_lep_fitted.Phi(), w )
+    histograms['corr_b_lep_E'].Fill(   b_lep_true.E(),        b_lep_fitted.E(),   w )
+    histograms['corr_b_lep_m'].Fill(   b_lep_true.M(),        b_lep_fitted.M(),   w )
+
+    histograms['corr_b_had_pt'].Fill(  b_had_true.Pt(),       b_had_fitted.Pt(),  w )
+    histograms['corr_b_had_y'].Fill(   b_had_true.Rapidity(), b_had_fitted.Rapidity(), w )
+    histograms['corr_b_had_phi'].Fill( b_had_true.Phi(),      b_had_fitted.Phi(), w )
+    histograms['corr_b_had_E'].Fill(   b_had_true.E(),        b_had_fitted.E(),   w )
+    histograms['corr_b_had_m'].Fill(   b_had_true.M(),        b_had_fitted.M(),   w )
 
     # residuals
     histograms['diff_W_had_px'].Fill(  diff_W_had_px,  w )
