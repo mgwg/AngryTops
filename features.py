@@ -94,8 +94,8 @@ attributes = ['W_had_px', 'W_had_py', 'W_had_pz', 'W_had_E', 'W_had_m',
 't_lep_phi']
 
 corr_2d = ['corr_t_had_pt', 'corr_t_had_y', 'corr_t_had_phi', 'corr_t_had_E',
-           'corr_t_had_m', 'corr_t_lep_pt', 'corr_t_lep_y', 'corr_t_lep_phi',
-           'corr_t_lep_E', 'corr_t_lep_m']
+           'corr_t_lep_pt', 'corr_t_lep_y', 'corr_t_lep_phi',
+           'corr_t_lep_E']
 
 # residuals = ['diff_W_had_px', 'diff_W_had_py', 'diff_W_had_pz', 'diff_W_had_pt',
 # 'diff_W_had_y', 'diff_W_had_phi', 'diff_W_had_E', 'diff_W_had_m',
