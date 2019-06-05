@@ -408,7 +408,7 @@ def plot_correlations(hist_name):
     # True and fitted leaf
     hist = infile.Get(hist_name)
     if hist == None:
-        print ("ERROR: invalid histogram for", obs)
+        print ("ERROR: invalid histogram for", hist_name)
 
     #Normalize(hist)
 
