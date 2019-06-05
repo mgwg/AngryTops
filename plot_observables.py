@@ -267,7 +267,7 @@ def DrawRatio( data, prediction, xtitle = "", yrange=[0.4,1.6] ):
     return frame, tot_unc, ratio
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def plot_observables(obs, title):
+def plot_observables(obs):
     # Load the histograms
     hname_true = "%s_true" % (obs)
     hame_fitted = "%s_fitted" % (obs)
@@ -297,8 +297,8 @@ def plot_observables(obs, title):
     SetTH1FStyle( h_fitted, color=kBlack, markersize=0, markerstyle=20, linewidth=3 )
 
     c, pad0, pad1 = MakeCanvas()
-
     pad0.cd()
+    gStyle.SetOptTitle(0)
 
     h_true.Draw("h")
     h_fitted.Draw("h same")
@@ -307,9 +307,8 @@ def plot_observables(obs, title):
     h_true.SetMaximum( hmax )
     h_fitted.SetMinimum( 0. )
     h_true.SetMinimum( 0. )
-    h_true.SetTitle(title)
 
-    leg = TLegend( 0.20, 0.90, 0.50, 0.90 )
+    leg = TLegend( 0.20, 0.80, 0.50, 0.90 )
     leg.SetFillColor(0)
     leg.SetFillStyle(0)
     leg.SetBorderSize(0)
@@ -326,8 +325,19 @@ def plot_observables(obs, title):
     l.SetNDC()
     l.SetTextFont(42)
     l.SetTextColor(kBlack)
-    l.DrawLatex( 0.7, 0.85, "KS test: %.2f" % KS )
-    l.DrawLatex( 0.7, 0.80, "#chi^{2}/NDF = %.2f" % X2 )
+    l.DrawLatex( 0.7, 0.80, "KS test: %.2f" % KS )
+    l.DrawLatex( 0.7, 0.75, "#chi^{2}/NDF = %.2f" % X2 )
+
+    gPad.RedrawAxis()
+
+    newpad = TPad("newpad","a caption",0.1,0,1,1)
+    newpad.SetFillStyle(4000)
+    newpad.Draw()
+    newpad.cd()
+    title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
+    title.SetFillColor(16)
+    title.SetTextFont(52)
+    title.Draw()
 
     gPad.RedrawAxis()
 
@@ -341,9 +351,13 @@ def plot_observables(obs, title):
     c.cd()
 
     c.SaveAs("{0}/img/{1}.png".format(training_dir, obs))
+    pad0.Close()
+    pad1.Close()
+    c.Close()
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def plot_residuals(obs, title):
+def plot_residuals(obs):
     hist_name = "diff_{0}".format(obs)
 
     # True and fitted leaf
@@ -373,12 +387,23 @@ def plot_residuals(obs, title):
 
     gPad.RedrawAxis()
 
+    newpad = TPad("newpad","a caption",0.1,0,1,1)
+    newpad.SetFillStyle(4000)
+    newpad.Draw()
+    newpad.cd()
+    title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
+    title.SetFillColor(16)
+    title.SetTextFont(52)
+    title.Draw()
+
     c.cd()
 
     c.SaveAs("{0}/img/diff_{1}.png".format(training_dir,obs))
+    pad0.Close()
+    c.Close()
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def plot_correlations(hist_name, title):
+def plot_correlations(hist_name):
 
     # True and fitted leaf
     hist = infile.Get(hist_name)
@@ -390,6 +415,18 @@ def plot_correlations(hist_name, title):
     #SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
 
     c = TCanvas()
+    c.cd()
+
+    pad0 = TPad( "pad0","pad0",0, 0,1,1,0,0,0 )
+    pad0.SetLeftMargin( 0.18 ) #0.16
+    pad0.SetRightMargin( 0.05 )
+    pad0.SetBottomMargin( 0.01 )
+    #pad0.SetTopMargin( 0.14 )
+    pad0.SetTopMargin( 0.07 ) #0.05
+    pad0.SetFillColor(0)
+    pad0.SetFillStyle(4000)
+    pad0.Draw()
+    pad0.cd()
 
     #pad0.cd()
     #hist.GetXaxis().SetNdivisions(508)
@@ -406,11 +443,23 @@ def plot_correlations(hist_name, title):
 
     gPad.RedrawAxis()
 
+    newpad = TPad("newpad","a caption",0.1,0,1,1)
+    newpad.SetFillStyle(4000)
+    newpad.Draw()
+    newpad.cd()
+    title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
+    title.SetFillColor(16)
+    title.SetTextFont(52)
+    title.Draw()
+
     c.cd()
 
     c.SaveAs("{0}/img/{1}.png".format(training_dir, hist_name))
+    pad0.Close()
+    c.Close()
 
-def plot_profile(obs, title):
+
+def plot_profile(obs):
     hist_name = "reso_{0}".format(obs)
     hist = infile.Get(hist_name)
     if hist == None:
@@ -418,9 +467,22 @@ def plot_profile(obs, title):
     hist = hist.ProfileX("hist_pfx")
     SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
     c = TCanvas()
-    c.cd()
+
     hist.Draw()
+
+    newpad = TPad("newpad","a caption",0.1,0,1,1)
+    newpad.SetFillStyle(4000)
+    newpad.Draw()
+    newpad.cd()
+    title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
+    title.SetFillColor(16)
+    title.SetTextFont(52)
+    title.Draw()
+
+    c.cd()
+
     c.SaveAs("{0}/img/reso_{1}.png".format(training_dir,obs))
+    c.Close()
 
 ################################################################################
 if __name__==   "__main__":
@@ -429,13 +491,13 @@ if __name__==   "__main__":
 
     # Make a plot for each observable
     for obs in attributes:
-        plot_observables(obs, caption)
+        plot_observables(obs)
 
     # Draw Differences and resonances
     for obs in attributes:
-        plot_residuals(obs, caption)
-        plot_profile(obs, caption)
+        plot_residuals(obs)
+        plot_profile(obs)
 
     # Draw 2D Correlations
     for corr in corr_2d:
-        plot_correlations(corr, caption)
+        plot_correlations(corr)
