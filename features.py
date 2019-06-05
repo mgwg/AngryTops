@@ -12,8 +12,14 @@ column_names = ["runNumber", "eventNumber", "weight", "jets_n", "bjets_n",
 "target_b_had_Px", "target_b_had_Py", "target_b_had_Pz", "target_b_had_E", "target_b_had_M",
 "target_b_lep_Px", "target_b_lep_Py", "target_b_lep_Pz", "target_b_lep_E", "target_b_lep_M",
 "target_t_had_Px", "target_t_had_Py", "target_t_had_Pz", "target_t_had_E", "target_t_had_M",
-"target_t_lep_Px", "target_t_lep_Py", "target_t_lep_Pz", "target_t_lep_E", "target_t_lep_M"]
-
+"target_t_lep_Px", "target_t_lep_Py", "target_t_lep_Pz", "target_t_lep_E", "target_t_lep_M",
+"lep Pt", "lep Eta", "lep Phi",
+"jet0 Pt", "jet0 Eta", "jet0 Phi",
+"jet1 Pt", "jet1 Eta", "jet1 Phi",
+"jet2 Pt", "jet2 Eta", "jet2 Phi",
+"jet3 Pt", "jet3 Eta", "jet3 Phi",
+"jet4 Pt", "jet4 Eta", "jet4 Phi",
+]
 
 input_columns = [
 "lep.Px", "lep.Py", "lep.Pz", "lep.E", "met_met", "met_phi",

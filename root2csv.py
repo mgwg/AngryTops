@@ -244,7 +244,13 @@ for ientry in range(n_entries):
         "%.5f" % target_b_had[0], "%.5f" % target_b_had[1], "%.5f" % target_b_had[2], "%.5f" % target_b_had[3], "%.5f" % target_b_had[4],
         "%.5f" % target_b_lep[0], "%.5f" % target_b_lep[1], "%.5f" % target_b_lep[2], "%.5f" % target_b_lep[3], "%.5f" % target_b_lep[4],
         "%.5f" % target_t_had[0], "%.5f" % target_t_had[1], "%.5f" % target_t_had[2], "%.5f" % target_t_had[3], "%.5f" % target_t_had[4],
-        "%.5f" % target_t_lep[0], "%.5f" % target_t_lep[1], "%.5f" % target_t_lep[2], "%.5f" % target_t_lep[3], "%.5f" % target_t_lep[4]
+        "%.5f" % target_t_lep[0], "%.5f" % target_t_lep[1], "%.5f" % target_t_lep[2], "%.5f" % target_t_lep[3], "%.5f" % target_t_lep[4],
+        "%.5f" % lep.Pt(),     "%.5f" % lep.Eta(),     "%.5f" % lep.Phi(),
+        "%.5f" % sjets[0][6],  "%.5f" % sjets[0][7],  "%.5f" % sjets[0][8],
+        "%.5f" % sjets[1][6],  "%.5f" % sjets[1][7],  "%.5f" % sjets[1][8],
+        "%.5f" % sjets[2][6],  "%.5f" % sjets[2][7],  "%.5f" % sjets[2][8],
+        "%.5f" % sjets[3][6],  "%.5f" % sjets[3][7],  "%.5f" % sjets[3][8],
+        "%.5f" % sjets[4][6],  "%.5f" % sjets[4][7],  "%.5f" % sjets[4][8],
             ) )
         # Change the angle to rotate by
         phi = np.random.uniform(- np.pi, np.pi)
