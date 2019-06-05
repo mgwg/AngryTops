@@ -5,7 +5,8 @@ from ROOT import *
 import numpy as np
 
 from features import *
-if len(sys.argv) > 1: training_dir = sys.argv[1]
+training_dir = sys.argv[1]
+caption = sys.argv[2]
 ################################################################################
 # Set style of plots
 gROOT.LoadMacro("AtlasDocs/AtlasStyle.C")
@@ -266,7 +267,7 @@ def DrawRatio( data, prediction, xtitle = "", yrange=[0.4,1.6] ):
     return frame, tot_unc, ratio
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def plot_observables(obs):
+def plot_observables(obs, title):
     # Load the histograms
     hname_true = "%s_true" % (obs)
     hame_fitted = "%s_fitted" % (obs)
@@ -342,7 +343,7 @@ def plot_observables(obs):
     c.SaveAs("{0}/img/{1}.png".format(training_dir, obs))
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def plot_residuals(obs):
+def plot_residuals(obs, title):
     hist_name = "diff_{0}".format(obs)
 
     # True and fitted leaf
@@ -377,7 +378,7 @@ def plot_residuals(obs):
     c.SaveAs("{0}/img/diff_{1}.png".format(training_dir,obs))
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def plot_correlations(hist_name):
+def plot_correlations(hist_name, title):
 
     # True and fitted leaf
     hist = infile.Get(hist_name)
@@ -409,7 +410,7 @@ def plot_correlations(hist_name):
 
     c.SaveAs("{0}/img/{1}.png".format(training_dir, hist_name))
 
-def plot_profile(obs):
+def plot_profile(obs, title):
     hist_name = "reso_{0}".format(obs)
     hist = infile.Get(hist_name)
     if hist == None:
@@ -428,13 +429,13 @@ if __name__==   "__main__":
 
     # Make a plot for each observable
     for obs in attributes:
-        plot_observables(obs)
+        plot_observables(obs, caption)
 
     # Draw Differences and resonances
     for obs in attributes:
-        plot_residuals(obs)
-        plot_profile(obs)
+        plot_residuals(obs, caption)
+        plot_profile(obs, caption)
 
     # Draw 2D Correlations
     for corr in corr_2d:
-        plot_correlations(corr)
+        plot_correlations(corr, caption)
