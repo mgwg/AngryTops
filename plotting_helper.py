@@ -2,6 +2,9 @@
 # BORROWED: From Tensorflow tutorials
 import matplotlib.pyplot as plt
 
+plt.rc('legend',fontsize=22)
+plt.rcParams.update({'font.size': 22})
+
 def plot_history(history, save_dir):
     plt.figure(figsize=(16,10))
 
