@@ -21,13 +21,22 @@ def train_model(model_num, csv_file="csv/topreco.csv", BATCH_SIZE=32, EPOCHES=30
     train_dir = "CheckPoints/{}".format(train_dir)
     print("Saving files in: {}".format(train_dir))
     checkpoint_path = "{}/cp.ckpt".format(train_dir)
+    try:
+        log = open("{}/log.txt".format(train_dir), 'w')
+        sys.stdout = log
+    except Exception:
+        os.mkdir(train_dir)
+        log = open("{}/log.txt".format(train_dir), 'w')
+        sys.stdout = log
 
 ###############################################################################
     # LOADING / PRE-PROCESSING DATA
     (training_input, training_output), (testing_input, testing_output), \
            (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) = get_input_output(type="minmax")
     testing_input_original = testing_input.copy()
-    print(training_input.shape)
+    print("Shape of training_input: {}".format(training_input.shape))
+    print("Shape of training_input: {}".format(training_input.shape), file=sys.stderr)
+
 
 ###############################################################################
     # BUILDING / TRAINING MODEL
@@ -35,10 +44,13 @@ def train_model(model_num, csv_file="csv/topreco.csv", BATCH_SIZE=32, EPOCHES=30
     try:
         model.load_weights(checkpoint_path)
         print("Loaded weights from previous training session")
+        print("Loaded weights from previous training session", file=sys.stderr)
     except Exception as e:
         print(e)
+        print(e, file=sys.stderr)
     #model = keras.models.load_model("{}/simple_model.h5".format(train_dir))
     print(model.summary())
+    print(model.summary(), file=sys.stderr)
 
     cp_callback = keras.callbacks.ModelCheckpoint(checkpoint_path,
                                                 save_weights_only=True, verbose=1)
@@ -49,6 +61,7 @@ def train_model(model_num, csv_file="csv/topreco.csv", BATCH_SIZE=32, EPOCHES=30
                             )
     except ValueError:
         print("Detected invalid input shape. Assuming model is multi-input")
+        print("Detected invalid input shape. Assuming model is multi-input", file=sys.stderr)
         try:
             training_input = [training_input[:,:6], training_input[:,6:]]
             testing_input = [testing_input[:,:6], testing_input[:,6:]]
@@ -58,9 +71,11 @@ def train_model(model_num, csv_file="csv/topreco.csv", BATCH_SIZE=32, EPOCHES=30
                             )
         except KeyboardInterrupt:
             print("Training_inerrupted")
+            print("Training_inerrupted", file=sys.stderr)
             history = None
     except KeyboardInterrupt:
         print("Training_inerrupted")
+        print("Training_inerrupted", file=sys.stderr)
         history = None
 
 ###############################################################################
@@ -73,12 +88,14 @@ def train_model(model_num, csv_file="csv/topreco.csv", BATCH_SIZE=32, EPOCHES=30
       pickle.dump(lep_scalar, file_scaler, protocol=2)
       pickle.dump(output_scalar, file_scaler, protocol=2)
     print("INFO: scalers saved to file:", scaler_filename)
+    print("INFO: scalers saved to file:", scaler_filename, file=sys.stderr)
 
 ###############################################################################
     # EVALUATING MODEL AND MAKE PREDICTIONS
     # Evaluating model and saving the predictions
     test_acc = model.evaluate(testing_input, testing_output)
     print('\nTest accuracy:', test_acc)
+    print('\nTest accuracy:', test_acc, file=sys.stderr)
     predictions = model.predict(testing_input)
     np.savez("{}/predictions".format(train_dir), input=testing_input_original,\
              true=testing_output, pred=predictions, events=event_testing)
@@ -86,8 +103,12 @@ def train_model(model_num, csv_file="csv/topreco.csv", BATCH_SIZE=32, EPOCHES=30
     if history is not None:
         for key in history.history.keys():
             np.savez("{0}/{1}.npz".format(train_dir, key), epoches=history.epoch, loss=history.history[key])
-        print(history.history.keys())
+        print("Keys: ", history.history.keys())
         plot_history(history, train_dir)
+
+    sys.stdout = sys.__stdout__
+    log.close()
+
 
 if __name__ == "__main__":
     if len(sys.argv) == 3:
