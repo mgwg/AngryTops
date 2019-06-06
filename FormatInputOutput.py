@@ -9,7 +9,7 @@ import sklearn.preprocessing
 #input_filename = "csv/topreco.csv"
 #input_filename = "csv/topreco_augmented1.csv"
 
-def get_input_output(input_filename="csv/topreco_augmented1.csv", training_split=0.9, shuff=False, type="minmax"):
+def get_input_output(input_filename="csv/topreco_5dec_aug1.csv", training_split=0.9, shuff=False, type="minmax"):
     """
     Return the training and testing data
     Training Data: Array of 36 elements. I am debating reshaping to matrix of (6 x 6)
@@ -55,6 +55,15 @@ def get_input_output(input_filename="csv/topreco_augmented1.csv", training_split
     event_testing = event_info[:cut]
     return (training_input, training_output), (testing_input, testing_output), \
            (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing)
+
+def get_ptetaphi(input_filename="csv/topreco_5dec_aug1.csv", training_split=0.9, shuff=False, type="minmax"):
+    """Gets input and output in the pt eta phi representation"""
+    df = pd.read_csv(input_filename, names=column_names)
+    # Load jets, leptons and output columns
+    event_info = df[features_event_info].values
+    
+
+
 
 def normalize(arr, type="minmax"):
     """Normalize the arr with StandardScalar and return the normalized array

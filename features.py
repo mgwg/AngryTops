@@ -47,6 +47,14 @@ input_features_jets = [
 "jet4 P_x",  "jet4 P_y",  "jet4 P_z",  "jet4 E",  "jet4 M",
 ]
 
+input_features_jets_ptetaphi = [
+"jet0 Pt",  "jet0 Eta",  "jet0 Phi",  "jet0 E", "jet0 M",
+"jet1 Pt",  "jet1 Eta",  "jet1 Phi",  "jet1 E", "jet1 M",
+"jet2 Pt",  "jet2 Eta",  "jet2 Phi",  "jet2 E", "jet2 M",
+"jet3 Pt",  "jet3 Eta",  "jet3 Phi",  "jet3 E", "jet3 M",
+"jet4 Pt",  "jet4 Eta",  "jet4 Phi",  "jet4 E", "jet4 M"
+]
+
 btags = [
 "jet0 BTag", "jet1 BTag", "jet2 BTag", "jet3 BTag", "jet4 BTag"
 ]
