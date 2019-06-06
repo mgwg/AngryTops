@@ -166,7 +166,8 @@ def save_training_history( history, filename = "GAN/training_history.root", verb
 # ADDED BY FARDIN
 
 def MakeInput( jets, W_had, b_had, t_had, W_lep, b_lep, t_lep ):
-    """Format output, returning a jet matrix (detector level), W, b quark and lepton arrays (particle leve) and t-quark momenta (parton level)
+    """Format output, returning a jet matrix (detector level), W, b quark and
+    lepton arrays (particle leve) and t-quark momenta (parton level)
     """
     # INPUT DATA FOR RNN
     # Populate 5 x 6 matrix of jet foration

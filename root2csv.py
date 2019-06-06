@@ -251,6 +251,12 @@ for ientry in range(n_entries):
         "%.5f" % sjets[2][6],  "%.5f" % sjets[2][7],  "%.5f" % sjets[2][8],
         "%.5f" % sjets[3][6],  "%.5f" % sjets[3][7],  "%.5f" % sjets[3][8],
         "%.5f" % sjets[4][6],  "%.5f" % sjets[4][7],  "%.5f" % sjets[4][8],
+        "%.5f" % target_W_had[5], "%.5f" % target_W_had[6], "%.5f" % target_W_had[7],
+        "%.5f" % target_W_lep[5], "%.5f" % target_W_lep[6], "%.5f" % target_W_lep[7],
+        "%.5f" % target_b_had[5], "%.5f" % target_b_had[6], "%.5f" % target_b_had[7],
+        "%.5f" % target_b_lep[5], "%.5f" % target_b_lep[6], "%.5f" % target_b_lep[7],
+        "%.5f" % target_t_had[5], "%.5f" % target_t_had[6], "%.5f" % target_t_had[7],
+        "%.5f" % target_t_lep[5], "%.5f" % target_t_lep[6], "%.5f" % target_t_lep[7],
             ) )
         # Change the angle to rotate by
         phi = np.random.uniform(- np.pi, np.pi)

@@ -19,6 +19,12 @@ column_names = ["runNumber", "eventNumber", "weight", "jets_n", "bjets_n",
 "jet2 Pt", "jet2 Eta", "jet2 Phi",
 "jet3 Pt", "jet3 Eta", "jet3 Phi",
 "jet4 Pt", "jet4 Eta", "jet4 Phi",
+"target_W_had_Pt", "target_W_had_Eta", "target_W_had_Phi",
+"target_W_lep_Pt", "target_W_lep_Eta", "target_W_lep_Phi",
+"target_b_had_Pt", "target_b_had_Eta", "target_b_had_Phi",
+"target_b_lep_Pt", "target_b_lep_Eta", "target_b_lep_Phi",
+"target_t_had_Pt", "target_t_had_Eta", "target_t_had_Phi",
+"target_t_lep_Pt", "target_t_lep_Eta", "target_t_lep_Phi"
 ]
 
 input_columns = [
@@ -37,6 +43,15 @@ output_columns = [
 "target_b_lep_Px", "target_b_lep_Py", "target_b_lep_Pz", "target_b_lep_E",
 "target_t_had_Px", "target_t_had_Py", "target_t_had_Pz", "target_t_had_E",
 "target_t_lep_Px", "target_t_lep_Py", "target_t_lep_Pz", "target_t_lep_E",
+]
+
+output_columns_ptetaphi = [
+"target_W_had_Pt", "target_W_had_Eta", "target_W_had_Phi", "target_W_had_E",
+"target_W_lep_Pt", "target_W_lep_Eta", "target_W_lep_Phi", "target_W_lep_E",
+"target_b_had_Pt", "target_b_had_Eta", "target_b_had_Phi", "target_b_had_E",
+"target_b_lep_Pt", "target_b_lep_Eta", "target_b_lep_Phi", "target_b_lep_E",
+"target_t_had_Pt", "target_t_had_Eta", "target_t_had_Phi", "target_t_had_E",
+"target_t_lep_Pt", "target_t_lep_Eta", "target_t_lep_Phi", "target_t_lep_E",
 ]
 
 input_features_jets = [
@@ -61,6 +76,10 @@ btags = [
 
 input_features_lep = [
 "lep.Px", "lep.Py", "lep.Pz", "lep.E", "met_met", "met_phi"
+]
+
+input_features_lep_ptetaphi = [
+"lep.Pt", "lep.Eta", "lep.Phi", "lep.E", "met_met", "met_phi"
 ]
 
 target_features_W_lep = [
