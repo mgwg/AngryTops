@@ -3,7 +3,7 @@ import os, sys
 import csv
 
 import ROOT
-from ROOT import TLorentzVector, gROOT, TChain
+from ROOT import TLorentzVector, gROOT, TChain, TVector2
 from tree_traversal import GetIndices
 from helper_functions import *
 import numpy as np
