@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 source /home/fsyed/.bashrc
 source /home/fsyed/tf/bin/activate
+source /home/fsyed/tf/bin/activate
 
 python train_simple_model.py $1 $2 $3 $4 $5
 
