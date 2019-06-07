@@ -8,7 +8,7 @@ import numpy as np
 from sklearn import preprocessing
 
 
-def RotateEvent( lep, jets, phi ):
+def RotateEvent(lep, jets, met, phi):
     """Takes in LorentzVector lep, jets and rotates each along the Z axis by
     an angle phi
     @==========================================================
@@ -20,10 +20,14 @@ def RotateEvent( lep, jets, phi ):
     @ Return
     A rotated LorentzVector
     """
+    # Missing Azimuthal Energy
+    met_phi = TVector2.Phi_mpi_pi(met_phi_original + phi)
 
+    # Lepton
     lep_new = TLorentzVector(lep)
     lep_new.RotateZ(phi)
 
+    # Jets
     jets_new = []
     for j in jets:
         jets_new += [ TLorentzVector(j) ]
@@ -32,3 +36,8 @@ def RotateEvent( lep, jets, phi ):
         j_new.RotateZ(phi)
 
     return lep_new, jets_new
+
+def FlipEta(lep, jets):
+    lep = let.SetPtEtaPhiE(lep.Pt(), -lep.Eta(), lep.Phi(), lep.E())
+    for lj in jets:
+        lj.SetPtEtaPhiE(lj.Pt(), -lj.Eta(), lj.Phi(), lj.E())
