@@ -223,13 +223,14 @@ for ientry in range(n_entries):
     # Augment Data By Rotating 5 Different Ways
     n_good += 1
     phi = 0
+    flip_eta = False
     # Set the phi angle of the lepton to zero
     if len(sys.argv) > 4: phi = -1 * lep.Phi()
-    if len(sys.argv) > 4: flip_eta = True
+    if len(sys.argv) > 5: flip_eta = True
     print("Writing new row to csv file")
     for i in range(n_data_aug):
     # make event wrapper
-        lep_aug, jets_aug, met_phi_aug, phi = RotateEvent(lep, jets, met, phi)
+        lep_aug, jets_aug, met_phi_aug = RotateEvent(lep, jets, met_phi, phi)
         lep_flipped, jets_flipped = FlipEta(lep_aug, jets_aug)
         sjets0, target_W_had, target_b_had, target_t_had, target_W_lep, target_b_lep, target_t_lep = MakeInput(jets_aug, W_had, b_had, t_had, W_lep, b_lep, t_lep )
         sjets1, _, _, _, _, _, _ = MakeInput(jets_flipped, W_had, b_had, t_had, W_lep, b_lep, t_lep )
