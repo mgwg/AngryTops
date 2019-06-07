@@ -226,10 +226,10 @@ for ientry in range(n_entries):
     # Set the phi angle of the lepton to zero
     if len(sys.argv) > 4:
         phi = -1 * lep.Phi()
-    met_phi = TVector2.Phi_mpi_pi(met_phi_original + phi)
     print("Writing new row to csv file")
     for i in range(n_data_aug):
     # make event wrapper
+        met_phi = TVector2.Phi_mpi_pi(met_phi_original + phi)
         sjets, target_W_had, target_b_had, target_t_had, target_W_lep, target_b_lep, target_t_lep = MakeInput( jets, W_had, b_had, t_had, W_lep, b_lep, t_lep )
 
     # write out
