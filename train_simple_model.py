@@ -38,6 +38,7 @@ def train_model(model_num, csv_file="csv/topreco.csv", BATCH_SIZE=32, EPOCHES=30
     testing_input_original = testing_input.copy()
     print("Shape of training_input: {}".format(training_input.shape))
     print("Shape of training_input: {}".format(training_input.shape), file=sys.stderr)
+    print("Shape of testing_input: {}".format(testing_input.shape), file=sys.stderr)
 
 
 ###############################################################################
