@@ -1,7 +1,7 @@
 training_dir = 'CheckPoints/training_scrap'
 
 column_names = ["runNumber", "eventNumber", "weight", "jets_n", "bjets_n",
-"lep.Px", "lep.Py", "lep.Pz", "lep.E", "met_met", "met_phi",
+"lep Px", "lep Py", "lep Pz", "lep E", "met_met", "met_phi",
 "jet0 P_x",  "jet0 P_y",  "jet0 P_z",  "jet0 E",  "jet0 M",  "jet0 BTag",
 "jet1 P_x",  "jet1 P_y",  "jet1 P_z",  "jet1 E",  "jet1 M",  "jet1 BTag",
 "jet2 P_x",  "jet2 P_y",  "jet2 P_z",  "jet2 E",  "jet2 M",  "jet2 BTag",
@@ -28,7 +28,7 @@ column_names = ["runNumber", "eventNumber", "weight", "jets_n", "bjets_n",
 ]
 
 input_columns = [
-"lep.Px", "lep.Py", "lep.Pz", "lep.E", "met_met", "met_phi",
+"lep Px", "lep Py", "lep Pz", "lep E", "met_met", "met_phi",
 "jet0 P_x",  "jet0 P_y",  "jet0 P_z",  "jet0 E",  "jet0 M",  "jet0 BTag",
 "jet1 P_x",  "jet1 P_y",  "jet1 P_z",  "jet1 E",  "jet1 M",  "jet1 BTag",
 "jet2 P_x",  "jet2 P_y",  "jet2 P_z",  "jet2 E",  "jet2 M",  "jet2 BTag",
@@ -75,11 +75,11 @@ btags = [
 ]
 
 input_features_lep = [
-"lep.Px", "lep.Py", "lep.Pz", "lep.E", "met_met", "met_phi"
+"lep Px", "lep Py", "lep Pz", "lep E", "met_met", "met_phi"
 ]
 
 input_features_lep_ptetaphi = [
-"lep.Pt", "lep.Eta", "lep.Phi", "lep.E", "met_met", "met_phi"
+"lep Pt", "lep Eta", "lep Phi", "lep E", "met_met", "met_phi"
 ]
 
 target_features_W_lep = [

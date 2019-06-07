@@ -347,7 +347,6 @@ def model14(learn_rate, input_size=36, reshape_shape=(6,6), **kwargs):
     # unceccessary
     # The return_sequences=True argument ==> Not sure what this does
     # I simplified the model significantly => Reduced it to one recurrent layer
-    print(kwargs)
     reg_weight = kwargs['reg_weight']
     model = keras.Sequential()
     model.add(Dense(36, activation='relu', input_shape=(input_size,)))

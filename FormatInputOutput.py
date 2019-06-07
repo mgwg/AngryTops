@@ -9,7 +9,7 @@ import sklearn.preprocessing
 #input_filename = "csv/topreco.csv"
 #input_filename = "csv/topreco_augmented1.csv"
 
-def get_input_output(input_filename="csv/topreco_5dec_aug1.csv", \
+def get_input_output(input_filename='csv/topreco_augmented1_5dec.csv', \
                      training_split=0.9, shuff=False, type="minmax", rep="cart"):
     """
     Return the training and testing data
@@ -76,7 +76,7 @@ def normalize(arr, type="minmax"):
 # Testing to see if this works
 if __name__=='__main__':
     (training_input, training_output), (testing_input, testing_output), \
-           (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing)= get_input_output()
+           (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing)= get_input_output(rep="ptetaphi")
     print(np.any(np.isnan(training_input)))
     print(np.any(np.isnan(training_output)))
     print(training_output[3])
