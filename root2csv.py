@@ -224,8 +224,8 @@ for ientry in range(n_entries):
     n_good += 1
     phi = 0
     # Set the phi angle of the lepton to zero
-    if len(sys.argv) > 4: phi = -1 * lep.Phi()
-    if len(sys.argv) > 4: flip_eta = True
+    if len(sys.argv) == 'aa': phi = -1 * lep.Phi()
+    if len(sys.argv) == 'bb': flip_eta = True
     print("Writing new row to csv file")
     for i in range(n_data_aug):
     # make event wrapper
