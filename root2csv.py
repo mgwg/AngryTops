@@ -222,7 +222,7 @@ for ientry in range(n_entries):
     # Augment Data By Rotating 5 Different Ways
     n_good += 1
     phi = 0
-    met_phi_original = met_phi.Copy()
+    met_phi_original = met_phi
     # Set the phi angle of the lepton to zero
     if len(sys.argv) > 4:
         phi = -1 * lep.Phi()
