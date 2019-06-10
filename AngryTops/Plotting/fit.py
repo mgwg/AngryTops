@@ -6,7 +6,7 @@ from array import array
 import pickle
 import numpy as np
 import sklearn.preprocessing
-from ..features import *
+from AngryTops.features import *
 ################################################################################
 # CONSTANTS
 training_dir = sys.argv[1]

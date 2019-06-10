@@ -12,7 +12,7 @@ from data_augmentation import *
 
 gROOT.SetBatch(True)
 
-from features import *
+from AngryTops.features import *
 
 ###############################
 # CONSTANTS
