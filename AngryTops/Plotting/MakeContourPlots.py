@@ -1,7 +1,7 @@
 from ROOT import TCanvas, TFile, TProfile, TNtuple, TH1F, TH2F, TChain
 from ROOT import gROOT, gBenchmark, gRandom, gSystem, Double
-from features import *
 import sys
+from ..features import *
 
 def draw_contour(attribute_name, treename='fitted.root', dir=training_dir):
     # Create a new canvas, and customize it.

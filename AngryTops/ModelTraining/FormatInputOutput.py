@@ -1,7 +1,10 @@
-# Use this script to read in the panda array, seperate input and output, and
-# seperate test / training data from each other
+"""Use this script to read in the panda array, seperate input and output, and
+seperate test / training data from each other
+Meant to be run from the parent directory
+"""
 import pandas as pd
 import numpy as np
+import sys
 from features import *
 from sklearn.utils import shuffle
 import sklearn.preprocessing
@@ -9,13 +12,14 @@ import sklearn.preprocessing
 #input_filename = "csv/topreco.csv"
 #input_filename = "csv/topreco_augmented1.csv"
 
-def get_input_output(input_filename='csv/topreco_augmented1_5dec.csv', \
+def get_input_output(input_filename='topreco_augmented1_5dec.csv', \
                      training_split=0.9, shuff=False, type="minmax", rep="cart"):
     """
     Return the training and testing data
     Training Data: Array of 36 elements. I am debating reshaping to matrix of (6 x 6)
     Testing Data: Matrix of Shape (4 x 6)
     """
+    input_filename = "../csv/{}".format(input_filename)
     df = pd.read_csv(input_filename, names=column_names)
     # Shuffle the DataSet
     if shuff:

@@ -1,31 +1,36 @@
-# Train the simplest model. Mostly Use this script for testing
+"""
+Train the simplest model. Mostly Use this script for testing
+Meant to be run from the parent directory
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow import keras
-from features import *
 import os
 import sys
-from models import models
-from plotting_helper import plot_history
-from FormatInputOutput import get_input_output
+from features import *
+from ModelTraining.models import models
+from ModelTraining.plotting_helper import plot_history
+from ModelTraining.FormatInputOutput import get_input_output
 import pickle
 
 print(tf.__version__)
 print(tf.test.gpu_device_name())
 
-def train_model(model_num, csv_file="csv/topreco.csv", BATCH_SIZE=32, EPOCHES=30,\
+def train_model(model_num, csv_file="topreco.csv", BATCH_SIZE=32, EPOCHES=30,\
                     train_dir=training_dir, learn_rate=0.001, scaling="minmax",\
                     rep="pxpypzE", input_size=30, reshape_shape=(6,6), **kwargs):
 ###############################################################################
     # CONSTANTS
-    train_dir = "CheckPoints/{}".format(train_dir)
+    train_dir = "../CheckPoints/{}".format(train_dir)
     print("Saving files in: {}".format(train_dir))
     checkpoint_path = "{}/cp.ckpt".format(train_dir)
     try:
         log = open("{}/log.txt".format(train_dir), 'w')
         sys.stdout = log
-    except Exception:
+        print("Got here")
+    except Exception as e:
+        print(e)
         os.mkdir(train_dir)
         log = open("{}/log.txt".format(train_dir), 'w')
         sys.stdout = log
