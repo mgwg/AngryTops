@@ -22,7 +22,7 @@ def get_input_output(input_filename='csv/topreco_augmented1_5dec.csv', \
         df = shuffle(df)
     # Load jets, leptons and output columns
     event_info = df[features_event_info].values
-    if rep == "ptetaphi":
+    if rep == "ptetaphiE":
         jets = df[input_features_jets_ptetaphi].values
         lep = df[input_features_lep_ptetaphi].values
         truth = df[output_columns_ptetaphi].values
