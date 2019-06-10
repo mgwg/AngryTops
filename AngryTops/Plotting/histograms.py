@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os, sys, time
 import argparse
-from ..features import *
+from AngryTops.features import *
 
 from ROOT import *
 from array import array
@@ -17,7 +17,7 @@ m_b = 4.95
 if len(sys.argv) > 1: training_dir = sys.argv[1]
 infilename = "{}/fitted.root".format(training_dir)
 ofilename = "{}/histograms.root".format(training_dir)
-
+print(infilename)
 
 ################################################################################
 # HELPER FUNCTIONS

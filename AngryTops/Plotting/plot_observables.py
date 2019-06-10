@@ -3,13 +3,13 @@ import os, sys
 from ROOT import *
 import numpy as np
 
-from ..features import *
+from AngryTops.features import *
 training_dir = sys.argv[1]
 caption = sys.argv[2]
 ################################################################################
 # Set style of plots
-gROOT.LoadMacro("../../AtlasDocs/AtlasStyle.C")
-gROOT.LoadMacro( "../../AtlasDocs/AtlasUtils.C" )
+gROOT.LoadMacro("../AtlasDocs/AtlasStyle.C")
+gROOT.LoadMacro( "../AtlasDocs/AtlasUtils.C" )
 SetAtlasStyle()
 
 gStyle.SetOptStat(0)
