@@ -10,12 +10,12 @@ import sklearn.preprocessing
 from features import *
 ################################################################################
 # CONSTANTS
-representation = sys.argv[1]
+training_dir = sys.argv[1]
+representation = sys.argv[2]
 m_t = 172.5
 m_W = 80.4
 m_b = 4.95
 np.set_printoptions( precision=3, suppress=True, linewidth=250 )
-if len(sys.argv) > 2: training_dir = sys.argv[2]
 infilename = "csv/topreco.csv"
 model_filename  = "{}/simple_model.h5".format(training_dir)
 #if len(sys.argv) > 1: infilename = sys.argv[1]
