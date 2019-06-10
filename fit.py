@@ -40,7 +40,7 @@ def MakeP4( y, m=0., sf=1.000 ):
   if representation == "cartesian":
       p4.SetPxPyPzE( p0, p1, p2, E )
   elif representation == "ptetaphi":
-      p4.SetPtEtaPhi( p0, p1, p2, E )
+      p4.SetPtEtaPhiE( p0, p1, p2, E )
   else:
       raise Exception("Invalid Representation Given: {}".format(representation))
   return p4
