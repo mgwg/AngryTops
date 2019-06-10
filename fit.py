@@ -10,11 +10,12 @@ import sklearn.preprocessing
 from features import *
 ################################################################################
 # CONSTANTS
+representation = sys.argv[1]
 m_t = 172.5
 m_W = 80.4
 m_b = 4.95
 np.set_printoptions( precision=3, suppress=True, linewidth=250 )
-if len(sys.argv) > 1: training_dir = sys.argv[1]
+if len(sys.argv) > 2: training_dir = sys.argv[2]
 infilename = "csv/topreco.csv"
 model_filename  = "{}/simple_model.h5".format(training_dir)
 #if len(sys.argv) > 1: infilename = sys.argv[1]
@@ -32,13 +33,16 @@ def PrintOut( p4_true, p4_fitted, event_info, label ):
 def MakeP4( y, m=0., sf=1.000 ):
   p4 = TLorentzVector()
 
-  px = y[0] * sf
-  py = y[1] * sf
-  pz = y[2] * sf
-  P2 = px*px + py*py + pz*pz
-  E  = TMath.Sqrt( P2 + m*m )
-
-  p4.SetPxPyPzE( px, py, pz, E )
+  p0 = y[0] * sf
+  p1 = y[1] * sf
+  p2 = y[2] * sf
+  E  = y[3] * sf
+  if representation == "cartesian":
+      p4.SetPxPyPzE( p0, p1, p2, E )
+  elif representation == "ptetaphi":
+      p4.SetPtEtaPhi( p0, p1, p2, E )
+  else:
+      raise Exception("Invalid Representation Given: {}".format(representation))
   return p4
 
 ################################################################################
