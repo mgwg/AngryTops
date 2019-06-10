@@ -170,7 +170,7 @@ plots=['reso_t_had_phi', 'corr_b_had_phi', 'corr_W_had_pt',
  'reso_t_lep_pz', 'diff_t_lep_phi', 'reso_W_lep_pt',
  'reso_t_had_py', 'b_lep_px', 'corr_t_had_pt', 'b_had_py',
  'diff_b_lep_phi', 'b_lep_pz', 'reso_t_lep_px', 'reso_t_lep_py',
- 'reso_W_had_pt', 'reso_t_had_pz', 'corr_t_lep_pt', 'b_had_px.png']
+ 'reso_W_had_pt', 'reso_t_had_pz', 'corr_t_lep_pt', 'b_had_px']
 
 # residuals = ['diff_W_had_px', 'diff_W_had_py', 'diff_W_had_pz', 'diff_W_had_pt',
 # 'diff_W_had_y', 'diff_W_had_phi', 'diff_W_had_E', 'diff_W_had_m',
