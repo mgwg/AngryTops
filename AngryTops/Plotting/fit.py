@@ -35,11 +35,15 @@ def MakeP4( y, m=0., sf=1.000 ):
   p0 = y[0] * sf
   p1 = y[1] * sf
   p2 = y[2] * sf
-  E  = y[3] * sf
-  if representation == "cartesian":
+  if representation == "pxpypzE":
+      E  = y[3] * sf
       p4.SetPxPyPzE( p0, p1, p2, E )
-  elif representation == "ptetaphi":
+  elif representation == "ptetaphiE":
+      E  = y[3] * sf
       p4.SetPtEtaPhiE( p0, p1, p2, E )
+  elif representation == "ptetaphiM":
+      M  = y[3] * sf
+      p4.SetPtEtaPhiM( p0, p1, p2, M )
   else:
       raise Exception("Invalid Representation Given: {}".format(representation))
   return p4
