@@ -45,13 +45,22 @@ output_columns = [
 "target_t_lep_Px", "target_t_lep_Py", "target_t_lep_Pz", "target_t_lep_E",
 ]
 
-output_columns_ptetaphi = [
+output_columns_ptetaphiE = [
 "target_W_had_Pt", "target_W_had_Eta", "target_W_had_Phi", "target_W_had_E",
 "target_W_lep_Pt", "target_W_lep_Eta", "target_W_lep_Phi", "target_W_lep_E",
 "target_b_had_Pt", "target_b_had_Eta", "target_b_had_Phi", "target_b_had_E",
 "target_b_lep_Pt", "target_b_lep_Eta", "target_b_lep_Phi", "target_b_lep_E",
 "target_t_had_Pt", "target_t_had_Eta", "target_t_had_Phi", "target_t_had_E",
 "target_t_lep_Pt", "target_t_lep_Eta", "target_t_lep_Phi", "target_t_lep_E",
+]
+
+output_columns_ptetaphiM = [
+"target_W_had_Pt", "target_W_had_Eta", "target_W_had_Phi", "target_W_had_M",
+"target_W_lep_Pt", "target_W_lep_Eta", "target_W_lep_Phi", "target_W_lep_M",
+"target_b_had_Pt", "target_b_had_Eta", "target_b_had_Phi", "target_b_had_M",
+"target_b_lep_Pt", "target_b_lep_Eta", "target_b_lep_Phi", "target_b_lep_M",
+"target_t_had_Pt", "target_t_had_Eta", "target_t_had_Phi", "target_t_had_M",
+"target_t_lep_Pt", "target_t_lep_Eta", "target_t_lep_Phi", "target_t_lep_M",
 ]
 
 input_features_jets = [

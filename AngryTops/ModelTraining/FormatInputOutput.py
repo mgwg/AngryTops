@@ -29,7 +29,11 @@ def get_input_output(input_filename='topreco_augmented1_5dec.csv', \
     if rep == "ptetaphiE":
         jets = df[input_features_jets_ptetaphi].values
         lep = df[input_features_lep_ptetaphi].values
-        truth = df[output_columns_ptetaphi].values
+        truth = df[output_columns_ptetaphiE].values
+    elif rep == 'ptetaphiM':
+        jets = df[input_features_jets_ptetaphi].values
+        lep = df[input_features_lep_ptetaphi].values
+        truth = df[output_columns_ptetaphiM].values
     else:
         jets = df[input_features_jets].values
         lep = df[input_features_lep].values
@@ -80,7 +84,7 @@ def normalize(arr, type="minmax"):
 # Testing to see if this works
 if __name__=='__main__':
     (training_input, training_output), (testing_input, testing_output), \
-           (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing)= get_input_output(rep="ptetaphi")
+           (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing)= get_input_output(rep="ptetaphiM")
     print(np.any(np.isnan(training_input)))
     print(np.any(np.isnan(training_output)))
     print(training_output[3])
