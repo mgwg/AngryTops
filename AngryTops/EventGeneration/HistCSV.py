@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from features import column_names
 
-def getRawHists(fname='../..csv/topreco_5dec_aug1.csv'):
+def getRawHists(fname):
     df = pd.read_csv(fname, names=column_names)
     columns = df.columns
     shape = df.shape
@@ -17,13 +17,10 @@ def getRawHists(fname='../..csv/topreco_5dec_aug1.csv'):
         plt.ylabel("Counts")
         plt.yscale('log')
         if "_" in fname:
-            output_filedir = fname.split("/")[1].split(".")[0]
-            plt.savefig("../..Plots/{0}/{1}.png".format(output_filedir, column_names[i]))
+            output_filedir = fname.split("/")[2].split(".")[0]
+            plt.savefig("..Plots/{0}/{1}.png".format(output_filedir, column_names[i]))
         else:
-            plt.savefig("../../Plots/original/{}.png".format(column_names[i]))
-
-def getTrainingHist(fname='../../CheckPoints/training_5/TrainingLog.csv'):
-    df = pd.read_csv(fname, names=column_names)
+            plt.savefig("../Plots/original/{}.png".format(column_names[i]))
 
 if __name__ == "__main__":
-    getRawHists()
+    getRawHists(fname='../csv/topreco_aug_eta.csv')

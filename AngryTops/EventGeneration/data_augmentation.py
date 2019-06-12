@@ -47,4 +47,4 @@ def FlipEta(lep, jets):
         new_jet.SetPtEtaPhiE(lj.Pt(), -lj.Eta(), lj.Phi(), lj.E())
         new_jet.btag = lj.btag
 
-    return lep, new_jets
+    return lep_new, new_jets
