@@ -17,9 +17,9 @@ import pickle
 print(tf.__version__)
 print(tf.test.gpu_device_name())
 
-def train_model(model_num, csv_file="topreco.csv", BATCH_SIZE=32, EPOCHES=30,\
-                    train_dir=training_dir, learn_rate=0.001, scaling="minmax",\
-                    rep="pxpypzE", input_size=30, reshape_shape=(6,6), **kwargs):
+def train_model(model_name, train_dir, csv_file="topreco.csv", BATCH_SIZE=32,\
+                EPOCHES=30, learn_rate=0.001, scaling="minmax",\
+                rep="pxpypzE", input_size=30, reshape_shape=(6,6), **kwargs):
 ###############################################################################
     # CONSTANTS
     train_dir = "../CheckPoints/{}".format(train_dir)
@@ -48,7 +48,7 @@ def train_model(model_num, csv_file="topreco.csv", BATCH_SIZE=32, EPOCHES=30,\
 
 ###############################################################################
     # BUILDING / TRAINING MODEL
-    model = models[model_num](learn_rate, **kwargs)
+    model = models[model_name](learn_rate, **kwargs)
     try:
         model.load_weights(checkpoint_path)
         print("Loaded weights from previous training session")
@@ -67,7 +67,8 @@ def train_model(model_num, csv_file="topreco.csv", BATCH_SIZE=32, EPOCHES=30,\
                             batch_size=BATCH_SIZE, validation_split=0.1,
                             callbacks = [cp_callback]
                             )
-    except ValueError:
+    except ValueError as v:
+        print(v)
         print("Detected invalid input shape. Assuming model is multi-input")
         print("Detected invalid input shape. Assuming model is multi-input", file=sys.stderr)
         try:
@@ -120,12 +121,12 @@ def train_model(model_num, csv_file="topreco.csv", BATCH_SIZE=32, EPOCHES=30,\
 
 if __name__ == "__main__":
     if len(sys.argv) == 3:
-        train_model(int(sys.argv[1]), train_dir=sys.argv[2])
+        train_model(sys.argv[1], train_dir=sys.argv[2])
     elif len(sys.argv) == 4:
-        train_model(int(sys.argv[1]), train_dir=sys.argv[2], csv_file=sys.argv[3])
+        train_model(sys.argv[1], train_dir=sys.argv[2], csv_file=sys.argv[3])
     elif len(sys.argv) == 5:
-        train_model(int(sys.argv[1]), train_dir=sys.argv[2], csv_file=sys.argv[3],
+        train_model(sys.argv[1], train_dir=sys.argv[2], csv_file=sys.argv[3],
                     learn_rate = np.float(sys.argv[4]))
     elif len(sys.argv) == 6:
-        train_model(int(sys.argv[1]), train_dir=sys.argv[2], csv_file=sys.argv[3],
+        train_model(sys.argv[1], train_dir=sys.argv[2], csv_file=sys.argv[3],
                     learn_rate = np.float(sys.argv[4]), scaling=sys.argv[5])
