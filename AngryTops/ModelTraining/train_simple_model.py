@@ -39,7 +39,7 @@ def train_model(model_num, csv_file="topreco.csv", BATCH_SIZE=32, EPOCHES=30,\
     # LOADING / PRE-PROCESSING DATA
     (training_input, training_output), (testing_input, testing_output), \
            (jets_scalar, lep_scalar, output_scalar), \
-           (event_training, event_testing) = get_input_output(type="minmax", rep=rep)
+           (event_training, event_testing) = get_input_output(input_filename=csv_file, type="minmax", rep=rep)
     testing_input_original = testing_input.copy()
     print("Shape of training_input: {}".format(training_input.shape))
     print("Shape of training_input: {}".format(training_input.shape), file=sys.stderr)
