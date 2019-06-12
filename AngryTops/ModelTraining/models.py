@@ -3,7 +3,8 @@ from tensorflow import keras
 from tensorflow.keras.layers import *
 from tensorflow.keras.regularizers import *
 import sys
-from features import *
+from AngryTops.features import *
+from AngryTops.ModelTraining.custom_loss import *
 
 n_features_input = 6
 n_target_features = 6
@@ -363,6 +364,22 @@ def model14(learn_rate, input_size=36, reshape_shape=(6,6), **kwargs):
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
+def modeltest(learn_rate, input_size=36, reshape_shape=(6,6), **kwargs):
+    """
+    Create a simple RNN with one recurrent layer
+    """
+    model = keras.Sequential()
+    model.add(Dense(36, activation='relu', input_shape=(input_size,)))
+    model.add(Reshape(target_shape=reshape_shape))
+    model.add(SimpleRNN(30, return_sequences=True))
+    model.add(Flatten())
+    model.add(Dense(24))
+    #model.add(Reshape(target_shape=(6,4)))
+
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
+    model.compile(optimizer=optimizer, loss=kl_loss, metrics=['mae', 'mse', kl_loss])
+    return model
+
 
 ################################################################################
 # List of all models
@@ -371,5 +388,6 @@ models = [model0, model1, model2, model3, model4, model5, model6, model7,
 ################################################################################
 
 if __name__ == "__main__":
-    for model in models:
-        model(10e-3)
+    #for model in models:
+    #    model(10e-3)
+    modeltest(10e-3)
