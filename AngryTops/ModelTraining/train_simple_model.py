@@ -28,7 +28,6 @@ def train_model(model_name, train_dir, csv_file="topreco.csv", BATCH_SIZE=32,\
     try:
         log = open("{}/log.txt".format(train_dir), 'w')
         sys.stdout = log
-        print("Got here")
     except Exception as e:
         print(e)
         os.mkdir(train_dir)
