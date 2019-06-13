@@ -102,7 +102,7 @@ def triple_lstm(learn_rate, reshape_shape=(6,6), **kwargs):
     # unceccessary
     # The return_sequences=True argument ==> Not sure what this does
     # I simplified the model significantly => Reduced it to one recurrent layer
-    lstm0, lstm1, lstm2, = 50
+    lstm0, lstm1, lstm2 = 50, 50, 50
     if 'lstm0' in kwargs.keys(): lstm0 = int(kwargs['lstm0'])
     if 'lstm1' in kwargs.keys(): lstm1 = int(kwargs['lstm1'])
     if 'lstm2' in kwargs.keys(): lstm0 = int(kwargs['lstm2'])
