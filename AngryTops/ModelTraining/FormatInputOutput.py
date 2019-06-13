@@ -12,19 +12,19 @@ import sklearn.preprocessing
 #input_filename = "csv/topreco.csv"
 #input_filename = "csv/topreco_augmented1.csv"
 
-def get_input_output(input_filename='topreco_augmented1_5dec.csv', \
+def get_input_output(input_filename='topreco.csv', \
                      training_split=0.9, shuff=False, type="minmax", rep="cart"):
     """
     Return the training and testing data
     Training Data: Array of 36 elements. I am debating reshaping to matrix of (6 x 6)
-    Testing Data: Matrix of Shape (4 x 6)
+    Testing Data: Matrix of Shape (6 x 4)
     """
     input_filename = "../csv/{}".format(input_filename)
     df = pd.read_csv(input_filename, names=column_names)
     # Shuffle the DataSet
     if shuff:
         df = shuffle(df)
-    # Load jets, leptons and output columns
+    # Load jets, leptons and output columns of the correct representation
     event_info = df[features_event_info].values
     if rep == "ptetaphiE":
         jets = df[input_features_jets_ptetaphi].values
@@ -38,6 +38,7 @@ def get_input_output(input_filename='topreco_augmented1_5dec.csv', \
         jets = df[input_features_jets].values
         lep = df[input_features_lep].values
         truth = df[output_columns].values
+    # Load Btags and add extra dimension to shape (for concatenation)
     btag = df[btags].values
     btag = btag.reshape(btag.shape[0], btag.shape[1], 1)
 
