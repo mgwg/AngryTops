@@ -9,7 +9,7 @@ from AngryTops.ModelTraining.custom_loss import *
 n_features_input = 6
 n_target_features = 6
 
-def base_model(learn_rate, input_size=36, reshape_shape=(6,6), **kwargs):
+def base_model(learn_rate, reshape_shape=(6,6), **kwargs):
     """
     The base model. Consists of a since LSTM layer of 30 nodes sandwiched
     between two dense layers
@@ -23,7 +23,7 @@ def base_model(learn_rate, input_size=36, reshape_shape=(6,6), **kwargs):
     if 'lstm_size' in kwargs.keys():
         lstm_size = int(kwargs[lstm_size])
     model = keras.Sequential()
-    model.add(Dense(36, activation='relu', input_shape=(input_size,)))
+    model.add(Dense(36, activation='relu', input_shape=(36,)))
     model.add(Reshape(target_shape=reshape_shape))
     model.add(LSTM(lstm_size, return_sequences=True))
     model.add(Flatten())
@@ -34,7 +34,7 @@ def base_model(learn_rate, input_size=36, reshape_shape=(6,6), **kwargs):
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
-def batchnorm_model(learn_rate, input_size=36, reshape_shape=(6,6), **kwargs):
+def batchnorm_model(learn_rate, reshape_shape=(6,6), **kwargs):
     """
     The base model. Consists of a since LSTM layer of 30 nodes sandwiched
     between two dense layers
@@ -48,7 +48,7 @@ def batchnorm_model(learn_rate, input_size=36, reshape_shape=(6,6), **kwargs):
     if 'lstm_size' in kwargs.keys():
         lstm_size = int(kwargs[lstm_size])
     model = keras.Sequential()
-    model.add(Dense(36, activation='relu', input_shape=(input_size,)))
+    model.add(Dense(36, activation='relu', input_shape=(36,)))
     model.add(BatchNormalization())
     model.add(Reshape(target_shape=reshape_shape))
     model.add(LSTM(lstm_size, return_sequences=True))
@@ -60,7 +60,7 @@ def batchnorm_model(learn_rate, input_size=36, reshape_shape=(6,6), **kwargs):
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
-def double_lstm(learn_rate, input_size=36, reshape_shape=(6,6), **kwargs):
+def double_lstm(learn_rate, reshape_shape=(6,6), **kwargs):
     """
     Create a RNN w/ 3 regularized LSTM layers, sandwiched between Batch
     Normalizations and Dense Layers
@@ -77,7 +77,7 @@ def double_lstm(learn_rate, input_size=36, reshape_shape=(6,6), **kwargs):
     rec_weight = kwargs['rec_weight']
     bias_weight = kwargs["bias_weight"]
     model = keras.Sequential()
-    model.add(Dense(36, activation='relu', input_shape=(input_size,)))
+    model.add(Dense(36, activation='relu', input_shape=(36,)))
     model.add(BatchNormalization())
     model.add(Reshape(target_shape=reshape_shape))
     model.add(LSTM(lstm0, return_sequences=True, kernel_regularizer=l2(reg_weight),
@@ -92,7 +92,7 @@ def double_lstm(learn_rate, input_size=36, reshape_shape=(6,6), **kwargs):
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
-def triple_lstm(learn_rate, input_size=36, reshape_shape=(6,6), **kwargs):
+def triple_lstm(learn_rate, reshape_shape=(6,6), **kwargs):
     """
     Create a RNN w/ 3 regularized LSTM layers, sandwiched between Batch
     Normalizations and Dense Layers
@@ -110,7 +110,7 @@ def triple_lstm(learn_rate, input_size=36, reshape_shape=(6,6), **kwargs):
     rec_weight = kwargs['rec_weight']
     bias_weight = kwargs["bias_weight"]
     model = keras.Sequential()
-    model.add(Dense(36, activation='relu', input_shape=(input_size,)))
+    model.add(Dense(36, activation='relu', input_shape=(36,)))
     model.add(BatchNormalization())
     model.add(Reshape(target_shape=reshape_shape))
     model.add(LSTM(lstm0, return_sequences=True, kernel_regularizer=l2(reg_weight),
