@@ -29,20 +29,20 @@ def PrintOut( p4_true, p4_fitted, event_info, label ):
                 p4_fitted.Pt(), p4_fitted.Rapidity(), p4_fitted.Phi(), p4_fitted.E(), p4_fitted.M() ))
 
 
-def MakeP4( y, m=0., sf=1.000 ):
+def MakeP4( y, m=0.):
   p4 = TLorentzVector()
 
-  p0 = y[0] * sf
-  p1 = y[1] * sf
-  p2 = y[2] * sf
+  p0 = y[0]
+  p1 = y[1]
+  p2 = y[2]
   if representation == "pxpypzE":
-      E  = y[3] * sf
+      E  = y[3]
       p4.SetPxPyPzE( p0, p1, p2, E )
   elif representation == "ptetaphiE":
-      E  = y[3] * sf
+      E  = y[3]
       p4.SetPtEtaPhiE( p0, p1, p2, E )
   elif representation == "ptetaphiM":
-      M  = y[3] * sf
+      M  = y[3]
       p4.SetPtEtaPhiM( p0, p1, p2, M )
   else:
       raise Exception("Invalid Representation Given: {}".format(representation))
@@ -112,6 +112,13 @@ y_true_b_had = true[:,2,:]
 y_true_b_lep = true[:,3,:]
 y_true_t_had = true[:,4,:]
 y_true_t_lep = true[:,5,:]
+
+y_fitted_W_had = y_fitted[:,0,:]
+y_fitted_W_lep = y_fitted[:,1,:]
+y_fitted_b_had = y_fitted[:,2,:]
+y_fitted_b_lep = y_fitted[:,3,:]
+y_fitted_t_had = y_fitted[:,4,:]
+y_fitted_t_lep = y_fitted[:,5,:]
 
 #y_fitted = y_scaler.inverse_transform( y_fitted )
 n_events = true.shape[0]
@@ -349,22 +356,22 @@ for i in range(n_events):
     #  Originally, all of the fitted values had a max-momentum attribute. I
     # removed that. Possibly might induce bug?
     W_had_true   = MakeP4( y_true_W_had[i], m_W )
-    W_had_fitted = MakeP4( y_fitted[i][0],  m_W)
+    W_had_fitted = MakeP4( y_fitted_W_had[i],  m_W)
 
     W_lep_true   = MakeP4( y_true_W_lep[i], m_W )
-    W_lep_fitted = MakeP4( y_fitted[i][1],  m_W)
+    W_lep_fitted = MakeP4( y_fitted_W_lep[i],  m_W)
 
     b_had_true   = MakeP4( y_true_b_had[i], m_b )
-    b_had_fitted = MakeP4( y_fitted[i][2],  m_b )
+    b_had_fitted = MakeP4( y_fitted_b_had[i],  m_b )
 
     b_lep_true   = MakeP4( y_true_b_lep[i], m_b )
-    b_lep_fitted = MakeP4( y_fitted[i][3],  m_b)
-
-    t_lep_true   = MakeP4( y_true_t_lep[i], m_t )
-    t_lep_fitted = MakeP4( y_fitted[i][4],  m_t)
+    b_lep_fitted = MakeP4( y_fitted_b_lep[i],  m_b)
 
     t_had_true   = MakeP4( y_true_t_had[i], m_t )
-    t_had_fitted = MakeP4( y_fitted[i][4],  m_t)
+    t_had_fitted = MakeP4( y_fitted_t_had[i],  m_t)
+
+    t_lep_true   = MakeP4( y_true_t_lep[i], m_t )
+    t_lep_fitted = MakeP4( y_fitted_t_lep[i],  m_t)
 
     # fill branches
     b_eventNumber[0] = int(event_info[i][0])

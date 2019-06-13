@@ -18,8 +18,8 @@ print(tf.__version__)
 print(tf.test.gpu_device_name())
 
 def train_model(model_name, train_dir, csv_file="topreco.csv", BATCH_SIZE=32,\
-                EPOCHES=30, learn_rate=0.001, scaling="minmax",\
-                rep="pxpypzE", input_size=30, reshape_shape=(6,6), **kwargs):
+                EPOCHES=30, learn_rate=0.001, scaling="minmax", rep="pxpypzE", \
+                **kwargs):
 ###############################################################################
     # CONSTANTS
     train_dir = "../CheckPoints/{}".format(train_dir)
