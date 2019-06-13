@@ -13,7 +13,7 @@ import sklearn.preprocessing
 #input_filename = "csv/topreco_augmented1.csv"
 
 def get_input_output(input_filename='topreco.csv', \
-                     training_split=0.9, shuff=False, type="minmax", rep="cart"):
+                     training_split=0.9, shuff=False, scaling="standard", rep="pxpypzE"):
     """
     Return the training and testing data
     Training Data: Array of 36 elements. I am debating reshaping to matrix of (6 x 6)
@@ -44,19 +44,19 @@ def get_input_output(input_filename='topreco.csv', \
 
     # Normalize and retrieve the standard scalar
     # Note: We do not want to normalize the BTag column (the last one) in jets
-    jets_momentum, jets_scalar = normalize(jets, type)
+    jets_momentum, jets_scalar = normalize(jets, scaling)
     jets_momentum = jets_momentum.reshape(jets.shape[0], 5, 5)
     jets_norm = np.concatenate((jets_momentum, btag), axis=2)
 
     # Lepton
-    lep_norm, lep_scalar = normalize(lep, type)
+    lep_norm, lep_scalar = normalize(lep, scaling)
     lep_norm = lep_norm.reshape(lep.shape[0], 1, lep.shape[1])
 
     # Combine into input and output arrays of correct shape
     # For new, we flatten the input. Can change in the future
     input = np.concatenate((lep_norm, jets_norm), axis=1)
     input = input.reshape(input.shape[0], 36)
-    output, output_scalar = normalize(truth, type)
+    output, output_scalar = normalize(truth, scaling)
     output = output.reshape(output.shape[0], 6, 4)
 
     # Seperate training and testing data
@@ -72,7 +72,7 @@ def get_input_output(input_filename='topreco.csv', \
            (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing)
 
 
-def normalize(arr, type="minmax"):
+def normalize(arr, scaling):
     """Normalize the arr with StandardScalar and return the normalized array
     and the scalar"""
     if type == "standard":
