@@ -21,7 +21,7 @@ def base_model(learn_rate, reshape_shape=(6,6), **kwargs):
     # I simplified the model significantly => Reduced it to one recurrent layer
     lstm_size = 30
     if 'lstm_size' in kwargs.keys():
-        lstm_size = int(kwargs[lstm_size])
+        lstm_size = int(kwargs['lstm_size'])
     model = keras.Sequential()
     model.add(Dense(36, activation='relu', input_shape=(36,)))
     model.add(Reshape(target_shape=reshape_shape))
@@ -46,7 +46,7 @@ def batchnorm_model(learn_rate, reshape_shape=(6,6), **kwargs):
     # I simplified the model significantly => Reduced it to one recurrent layer
     lstm_size = 30
     if 'lstm_size' in kwargs.keys():
-        lstm_size = int(kwargs[lstm_size])
+        lstm_size = int(kwargs['lstm_size'])
     model = keras.Sequential()
     model.add(Dense(36, activation='relu', input_shape=(36,)))
     model.add(BatchNormalization())
