@@ -127,6 +127,39 @@ def triple_lstm(learn_rate, reshape_shape=(6,6), **kwargs):
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
+def model_mult(learn_rate, reshape_shape, **kwargs):
+    """Seperate the inputs for jets and leps"""
+    input_jets = Input(shape = (30,), name="input_jets")
+    input_lep = Input(shape=(6,), name="input_lep")
+
+    # Lepton Branch
+    x_lep = Dense(10, activation='relu')(input_lep)
+    x_lep = Dense(8, activation='relu')(input_lep)
+    x_lep = Dense(8, activation='relu')(x_lep)
+    x_lep = Reshape(target_shape=(1,8))(x_lep)
+    x_lep = keras.Model(inputs=input_lep, outputs=x_lep)
+
+    # Jets Branch
+    x_jets = Reshape(target_shape=(5,6))(input_jets)
+    x_jets = LSTM(10, return_sequences=True)(x_jets)
+    x_jets = LSTM(8, return_sequences=True)(x_jets)
+    x_jets = Dense(8, activation="relu")(x_jets)
+    x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
+
+    # Combine them
+    combined = concatenate([x_lep.output, x_jets.output], axis=1)
+
+    # Apply some more layers to combined data set
+    final = LSTM(6, return_sequences=True)(combined)
+    final = Dense(4, activation="linear")(final)
+
+    # Make final model
+    model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
+
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
+    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+
+    return model
 
 ################################################################################
 # List of all models

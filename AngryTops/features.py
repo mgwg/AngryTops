@@ -1,3 +1,7 @@
+"""This contains the different columns and subsets of the csv files used for the analysis"""
+
+#================================================================================
+# COLUMN NAMES OF THE CSV FILE
 column_names = ["runNumber", "eventNumber", "weight", "jets_n", "bjets_n",
 "lep Px", "lep Py", "lep Pz", "lep E", "met_met", "met_phi",
 "jet0 P_x",  "jet0 P_y",  "jet0 P_z",  "jet0 E",  "jet0 M",  "jet0 BTag",
@@ -22,100 +26,108 @@ column_names = ["runNumber", "eventNumber", "weight", "jets_n", "bjets_n",
 "target_b_had_Pt", "target_b_had_Eta", "target_b_had_Phi",
 "target_b_lep_Pt", "target_b_lep_Eta", "target_b_lep_Phi",
 "target_t_had_Pt", "target_t_had_Eta", "target_t_had_Phi",
-"target_t_lep_Pt", "target_t_lep_Eta", "target_t_lep_Phi"
-]
+"target_t_lep_Pt", "target_t_lep_Eta", "target_t_lep_Phi"]
+#================================================================================
+# OUTPUT COLUMNS
+# pxpypz representation
+output_columns_pxpypz = [
+"target_W_had_Px", "target_W_had_Py", "target_W_had_Pz",
+"target_W_lep_Px", "target_W_lep_Py", "target_W_lep_Pz",
+"target_b_had_Px", "target_b_had_Py", "target_b_had_Pz",
+"target_b_lep_Px", "target_b_lep_Py", "target_b_lep_Pz",
+"target_t_had_Px", "target_t_had_Py", "target_t_had_Pz",
+"target_t_lep_Px", "target_t_lep_Py", "target_t_lep_Pz"]
 
-input_columns = [
-"lep Px", "lep Py", "lep Pz", "lep E", "met_met", "met_phi",
-"jet0 P_x",  "jet0 P_y",  "jet0 P_z",  "jet0 E",  "jet0 M",  "jet0 BTag",
-"jet1 P_x",  "jet1 P_y",  "jet1 P_z",  "jet1 E",  "jet1 M",  "jet1 BTag",
-"jet2 P_x",  "jet2 P_y",  "jet2 P_z",  "jet2 E",  "jet2 M",  "jet2 BTag",
-"jet3 P_x",  "jet3 P_y",  "jet3 P_z",  "jet3 E",  "jet3 M",  "jet3 BTag",
-"jet4 P_x",  "jet4 P_y",  "jet4 P_z",  "jet4 E",  "jet4 M",  "jet4 BTag",
-]
-
-output_columns = [
+# pxpypzE representation
+output_columns_pxpypzE = [
 "target_W_had_Px", "target_W_had_Py", "target_W_had_Pz", "target_W_had_E",
 "target_W_lep_Px", "target_W_lep_Py", "target_W_lep_Pz", "target_W_lep_E",
 "target_b_had_Px", "target_b_had_Py", "target_b_had_Pz", "target_b_had_E",
 "target_b_lep_Px", "target_b_lep_Py", "target_b_lep_Pz", "target_b_lep_E",
 "target_t_had_Px", "target_t_had_Py", "target_t_had_Pz", "target_t_had_E",
-"target_t_lep_Px", "target_t_lep_Py", "target_t_lep_Pz", "target_t_lep_E",
-]
+"target_t_lep_Px", "target_t_lep_Py", "target_t_lep_Pz", "target_t_lep_E"]
 
+# ptetaphi representation
+output_columns_ptetaphi = [
+"target_W_had_Pt", "target_W_had_Eta", "target_W_had_Phi",
+"target_W_lep_Pt", "target_W_lep_Eta", "target_W_lep_Phi",
+"target_b_had_Pt", "target_b_had_Eta", "target_b_had_Phi",
+"target_b_lep_Pt", "target_b_lep_Eta", "target_b_lep_Phi",
+"target_t_had_Pt", "target_t_had_Eta", "target_t_had_Phi",
+"target_t_lep_Pt", "target_t_lep_Eta", "target_t_lep_Phi"]
+
+# ptetaphiE representation
 output_columns_ptetaphiE = [
 "target_W_had_Pt", "target_W_had_Eta", "target_W_had_Phi", "target_W_had_E",
 "target_W_lep_Pt", "target_W_lep_Eta", "target_W_lep_Phi", "target_W_lep_E",
 "target_b_had_Pt", "target_b_had_Eta", "target_b_had_Phi", "target_b_had_E",
 "target_b_lep_Pt", "target_b_lep_Eta", "target_b_lep_Phi", "target_b_lep_E",
 "target_t_had_Pt", "target_t_had_Eta", "target_t_had_Phi", "target_t_had_E",
-"target_t_lep_Pt", "target_t_lep_Eta", "target_t_lep_Phi", "target_t_lep_E",
-]
+"target_t_lep_Pt", "target_t_lep_Eta", "target_t_lep_Phi", "target_t_lep_E"]
 
+# ptetaphiM representation
 output_columns_ptetaphiM = [
 "target_W_had_Pt", "target_W_had_Eta", "target_W_had_Phi", "target_W_had_M",
 "target_W_lep_Pt", "target_W_lep_Eta", "target_W_lep_Phi", "target_W_lep_M",
 "target_b_had_Pt", "target_b_had_Eta", "target_b_had_Phi", "target_b_had_M",
 "target_b_lep_Pt", "target_b_lep_Eta", "target_b_lep_Phi", "target_b_lep_M",
 "target_t_had_Pt", "target_t_had_Eta", "target_t_had_Phi", "target_t_had_M",
-"target_t_lep_Pt", "target_t_lep_Eta", "target_t_lep_Phi", "target_t_lep_M",
-]
+"target_t_lep_Pt", "target_t_lep_Eta", "target_t_lep_Phi", "target_t_lep_M"]
+#================================================================================
+# INPUT COLUMNS
+# pxpypz representation
+jets_pxpypz = [
+"jet0 P_x",  "jet0 P_y",  "jet0 P_z",
+"jet1 P_x",  "jet1 P_y",  "jet1 P_z",
+"jet2 P_x",  "jet2 P_y",  "jet2 P_z",
+"jet3 P_x",  "jet3 P_y",  "jet3 P_z",
+"jet4 P_x",  "jet4 P_y",  "jet4 P_z"]
 
-input_features_jets = [
+# pxpypzEM representation
+jets_pxpypzEM = [
 "jet0 P_x",  "jet0 P_y",  "jet0 P_z",  "jet0 E",  "jet0 M",
 "jet1 P_x",  "jet1 P_y",  "jet1 P_z",  "jet1 E",  "jet1 M",
 "jet2 P_x",  "jet2 P_y",  "jet2 P_z",  "jet2 E",  "jet2 M",
 "jet3 P_x",  "jet3 P_y",  "jet3 P_z",  "jet3 E",  "jet3 M",
-"jet4 P_x",  "jet4 P_y",  "jet4 P_z",  "jet4 E",  "jet4 M",
-]
+"jet4 P_x",  "jet4 P_y",  "jet4 P_z",  "jet4 E",  "jet4 M"]
 
-input_features_jets_ptetaphi = [
+# ptetaphiEM representation
+jets_ptetaphi = [
+"jet0 Pt",  "jet0 Eta",  "jet0 Phi",
+"jet1 Pt",  "jet1 Eta",  "jet1 Phi",
+"jet2 Pt",  "jet2 Eta",  "jet2 Phi",
+"jet3 Pt",  "jet3 Eta",  "jet3 Phi",
+"jet4 Pt",  "jet4 Eta",  "jet4 Phi"]
+
+# ptetaphiEM representation
+jets_ptetaphiEM = [
 "jet0 Pt",  "jet0 Eta",  "jet0 Phi",  "jet0 E", "jet0 M",
 "jet1 Pt",  "jet1 Eta",  "jet1 Phi",  "jet1 E", "jet1 M",
 "jet2 Pt",  "jet2 Eta",  "jet2 Phi",  "jet2 E", "jet2 M",
 "jet3 Pt",  "jet3 Eta",  "jet3 Phi",  "jet3 E", "jet3 M",
-"jet4 Pt",  "jet4 Eta",  "jet4 Phi",  "jet4 E", "jet4 M"
-]
+"jet4 Pt",  "jet4 Eta",  "jet4 Phi",  "jet4 E", "jet4 M"]
+#================================================================================
+# LEPTON + MET COLUMNS
 
-btags = [
-"jet0 BTag", "jet1 BTag", "jet2 BTag", "jet3 BTag", "jet4 BTag"
-]
+# Lepton info (cartesian) + missing transverse energy info
+lep_cart = ["lep Px", "lep Py", "lep Pz", "met_met", "met_phi"]
 
-input_features_lep = [
-"lep Px", "lep Py", "lep Pz", "lep E", "met_met", "met_phi"
-]
+# Lepton info (cartesian) + Energy + missing transverse energy info
+lep_cartE = ["lep Px", "lep Py", "lep Pz", "lep E", "met_met", "met_phi"]
 
-input_features_lep_ptetaphi = [
-"lep Pt", "lep Eta", "lep Phi", "lep E", "met_met", "met_phi"
-]
+# Lepton info (ptetaphi) + missing transverse energy info
+lep_ptetaphi = ["lep Pt", "lep Eta", "lep Phi", "met_met", "met_phi"]
 
-target_features_W_lep = [
-"target_W_lep_Px", "target_W_lep_Py", "target_W_lep_Pz", "target_W_lep_E"
-]
+# Lepton info (ptetaphi) + Energy + missing transverse energy info
+lep_ptetaphiE = ["lep Pt", "lep Eta", "lep Phi", "lep E", "met_met", "met_phi"]
+#================================================================================
+# BTAG COLUMNS + EVENT INFO
+btags = ["jet0 BTag", "jet1 BTag", "jet2 BTag", "jet3 BTag", "jet4 BTag"]
 
-target_features_W_had = [
-"target_W_had_Px", "target_W_had_Py", "target_W_had_Pz", "target_W_had_E"
-]
+features_event_info = ["runNumber", "eventNumber", "weight", "jets_n", "bjets_n"]
 
-target_features_b_had  = [
-"target_b_had_Px", "target_b_had_Py", "target_b_had_Pz", "target_b_had_E"
-]
-
-target_features_b_lep  = [
-"target_b_lep_Px", "target_b_lep_Py", "target_b_lep_Pz", "target_b_lep_E"
-]
-
-target_features_t_had  = [
-"target_t_had_Px", "target_t_had_Py", "target_t_had_Pz", "target_t_had_E"
-]
-
-target_features_t_lep  = [
-"target_t_lep_Px", "target_t_lep_Py", "target_t_lep_Pz", "target_t_lep_E"
-]
-
-features_event_info = [
-    "runNumber", "eventNumber", "weight", "jets_n", "bjets_n"
-]
+#================================================================================
+# COLUMNS FOR PLOTTING PURPOSES
 
 attributes = ['W_had_px', 'W_had_py', 'W_had_pz', 'W_had_E', 'W_had_m',
 'W_had_pt', 'W_had_y', 'W_had_phi', 'b_had_px', 'b_had_py', 'b_had_pz',
@@ -133,8 +145,7 @@ corr_2d = [
 'corr_t_had_pt','corr_t_had_y', 'corr_t_had_phi', 'corr_t_had_E',
 'corr_W_lep_pt', 'corr_W_lep_y', 'corr_W_lep_phi', 'corr_W_lep_E',
 'corr_b_lep_pt', 'corr_b_lep_y', 'corr_b_lep_phi','corr_b_lep_E',
- 'corr_t_lep_pt','corr_t_lep_y', 'corr_t_lep_phi', 'corr_t_lep_E'
- ]
+ 'corr_t_lep_pt','corr_t_lep_y', 'corr_t_lep_phi', 'corr_t_lep_E']
 
 plots = ['reso_t_had_phi', 'corr_b_had_phi', 'corr_W_had_pt',
  'diff_W_lep_E', 'diff_t_had_y', 'reso_W_lep_pz',
@@ -178,3 +189,15 @@ plots = ['reso_t_had_phi', 'corr_b_had_phi', 'corr_W_had_pt',
  'reso_t_had_py', 'b_lep_px', 'corr_t_had_pt', 'b_had_py',
  'diff_b_lep_phi', 'b_lep_pz', 'reso_t_lep_px', 'reso_t_lep_py',
  'reso_W_had_pt', 'reso_t_had_pz', 'corr_t_lep_pt', 'b_had_px']
+
+#================================================================================
+ # A dictionary associating each representation with the correct input and output
+ # lists
+representations = {
+ "pxpypz": [lep_cart, jets_pxpypz, output_columns_pxpypz],
+ "pxpypzE": [lep_cartE, jets_pxpypzEM, output_columns_ptetaphiE],
+ "pxpypzM": [lep_cartE, jets_pxpypzEM, output_columns_ptetaphiM],
+ "ptetaphi": [lep_ptetaphi, jets_ptetaphi, output_columns_ptetaphi],
+ "ptetaphiE": [lep_ptetaphiE, jets_ptetaphiEM, output_columns_ptetaphiE],
+ "ptetaphiM": [lep_ptetaphiE, jets_ptetaphiEM, output_columns_ptetaphiE]
+ }

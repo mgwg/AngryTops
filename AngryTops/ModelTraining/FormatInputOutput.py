@@ -5,59 +5,45 @@ Meant to be run from the parent directory
 import pandas as pd
 import numpy as np
 import sys
-from features import *
+from AngryTops.features import *
 from sklearn.utils import shuffle
 import sklearn.preprocessing
 
-#input_filename = "csv/topreco.csv"
-#input_filename = "csv/topreco_augmented1.csv"
-
-def get_input_output(input_filename='topreco.csv', \
-                     training_split=0.9, shuff=False, scaling="standard", rep="pxpypzE"):
+def get_input_output(input_filename, training_split=0.9, **kwargs):
     """
     Return the training and testing data
     Training Data: Array of 36 elements. I am debating reshaping to matrix of (6 x 6)
     Testing Data: Matrix of Shape (6 x 4)
     """
+    scaling = kwargs['scaling']
+    rep = kwargs['rep']
     input_filename = "../csv/{}".format(input_filename)
     df = pd.read_csv(input_filename, names=column_names)
-    # Shuffle the DataSet
-    if shuff:
-        df = shuffle(df)
     # Load jets, leptons and output columns of the correct representation
     event_info = df[features_event_info].values
-    if rep == "ptetaphiE":
-        jets = df[input_features_jets_ptetaphi].values
-        lep = df[input_features_lep_ptetaphi].values
-        truth = df[output_columns_ptetaphiE].values
-    elif rep == 'ptetaphiM':
-        jets = df[input_features_jets_ptetaphi].values
-        lep = df[input_features_lep_ptetaphi].values
-        truth = df[output_columns_ptetaphiM].values
-    else:
-        jets = df[input_features_jets].values
-        lep = df[input_features_lep].values
-        truth = df[output_columns].values
-    # Load Btags and add extra dimension to shape (for concatenation)
+    lep = df[representations[rep][0]].values
+    jets = df[representations[rep][1]].values
+    truth = df[representations[rep][2]].values
     btag = df[btags].values
     btag = btag.reshape(btag.shape[0], btag.shape[1], 1)
 
     # Normalize and retrieve the standard scalar
     # Note: We do not want to normalize the BTag column (the last one) in jets
     jets_momentum, jets_scalar = normalize(jets, scaling)
-    jets_momentum = jets_momentum.reshape(jets.shape[0], 5, 5)
+    jets_momentum = jets_momentum.reshape(jets.shape[0], 5, -1)
     jets_norm = np.concatenate((jets_momentum, btag), axis=2)
+    jets_norm = jets_norm.reshape(jets_norm.shape[0], jets_norm.shape[1] * jets_norm.shape[2])
 
     # Lepton
     lep_norm, lep_scalar = normalize(lep, scaling)
-    lep_norm = lep_norm.reshape(lep.shape[0], 1, lep.shape[1])
 
     # Combine into input and output arrays of correct shape
     # For new, we flatten the input. Can change in the future
     input = np.concatenate((lep_norm, jets_norm), axis=1)
-    input = input.reshape(input.shape[0], 36)
     output, output_scalar = normalize(truth, scaling)
-    output = output.reshape(output.shape[0], 6, 4)
+    output = output.reshape(output.shape[0], 6, -1)
+    print(input.shape)
+    print(output.shape)
 
     # Seperate training and testing data
     assert 0 < training_split < 1, "Invalid training_split given"
@@ -85,7 +71,7 @@ def normalize(arr, scaling):
 # Testing to see if this works
 if __name__=='__main__':
     (training_input, training_output), (testing_input, testing_output), \
-           (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing)= get_input_output(rep="ptetaphiM")
+    (jets_scalar, lep_scalar, output_scalar), \
+    (event_training, event_testing)= get_input_output(input_filename="topreco_5dec.csv", scaling='standard', rep="pxpypzE")
     print(np.any(np.isnan(training_input)))
     print(np.any(np.isnan(training_output)))
-    print(training_output[3])
