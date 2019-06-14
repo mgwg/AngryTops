@@ -137,14 +137,16 @@ def model_multi(**kwargs):
     information to obtain the final state objects. Uses only a single LSTM layer
     in the beginning for jets."""
     learn_rate = kwargs["learn_rate"]
+    lstm_size = kwargs['lstm_size']
+    dense_size = kwargs['dense_size']
     input_jets = Input(shape = (20,), name="input_jets")
     input_lep = Input(shape=(5,), name="input_lep")
 
     # Jets
     x_jets = Reshape(target_shape=(5,4))(input_jets)
-    x_jets = LSTM(10, return_sequences=True)(x_jets)
-    x_jets = Reshape(target_shape=(50,))(x_jets)
-    x_jets = Dense(30, activation='linear')(x_jets)
+    x_jets = LSTM(lstm_size, return_sequences=True)(x_jets)
+    x_jets = Reshape(target_shape=(5*lstm_size,))(x_jets)
+    x_jets = Dense(dense_size, activation='linear')(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
 
     # Lep
