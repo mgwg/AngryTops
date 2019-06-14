@@ -17,14 +17,27 @@ import pickle
 print(tf.__version__)
 print(tf.test.gpu_device_name())
 
-def train_model(model_name, train_dir, csv_file="topreco.csv", BATCH_SIZE=32,\
-                EPOCHES=30, learn_rate=0.001, scaling="minmax", rep="pxpypzE", \
-                **kwargs):
-###############################################################################
+def train_model(model_name, train_dir, csv_file, **kwargs):
+    """
+    Trains a DNN model.
+    ============================================================================
+    INPUTS:
+    Model_name: The name of the mode in models.py
+    train_dir: Name of the folder to save the training info + model
+    csv_file: The csv file to read data from.
+    EPOCHES: # of EPOCHES to train
+    BATCH_SIZE: Batch size for training
+    learn_rate: Learn rate for neural network.
+    scaling: Choose between 'standard' or 'minmax' scaling of input and outputs
+    rep: The representation of the data. ie. pxpypz vs ptetaphiM vs ...
+    multi_input: True if the model is a multi_input model. False otherwise.
+    """
     # CONSTANTS
     train_dir = "../CheckPoints/{}".format(train_dir)
     print("Saving files in: {}".format(train_dir))
     checkpoint_path = "{}/cp.ckpt".format(train_dir)
+    EPOCHES = kwargs["EPOCHES"]
+    BATCH_SIZE = kwargs["BATCH_SIZE"]
     try:
         log = open("{}/log.txt".format(train_dir), 'w')
         sys.stdout = log
@@ -34,20 +47,15 @@ def train_model(model_name, train_dir, csv_file="topreco.csv", BATCH_SIZE=32,\
         log = open("{}/log.txt".format(train_dir), 'w')
         sys.stdout = log
 
-###############################################################################
+    ###########################################################################
     # LOADING / PRE-PROCESSING DATA
     (training_input, training_output), (testing_input, testing_output), \
-           (jets_scalar, lep_scalar, output_scalar), \
-           (event_training, event_testing) = get_input_output(input_filename=csv_file, scaling=scaling, rep=rep)
-    testing_input_original = testing_input.copy()
-    print("Shape of training_input: {}".format(training_input.shape))
-    print("Shape of training_input: {}".format(training_input.shape), file=sys.stderr)
-    print("Shape of testing_input: {}".format(testing_input.shape), file=sys.stderr)
+    (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) \
+                           = get_input_output(input_filename=csv_file, **kwargs)
 
-
-###############################################################################
+    ###########################################################################
     # BUILDING / TRAINING MODEL
-    model = models[model_name](learn_rate, **kwargs)
+    model = models[model_name](**kwargs)
     try:
         model.load_weights(checkpoint_path)
         print("Loaded weights from previous training session")
@@ -55,12 +63,12 @@ def train_model(model_name, train_dir, csv_file="topreco.csv", BATCH_SIZE=32,\
     except Exception as e:
         print(e)
         print(e, file=sys.stderr)
-    #model = keras.models.load_model("{}/simple_model.h5".format(train_dir))
+
     print(model.summary())
     print(model.summary(), file=sys.stderr)
 
     cp_callback = keras.callbacks.ModelCheckpoint(checkpoint_path,
-                                                save_weights_only=True, verbose=1)
+                                            save_weights_only=True, verbose=1)
     try:
         history = model.fit(training_input, training_output,  epochs=EPOCHES,
                             batch_size=BATCH_SIZE, validation_split=0.1,
@@ -71,7 +79,7 @@ def train_model(model_name, train_dir, csv_file="topreco.csv", BATCH_SIZE=32,\
         print("Training_inerrupted", file=sys.stderr)
         history = None
 
-###############################################################################
+    ###########################################################################
     # SAVING MODEL, TRAINING HISTORY AND SCALARS
     model.save('{}/simple_model.h5'.format(train_dir))
 
@@ -83,19 +91,20 @@ def train_model(model_name, train_dir, csv_file="topreco.csv", BATCH_SIZE=32,\
     print("INFO: scalers saved to file:", scaler_filename)
     print("INFO: scalers saved to file:", scaler_filename, file=sys.stderr)
 
-###############################################################################
+    ###########################################################################
     # EVALUATING MODEL AND MAKE PREDICTIONS
     # Evaluating model and saving the predictions
     test_acc = model.evaluate(testing_input, testing_output)
     print('\nTest accuracy:', test_acc)
     print('\nTest accuracy:', test_acc, file=sys.stderr)
     predictions = model.predict(testing_input)
-    np.savez("{}/predictions".format(train_dir), input=testing_input_original,\
+    np.savez("{}/predictions".format(train_dir), input=testing_input,
              true=testing_output, pred=predictions, events=event_testing)
 
     if history is not None:
         for key in history.history.keys():
-            np.savez("{0}/{1}.npz".format(train_dir, key), epoches=history.epoch, loss=history.history[key])
+            np.savez("{0}/{1}.npz".format(train_dir, key),
+                            epoches=history.epoch, loss=history.history[key])
         print("Keys: ", history.history.keys())
         plot_history(history, train_dir)
 
@@ -104,13 +113,4 @@ def train_model(model_name, train_dir, csv_file="topreco.csv", BATCH_SIZE=32,\
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 3:
-        train_model(sys.argv[1], train_dir=sys.argv[2])
-    elif len(sys.argv) == 4:
-        train_model(sys.argv[1], train_dir=sys.argv[2], csv_file=sys.argv[3])
-    elif len(sys.argv) == 5:
-        train_model(sys.argv[1], train_dir=sys.argv[2], csv_file=sys.argv[3],
-                    learn_rate = np.float(sys.argv[4]))
-    elif len(sys.argv) == 6:
-        train_model(sys.argv[1], train_dir=sys.argv[2], csv_file=sys.argv[3],
-                    learn_rate = np.float(sys.argv[4]), scaling=sys.argv[5])
+    print("Compiled")

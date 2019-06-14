@@ -9,7 +9,7 @@ from AngryTops.ModelTraining.custom_loss import *
 n_features_input = 6
 n_target_features = 6
 
-def base_model(learn_rate, reshape_shape=(6,6), **kwargs):
+def base_model(**kwargs):
     """
     The base model. Consists of a since LSTM layer of 30 nodes sandwiched
     between two dense layers
@@ -19,12 +19,13 @@ def base_model(learn_rate, reshape_shape=(6,6), **kwargs):
     # unceccessary
     # The return_sequences=True argument ==> Not sure what this does
     # I simplified the model significantly => Reduced it to one recurrent layer
+    learn_rate = kwargs["learn_rate"]
     lstm_size = 30
     if 'lstm_size' in kwargs.keys():
         lstm_size = int(kwargs['lstm_size'])
     model = keras.Sequential()
     model.add(Dense(36, activation='relu', input_shape=(36,)))
-    model.add(Reshape(target_shape=reshape_shape))
+    model.add(Reshape(target_shape=(6,6)))
     model.add(LSTM(lstm_size, return_sequences=True))
     model.add(Flatten())
     model.add(Dense(24))
@@ -34,7 +35,7 @@ def base_model(learn_rate, reshape_shape=(6,6), **kwargs):
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
-def batchnorm_model(learn_rate, reshape_shape=(6,6), **kwargs):
+def batchnorm_model(**kwargs):
     """
     The base model. Consists of a since LSTM layer of 30 nodes sandwiched
     between two dense layers
@@ -44,13 +45,14 @@ def batchnorm_model(learn_rate, reshape_shape=(6,6), **kwargs):
     # unceccessary
     # The return_sequences=True argument ==> Not sure what this does
     # I simplified the model significantly => Reduced it to one recurrent layer
+    learn_rate = kwargs["learn_rate"]
     lstm_size = 30
     if 'lstm_size' in kwargs.keys():
         lstm_size = int(kwargs['lstm_size'])
     model = keras.Sequential()
     model.add(Dense(36, activation='relu', input_shape=(36,)))
     model.add(BatchNormalization())
-    model.add(Reshape(target_shape=reshape_shape))
+    model.add(Reshape(target_shape=(6,6)))
     model.add(LSTM(lstm_size, return_sequences=True))
     model.add(Flatten())
     model.add(Dense(24))
@@ -60,7 +62,7 @@ def batchnorm_model(learn_rate, reshape_shape=(6,6), **kwargs):
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
-def double_lstm(learn_rate, reshape_shape=(6,6), **kwargs):
+def double_lstm(**kwargs):
     """
     Create a RNN w/ 3 regularized LSTM layers, sandwiched between Batch
     Normalizations and Dense Layers
@@ -70,6 +72,7 @@ def double_lstm(learn_rate, reshape_shape=(6,6), **kwargs):
     # unceccessary
     # The return_sequences=True argument ==> Not sure what this does
     # I simplified the model significantly => Reduced it to one recurrent layer
+    learn_rate = kwargs["learn_rate"]
     lstm0, lstm1 = 50, 50
     if 'lstm0' in kwargs.keys(): lstm0 = int(kwargs['lstm0'])
     if 'lstm1' in kwargs.keys(): lstm1 = int(kwargs['lstm1'])
@@ -79,7 +82,7 @@ def double_lstm(learn_rate, reshape_shape=(6,6), **kwargs):
     model = keras.Sequential()
     model.add(Dense(36, activation='relu', input_shape=(36,)))
     model.add(BatchNormalization())
-    model.add(Reshape(target_shape=reshape_shape))
+    model.add(Reshape(target_shape=(6,6)))
     model.add(LSTM(lstm0, return_sequences=True, kernel_regularizer=l2(reg_weight),
                     recurrent_regularizer=l2(rec_weight), bias_regularizer=l2(bias_weight)))
     model.add(LSTM(lstm1, return_sequences=True, kernel_regularizer=l2(reg_weight),
@@ -92,7 +95,7 @@ def double_lstm(learn_rate, reshape_shape=(6,6), **kwargs):
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
-def triple_lstm(learn_rate, reshape_shape=(6,6), **kwargs):
+def triple_lstm(**kwargs):
     """
     Create a RNN w/ 3 regularized LSTM layers, sandwiched between Batch
     Normalizations and Dense Layers
@@ -102,6 +105,7 @@ def triple_lstm(learn_rate, reshape_shape=(6,6), **kwargs):
     # unceccessary
     # The return_sequences=True argument ==> Not sure what this does
     # I simplified the model significantly => Reduced it to one recurrent layer
+    learn_rate = kwargs["learn_rate"]
     lstm0, lstm1, lstm2 = 50, 50, 50
     if 'lstm0' in kwargs.keys(): lstm0 = int(kwargs['lstm0'])
     if 'lstm1' in kwargs.keys(): lstm1 = int(kwargs['lstm1'])
@@ -112,7 +116,7 @@ def triple_lstm(learn_rate, reshape_shape=(6,6), **kwargs):
     model = keras.Sequential()
     model.add(Dense(36, activation='relu', input_shape=(36,)))
     model.add(BatchNormalization())
-    model.add(Reshape(target_shape=reshape_shape))
+    model.add(Reshape(target_shape=(6,6)))
     model.add(LSTM(lstm0, return_sequences=True, kernel_regularizer=l2(reg_weight),
                     recurrent_regularizer=l2(rec_weight), bias_regularizer=l2(bias_weight)))
     model.add(LSTM(lstm1, return_sequences=True, kernel_regularizer=l2(reg_weight),
@@ -127,31 +131,32 @@ def triple_lstm(learn_rate, reshape_shape=(6,6), **kwargs):
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
-def model_mult(learn_rate, reshape_shape, **kwargs):
-    """Seperate the inputs for jets and leps"""
-    input_jets = Input(shape = (30,), name="input_jets")
-    input_lep = Input(shape=(6,), name="input_lep")
+def model_multi(**kwargs):
+    """Seperate the inputs for jets and leps. Idea: Apply an LSTM layer to
+    correctly identify the order of the jets. Then combine with lept + met
+    information to obtain the final state objects. Uses only a single LSTM layer
+    in the beginning for jets."""
+    learn_rate = kwargs["learn_rate"]
+    input_jets = Input(shape = (20,), name="input_jets")
+    input_lep = Input(shape=(5,), name="input_lep")
 
-    # Lepton Branch
-    x_lep = Dense(10, activation='relu')(input_lep)
-    x_lep = Dense(8, activation='relu')(input_lep)
-    x_lep = Dense(8, activation='relu')(x_lep)
-    x_lep = Reshape(target_shape=(1,8))(x_lep)
-    x_lep = keras.Model(inputs=input_lep, outputs=x_lep)
-
-    # Jets Branch
-    x_jets = Reshape(target_shape=(5,6))(input_jets)
+    # Jets
+    x_jets = Reshape(target_shape=(5,4))(input_jets)
     x_jets = LSTM(10, return_sequences=True)(x_jets)
-    x_jets = LSTM(8, return_sequences=True)(x_jets)
-    x_jets = Dense(8, activation="relu")(x_jets)
+    x_jets = Reshape(target_shape=(50,))(x_jets)
+    x_jets = Dense(30, activation='linear')(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
+
+    # Lep
+    x_lep = keras.Model(inputs=input_lep, outputs=input_lep)
 
     # Combine them
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
 
     # Apply some more layers to combined data set
-    final = LSTM(6, return_sequences=True)(combined)
-    final = Dense(4, activation="linear")(final)
+    final = Dense(18, activation='relu')(combined)
+    final = Reshape(target_shape=(6,3))(final)
+    final = Dense(3, activation="linear")(final)
 
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
@@ -164,7 +169,8 @@ def model_mult(learn_rate, reshape_shape, **kwargs):
 ################################################################################
 # List of all models
 models = {'base_model':base_model, 'batchnorm_model':batchnorm_model,
-          'double_lstm':double_lstm, 'triple_lstm':triple_lstm}
+          'double_lstm':double_lstm, 'triple_lstm':triple_lstm,
+          'model_multi':model_multi}
 ################################################################################
 
 if __name__ == "__main__":

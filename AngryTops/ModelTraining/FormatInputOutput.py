@@ -15,11 +15,14 @@ def get_input_output(input_filename, training_split=0.9, **kwargs):
     Training Data: Array of 36 elements. I am debating reshaping to matrix of (6 x 6)
     Testing Data: Matrix of Shape (6 x 4)
     """
+    # Inputs
     scaling = kwargs['scaling']
     rep = kwargs['rep']
+    multi_input = kwargs['multi_input']
+
+    # Load jets, leptons and output columns of the correct representation
     input_filename = "../csv/{}".format(input_filename)
     df = pd.read_csv(input_filename, names=column_names)
-    # Load jets, leptons and output columns of the correct representation
     event_info = df[features_event_info].values
     lep = df[representations[rep][0]].values
     jets = df[representations[rep][1]].values
@@ -33,25 +36,26 @@ def get_input_output(input_filename, training_split=0.9, **kwargs):
     jets_momentum = jets_momentum.reshape(jets.shape[0], 5, -1)
     jets_norm = np.concatenate((jets_momentum, btag), axis=2)
     jets_norm = jets_norm.reshape(jets_norm.shape[0], jets_norm.shape[1] * jets_norm.shape[2])
-
-    # Lepton
     lep_norm, lep_scalar = normalize(lep, scaling)
 
-    # Combine into input and output arrays of correct shape
-    # For new, we flatten the input. Can change in the future
-    input = np.concatenate((lep_norm, jets_norm), axis=1)
-    output, output_scalar = normalize(truth, scaling)
-    output = output.reshape(output.shape[0], 6, -1)
-    print(input.shape)
-    print(output.shape)
-
-    # Seperate training and testing data
+    # INPUT
     assert 0 < training_split < 1, "Invalid training_split given"
     cut = np.int(np.round(df.shape[0] * training_split))
-    training_input = input[:cut]
+    if multi_input:
+        input = [lep_norm, jets_norm]
+        training_input = [lep_norm[:cut], jets_norm[:cut]]
+        testing_input = [lep_norm[cut:], jets_norm[cut:]]
+    else:
+        input = np.concatenate((lep_norm, jets_norm), axis=1)
+        training_input = input[:cut]
+        testing_input = input[cut:]
+
+    # OUTPUT
+    output, output_scalar = normalize(truth, scaling)
+    output = output.reshape(output.shape[0], 6, -1)
     training_output = output[:cut]
-    testing_input = input[cut:]
     testing_output = output[cut:]
+
     event_training = event_info[cut:]
     event_testing = event_info[:cut]
     return (training_input, training_output), (testing_input, testing_output), \
