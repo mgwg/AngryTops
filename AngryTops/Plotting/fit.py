@@ -53,13 +53,12 @@ def MakeP4(y, m):
 # Load Predictions
 print("INFO: fitting ttbar decay chain...")
 predictions = np.load('{}/predictions.npz'.format(training_dir))
-input= predictions['input']
 true = predictions['true']
 y_fitted = predictions['pred']
 event_info = predictions['events']
 # Keep track of the old shape: (# of test particles, # of features per
 # test particle, number of features for input)
-old_shape = (true.shape[1], true.shape[2], input.shape[-1])
+old_shape = (true.shape[1], true.shape[2])
 
 ################################################################################
 # UNDO NORMALIZATIONS
@@ -69,29 +68,6 @@ with open( scaler_filename, "rb" ) as file_scaler:
   jets_scalar = pickle.load(file_scaler)
   lep_scalar = pickle.load(file_scaler)
   output_scalar = pickle.load(file_scaler)
-
-# Divide up the input
-jets = input.reshape(input.shape[0], 6, -1)
-lep = jets[:,0,:]
-lep = lep.reshape(lep.shape[0], -1)
-jets_mom = jets[:,1:,:-1]
-jets_mom = jets_mom.reshape(jets_mom.shape[0], jets_mom.shape[1] * jets_mom.shape[2])
-btag = jets[:,1:,-1]
-btag = btag.reshape(btag.shape[0], btag.shape[1], 1)
-
-# Rescale each section
-lep = lep_scalar.inverse_transform(lep)
-jets_mom = jets_scalar.inverse_transform(jets_mom)
-
-# Recombine input
-jets_mom = jets_mom.reshape(jets_mom.shape[0], 5, -1)
-jets_norm = np.concatenate((jets_mom, btag), axis=2)
-#jets_n = np.sum(jets_norm.mean(-1) != 0, axis=-1 )
-#bjets_n = btag[:,:,0].sum(axis=-1)
-
-lep = lep.reshape(lep.shape[0], 1, lep.shape[1])
-input = np.concatenate((lep, jets_norm), axis=1)
-input = input.reshape(input.shape[0], old_shape[2])
 
 # Rescale the truth array
 true = true.reshape(true.shape[0], true.shape[1]*true.shape[2])
@@ -105,8 +81,6 @@ y_fitted = y_fitted.reshape(y_fitted.shape[0], old_shape[0], old_shape[1])
 ################################################################################
 
 # Seperate input and truth arrays so that I don't have to edit the code below
-X_jets = input[1:]
-X_lept = input[0]
 y_true_W_had = true[:,0,:]
 y_true_W_lep = true[:,1,:]
 y_true_b_had = true[:,2,:]
