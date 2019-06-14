@@ -42,7 +42,8 @@ def MakeP4(y, m):
         M  = y[3]
         p4.SetPtEtaPhiM(p0, p1, p2, M)
     elif representation == "pxpypz":
-        p4.SetPxPyPzM(p0, p1, p2, m)
+        E = np.sqrt(p0**2 + p1**2 + p2**2 + m**2)
+        p4.SetPxPyPzE(p0, p1, p2, E)
     elif representation == "ptetaphi":
         p4.SetPtEtaPhiM(p0, p1, p2, m)
     else:
