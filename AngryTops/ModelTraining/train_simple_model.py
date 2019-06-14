@@ -8,10 +8,10 @@ import tensorflow as tf
 from tensorflow import keras
 import os
 import sys
-from features import *
-from ModelTraining.models import models
-from ModelTraining.plotting_helper import plot_history
-from ModelTraining.FormatInputOutput import get_input_output
+from AngryTops.features import *
+from AngryTops.ModelTraining.models import models
+from AngryTops.ModelTraining.plotting_helper import plot_history
+from AngryTops.ModelTraining.FormatInputOutput import get_input_output
 import pickle
 
 print(tf.__version__)
@@ -66,21 +66,6 @@ def train_model(model_name, train_dir, csv_file="topreco.csv", BATCH_SIZE=32,\
                             batch_size=BATCH_SIZE, validation_split=0.1,
                             callbacks = [cp_callback]
                             )
-    except ValueError as v:
-        print(v)
-        print("Detected invalid input shape. Assuming model is multi-input")
-        print("Detected invalid input shape. Assuming model is multi-input", file=sys.stderr)
-        try:
-            training_input = [training_input[:,:6], training_input[:,6:]]
-            testing_input = [testing_input[:,:6], testing_input[:,6:]]
-            history = model.fit(training_input, training_output,  epochs=EPOCHES,
-                            batch_size=BATCH_SIZE, validation_split=0.1,
-                            callbacks = [cp_callback]
-                            )
-        except KeyboardInterrupt:
-            print("Training_inerrupted")
-            print("Training_inerrupted", file=sys.stderr)
-            history = None
     except KeyboardInterrupt:
         print("Training_inerrupted")
         print("Training_inerrupted", file=sys.stderr)

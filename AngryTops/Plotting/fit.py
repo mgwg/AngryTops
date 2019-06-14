@@ -14,10 +14,9 @@ representation = sys.argv[2]
 m_t = 172.5
 m_W = 80.4
 m_b = 4.95
-np.set_printoptions( precision=3, suppress=True, linewidth=250 )
+np.set_printoptions(precision=3, suppress=True, linewidth=250)
 infilename = "csv/topreco.csv"
 model_filename  = "{}/simple_model.h5".format(training_dir)
-#if len(sys.argv) > 1: infilename = sys.argv[1]
 
 ################################################################################
 # HELPER FUNCTIONS
@@ -28,25 +27,27 @@ def PrintOut( p4_true, p4_fitted, event_info, label ):
                 p4_true.Pt(),   p4_true.Rapidity(),   p4_true.Phi(),   p4_true.E(),   p4_true.M(), \
                 p4_fitted.Pt(), p4_fitted.Rapidity(), p4_fitted.Phi(), p4_fitted.E(), p4_fitted.M() ))
 
-
-def MakeP4( y, m=0.):
-  p4 = TLorentzVector()
-
-  p0 = y[0]
-  p1 = y[1]
-  p2 = y[2]
-  if representation == "pxpypzE":
-      E  = y[3]
-      p4.SetPxPyPzE( p0, p1, p2, E )
-  elif representation == "ptetaphiE":
-      E  = y[3]
-      p4.SetPtEtaPhiE( p0, p1, p2, E )
-  elif representation == "ptetaphiM":
-      M  = y[3]
-      p4.SetPtEtaPhiM( p0, p1, p2, M )
-  else:
-      raise Exception("Invalid Representation Given: {}".format(representation))
-  return p4
+def MakeP4(y, m):
+    p4 = TLorentzVector()
+    p0 = y[0]
+    p1 = y[1]
+    p2 = y[2]
+    if representation == "pxpypzE":
+        E  = y[3]
+        p4.SetPxPyPzE(p0, p1, p2, E)
+    elif representation == "ptetaphiE":
+        E  = y[3]
+        p4.SetPtEtaPhiE(p0, p1, p2, E)
+    elif representation == "ptetaphiM":
+        M  = y[3]
+        p4.SetPtEtaPhiM(p0, p1, p2, M)
+    elif representation == "pxpypz":
+        p4.SetPxPyPzM(p0, p1, p2, m)
+    elif representation == "ptetaphi":
+        p4.SetPtEtaPhiM(p0, p1, p2, m)
+    else:
+        raise Exception("Invalid Representation Given: {}".format(representation))
+    return p4
 
 ################################################################################
 # Load Predictions
