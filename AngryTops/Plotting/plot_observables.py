@@ -368,7 +368,7 @@ def plot_residuals(obs):
     if hist.Class() == TH2F.Class():
         hist = hist.ProfileX("hist_pfx")
 
-    SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
+    SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=2, markersize=1 )
 
     c, pad0 = MakeCanvas2()
 
@@ -464,7 +464,7 @@ def plot_profile(obs):
     if hist == None:
         print ("ERROR: invalid histogram for", obs)
     hist = hist.ProfileX("hist_pfx")
-    SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
+    SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=1 )
     c = TCanvas()
 
     hist.Draw()
