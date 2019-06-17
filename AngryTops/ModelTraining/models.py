@@ -141,12 +141,18 @@ def model_multi(**kwargs):
     dense_size = kwargs['dense_size']
     input_jets = Input(shape = (20,), name="input_jets")
     input_lep = Input(shape=(5,), name="input_lep")
+    dense_act1 = 'relu'
+    dense_act2 = 'relu'
+    target_shape = (6,3)
+    if 'dense_act1' in kwargs.keys(): dense_act1 = kwargs['dense_act1']
+    if 'dense_act2' in kwargs.keys(): dense_act2 = kwargs['dense_act2']
+    if 'target_shape' in kwargs.keys(): target_shape = kwargs['target_shape']
 
     # Jets
     x_jets = Reshape(target_shape=(5,4))(input_jets)
     x_jets = LSTM(lstm_size, return_sequences=True)(x_jets)
     x_jets = Reshape(target_shape=(5*lstm_size,))(x_jets)
-    x_jets = Dense(dense_size, activation='linear')(x_jets)
+    x_jets = Dense(dense_size, activation=dense_act1)(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
 
     # Lep
@@ -156,8 +162,8 @@ def model_multi(**kwargs):
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
 
     # Apply some more layers to combined data set
-    final = Dense(18, activation='relu')(combined)
-    final = Reshape(target_shape=(6,3))(final)
+    final = Dense(dense_act2, activation='relu')(combined)
+    final = Reshape(target_shape=target_shape)(final)
     final = Dense(3, activation="linear")(final)
 
     # Make final model
