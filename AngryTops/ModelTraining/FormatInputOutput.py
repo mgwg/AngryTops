@@ -9,7 +9,7 @@ from AngryTops.features import *
 from sklearn.utils import shuffle
 import sklearn.preprocessing
 
-def get_input_output(input_filename, training_split=0.9, **kwargs):
+def get_input_output(input_filename, training_split=0.9, single_output=None, **kwargs):
     """
     Return the training and testing data
     Training Data: Array of 36 elements. I am debating reshaping to matrix of (6 x 6)
@@ -19,6 +19,7 @@ def get_input_output(input_filename, training_split=0.9, **kwargs):
     scaling = kwargs['scaling']
     rep = kwargs['rep']
     multi_input = kwargs['multi_input']
+    if 'single_output' in kwargs.keys(): single_output = kwargs['single_output']
 
     # Load jets, leptons and output columns of the correct representation
     input_filename = "../csv/{}".format(input_filename)
@@ -26,7 +27,11 @@ def get_input_output(input_filename, training_split=0.9, **kwargs):
     event_info = df[features_event_info].values
     lep = df[representations[rep][0]].values
     jets = df[representations[rep][1]].values
-    truth = df[representations[rep][2]].values
+    if single_output is None:
+        truth = df[representations[rep][2]].values
+    else:
+        truth = df[single_output].values
+        truth = truth.reshape(truth.shape[0], -1)
     btag = df[btags].values
     btag = btag.reshape(btag.shape[0], btag.shape[1], 1)
 
@@ -52,7 +57,8 @@ def get_input_output(input_filename, training_split=0.9, **kwargs):
 
     # OUTPUT
     output, output_scalar = normalize(truth, scaling)
-    output = output.reshape(output.shape[0], 6, -1)
+    if not single_output:
+        output = output.reshape(output.shape[0], 6, -1)
     training_output = output[:cut]
     testing_output = output[cut:]
 
@@ -60,7 +66,6 @@ def get_input_output(input_filename, training_split=0.9, **kwargs):
     event_testing = event_info[:cut]
     return (training_input, training_output), (testing_input, testing_output), \
            (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing)
-
 
 def normalize(arr, scaling):
     """Normalize the arr with StandardScalar and return the normalized array
