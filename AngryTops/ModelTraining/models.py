@@ -143,7 +143,6 @@ def model_multi(**kwargs):
     input_lep = Input(shape=(5,), name="input_lep")
     dense_act1 = 'linear'
     dense_act2 = 'relu'
-    target_shape = (6,3)
     if 'dense_act1' in kwargs.keys(): dense_act1 = kwargs['dense_act1']
     if 'dense_act2' in kwargs.keys(): dense_act2 = kwargs['dense_act2']
 
@@ -173,11 +172,49 @@ def model_multi(**kwargs):
 
     return model
 
+def dense_multi(**kwargs):
+    """A denser version of model_multi"""
+    learn_rate = kwargs["learn_rate"]
+    lstm_size = kwargs['lstm_size']
+    dense1 = kwargs['dense1']
+    input_jets = Input(shape = (20,), name="input_jets")
+    input_lep = Input(shape=(5,), name="input_lep")
+    dense_act1 = 'relu'
+    if 'dense_act1' in kwargs.keys(): dense_act1 = kwargs['dense_act1']
+
+    # Jets
+    x_jets = Reshape(target_shape=(5,4))(input_jets)
+    x_jets = LSTM(50, return_sequences=True)(x_jets)
+    x_jets = Reshape(target_shape=(5*lstm_size,))(x_jets)
+    x_jets = Dense(50, activation='relu')(x_jets)
+    x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
+
+    # Lep
+    x_lep = keras.Model(inputs=input_lep, outputs=input_lep)
+
+    # Combine them
+    combined = concatenate([x_lep.output, x_jets.output], axis=1)
+
+    # Apply some more layers to combined data set
+    final = Dense(dense1, activation=dense_act1)(combined)
+    final = Dense(18, activation='elu')(final)
+    final = Reshape(target_shape=(6,3))(final)
+    final = Dense(3, activation="linear")(final)
+    final = Dense(3, activation="linear")(final)
+
+    # Make final model
+    model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
+
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
+    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+
+    return model
+
 ################################################################################
 # List of all models
 models = {'base_model':base_model, 'batchnorm_model':batchnorm_model,
           'double_lstm':double_lstm, 'triple_lstm':triple_lstm,
-          'model_multi':model_multi}
+          'model_multi':model_multi, 'dense_multi':dense_multi}
 ################################################################################
 
 if __name__ == "__main__":
