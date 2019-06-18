@@ -210,11 +210,52 @@ def dense_multi(**kwargs):
 
     return model
 
+def single_var(**kwargs):
+    """Predicts only ONE output variable"""
+    learn_rate = kwargs["learn_rate"]
+    lstm_size = kwargs['lstm_size']
+    dense_size = kwargs['dense_size']
+    input_jets = Input(shape = (20,), name="input_jets")
+    input_lep = Input(shape=(5,), name="input_lep")
+    dense_act1 = 'linear'
+    dense_act2 = 'relu'
+    if 'dense_act1' in kwargs.keys(): dense_act1 = kwargs['dense_act1']
+    if 'dense_act2' in kwargs.keys(): dense_act2 = kwargs['dense_act2']
+
+    # Jets
+    x_jets = Reshape(target_shape=(5,4))(input_jets)
+    x_jets = LSTM(lstm_size, return_sequences=True)(x_jets)
+    x_jets = Reshape(target_shape=(5*lstm_size,))(x_jets)
+    x_jets = Dense(dense_size, activation=dense_act1)(x_jets)
+    x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
+
+    # Lep
+    x_lep = keras.Model(inputs=input_lep, outputs=input_lep)
+
+    # Combine them
+    combined = concatenate([x_lep.output, x_jets.output], axis=1)
+
+    # Apply some more layers to combined data set
+    final = Dense(18, activation=dense_act2)(combined)
+    final = Reshape(target_shape=(6,3))(final)
+    final = Dense(3, activation="linear")(final)
+    final = Flatten()(final)
+    final = Dense(1, activation='linear')(final)
+
+    # Make final model
+    model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
+
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
+    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+
+    return model
+
 ################################################################################
 # List of all models
 models = {'base_model':base_model, 'batchnorm_model':batchnorm_model,
           'double_lstm':double_lstm, 'triple_lstm':triple_lstm,
-          'model_multi':model_multi, 'dense_multi':dense_multi}
+          'model_multi':model_multi, 'dense_multi':dense_multi,
+          'single_var':single_var}
 ################################################################################
 
 if __name__ == "__main__":
