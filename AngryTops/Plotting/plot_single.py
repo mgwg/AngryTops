@@ -259,9 +259,12 @@ if __name__=="__main__":
     # MAKE HISTOGRAM
     h_true = TH1F("true", ";idk ? arb [arb]", nbins, lowerlim, upperlim)
     h_fitted = TH1F("pred", ";idk ? arb [arb]", nbins, lowerlim, upperlim)
+    h_corr = TH2F("true", ";True [arb];Fitted [arb]", nbins, lowerlim, upperlim, nbins, lowerlim, upperlim)
     for i in range(true.shape[0]):
         h_true.Fill(true[i], 1.0)
         h_fitted.Fill(y_fitted[i], 1.0)
+        h_corr.Fill(true[i], y_fitted[i], 1.0)
+
 
     # FORMAT HISTOGRAMS
     xtitle = h_true.GetXaxis().GetTitle()
@@ -333,3 +336,35 @@ if __name__=="__main__":
     pad1.Close()
     c.Close()
 
+    # MAKE CONTOUR PLOT
+    c = TCanvas()
+    c.cd()
+    pad0 = TPad( "pad0","pad0",0, 0,1,1,0,0,0 )
+    pad0.SetLeftMargin( 0.18 ) #0.16
+    pad0.SetRightMargin( 0.05 )
+    pad0.SetBottomMargin( 0.05 )
+    pad0.SetTopMargin( 0.07 ) #0.05
+    pad0.SetFillColor(0)
+    pad0.SetFillStyle(4000)
+    pad0.Draw()
+    pad0.cd()
+    h_corr.Draw("colz")
+    corr = h_corr.GetCorrelationFactor()
+    l = TLatex()
+    l.SetNDC()
+    l.SetTextFont(42)
+    l.SetTextColor(kBlack)
+    l.DrawLatex( 0.2, 0.8, "Corr Coeff: %.2f" % corr )
+    gPad.RedrawAxis()
+    newpad = TPad("newpad","a caption",0.1,0,1,1)
+    newpad.SetFillStyle(4000)
+    newpad.Draw()
+    newpad.cd()
+    title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
+    title.SetFillColor(16)
+    title.SetTextFont(52)
+    title.Draw()
+    c.cd()
+    c.SaveAs("{0}/ContourPlot.png".format(training_dir))
+    pad0.Close()
+    c.Close()
