@@ -139,18 +139,29 @@ def model_multi(**kwargs):
     learn_rate = kwargs["learn_rate"]
     lstm_size = kwargs['lstm_size']
     dense_size = kwargs['dense_size']
-    input_jets = Input(shape = (20,), name="input_jets")
-    input_lep = Input(shape=(5,), name="input_lep")
     dense_act1 = 'linear'
     dense_act2 = 'relu'
+    reg_weight = 0.0
+    rec_weight = 0.0
+    dense1_weight = 0.0
+    if 'reg_weight' in kwargs.keys(): reg_weight = kwargs['reg_weight']
+    if 'rec_weight' in kwargs.keys(): rec_weight = kwargs['rec_weight']
+    if 'bias_weight' in kwargs.keys():bias_weight = kwargs["bias_weight"]
+    if 'dense_act1' in kwargs.keys(): dense_act1 = kwargs['dense_act1']
     if 'dense_act1' in kwargs.keys(): dense_act1 = kwargs['dense_act1']
     if 'dense_act2' in kwargs.keys(): dense_act2 = kwargs['dense_act2']
+    if 'dense1_weight' in kwargs.keys(): dense_act2 = kwargs['dense1_weight']
 
+    input_jets = Input(shape = (20,), name="input_jets")
+    input_lep = Input(shape=(5,), name="input_lep")
     # Jets
     x_jets = Reshape(target_shape=(5,4))(input_jets)
-    x_jets = LSTM(lstm_size, return_sequences=True)(x_jets)
+    x_jets = LSTM(lstm_size, return_sequences=True,
+                  kernel_regularizer=l2(reg_weight),
+                  recurrent_regularizer=l2(rec_weight))(x_jets)
     x_jets = Reshape(target_shape=(5*lstm_size,))(x_jets)
-    x_jets = Dense(dense_size, activation=dense_act1)(x_jets)
+    x_jets = Dense(dense_size, activation=dense_act1,
+                   kernel_regularizer=l2(dense1_weight))(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
 
     # Lep
@@ -177,14 +188,23 @@ def dense_multi(**kwargs):
     learn_rate = kwargs["learn_rate"]
     lstm_size = kwargs['lstm_size']
     dense1 = kwargs['dense1']
-    input_jets = Input(shape = (20,), name="input_jets")
-    input_lep = Input(shape=(5,), name="input_lep")
     dense_act1 = 'relu'
+    reg_weight = 0.0
+    rec_weight = 0.0
+    bias_weight = 0.0
+    if 'reg_weight' in kwargs.kers(): reg_weight = kwargs['reg_weight']
+    if 'rec_weight' in kwargs.kers(): rec_weight = kwargs['rec_weight']
+    if 'bias_weight' in kwargs.kers():bias_weight = kwargs["bias_weight"]
     if 'dense_act1' in kwargs.keys(): dense_act1 = kwargs['dense_act1']
 
+    input_jets = Input(shape = (20,), name="input_jets")
+    input_lep = Input(shape=(5,), name="input_lep")
     # Jets
     x_jets = Reshape(target_shape=(5,4))(input_jets)
-    x_jets = LSTM(50, return_sequences=True)(x_jets)
+    x_jets = LSTM(50, return_sequences=True,
+                  kernel_regularizer=l2(reg_weight),
+                  recurrent_regularizer=l2(rec_weight),
+                  bias_regularizer=l2(bias_weight))(x_jets)
     x_jets = Reshape(target_shape=(5*lstm_size,))(x_jets)
     x_jets = Dense(50, activation='relu')(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
@@ -224,7 +244,8 @@ def single_var(**kwargs):
 
     # Jets
     x_jets = Reshape(target_shape=(5,4))(input_jets)
-    x_jets = LSTM(lstm_size, return_sequences=True)(x_jets)
+    x_jets = LSTM(50, return_sequences=True)(x_jets)
+    x_jets = LSTM(30, return_sequences=True)(x_jets)
     x_jets = Reshape(target_shape=(5*lstm_size,))(x_jets)
     x_jets = Dense(dense_size, activation=dense_act1)(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
