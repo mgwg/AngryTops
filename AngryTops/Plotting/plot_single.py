@@ -1,14 +1,16 @@
 import os, sys
 from ROOT import *
 import numpy as np
-
+import pickle
 from AngryTops.features import *
 
 ################################################################################
 # CONSTANTS
 training_dir = sys.argv[1]
-representation = sys.argv[2]
-caption = sys.argv[3]
+caption = sys.argv[2]
+nbins = int(sys.argv[3])
+lowerlim = float(sys.argv[4])
+upperlim = float(sys.argv[5])
 m_t = 172.5
 m_W = 80.4
 m_b = 4.95
@@ -255,15 +257,17 @@ if __name__=="__main__":
     y_fitted = output_scalar.inverse_transform(y_fitted)
 
     # MAKE HISTOGRAM
-    h_true = TH1F("true", ";idk ? arb [arb]", 50, -1000., 1000.)
-    h_fitted = TH1F("pred", ";idk ? arb [arb]", 50, -1000., 1000.)
-    h_true.Fill(true, 1)
-    h_fitted.Fill(y_fitted, 1)
+    h_true = TH1F("true", ";idk ? arb [arb]", nbins, lowerlim, upperlim)
+    h_fitted = TH1F("pred", ";idk ? arb [arb]", nbins, lowerlim, upperlim)
+    for i in range(true.shape[0]):
+        h_true.Fill(true[i], 1.0)
+        h_fitted.Fill(y_fitted[i], 1.0)
 
     # FORMAT HISTOGRAMS
+    xtitle = h_true.GetXaxis().GetTitle()
+    ytitle = h_true.GetYaxis().GetTitle()
     for h in [h_true, h_fitted]:
-      h.Sumw2()
-      if hname.endswith("true")>-1:
+        h.Sumw2()
         h.SetMarkerColor(kRed)
         h.SetLineColor(kRed)
         h.SetMarkerStyle(24)
@@ -324,7 +328,8 @@ if __name__=="__main__":
     frame, tot_unc, ratio = DrawRatio(h_fitted, h_true, xtitle, yrange)
     gPad.RedrawAxis()
     c.cd()
-    c.SaveAs("histogram.png".format(training_dir, obs))
+    c.SaveAs("{}/histogram.png".format(training_dir))
     pad0.Close()
     pad1.Close()
     c.Close()
+
