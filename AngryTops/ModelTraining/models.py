@@ -236,10 +236,8 @@ def single_var(**kwargs):
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
 
     # Apply some more layers to combined data set
-    final = Dense(18, activation=dense_act2)(combined)
-    final = Reshape(target_shape=(6,3))(final)
-    final = Dense(3, activation="linear")(final)
-    final = Flatten()(final)
+    final = Dense(15, activation=dense_act2)(combined)
+    final = Dense(5, activation="elu")(final)
     final = Dense(1, activation='linear')(final)
 
     # Make final model
