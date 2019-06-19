@@ -15,7 +15,6 @@ m_t = 172.5
 m_W = 80.4
 m_b = 4.95
 np.set_printoptions(precision=3, suppress=True, linewidth=250)
-infilename = "csv/topreco.csv"
 model_filename  = "{}/simple_model.h5".format(training_dir)
 
 ################################################################################
