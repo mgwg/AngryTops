@@ -73,7 +73,7 @@ def normalize(arr, scaling):
     if type == "standard":
         scalar = sklearn.preprocessing.StandardScaler()
     else:
-        scalar = sklearn.preprocessing.MinMaxScaler()
+        scalar = sklearn.preprocessing.MinMaxScaler(feature_range=(-1, 1))
     new_arr = scalar.fit_transform(arr)
     return new_arr, scalar
 
