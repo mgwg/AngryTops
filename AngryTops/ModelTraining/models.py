@@ -246,7 +246,7 @@ def single_var(**kwargs):
     x_jets = Reshape(target_shape=(5,4))(input_jets)
     x_jets = LSTM(50, return_sequences=True)(x_jets)
     x_jets = LSTM(30, return_sequences=True)(x_jets)
-    x_jets = Reshape(target_shape=(5*lstm_size,))(x_jets)
+    x_jets = Reshape(target_shape=(5*30,))(x_jets)
     x_jets = Dense(dense_size, activation=dense_act1)(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
 
