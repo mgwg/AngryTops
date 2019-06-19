@@ -191,10 +191,8 @@ def dense_multi(**kwargs):
     dense_act1 = 'relu'
     reg_weight = 0.0
     rec_weight = 0.0
-    bias_weight = 0.0
-    if 'reg_weight' in kwargs.kers(): reg_weight = kwargs['reg_weight']
-    if 'rec_weight' in kwargs.kers(): rec_weight = kwargs['rec_weight']
-    if 'bias_weight' in kwargs.kers():bias_weight = kwargs["bias_weight"]
+    if 'reg_weight' in kwargs.keys(): reg_weight = kwargs['reg_weight']
+    if 'rec_weight' in kwargs.keys(): rec_weight = kwargs['rec_weight']
     if 'dense_act1' in kwargs.keys(): dense_act1 = kwargs['dense_act1']
 
     input_jets = Input(shape = (20,), name="input_jets")
@@ -203,8 +201,7 @@ def dense_multi(**kwargs):
     x_jets = Reshape(target_shape=(5,4))(input_jets)
     x_jets = LSTM(50, return_sequences=True,
                   kernel_regularizer=l2(reg_weight),
-                  recurrent_regularizer=l2(rec_weight),
-                  bias_regularizer=l2(bias_weight))(x_jets)
+                  recurrent_regularizer=l2(rec_weight))(x_jets)
     x_jets = Reshape(target_shape=(5*lstm_size,))(x_jets)
     x_jets = Dense(50, activation='relu')(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
