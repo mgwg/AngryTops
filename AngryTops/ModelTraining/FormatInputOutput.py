@@ -25,7 +25,8 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
     input_filename = "../csv/{}".format(input_filename)
     df = pd.read_csv(input_filename, names=column_names)
     if 'shuffle' in kwargs.keys():
-        df = shuffle(df)
+        print("Shuffling training/testing data")
+	df = shuffle(df)
     event_info = df[features_event_info].values
     lep = df[representations[rep][0]].values
     jets = df[representations[rep][1]].values
