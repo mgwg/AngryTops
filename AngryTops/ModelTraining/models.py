@@ -411,7 +411,7 @@ models = {'model_multi':model_multi,  'dense_multi':dense_multi,
           'dense_multi6':dense_multi6,'dense_multi7':dense_multi7,
           'dense_multi8':dense_multi8}
 
-for key, constructor in single_models:
+for key, constructor in single_models.items():
     models[key] = constructor
 
 ################################################################################
