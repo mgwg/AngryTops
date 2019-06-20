@@ -173,7 +173,7 @@ def dense_multi3(**kwargs):
 
     # Lep
     x_lep = Dense(10, activation='linear')(input_lep)
-    x_lep = keras.Model(inputs=input_lep, outputs=input_lep)
+    x_lep = keras.Model(inputs=input_lep, outputs=x_lep)
 
     # Combine them
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
@@ -214,7 +214,7 @@ def dense_multi4(**kwargs):
     x_lep = Dense(20, activation='relu')(input_lep)
     x_lep = Dense(15, activation='relu')(x_lep)
     x_lep = Dense(10, activation='linear')(x_lep)
-    x_lep = keras.Model(inputs=input_lep, outputs=input_lep)
+    x_lep = keras.Model(inputs=input_lep, outputs=x_lep)
 
     # Combine them
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
@@ -258,7 +258,7 @@ def dense_multi5(**kwargs):
     x_lep = Dense(15, activation='relu')(x_lep)
     x_lep = BatchNormalization()(x_lep)
     x_lep = Dense(10, activation='linear')(x_lep)
-    x_lep = keras.Model(inputs=input_lep, outputs=input_lep)
+    x_lep = keras.Model(inputs=input_lep, outputs=x_lep)
 
     # Combine them
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
@@ -300,7 +300,7 @@ def dense_multi6(**kwargs):
     x_lep = Dense(15, activation='relu')(x_lep)
     x_lep = BatchNormalization()(x_lep)
     x_lep = Dense(10, activation='linear')(x_lep)
-    x_lep = keras.Model(inputs=input_lep, outputs=input_lep)
+    x_lep = keras.Model(inputs=input_lep, outputs=x_lep)
 
     # Combine them
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
@@ -340,7 +340,7 @@ def dense_multi7(**kwargs):
     x_lep = Dense(15, activation='relu')(x_lep)
     x_lep = Dense(10, activation='linear')(x_lep)
     x_jets = BatchNormalization()(x_jets)
-    x_lep = keras.Model(inputs=input_lep, outputs=input_lep)
+    x_lep = keras.Model(inputs=input_lep, outputs=x_lep)
 
     # Combine them
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
@@ -380,7 +380,7 @@ def dense_multi8(**kwargs):
     x_lep = Dense(15, activation='relu')(x_lep)
     x_lep = Dense(10, activation='linear')(x_lep)
     x_lep = BatchNormalization()(x_lep)
-    x_lep = keras.Model(inputs=input_lep, outputs=input_lep)
+    x_lep = keras.Model(inputs=input_lep, outputs=x_lep)
 
     # Combine them
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
