@@ -159,7 +159,14 @@ def model_multi(**kwargs):
     x_jets = LSTM(lstm_size, return_sequences=True,
                   kernel_regularizer=l2(reg_weight),
                   recurrent_regularizer=l2(rec_weight))(x_jets)
-    x_jets = Reshape(target_shape=(5*lstm_size,))(x_jets)
+    x_jets = LSTM(lstm_size//2, return_sequences=True,
+                  kernel_regularizer=l2(reg_weight),
+                  recurrent_regularizer=l2(rec_weight))(x_jets)
+    x_jets = LSTM(lstm_size//4, return_sequences=False,
+                  kernel_regularizer=l2(reg_weight),
+                  recurrent_regularizer=l2(rec_weight))(x_jets)
+
+    #x_jets = Reshape(target_shape=(5*lstm_size,))(x_jets)
     x_jets = Dense(dense_size, activation=dense_act1,
                    kernel_regularizer=l2(dense1_weight))(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
@@ -171,9 +178,9 @@ def model_multi(**kwargs):
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
 
     # Apply some more layers to combined data set
-    final = Dense(18, activation=dense_act2)(combined)
+    final = Dense(25, activation=dense_act2)(combined)
+    final = Dense(18, activation='linear')(combined)
     final = Reshape(target_shape=(6,3))(final)
-    final = Dense(3, activation="linear")(final)
 
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
@@ -199,11 +206,10 @@ def dense_multi(**kwargs):
     input_lep = Input(shape=(5,), name="input_lep")
     # Jets
     x_jets = Reshape(target_shape=(5,4))(input_jets)
-    x_jets = LSTM(50, return_sequences=True,
+    x_jets = LSTM(50, return_sequences=False,
                   kernel_regularizer=l2(reg_weight),
                   recurrent_regularizer=l2(rec_weight))(x_jets)
-    x_jets = Reshape(target_shape=(5*lstm_size,))(x_jets)
-    x_jets = Dense(50, activation='relu')(x_jets)
+    x_jets = Dense(30, activation='relu')(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
 
     # Lep
@@ -218,6 +224,51 @@ def dense_multi(**kwargs):
     final = Reshape(target_shape=(6,3))(final)
     final = Dense(3, activation="linear")(final)
     final = Dense(3, activation="linear")(final)
+
+    # Make final model
+    model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
+
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
+    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+
+    return model
+
+def dense_multi2(**kwargs):
+    """A denser version of model_multi"""
+    learn_rate = kwargs["learn_rate"]
+    dense_act1 = 'relu'
+    reg_weight = 0.0
+    rec_weight = 0.0
+    if 'reg_weight' in kwargs.keys(): reg_weight = kwargs['reg_weight']
+    if 'rec_weight' in kwargs.keys(): rec_weight = kwargs['rec_weight']
+    if 'dense_act1' in kwargs.keys(): dense_act1 = kwargs['dense_act1']
+
+    input_jets = Input(shape = (20,), name="input_jets")
+    input_lep = Input(shape=(5,), name="input_lep")
+    # Jets
+    x_jets = Reshape(target_shape=(5,4))(input_jets)
+    x_jets = LSTM(50, return_sequences=True,
+                  kernel_regularizer=l2(reg_weight),
+                  recurrent_regularizer=l2(rec_weight))(x_jets)
+    x_jets = LSTM(40, return_sequences=True,
+                  kernel_regularizer=l2(reg_weight),
+                  recurrent_regularizer=l2(rec_weight))(x_jets)
+    x_jets = LSTM(30, return_sequences=False,
+                  kernel_regularizer=l2(reg_weight),
+                  recurrent_regularizer=l2(rec_weight))(x_jets)
+    x_jets = Dense(20, activation='relu')(x_jets)
+    x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
+
+    # Lep
+    x_lep = keras.Model(inputs=input_lep, outputs=input_lep)
+
+    # Combine them
+    combined = concatenate([x_lep.output, x_jets.output], axis=1)
+
+    # Apply some more layers to combined data set
+    final = Dense(18, activation='tanh')(combined)
+    final = Dense(18, activation='linear')(final)
+    final = Reshape(target_shape=(6,3))(final)
 
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
@@ -271,7 +322,7 @@ def single_var(**kwargs):
 models = {'base_model':base_model, 'batchnorm_model':batchnorm_model,
           'double_lstm':double_lstm, 'triple_lstm':triple_lstm,
           'model_multi':model_multi, 'dense_multi':dense_multi,
-          'single_var':single_var}
+          'single_var':single_var, 'dense_multi2':dense_multi2}
 ################################################################################
 
 if __name__ == "__main__":
