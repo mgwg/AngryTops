@@ -339,7 +339,7 @@ def dense_multi7(**kwargs):
     x_lep = Dense(20, activation='relu')(input_lep)
     x_lep = Dense(15, activation='relu')(x_lep)
     x_lep = Dense(10, activation='linear')(x_lep)
-    x_jets = BatchNormalization()(x_jets)
+    x_lep = BatchNormalization()(x_jets)
     x_lep = keras.Model(inputs=input_lep, outputs=x_lep)
 
     # Combine them
