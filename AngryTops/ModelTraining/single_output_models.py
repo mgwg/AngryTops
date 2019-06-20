@@ -53,7 +53,7 @@ def single2(**kwargs):
     x_jets = LSTM(30, return_sequences=False)(x_jets)
     x_jets = Dense(25, activation='relu')(x_jets)
     x_jets = Dense(20, activation='relu')(x_jets)
-    x-jets = BatchNormalization()(x_jets)
+    x_jets = BatchNormalization()(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
 
     # Lep
@@ -88,7 +88,7 @@ def single3(**kwargs):
     x_jets = LSTM(30, return_sequences=False)(x_jets)
     x_jets = Dense(25, activation='relu')(x_jets)
     x_jets = Dense(20, activation='relu')(x_jets)
-    x-jets = BatchNormalization()(x_jets)
+    x_jets = BatchNormalization()(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
 
     # Lep
