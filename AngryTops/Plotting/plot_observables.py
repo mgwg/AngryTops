@@ -485,6 +485,7 @@ def plot_profile(obs):
 
 ################################################################################
 if __name__==   "__main__":
+    os.mkdir('{}/img'.format(training_dir))
     infilename = "{}/histograms.root".format(training_dir)
     infile = TFile.Open(infilename)
 
