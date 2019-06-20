@@ -113,5 +113,5 @@ def single3(**kwargs):
 
 ################################################################################
 # List of all models
-single_models = {'single_var':single_var}
+single_models = {'single1':single1, 'single2':single2, 'single3':single3}
 ################################################################################
