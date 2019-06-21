@@ -29,7 +29,11 @@ def single1(**kwargs):
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
 
     # Apply some more layers to combined data set
-    final = Dense(15, activation='relu')(combined)
+    final = Dense(30, activation='relu')(combined)
+    final = Dense(25, activation="relu")(final)
+    final = Dense(20, activation="relu")(final)
+    final = Dense(15, activation="relu")(final)
+    final = Dense(10, activation="relu")(final)
     final = Dense(5, activation="elu")(final)
     final = Dense(1, activation='linear')(final)
 
@@ -48,9 +52,13 @@ def single2(**kwargs):
 
     # Jets
     x_jets = Reshape(target_shape=(5,4))(input_jets)
+    x_jets = BatchNormalization()(x_jets)
     x_jets = LSTM(50, return_sequences=True)(x_jets)
+    x_jets = BatchNormalization()(x_jets)
     x_jets = LSTM(40, return_sequences=True)(x_jets)
+    x_jets = BatchNormalization()(x_jets)
     x_jets = LSTM(30, return_sequences=False)(x_jets)
+    x_jets = BatchNormalization()(x_jets)
     x_jets = Dense(25, activation='relu')(x_jets)
     x_jets = Dense(20, activation='relu')(x_jets)
     x_jets = BatchNormalization()(x_jets)
@@ -87,6 +95,8 @@ def single3(**kwargs):
     x_jets = Reshape(target_shape=(5,4))(input_jets)
     x_jets = Dense(50, activation='relu')(x_jets)
     x_jets = Dense(40, activation='relu')(x_jets)
+    x_jets = BatchNormalization()(x_jets)
+    x_jets = LSTM(40, return_sequences=True)(x_jets)
     x_jets = LSTM(30, return_sequences=False)(x_jets)
     x_jets = Dense(25, activation='relu')(x_jets)
     x_jets = Dense(20, activation='relu')(x_jets)
@@ -104,7 +114,11 @@ def single3(**kwargs):
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
 
     # Apply some more layers to combined data set
-    final = Dense(15, activation='relu')(combined)
+    final = Dense(30, activation='relu')(combined)
+    final = Dense(25, activation="relu")(final)
+    final = Dense(20, activation="relu")(final)
+    final = Dense(15, activation="relu")(final)
+    final = Dense(10, activation="relu")(final)
     final = Dense(5, activation="elu")(final)
     final = Dense(1, activation='linear')(final)
 
