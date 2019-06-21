@@ -159,7 +159,7 @@ def single4(**kwargs):
     # Apply some more layers to combined data set
     final = Dense(30, activation='relu', kernel_regularizer=l2(0.005))(combined)
     final = Reshape(target_shape=(6,5))(final)
-    final = LSTM(30, return_sequences=False)(final)
+    final = LSTM(30, return_sequences=True)(final)
     final = LSTM(25, return_sequences=False)(final)
     final = Dense(25, activation="relu",  kernel_regularizer=l2(0.005))(final)
     final = Dense(20, activation="relu",  kernel_regularizer=l2(0.005))(final)
