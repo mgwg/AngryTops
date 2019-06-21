@@ -331,7 +331,7 @@ def dense_multi8(**kwargs):
     # Apply some more layers to combined data set
     final = Dense(30, activation='relu', kernel_regularizer=l2(0.0001))(combined)
     final = Dense(25, activation='relu', kernel_regularizer=l2(0.0001))(final)
-    final = Dense(25, activation='relu', activit_regularizer=l2(0.0001))(final)
+    final = Dense(25, activation='relu', kernel_regularizer=l2(0.0001))(final)
     final = Dense(18, activation='elu', kernel_regularizer=l2(0.0001))(final)
     final = Dense(18)(final)
     final = Reshape(target_shape=(6,3))(final)
