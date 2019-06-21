@@ -289,7 +289,7 @@ def dense_multi7(**kwargs):
 
     # Apply some more layers to combined data set
     final = Reshape(target_shape=(6,5))(combined)
-    final = LSTM(30, return_sequences=True, kernel_regularizer=l2(0.005))(final)
+    final = LSTM(30, return_sequences=False, kernel_regularizer=l2(0.005))(final)
     final = Dense(25, activation='relu', kernel_regularizer=l2(0.0001))(final)
     final = Dense(18, activation='elu', kernel_regularizer=l2(0.0001))(final)
     final = Dense(18)(final)
