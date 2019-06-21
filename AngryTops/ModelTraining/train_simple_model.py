@@ -13,6 +13,7 @@ from AngryTops.ModelTraining.models import models
 from AngryTops.ModelTraining.plotting_helper import plot_history
 from AngryTops.ModelTraining.FormatInputOutput import get_input_output
 import pickle
+from AngryTops.ModelTraining.print_model import print_structure
 
 print(tf.__version__)
 print(tf.test.gpu_device_name())
@@ -108,6 +109,11 @@ def train_model(model_name, train_dir, csv_file, **kwargs):
         print("Keys: ", history.history.keys())
         plot_history(history, train_dir)
 
+    for layer in model.layers:
+        g=layer.get_config()
+        h=layer.get_weights()
+        print (g)
+        print (h)
     sys.stdout = sys.__stdout__
     log.close()
 
