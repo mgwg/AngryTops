@@ -233,7 +233,7 @@ def dense_multi6(**kwargs):
     input_lep = Input(shape=(5,), name="input_lep")
     # Jets
     x_jets = Dense(50, activation='relu', kernel_regularizer=l2(10e-5))(input_jets)
-    x_jets = Reshape(target_shape=(5,4))(input_jets)
+    x_jets = Reshape(target_shape=(5,10))(x_jets)
     x_jets = LSTM(50, return_sequences=True, kernel_regularizer=l2(10e-5))(x_jets)
     x_jets = LSTM(30, return_sequences=False, kernel_regularizer=l2(10e-5))(x_jets)
     x_jets = Dense(30, activation='relu', kernel_regularizer=l2(10e-5))(x_jets)
@@ -273,7 +273,7 @@ def dense_multi7(**kwargs):
     # Jets
     x_jets = Reshape(target_shape=(5,4))(input_jets)
     x_jets = BatchNormalization()(x_jets)
-    x_jets = LSTM(50, return_sequences=True, kernel_regularizer=l2(10e-5))(x_jets)
+    x_jets = LSTM(50, return_sequences=False, kernel_regularizer=l2(10e-5))(x_jets)
     x_jets = Dense(25, activation='relu', kernel_regularizer=l2(10e-5))(x_jets)
     x_jets = BatchNormalization()(x_jets)
     x_jets = Dense(20)(x_jets)
