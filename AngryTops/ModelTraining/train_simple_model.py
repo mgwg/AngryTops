@@ -18,7 +18,7 @@ from AngryTops.ModelTraining.print_model import print_structure
 print(tf.__version__)
 print(tf.test.gpu_device_name())
 
-def train_model(model_name, train_dir, csv_file, **kwargs):
+def train_model(model_name, train_dir, csv_file, log_training=True, **kwargs):
     """
     Trains a DNN model.
     ============================================================================
@@ -39,14 +39,15 @@ def train_model(model_name, train_dir, csv_file, **kwargs):
     checkpoint_path = "{}/cp.ckpt".format(train_dir)
     EPOCHES = kwargs["EPOCHES"]
     BATCH_SIZE = kwargs["BATCH_SIZE"]
-    try:
-        log = open("{}/log.txt".format(train_dir), 'w')
-        sys.stdout = log
-    except Exception as e:
-        print(e)
-        os.mkdir(train_dir)
-        log = open("{}/log.txt".format(train_dir), 'w')
-        sys.stdout = log
+    if log_training:
+        try:
+            log = open("{}/log.txt".format(train_dir), 'w')
+            sys.stdout = log
+        except Exception as e:
+            print(e)
+            os.mkdir(train_dir)
+            log = open("{}/log.txt".format(train_dir), 'w')
+            sys.stdout = log
 
     ###########################################################################
     # LOADING / PRE-PROCESSING DATA
