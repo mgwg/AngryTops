@@ -15,8 +15,10 @@ def single1(**kwargs):
 
     # Jets
     x_jets = Reshape(target_shape=(5,4))(input_jets)
-    x_jets = LSTM(50, return_sequences=True)(x_jets)
-    x_jets = LSTM(30, return_sequences=True)(x_jets)
+    x_jets = LSTM(50, return_sequences=True, kernel_regularizer=l2(0.005))(x_jets)
+    x_jets = BatchNormalization()(x_jets)
+    x_jets = LSTM(30, return_sequences=True, kernel_regularizer=l2(0.005))(x_jets)
+    x_jets = BatchNormalization()(x_jets)
     x_jets = LSTM(20, return_sequences=False)(x_jets)
     x_jets = BatchNormalization()(x_jets)
     x_jets = Dense(20, activation='tanh')(x_jets)
@@ -29,9 +31,7 @@ def single1(**kwargs):
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
 
     # Apply some more layers to combined data set
-    final = Dense(30, activation='relu')(combined)
-    final = Dense(25, activation="relu")(final)
-    final = Dense(20, activation="relu")(final)
+    final = Dense(25, activation="relu")(combined)
     final = Dense(15, activation="relu")(final)
     final = Dense(10, activation="relu")(final)
     final = Dense(5, activation="elu")(final)
