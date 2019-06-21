@@ -165,7 +165,7 @@ def dense_multi4(**kwargs):
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
 
-    optimizer = tf.keras.optimizers.Adam(learn_rate)
+    optimizer = tf.keras.optimizers.Adam(10e-3)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
 
     return model
