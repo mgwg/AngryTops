@@ -240,18 +240,18 @@ def dense_multi6(**kwargs):
 
     # Lep
     x_lep = Dense(20, activation='elu', kernel_regularizer=l2(10e-4))(input_lep)
-    x_lep = Dense(15, activation='elu', kernel_regularizer=l2(10e-4))(input_lep)
+    x_lep = Dense(15, activation='elu', kernel_regularizer=l2(10e-4))(x_lep)
     x_lep = Dense(10, activation='linear')(input_lep)
-    x_lep = keras.Model(inputs=input_lep, outputs=input_lep)
+    x_lep = keras.Model(inputs=input_lep, outputs=x_lep)
 
     # Combine them
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
 
     # Apply some more layers to combined data set
-    final = Dense(25, activation='relu')(combined)
+    final = Dense(30, activation='relu')(combined)
+    final = Dense(25, activation='elu')(final)
     final = Dense(18, activation='elu')(final)
-    final = Dense(10, activation='elu')(final)
-    final = Dense(3, activation="linear")(final)
+    final = Dense(18), activation="linear")(final)
     final = Reshape(target_shape=(6,3))(final)
 
     # Make final model
