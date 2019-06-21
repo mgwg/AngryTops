@@ -251,7 +251,7 @@ def dense_multi6(**kwargs):
     final = Dense(30, activation='relu')(combined)
     final = Dense(25, activation='elu')(final)
     final = Dense(18, activation='elu')(final)
-    final = Dense(18), activation="linear")(final)
+    final = Dense(18, activation="linear")(final)
     final = Reshape(target_shape=(6,3))(final)
 
     # Make final model
