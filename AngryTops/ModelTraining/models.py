@@ -329,8 +329,8 @@ def dense_multi8(**kwargs):
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
 
     # Apply some more layers to combined data set
-    final = Dense(30, kernel_regularizer=l2(0.0001))(final)
-    final = Dense(25, kernel_regularizer=l2(0.0001))(final)
+    final = Dense(30, activation='relu', kernel_regularizer=l2(0.0001))(combined)
+    final = Dense(25, activation='relu', kernel_regularizer=l2(0.0001))(final)
     final = Dense(25, activation='relu', activit_regularizer=l2(0.0001))(final)
     final = Dense(18, activation='elu', kernel_regularizer=l2(0.0001))(final)
     final = Dense(18)(final)
