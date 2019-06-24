@@ -23,7 +23,7 @@ def single1(**kwargs):
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
 
     # Apply some more layers to combined data set
-    final = Dense(40, activation=dense_act1)(combined)
+    final = Dense(40, activation='relu')(combined)
     final = Dense(18, activation='elu')(final)
     final = Reshape(target_shape=(6,3))(final)
     final = Dense(3, activation="linear")(final)
