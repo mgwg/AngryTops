@@ -25,8 +25,7 @@ def single1(**kwargs):
     # Apply some more layers to combined data set
     final = Dense(40, activation='relu')(combined)
     final = Dense(18, activation='elu')(final)
-    final = Reshape(target_shape=(6,3))(final)
-    final = Dense(3, activation="linear")(final)
+    final = Dense(9, activation="relu")(final)
     final = Dense(3, activation="linear")(final)
 
     # Make final model
