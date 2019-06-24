@@ -98,8 +98,7 @@ def dense_multi3(**kwargs):
     # Jets
     x_jets = Reshape(target_shape=(5,4))(input_jets)
     x_jets = LSTM(50, return_sequences=True, kernel_regularizer=l2(10e-5))(x_jets)
-    x_jets = LSTM(40, return_sequences=True, kernel_regularizer=l2(10e-5))(x_jets)
-    x_jets = LSTM(30, return_sequences=False, kernel_regularizer=l2(10e-5))(x_jets)
+    x_jets = LSTM(25, return_sequences=False, kernel_regularizer=l2(10e-5))(x_jets)
     x_jets = Dense(20)(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
 
@@ -134,10 +133,7 @@ def dense_multi4(**kwargs):
     x_jets = Dense(20, activation='relu', kernel_regularizer=l2(10e-5))(input_jets)
     x_jets = Reshape(target_shape=(5,4))(x_jets)
     x_jets = LSTM(50, return_sequences=True, kernel_regularizer=l2(10e-5))(x_jets)
-    x_jets = BatchNormalization(axis=1)(x_jets)
-    x_jets = LSTM(40, return_sequences=True, kernel_regularizer=l2(10e-5))(x_jets)
-    x_jets = BatchNormalization(axis=1)(x_jets)
-    x_jets = LSTM(30, return_sequences=False, kernel_regularizer=l2(10e-5))(x_jets)
+    x_jets = LSTM(25, return_sequences=False, kernel_regularizer=l2(10e-5))(x_jets)
     x_jets = BatchNormalization()(x_jets)
     x_jets = Dense(20, activation='relu', kernel_regularizer=l2(10e-5))(x_jets)
     x_jets = Dense(20, activation='linear')(x_jets)
@@ -175,9 +171,7 @@ def dense_multi5(**kwargs):
     x_jets = Dense(20, activation='relu', kernel_regularizer=l2(10e-5))(x_jets)
     x_jets = Reshape(target_shape=(5,4))(x_jets)
     x_jets = LSTM(50, return_sequences=True, kernel_regularizer=l2(10e-5))(x_jets)
-    x_jets = LSTM(40, return_sequences=True, kernel_regularizer=l2(10e-5))(x_jets)
-    x_jets = BatchNormalization(axis=1)(x_jets)
-    x_jets = LSTM(30, return_sequences=False, kernel_regularizer=l2(10e-5))(x_jets)
+    x_jets = LSTM(25, return_sequences=False, kernel_regularizer=l2(10e-5))(x_jets)
     x_jets = BatchNormalization()(x_jets)
     x_jets = Dense(20, activation='linear')(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
@@ -215,7 +209,7 @@ def dense_multi6(**kwargs):
     x_jets = LSTM(50, return_sequences=True, kernel_regularizer=l2(10e-5))(x_jets)
     x_jets = LSTM(30, return_sequences=False, kernel_regularizer=l2(10e-5))(x_jets)
     x_jets = Dense(30, activation='relu', kernel_regularizer=l2(10e-5))(x_jets)
-    x_jets = Dense(20, activation='linear')(x_jets)
+    x_jets = Dense(25, activation='linear')(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
 
     # Lep
@@ -228,9 +222,9 @@ def dense_multi6(**kwargs):
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
 
     # Apply some more layers to combined data set
-    final = Dense(30, activation='relu')(combined)
+    final = Dense(50, activation='relu')(combined)
     final = Dense(25, activation='elu')(final)
-    final = Dense(18, activation='elu')(final)
+    final = Dense(18, activation='tanh')(final)
     final = Dense(18, activation="linear")(final)
     final = Reshape(target_shape=(6,3))(final)
 
@@ -250,7 +244,8 @@ def dense_multi7(**kwargs):
     # Jets
     x_jets = Reshape(target_shape=(5,4))(input_jets)
     x_jets = BatchNormalization(axis=1)(x_jets)
-    x_jets = LSTM(50, return_sequences=False, kernel_regularizer=l2(10e-5))(x_jets)
+    x_jets = LSTM(50, return_sequences=True)(x_jets)
+    x_jets = LSTM(25, return_sequences=False)(x_jets)
     x_jets = Dense(25, activation='relu', kernel_regularizer=l2(10e-5))(x_jets)
     x_jets = BatchNormalization()(x_jets)
     x_jets = Dense(20)(x_jets)
@@ -267,9 +262,11 @@ def dense_multi7(**kwargs):
 
     # Apply some more layers to combined data set
     final = Reshape(target_shape=(6,5))(combined)
-    final = LSTM(30, return_sequences=False, kernel_regularizer=l2(10e-5))(final)
-    final = Dense(18)(final)
-    final = Reshape(target_shape=(6,3))(final)
+    final = LSTM(30, return_sequences=True, kernel_regularizer=l2(10e-5))(final)
+    final = Dense(15, activation='elu')(final)
+    final = Dense(10, activation='elu')(final)
+    final = Dense(5, activation='tanh')(final)
+    final = Dense(3)(final)
 
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
@@ -287,7 +284,7 @@ def dense_multi8(**kwargs):
     # Jets
     x_jets = Reshape(target_shape=(5,4))(input_jets)
     x_jets = BatchNormalization(axis=1)(x_jets)
-    x_jets = LSTM(50, return_sequences=True, kernel_regularizer=l2(10e-5))(x_jets)
+    x_jets = LSTM(50, return_sequences=True, kernel_regularizer=l2(10e-5), recurrent_dropout=0.1)(x_jets)
     x_jets = LSTM(30, return_sequences=False, kernel_regularizer=l2(10e-5))(x_jets)
     x_jets = BatchNormalization()(x_jets)
     x_jets = Dense(20, activation='relu')(x_jets)
@@ -304,8 +301,9 @@ def dense_multi8(**kwargs):
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
 
     # Apply some more layers to combined data set
-    final = Dense(30, activation='relu', kernel_regularizer=l2(10e-5))(combined)
+    final = Dense(50, activation='relu', kernel_regularizer=l2(10e-5))(combined)
     final = Dense(25, activation='elu', kernel_regularizer=l2(10e-5))(final)
+    final = Dense(20, activation='elu', kernel_regularizer=l2(10e-5))(final)
     final = Dense(18)(final)
     final = Reshape(target_shape=(6,3))(final)
 
