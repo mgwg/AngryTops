@@ -12,9 +12,7 @@ def single1(**kwargs):
     input_lep = Input(shape=(5,), name="input_lep")
     # Jets
     x_jets = Reshape(target_shape=(5,4))(input_jets)
-    x_jets = LSTM(50, return_sequences=False,
-                  kernel_regularizer=l2(reg_weight),
-                  recurrent_regularizer=l2(rec_weight))(x_jets)
+    x_jets = LSTM(50, return_sequences=False)(x_jets)
     x_jets = Dense(30, activation='relu')(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
 
