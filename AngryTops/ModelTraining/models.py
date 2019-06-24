@@ -78,7 +78,7 @@ def dense_multi2(**kwargs):
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
 
     # Apply some more layers to combined data set
-    final = Dense(18, activation='tanh')(combined)
+    final = Dense(50, activation='tanh')(combined)
     final = Dense(18, activation='linear')(final)
     final = Reshape(target_shape=(6,3))(final)
 
