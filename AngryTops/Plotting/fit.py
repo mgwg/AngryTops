@@ -23,8 +23,8 @@ model_filename  = "{}/simple_model.h5".format(training_dir)
 def PrintOut( p4_true, p4_fitted, event_info, label ):
   print("rn=%-10i en=%-10i ) %s :: true=( %4.1f, %3.2f, %3.2f, %4.1f ; %3.1f ) :: fitted=( %4.1f, %3.2f, %3.2f, %4.1f ; %3.1f )" % \
                ( event_info[0], event_info[1], label,
-                p4_true.Pt(),   p4_true.Rapidity(),   p4_true.Phi(),   p4_true.E(),   p4_true.M(), \
-                p4_fitted.Pt(), p4_fitted.Rapidity(), p4_fitted.Phi(), p4_fitted.E(), p4_fitted.M() ))
+                p4_true.Px(),   p4_true.Py(),   p4_true.Pz(),   p4_true.Pt(),   p4_true.E(), \
+                p4_fitted.Px(), p4_fitted.Py(), p4_fitted.Pz(), p4_fitted.Pt(), p4_fitted.E() ))
 
 def MakeP4(y, m):
     p4 = TLorentzVector()
