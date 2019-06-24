@@ -42,12 +42,12 @@ def train_model(model_name, train_dir, csv_file, log_training=True, **kwargs):
     if log_training:
         try:
             log = open("{}/log.txt".format(train_dir), 'w')
-            sys.stdout = log
+            #sys.stdout = log
         except Exception as e:
             print(e)
             os.mkdir(train_dir)
             log = open("{}/log.txt".format(train_dir), 'w')
-            sys.stdout = log
+            #sys.stdout = log
 
     ###########################################################################
     # LOADING / PRE-PROCESSING DATA

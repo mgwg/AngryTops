@@ -23,10 +23,10 @@ def single1(**kwargs):
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
 
     # Apply some more layers to combined data set
-    final = Dense(40, activation='relu')(combined)
+    final = Dense(36, activation='relu')(combined)
     final = Dense(18, activation='elu')(final)
-    final = Dense(9, activation="relu")(final)
-    final = Dense(3, activation="linear")(final)
+    final = Dense(6, activation="relu")(final)
+    final = Dense(1, activation="linear")(final)
 
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
