@@ -138,7 +138,7 @@ def dense_multi4(**kwargs):
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
 
     # Lep
-    x_lep = Dense(10, activation='linear')(x_lep)
+    x_lep = Dense(10, activation='linear')(input_lep)
     x_lep = keras.Model(inputs=input_lep, outputs=x_lep)
 
     # Combine them
