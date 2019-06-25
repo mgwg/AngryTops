@@ -100,8 +100,12 @@ def train_model(model_name, train_dir, csv_file, log_training=True, **kwargs):
     print('\nTest accuracy:', test_acc)
     print('\nTest accuracy:', test_acc, file=sys.stderr)
     predictions = model.predict(testing_input)
-    np.savez("{}/predictions".format(train_dir), true=testing_output,
-             pred=predictions, events=event_testing)
+    if kwargs['multi_input']:
+        np.savez("{}/predictions".format(train_dir), lep=testing_input[0], jet=testing_input[1],
+                                      true=testing_output, pred=predictions, events=event_testing)
+    else:
+        np.savez("{}/predictions".format(train_dir), input=testing_input,
+                                      true=testing_output, pred=predictions, events=event_testing)
 
     if history is not None:
         for key in history.history.keys():
