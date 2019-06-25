@@ -49,13 +49,21 @@ def single0(**kwargs):
 
 def single1(**kwargs):
     """Predicts only ONE output variable"""
+    dense_act1 = 'relu'
+    reg_weight = 0.0
+    rec_weight = 0.0
+    if 'reg_weight' in kwargs.keys(): reg_weight = kwargs['reg_weight']
+    if 'rec_weight' in kwargs.keys(): rec_weight = kwargs['rec_weight']
+    if 'dense_act1' in kwargs.keys(): dense_act1 = kwargs['dense_act1']
+
     input_jets = Input(shape = (20,), name="input_jets")
     input_lep = Input(shape=(5,), name="input_lep")
     # Jets
     x_jets = Reshape(target_shape=(5,4))(input_jets)
-    x_jets = LSTM(25, return_sequences=False)(x_jets)
-    x_jets = Dense(20, activation='relu')(x_jets)
-    x_jets = Dense(20, activation='linear')(x_jets)
+    x_jets = LSTM(50, return_sequences=False,
+                  kernel_regularizer=l2(reg_weight),
+                  recurrent_regularizer=l2(rec_weight))(x_jets)
+    x_jets = Dense(30, activation='relu')(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
 
     # Lep
@@ -65,8 +73,10 @@ def single1(**kwargs):
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
 
     # Apply some more layers to combined data set
-    final = Dense(18, activation='elu')(combined)
-    final = Dense(6, activation="relu")(final)
+    final = Dense(40, activation=dense_act1)(combined)
+    final = Dense(18, activation='elu')(final)
+    final = Dense(6, activation='elu')(final)
+    final = Dense(6, activation='elu')(final)
     final = Dense(1, activation="linear")(final)
 
     # Make final model
