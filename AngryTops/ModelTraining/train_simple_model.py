@@ -5,15 +5,14 @@ Meant to be run from the parent directory
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
-from tensorflow import keras
+from tensorflow.keras.callbacks import ModelCheckpoint
 import os
 import sys
+import pickle
 from AngryTops.features import *
 from AngryTops.ModelTraining.models import models
 from AngryTops.ModelTraining.plotting_helper import plot_history
 from AngryTops.ModelTraining.FormatInputOutput import get_input_output
-import pickle
-from AngryTops.ModelTraining.print_model import print_structure
 
 print(tf.__version__)
 print(tf.test.gpu_device_name())
@@ -36,19 +35,17 @@ def train_model(model_name, train_dir, csv_file, log_training=True, **kwargs):
     # CONSTANTS
     train_dir = "../CheckPoints/{}".format(train_dir)
     print("Saving files in: {}".format(train_dir))
-    checkpoint_path = "{}/cp.ckpt".format(train_dir)
+    checkpoint_path = latest = tf.train.latest_checkpoint(train_dir)
+    print("Checkpoint Path: ", checkpoint_path)
     EPOCHES = kwargs["EPOCHES"]
     BATCH_SIZE = kwargs["BATCH_SIZE"]
+    try:
+        log = open("{}/log.txt".format(train_dir), 'w')
+    except Exception as e:
+        os.mkdir(train_dir)
+        log = open("{}/log.txt".format(train_dir), 'w')
     if log_training:
-        try:
-            log = open("{}/log.txt".format(train_dir), 'w')
-            sys.stdout = log
-        except Exception as e:
-            print(e)
-            os.mkdir(train_dir)
-            log = open("{}/log.txt".format(train_dir), 'w')
-            sys.stdout = log
-
+        sys.stdout = log
     ###########################################################################
     # LOADING / PRE-PROCESSING DATA
     (training_input, training_output), (testing_input, testing_output), \
@@ -67,10 +64,10 @@ def train_model(model_name, train_dir, csv_file, log_training=True, **kwargs):
         print(e, file=sys.stderr)
 
     print(model.summary())
-    print(model.summary(), file=sys.stderr)
 
-    cp_callback = keras.callbacks.ModelCheckpoint(checkpoint_path,
-                                            save_weights_only=True, verbose=1, save_freq=1)
+    filepath = train_dir + "/weights-improvement-{epoch:02d}.ckpt"
+    print("Checkpoints saved in: ", filepath)
+    cp_callback = ModelCheckpoint(filepath, save_weights_only=True, verbose=1, save_freq=1)
     try:
         history = model.fit(training_input, training_output,  epochs=EPOCHES,
                             batch_size=BATCH_SIZE, validation_split=0.1,
