@@ -65,17 +65,17 @@ def dense_multi2(**kwargs):
     x_jets = LSTM(50, return_sequences=True,
                   kernel_regularizer=l2(reg_weight),
                   recurrent_regularizer=l2(rec_weight))(x_jets)
-    x_jets = LSTM(40, return_sequences=True,
+    x_jets = LSTM(25, return_sequences=True,
                   kernel_regularizer=l2(reg_weight),
                   recurrent_regularizer=l2(rec_weight))(x_jets)
-    x_jets = LSTM(30, return_sequences=False,
+    x_jets = LSTM(12, return_sequences=False,
                   kernel_regularizer=l2(reg_weight),
                   recurrent_regularizer=l2(rec_weight))(x_jets)
-    x_jets = Dense(20, activation='relu')(x_jets)
+    x_jets = Dense(20, activation='tanh')(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
 
     # Lep
-    x_lep = Dense(10, activation='linear')(input_lep)
+    x_lep = Dense(10, activation='tanh')(input_lep)
     x_lep = keras.Model(inputs=input_lep, outputs=x_lep)
 
     # Combine them
@@ -83,6 +83,7 @@ def dense_multi2(**kwargs):
 
     # Apply some more layers to combined data set
     final = Dense(50, activation='tanh')(combined)
+    final = Dense(25, activation='tanh')(final)
     final = Dense(18, activation='linear')(final)
     final = Reshape(target_shape=(6,3))(final)
 
@@ -102,8 +103,8 @@ def dense_multi3(**kwargs):
     input_lep = Input(shape=(5,), name="input_lep")
     # Jets
     x_jets = Reshape(target_shape=(5,4))(input_jets)
-    x_jets = LSTM(25, return_sequences=False, kernel_regularizer=l2(10e-5))(x_jets)
-    x_jets = Dense(20)(x_jets)
+    x_jets = LSTM(50, return_sequences=False, kernel_regularizer=l2(10e-5))(x_jets)
+    x_jets = Dense(30)(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
 
     # Lep
@@ -114,7 +115,8 @@ def dense_multi3(**kwargs):
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
 
     # Apply some more layers to combined data set
-    final = Dense(18, activation='elu', kernel_regularizer=l2(10e-4))(combined)
+    final = Dense(40, activation='tanh', kernel_regularizer=l2(10e-4))(combined)
+    final = Dense(30, activation='elu', kernel_regularizer=l2(10e-4))(final)
     final = Dense(18)(final)
     final = Reshape(target_shape=(6,3))(final)
     final = Dense(3)(final)
@@ -138,11 +140,12 @@ def dense_multi4(**kwargs):
     x_jets = LSTM(50, return_sequences=True, kernel_regularizer=l2(10e-5))(x_jets)
     x_jets = LSTM(25, return_sequences=False, kernel_regularizer=l2(10e-5))(x_jets)
     x_jets = Dense(20, activation='relu', kernel_regularizer=l2(10e-5))(x_jets)
-    x_jets = Dense(20, activation='linear')(x_jets)
+    x_jets = Dense(30, activation='tanh')(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
 
     # Lep
-    x_lep = Dense(10, activation='linear')(input_lep)
+    x_lep = Dense(15, activation='tanh')(input_lep)
+    x_lep = Dense(10, activation='tanh')(x_lep)
     x_lep = keras.Model(inputs=input_lep, outputs=x_lep)
 
     # Combine them
@@ -174,20 +177,20 @@ def dense_multi5(**kwargs):
     x_jets = LSTM(50, return_sequences=True, kernel_regularizer=l2(10e-5))(x_jets)
     x_jets = LSTM(25, return_sequences=False, kernel_regularizer=l2(10e-5))(x_jets)
     x_jets = BatchNormalization()(x_jets)
-    x_jets = Dense(20, activation='linear')(x_jets)
+    x_jets = Dense(30, activation='tanh')(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
 
     # Lep
     x_lep = Dense(15, activation='relu', kernel_regularizer=l2(10e-5))(input_lep)
     x_lep = BatchNormalization()(x_lep)
-    x_lep = Dense(10, activation='linear')(x_lep)
+    x_lep = Dense(10, activation='tanh')(x_lep)
     x_lep = keras.Model(inputs=input_lep, outputs=x_lep)
 
     # Combine them
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
 
     # Apply some more layers to combined data set
-    final = Dense(18, activation='relu', kernel_regularizer=l2(10e-5))(combined)
+    final = Dense(18, activation='tanh', kernel_regularizer=l2(10e-5))(combined)
     final = Dense(18)(final)
     final = Reshape(target_shape=(6,3))(final)
 
@@ -208,7 +211,7 @@ def dense_multi6(**kwargs):
     x_jets = Reshape(target_shape=(5,4))(input_jets)
     x_jets = LSTM(50, return_sequences=True, kernel_regularizer=l2(10e-5))(x_jets)
     x_jets = LSTM(30, return_sequences=False, kernel_regularizer=l2(10e-5))(x_jets)
-    x_jets = Dense(25, activation='linear')(x_jets)
+    x_jets = Dense(30, activation='tanh')(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
 
     # Lep
@@ -288,12 +291,12 @@ def dense_multi8(**kwargs):
     x_jets = LSTM(30, return_sequences=False, kernel_regularizer=l2(10e-5))(x_jets)
     x_jets = BatchNormalization()(x_jets)
     x_jets = Dense(15, activation='relu')(x_jets)
-    x_jets = Dense(15)(x_jets)
+    x_jets = Dense(15, activation='tanh')(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
 
     # Lep
     x_lep = Dense(10, activation='relu', kernel_regularizer=l2(10e-5))(input_lep)
-    x_lep = Dense(5, activation='linear')(x_lep)
+    x_lep = Dense(5, activation='tanh')(x_lep)
     x_lep = keras.Model(inputs=input_lep, outputs=x_lep)
 
     # Combine them
