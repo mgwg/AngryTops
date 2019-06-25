@@ -15,6 +15,7 @@ def dense_multi1(**kwargs):
     if 'reg_weight' in kwargs.keys(): reg_weight = kwargs['reg_weight']
     if 'rec_weight' in kwargs.keys(): rec_weight = kwargs['rec_weight']
     if 'dense_act1' in kwargs.keys(): dense_act1 = kwargs['dense_act1']
+    learn_rate = kwargs['learn_rate']
 
     input_jets = Input(shape = (20,), name="input_jets")
     input_lep = Input(shape=(5,), name="input_lep")
@@ -43,7 +44,7 @@ def dense_multi1(**kwargs):
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
 
-    optimizer = tf.keras.optimizers.Adam(10e-3)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
 
     return model
@@ -55,6 +56,7 @@ def dense_multi2(**kwargs):
     if 'reg_weight' in kwargs.keys(): reg_weight = kwargs['reg_weight']
     if 'rec_weight' in kwargs.keys(): rec_weight = kwargs['rec_weight']
     if 'dense_act1' in kwargs.keys(): dense_act1 = kwargs['dense_act1']
+    learn_rate = kwargs['learn_rate']
 
     input_jets = Input(shape = (20,), name="input_jets")
     input_lep = Input(shape=(5,), name="input_lep")
@@ -87,13 +89,14 @@ def dense_multi2(**kwargs):
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
 
-    optimizer = tf.keras.optimizers.Adam(10e-3)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
 
     return model
 
 def dense_multi3(**kwargs):
     """A denser version of model_multi"""
+    learn_rate = kwargs['learn_rate']
 
     input_jets = Input(shape = (20,), name="input_jets")
     input_lep = Input(shape=(5,), name="input_lep")
@@ -119,13 +122,14 @@ def dense_multi3(**kwargs):
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
 
-    optimizer = tf.keras.optimizers.Adam(10e-3)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
 
     return model
 
 def dense_multi4(**kwargs):
     """A denser version of model_multi"""
+    learn_rate = kwargs['learn_rate']
 
     input_jets = Input(shape = (20,), name="input_jets")
     input_lep = Input(shape=(5,), name="input_lep")
@@ -153,13 +157,14 @@ def dense_multi4(**kwargs):
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
 
-    optimizer = tf.keras.optimizers.Adam(10e-3)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
 
     return model
 
 def dense_multi5(**kwargs):
     """A denser version of model_multi"""
+    learn_rate = kwargs['learn_rate']
 
     input_jets = Input(shape = (20,), name="input_jets")
     input_lep = Input(shape=(5,), name="input_lep")
@@ -189,13 +194,14 @@ def dense_multi5(**kwargs):
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
 
-    optimizer = tf.keras.optimizers.Adam(10e-3)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
 
     return model
 
 def dense_multi6(**kwargs):
     """A denser version of model_multi"""
+    learn_rate = kwargs['learn_rate']
     input_jets = Input(shape = (20,), name="input_jets")
     input_lep = Input(shape=(5,), name="input_lep")
     # Jets
@@ -224,13 +230,14 @@ def dense_multi6(**kwargs):
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
 
-    optimizer = tf.keras.optimizers.Adam(10e-3)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
 
     return model
 
 def dense_multi7(**kwargs):
     """A denser version of model_multi"""
+    learn_rate = kwargs['learn_rate']
 
     input_jets = Input(shape = (20,), name="input_jets")
     input_lep = Input(shape=(5,), name="input_lep")
@@ -263,13 +270,14 @@ def dense_multi7(**kwargs):
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
 
-    optimizer = tf.keras.optimizers.Adam(10e-3)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
 
     return model
 
 def dense_multi8(**kwargs):
     """A denser version of model_multi"""
+    learn_rate = kwargs['learn_rate']
 
     input_jets = Input(shape = (20,), name="input_jets")
     input_lep = Input(shape=(5,), name="input_lep")
@@ -303,7 +311,7 @@ def dense_multi8(**kwargs):
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
 
-    optimizer = tf.keras.optimizers.Adam(10e-3)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
 
     return model
