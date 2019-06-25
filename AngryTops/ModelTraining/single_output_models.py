@@ -13,6 +13,7 @@ def single0(**kwargs):
     if 'reg_weight' in kwargs.keys(): reg_weight = kwargs['reg_weight']
     if 'rec_weight' in kwargs.keys(): rec_weight = kwargs['rec_weight']
     if 'dense_act1' in kwargs.keys(): dense_act1 = kwargs['dense_act1']
+    learn_rate = kwargs['learn_rate']
 
     input_jets = Input(shape = (20,), name="input_jets")
     input_lep = Input(shape=(5,), name="input_lep")
@@ -42,7 +43,7 @@ def single0(**kwargs):
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
 
-    optimizer = tf.keras.optimizers.Adam(10e-3)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
 
     return model
@@ -55,6 +56,7 @@ def single1(**kwargs):
     if 'reg_weight' in kwargs.keys(): reg_weight = kwargs['reg_weight']
     if 'rec_weight' in kwargs.keys(): rec_weight = kwargs['rec_weight']
     if 'dense_act1' in kwargs.keys(): dense_act1 = kwargs['dense_act1']
+    learn_rate = kwargs['learn_rate']
 
     input_jets = Input(shape = (20,), name="input_jets")
     input_lep = Input(shape=(5,), name="input_lep")
@@ -82,13 +84,14 @@ def single1(**kwargs):
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
 
-    optimizer = tf.keras.optimizers.Adam(10e-3)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
 
     return model
 
 def single2(**kwargs):
     """Predicts only ONE output variable. Uses only dense layers"""
+    learn_rate = kwargs['learn_rate']
     input_jets = Input(shape = (20,), name="input_jets")
     input_lep = Input(shape=(5,), name="input_lep")
 
@@ -117,13 +120,14 @@ def single2(**kwargs):
 
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
-    optimizer = tf.keras.optimizers.Adam(10e-3)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
 
     return model
 
 def single3(**kwargs):
     """Predicts only ONE output variable. Uses only dense layers"""
+    learn_rate = kwargs['learn_rate']
     input_jets = Input(shape = (20,), name="input_jets")
     input_lep = Input(shape=(5,), name="input_lep")
 
@@ -157,13 +161,14 @@ def single3(**kwargs):
 
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
-    optimizer = tf.keras.optimizers.Adam(10e-3)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
 
     return model
 
 def single4(**kwargs):
     """Predicts only ONE output variable. Uses only dense layers"""
+    learn_rate = kwargs['learn_rate']
     input_jets = Input(shape = (20,), name="input_jets")
     input_lep = Input(shape=(5,), name="input_lep")
 
@@ -197,7 +202,7 @@ def single4(**kwargs):
 
     # Make final model
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
-    optimizer = tf.keras.optimizers.Adam(10e-3)
+    optimizer = tf.keras.optimizers.Adam(learn_rate)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
 
     return model
