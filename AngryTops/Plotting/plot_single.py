@@ -34,15 +34,6 @@ def Normalize( h, sf=1.0 ):
   if A == 0.: return
   h.Scale( sf / A )
 
-#~~~~~~~~~
-
-def Normalize( h, sf=1.0 ):
-  if h == None: return
-  A = h.Integral()
-  if A == 0.: return
-  h.Scale( sf / A )
-
-#~~~~~~~~~
 
 def SetTH1FStyle(h, color=kBlack, linewidth=1, fillcolor=0, fillstyle=0, markerstyle=21, markersize=1.3, fill_alpha=0):
     '''Set the style with a long list of parameters'''
