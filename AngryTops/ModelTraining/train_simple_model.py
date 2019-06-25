@@ -70,7 +70,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, **kwargs):
     print(model.summary(), file=sys.stderr)
 
     cp_callback = keras.callbacks.ModelCheckpoint(checkpoint_path,
-                                            save_weights_only=True, verbose=1)
+                                            save_weights_only=True, verbose=1, period=5)
     try:
         history = model.fit(training_input, training_output,  epochs=EPOCHES,
                             batch_size=BATCH_SIZE, validation_split=0.1,
