@@ -8,7 +8,6 @@ from glob import glob
 import os
 import pickle
 from ROOT import *
-from AngryTops.ModelTraining.models import models
 
 plt.rc('legend',fontsize=22)
 plt.rcParams.update({'font.size': 22})
@@ -25,7 +24,7 @@ attributes = [
 't_had_px', 't_had_py', 't_had_pz', 't_had_pt', 't_had_y', 't_had_y', 't_had_phi', 't_had_E',
 't_lep_px', 't_lep_py', 't_lep_pz', 't_lep_pt', 't_lep_y', 't_lep_y', 't_lep_phi', 't_lep_E']
 
-def IterateEpoches(train_dir, representation, model_name, **kwargs):
+def IterateEpoches(train_dir, representation):
     # Dictionary of
     chi2tests = {}
     for att in attributes:
@@ -64,11 +63,10 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
     # Make histogram of truth values
     truth_histograms = construct_histogram_dict(true, label='true', representation=representation)
     print("Made truth histogram")
-
+    
     # Iterate over checkpoints
-    checkpoints = np.sort(glob(train_dir + "/weights-improvement-*"))
-    model = models[model_name](**kwargs)
-    model = model.load_weights(train_dir + '/model_weights.h5')
+    checkpoints = np.sort(glob(train_dir + "/*.ckpt.index"))
+    model = keras.models.load_model(train_dir + '/simple_model.h5')
     for k in range(len(checkpoints)):
         print("Current CheckPoint: ", checkpoints[k])
         checkpoint_name = checkpoints[k].split(".")[:-1]
@@ -183,7 +181,7 @@ def construct_histogram_dict(true, label, representation):
         truth_histograms['t_lep_y'].Fill(   t_lep.Rapidity(), 1 )
         truth_histograms['t_lep_phi'].Fill( t_lep.Phi(), 1 )
         truth_histograms['t_lep_E'].Fill(   t_lep.E(),   1 )
-
+        
     return truth_histograms
 
 def Normalize( h, sf=1.0 ):
@@ -216,4 +214,4 @@ def MakeP4(y, m, representation):
     return p4
 
 if __name__ == "__main__":
-    IterateEpoches('/home/fsyed/AngryTops/CheckPoints/trash', 'pxpypz', 'dense_multi2')
+    IterateEpoches('/home/fsyed/AngryTops/CheckPoints/trash', 'ptetaphi')
