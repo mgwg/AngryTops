@@ -192,15 +192,14 @@ def construct_histogram_dict(true, label, representation):
         truth_histograms['t_lep_E'].Fill(   t_lep.E(),   1 )
 
     for key in truth_histograms.keys():
-        truth_histograms[key] = Normalize(truth_histograms[key])
+        Normalize(truth_histograms[key])
 
     return truth_histograms
 
 def Normalize( h, sf=1.0 ):
-  if h == None: return
-  A = h.Integral()
-  if A == 0.: return
-  h.Scale( sf / A )
+    if h == None: return
+    A = h.Integral()
+    h.Scale( sf / A )
 
 def MakeP4(y, m, representation):
     p4 = TLorentzVector()
