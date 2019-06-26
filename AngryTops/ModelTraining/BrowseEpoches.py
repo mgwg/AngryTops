@@ -7,6 +7,7 @@ from tensorflow import keras
 from glob import glob
 import os
 from ROOT import *
+from AngryTops.ModelTraining.models import models
 
 plt.rc('legend',fontsize=22)
 plt.rcParams.update({'font.size': 22})
@@ -23,7 +24,7 @@ attributes = [
 't_had_px', 't_had_py', 't_had_pz', 't_had_pt', 't_had_y', 't_had_y', 't_had_phi', 't_had_E',
 't_lep_px', 't_lep_py', 't_lep_pz', 't_lep_pt', 't_lep_y', 't_lep_y', 't_lep_phi', 't_lep_E']
 
-def IterateEpoches(train_dir, representation):
+def IterateEpoches(train_dir, representation, model_name, **kwargs):
     # Dictionary of
     chi2tests = {}
     for att in attributes:
@@ -55,7 +56,8 @@ def IterateEpoches(train_dir, representation):
 
     # Iterate over checkpoints
     checkpoints = np.sort(glob(train_dir + "/weights-improvement-*"))
-    model = keras.models.load_model(train_dir + '/simple_model.h5')
+    model = models[model_name](**kwargs)
+    model = model.load_weights(train_dir + '/model_weights.h5')
     for checkpoint in checkpoints:
         print("Current CheckPoint: ", checkpoint)
         model.load_weights(checkpoint)
@@ -206,4 +208,4 @@ def MakeP4(y, m, representation):
     return p4
 
 if __name__ == "__main__":
-    IterateEpoches(train_dir, representation)
+    IterateEpoches(train_dir, representation, model_name)
