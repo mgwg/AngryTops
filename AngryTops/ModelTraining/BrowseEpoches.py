@@ -190,6 +190,9 @@ def construct_histogram_dict(true, label, representation):
         truth_histograms['t_lep_phi'].Fill( t_lep.Phi(), 1 )
         truth_histograms['t_lep_E'].Fill(   t_lep.E(),   1 )
 
+        for key in truth_histograms.keys():
+            truth_histograms[key] = Normalize(truth_histograms[key])
+
     return truth_histograms
 
 def Normalize( h, sf=1.0 ):
