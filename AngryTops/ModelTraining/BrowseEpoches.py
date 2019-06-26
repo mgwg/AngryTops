@@ -66,36 +66,42 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
     print("Made truth histogram")
 
     # Iterate over checkpoints
+    xaxis = []
     checkpoints = np.sort(glob(train_dir + "/weights-improvement-*"))
     model = models[model_name](**kwargs)
     model = model.load_weights(train_dir + '/model_weights.h5')
     for k in range(len(checkpoints)):
         print("Current CheckPoint: ", checkpoints[k])
         checkpoint_name = checkpoints[k].split(".")[:-1]
-        model.load_weights(checkpoint_name)
-        y_fitted = model.predict(input)
-        fitted_histograms = construct_histogram_dict(y_fitted, label='fitted', representation=representation)
-        for att in attributes:
-            X2 = truth_histograms[att].Chi2Test(fitted_histograms[att], "UU NORM CHI2/NDF")
-            chi2tests[att].append(X2)
-            print("EPOCHE #: {}    Attribute: {}     X2: {:.2f}".format(k, att, X2))
+        try:
+            model.load_weights(checkpoint_name)
+            y_fitted = model.predict(input)
+            xaxis.append(k)
+            fitted_histograms = construct_histogram_dict(y_fitted, label='fitted', representation=representation)
+            for att in attributes:
+                X2 = truth_histograms[att].Chi2Test(fitted_histograms[att], "UU NORM CHI2/NDF")
+                chi2tests[att].append(X2)
+                print("EPOCHE #: {}    Attribute: {}     X2: {:.2f}".format(k, att, X2))
+            if i < 10:
+              PrintOut(MakeP4(true[i,4,:], m_t, representation), MakeP4(y_fitted[i,4,:], m_t, representation))
+        except Exception as e:
+            print("Invalid checkpoint encountered. Skipping checkpoint %i" % k)
 
     x2_pickle = "{}/x2_epoches.pkl".format(train_dir)
     with open( x2_pickle, "wb" ) as file_scaler:
         pickle.dump(chi2tests, file_scaler, protocol=2)
 
-    make_plots(chi2tests)
+    make_plots(chi2tests, xaxis)
 
 
 
 
 ################################################################################
-def make_plots(chi2tests):
+def make_plots(chi2tests, xaxis):
     os.mkdir(train_dir + "/x2_tests")
     os.chdir(train_dor + "/x2_tests")
     for key in chi2tests.keys():
         arr = chi2tests[key]
-        xaxis = np.arange(1, arr.size + 1, 1)
         plt.plot(xaxis, arr, label=key)
         plt.xlabel("EPOCH NUMBER")
         plt.ylabel("X2 Value")
@@ -214,6 +220,11 @@ def MakeP4(y, m, representation):
     else:
         raise Exception("Invalid Representation Given: {}".format(representation))
     return p4
+
+def PrintOut( p4_true, p4_fitted):
+  print("true=( %4.1f, %3.2f, %3.2f, %4.1f ; %3.1f ) :: fitted=( %4.1f, %3.2f, %3.2f, %4.1f ; %3.1f )" % \
+               (p4_true.Px(),   p4_true.Py(),   p4_true.Pz(),   p4_true.Pt(),   p4_true.E(), \
+                p4_fitted.Px(), p4_fitted.Py(), p4_fitted.Pz(), p4_fitted.Pt(), p4_fitted.E() ))
 
 if __name__ == "__main__":
     IterateEpoches('/home/fsyed/AngryTops/CheckPoints/trash', 'pxpypz', 'dense_multi2')
