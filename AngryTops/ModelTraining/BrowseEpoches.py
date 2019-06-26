@@ -69,10 +69,10 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
     xaxis = []
     checkpoints = np.sort(glob(train_dir + "/weights-improvement-*"))
     model = models[model_name](**kwargs)
-    model = model.load_weights(train_dir + '/model_weights.h5')
+    model.load_weights(train_dir + '/model_weights.h5')
     for k in range(len(checkpoints)):
-        print("Current CheckPoint: ", checkpoints[k])
-        checkpoint_name = checkpoints[k].split(".")[:-1]
+        checkpoint_name = '.'.join(checkpoints[k].split(".")[:-1])
+        print("Current CheckPoint: ", checkpoint_name)
         try:
             model.load_weights(checkpoint_name)
             y_fitted = model.predict(input)
@@ -85,6 +85,7 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
             if i < 10:
               PrintOut(MakeP4(true[i,4,:], m_t, representation), MakeP4(y_fitted[i,4,:], m_t, representation))
         except Exception as e:
+            print(e)
             print("Invalid checkpoint encountered. Skipping checkpoint %i" % k)
 
     x2_pickle = "{}/x2_epoches.pkl".format(train_dir)
@@ -230,4 +231,4 @@ def PrintOut( p4_true, p4_fitted):
                 p4_fitted.Px(), p4_fitted.Py(), p4_fitted.Pz(), p4_fitted.Pt(), p4_fitted.E() ))
 
 if __name__ == "__main__":
-    IterateEpoches('/home/fsyed/AngryTops/CheckPoints/trash', 'pxpypz', 'dense_multi2')
+    IterateEpoches('/home/fsyed/AngryTops/CheckPoints/dense_multi2.6.1000epoches', 'pxpypz', 'dense_multi2', learn_rate=10e-5)
