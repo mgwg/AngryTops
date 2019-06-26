@@ -35,7 +35,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, **kwargs):
     # CONSTANTS
     train_dir = "../CheckPoints/{}".format(train_dir)
     print("Saving files in: {}".format(train_dir))
-    checkpoint_path = latest = tf.train.latest_checkpoint(train_dir)
+    checkpoint_path = tf.train.latest_checkpoint(train_dir)
     print("Checkpoint Path: ", checkpoint_path)
     EPOCHES = kwargs["EPOCHES"]
     BATCH_SIZE = kwargs["BATCH_SIZE"]
@@ -81,6 +81,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, **kwargs):
     ###########################################################################
     # SAVING MODEL, TRAINING HISTORY AND SCALARS
     model.save('{}/simple_model.h5'.format(train_dir))
+    model.save_weights('{}/model_weights.h5'.format(train_dir))
 
     scaler_filename = "{}/scalers.pkl".format(train_dir)
     with open( scaler_filename, "wb" ) as file_scaler:
