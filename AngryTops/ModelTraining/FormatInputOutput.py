@@ -70,6 +70,39 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
     return (training_input, training_output), (testing_input, testing_output), \
            (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing)
 
+def scale(input, output, jet_scalar, lep_scalar, output_scalar):
+    # The true output array
+    true = output.copy()
+    old_shape = (true.shape[1], true.shape[2])
+    true = true.reshape(true.shape[0], true.shape[1]*true.shape[2])
+    true = output_scalar.inverse_transform(true)
+    true = true.reshape(true.shape[0], old_shape[0], old_shape[1])
+
+    # True input
+    if type(input) == type([]):
+        lep = input[0]
+        jet = input[1]
+    else:
+        lep = input[:,0,:]
+        jet = input[:,1:,:]
+    lep = lep_scalar.inverse_transform(lep)
+    jet = jet.reshape(jet.shape[0], 5, -1)
+    btag = jet[:,:, -1]
+    btag = btag.reshape(btag.shape[0], btag.shape[1], 1)
+    jet = jet[:,:,:-1]
+    jet = jet.reshape(jet.shape[0], -1)
+    jet = jets_scalar.inverse_transform(jet)
+    jet = jet.reshape(jet.shape[0], 5, -1)
+    jet = np.concatenate((jet, btag), axis=2)
+    jet = jet.reshape(jet.shape[0], -1)
+    if type(input) == type([]):
+        true_input = [lep, jet]
+    else:
+        true_input = np.concatenate((lep, jets), axis=1)
+    return true_input, true
+
+
+
 def normalize(arr, scaling):
     """Normalize the arr with StandardScalar and return the normalized array
     and the scalar"""
