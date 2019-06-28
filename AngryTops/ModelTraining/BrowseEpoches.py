@@ -71,7 +71,7 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
     model = models[model_name](**kwargs)
     model.load_weights(train_dir + '/model_weights.h5')
     max_evals = len(checkpoints)
-    if max_evals in kwargs['max_evals']: max_evals = kwargs['max_evals']
+    if 'max_evals' in kwargs.keys(): max_evals = kwargs['max_evals']
     for k in range(max_evals):
         checkpoint_name = '.'.join(checkpoints[k].split(".")[:-1])
         print("Current CheckPoint: ", checkpoint_name)
