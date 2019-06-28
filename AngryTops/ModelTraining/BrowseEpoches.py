@@ -70,7 +70,9 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
     checkpoints = np.sort(glob(train_dir + "/weights-improvement-*"))
     model = models[model_name](**kwargs)
     model.load_weights(train_dir + '/model_weights.h5')
-    for k in range(len(checkpoints)):
+    max_evals = len(checkpoints)
+    if max_evals in kwargs['max_evals']: max_evals = kwargs['max_evals']
+    for k in range(max_evals):
         checkpoint_name = '.'.join(checkpoints[k].split(".")[:-1])
         print("Current CheckPoint: ", checkpoint_name)
         try:
