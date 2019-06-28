@@ -113,14 +113,14 @@ def make_plots(chi2tests, xaxis, train_dir):
 
 
 
-def construct_histogram_dict(true, label, representation):
+def construct_histogram_dict(arr, label, representation):
     # Divide out truth arrays
-    y_W_had = true[:,0,:]
-    y_W_lep = true[:,1,:]
-    y_b_had = true[:,2,:]
-    y_b_lep = true[:,3,:]
-    y_t_had = true[:,4,:]
-    y_t_lep = true[:,5,:]
+    y_W_had = arr[:,0,:]
+    y_W_lep = arr[:,1,:]
+    y_b_had = arr[:,2,:]
+    y_b_lep = arr[:,3,:]
+    y_t_had = arr[:,4,:]
+    y_t_lep = arr[:,5,:]
 
     # Create empty histograms
     histograms = {}
@@ -129,7 +129,7 @@ def construct_histogram_dict(true, label, representation):
             histograms[att] = TH1F(att + "_" + label,  ";" + att + " [GeV]", 50, -1000., 1000.)
         elif att[-2:] == 'pt':
             histograms[att] = TH1F(att + "_" + label,  ";" + att + " [GeV]", 50, 0., 500.)
-        elif att[-2:] == 'y':
+        elif att[-1:] == 'y':
             histograms[att] = TH1F(att + "_" + label,   ";" + att + " #eta", 25, -5., 5.)
         elif att[-3:] == 'phi':
             histograms[att] = TH1F(att + "_" + label, ";" + att + " #phi", 16, -3.2, 3.2)
@@ -137,7 +137,7 @@ def construct_histogram_dict(true, label, representation):
             histograms[att] = TH1F(att + "_" + label,   ";" + att + " [GeV]", 50, 0., 500.)
 
     # Iterate through events
-    for i in range(true.shape[0]):
+    for i in range(arr.shape[0]):
         W_had   = MakeP4( y_W_had[i], m_W, representation)
         W_lep   = MakeP4( y_W_lep[i], m_W, representation)
         b_had   = MakeP4( y_b_had[i], m_b, representation)
