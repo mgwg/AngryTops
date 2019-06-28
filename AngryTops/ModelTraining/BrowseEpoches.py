@@ -299,8 +299,8 @@ def MakeP4(y, m, representation):
 
 def PrintOut( p4_true, p4_fitted):
   print("true=( %4.1f, %3.2f, %3.2f, %4.1f ; %3.1f ) :: fitted=( %4.1f, %3.2f, %3.2f, %4.1f ; %3.1f )" % \
-               (p4_true.Px(),   p4_true.Py(),   p4_true.Pz(),   p4_true.Pt(),   p4_true.E(), \
-                p4_fitted.Px(), p4_fitted.Py(), p4_fitted.Pz(), p4_fitted.Pt(), p4_fitted.E() ))
+               (p4_true.Px(),   p4_true.Py(),   p4_true.Pz(),   p4_true.Pt(),   p4_true.Rapidity(), \
+                p4_fitted.Px(), p4_fitted.Py(), p4_fitted.Pz(), p4_fitted.Pt(), p4_fitted.Rapidity() ))
 
 if __name__ == "__main__":
     IterateEpoches('../../CheckPoints/dense_multi1.1000Epoches', 'pxpypz', 'dense_multi1', learn_rate=10e-5, max_evals=1)
