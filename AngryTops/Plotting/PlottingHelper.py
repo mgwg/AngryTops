@@ -217,3 +217,31 @@ def DrawRatio( data, prediction, xtitle = "", yrange=[0.4,1.6] ):
     gPad.RedrawAxis()
 
     return frame, tot_unc, ratio
+
+def MakeCanvas2( npads = 1, side = 800, padding = 0.00 ):
+    # Makes simpler plot
+    y_plot    = side * ( 1. - ( + padding ) )
+    y_ratio   = side
+    y_padding = side * padding
+
+    height_tot = y_plot + npads * ( y_ratio + y_padding )
+    height_tot = int(height_tot)
+
+    c = TCanvas( "Histogram","FITTED/MC", height_tot, height_tot )
+    c.SetFrameFillStyle(4000)
+    c.SetFillColor(0)
+
+    pad0 = TPad( "pad0","pad0",0, padding,1,1,0,0,0 )
+    pad0.SetLeftMargin( 0.18 ) #0.16
+    pad0.SetRightMargin( 0.05 )
+    #pad0.SetTopMargin( 0.14 )
+    pad0.SetTopMargin( 0.07 ) #0.05
+    pad0.SetBottomMargin(0.5)
+    pad0.SetFillColor(0)
+    pad0.SetFillStyle(4000)
+    pad0.SetGridy(1)
+    pad0.SetGridx(1)
+    pad0.Draw()
+
+    pad0.cd()
+    return c, pad0
