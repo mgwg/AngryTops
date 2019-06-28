@@ -3,7 +3,7 @@ from ROOT import *
 import numpy as np
 import pickle
 from AngryTops.features import *
-from AngryTops.Plotting.PlottingHelper import *
+
 ################################################################################
 # Set style of plots
 gROOT.LoadMacro("../AtlasDocs/AtlasStyle.C")
