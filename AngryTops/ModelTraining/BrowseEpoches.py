@@ -230,4 +230,4 @@ def PrintOut( p4_true, p4_fitted):
                 p4_fitted.Px(), p4_fitted.Py(), p4_fitted.Pz(), p4_fitted.Pt(), p4_fitted.E() ))
 
 if __name__ == "__main__":
-    IterateEpoches('/home/fsyed/AngryTops/CheckPoints/dense_multi2.6.1000epoches', 'pxpypz', 'dense_multi2', learn_rate=10e-5)
+    IterateEpoches('../../CheckPoints/dense_multi1.1000Epoches', 'pxpypz', 'dense_multi1', learn_rate=10e-5)
