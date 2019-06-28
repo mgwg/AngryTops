@@ -121,18 +121,18 @@ def construct_histogram_dict(true, label, representation):
     y_t_lep = true[:,5,:]
 
     # Create empty histograms
-    truth_histograms = {}
+    histograms = {}
     for att in attributes:
         if att[-2:] == 'px' or att[-2:] == 'py' or att[-2:] == 'pz':
-            truth_histograms[att] = TH1F(att + "_" + label,  ";" + att + " [GeV]", 50, -1000., 1000.)
+            histograms[att] = TH1F(att + "_" + label,  ";" + att + " [GeV]", 50, -1000., 1000.)
         elif att[-2:] == 'pt':
-            truth_histograms[att] = TH1F(att + "_" + label,  ";" + att + " [GeV]", 50, 0., 500.)
+            histograms[att] = TH1F(att + "_" + label,  ";" + att + " [GeV]", 50, 0., 500.)
         elif att[-2:] == 'y':
-            truth_histograms[att] = TH1F(att + "_" + label,   ";" + att + " #eta", 25, -5., 5.)
+            histograms[att] = TH1F(att + "_" + label,   ";" + att + " #eta", 25, -5., 5.)
         elif att[-3:] == 'phi':
-            truth_histograms[att] = TH1F(att + "_" + label, ";" + att + " #phi", 16, -3.2, 3.2)
+            histograms[att] = TH1F(att + "_" + label, ";" + att + " #phi", 16, -3.2, 3.2)
         else:
-            truth_histograms[att] = TH1F(att + "_" + label,   ";" + att + " [GeV]", 50, 0., 500.)
+            histograms[att] = TH1F(att + "_" + label,   ";" + att + " [GeV]", 50, 0., 500.)
 
     # Iterate through events
     for i in range(true.shape[0]):
@@ -143,58 +143,58 @@ def construct_histogram_dict(true, label, representation):
         t_had   = MakeP4( y_t_had[i], m_t, representation)
         t_lep   = MakeP4( y_t_lep[i], m_t, representation)
 
-        truth_histograms['W_had_px'].Fill(  W_had.Px(),  1 )
-        truth_histograms['W_had_py'].Fill(  W_had.Py(),  1 )
-        truth_histograms['W_had_pz'].Fill(  W_had.Pz(),  1 )
-        truth_histograms['W_had_pt'].Fill(  W_had.Pt(),  1 )
-        truth_histograms['W_had_y'].Fill(   W_had.Rapidity(), 1 )
-        truth_histograms['W_had_phi'].Fill( W_had.Phi(), 1 )
-        truth_histograms['W_had_E'].Fill(   W_had.E(),   1 )
+        histograms['W_had_px'].Fill(  W_had.Px(),  1 )
+        histograms['W_had_py'].Fill(  W_had.Py(),  1 )
+        histograms['W_had_pz'].Fill(  W_had.Pz(),  1 )
+        histograms['W_had_pt'].Fill(  W_had.Pt(),  1 )
+        histograms['W_had_y'].Fill(   W_had.Rapidity(), 1 )
+        histograms['W_had_phi'].Fill( W_had.Phi(), 1 )
+        histograms['W_had_E'].Fill(   W_had.E(),   1 )
 
-        truth_histograms['b_had_px'].Fill(  b_had.Px(),  1 )
-        truth_histograms['b_had_py'].Fill(  b_had.Py(),  1 )
-        truth_histograms['b_had_pz'].Fill(  b_had.Pz(),  1 )
-        truth_histograms['b_had_pt'].Fill(  b_had.Pt(),  1 )
-        truth_histograms['b_had_y'].Fill(   b_had.Rapidity(), 1 )
-        truth_histograms['b_had_phi'].Fill( b_had.Phi(), 1 )
-        truth_histograms['b_had_E'].Fill(   b_had.E(),   1 )
+        histograms['b_had_px'].Fill(  b_had.Px(),  1 )
+        histograms['b_had_py'].Fill(  b_had.Py(),  1 )
+        histograms['b_had_pz'].Fill(  b_had.Pz(),  1 )
+        histograms['b_had_pt'].Fill(  b_had.Pt(),  1 )
+        histograms['b_had_y'].Fill(   b_had.Rapidity(), 1 )
+        histograms['b_had_phi'].Fill( b_had.Phi(), 1 )
+        histograms['b_had_E'].Fill(   b_had.E(),   1 )
 
-        truth_histograms['t_had_px'].Fill(  t_had.Px(),  1 )
-        truth_histograms['t_had_py'].Fill(  t_had.Py(),  1 )
-        truth_histograms['t_had_pz'].Fill(  t_had.Pz(),  1 )
-        truth_histograms['t_had_pt'].Fill(  t_had.Pt(),  1 )
-        truth_histograms['t_had_y'].Fill(   t_had.Rapidity(), 1 )
-        truth_histograms['t_had_phi'].Fill( t_had.Phi(), 1 )
-        truth_histograms['t_had_E'].Fill(   t_had.E(),   1 )
+        histograms['t_had_px'].Fill(  t_had.Px(),  1 )
+        histograms['t_had_py'].Fill(  t_had.Py(),  1 )
+        histograms['t_had_pz'].Fill(  t_had.Pz(),  1 )
+        histograms['t_had_pt'].Fill(  t_had.Pt(),  1 )
+        histograms['t_had_y'].Fill(   t_had.Rapidity(), 1 )
+        histograms['t_had_phi'].Fill( t_had.Phi(), 1 )
+        histograms['t_had_E'].Fill(   t_had.E(),   1 )
 
-        truth_histograms['W_lep_px'].Fill(  W_lep.Px(),  1 )
-        truth_histograms['W_lep_py'].Fill(  W_lep.Py(),  1 )
-        truth_histograms['W_lep_pz'].Fill(  W_lep.Pz(),  1 )
-        truth_histograms['W_lep_pt'].Fill(  W_lep.Pt(),  1 )
-        truth_histograms['W_lep_y'].Fill(   W_lep.Rapidity(), 1 )
-        truth_histograms['W_lep_phi'].Fill( W_lep.Phi(), 1 )
-        truth_histograms['W_lep_E'].Fill(   W_lep.E(),   1 )
+        histograms['W_lep_px'].Fill(  W_lep.Px(),  1 )
+        histograms['W_lep_py'].Fill(  W_lep.Py(),  1 )
+        histograms['W_lep_pz'].Fill(  W_lep.Pz(),  1 )
+        histograms['W_lep_pt'].Fill(  W_lep.Pt(),  1 )
+        histograms['W_lep_y'].Fill(   W_lep.Rapidity(), 1 )
+        histograms['W_lep_phi'].Fill( W_lep.Phi(), 1 )
+        histograms['W_lep_E'].Fill(   W_lep.E(),   1 )
 
-        truth_histograms['b_lep_px'].Fill(  b_lep.Px(),  1 )
-        truth_histograms['b_lep_py'].Fill(  b_lep.Py(),  1 )
-        truth_histograms['b_lep_pz'].Fill(  b_lep.Pz(),  1 )
-        truth_histograms['b_lep_pt'].Fill(  b_lep.Pt(),  1 )
-        truth_histograms['b_lep_y'].Fill(   b_lep.Rapidity(), 1 )
-        truth_histograms['b_lep_phi'].Fill( b_lep.Phi(), 1 )
-        truth_histograms['b_lep_E'].Fill(   b_lep.E(),   1 )
+        histograms['b_lep_px'].Fill(  b_lep.Px(),  1 )
+        histograms['b_lep_py'].Fill(  b_lep.Py(),  1 )
+        histograms['b_lep_pz'].Fill(  b_lep.Pz(),  1 )
+        histograms['b_lep_pt'].Fill(  b_lep.Pt(),  1 )
+        histograms['b_lep_y'].Fill(   b_lep.Rapidity(), 1 )
+        histograms['b_lep_phi'].Fill( b_lep.Phi(), 1 )
+        histograms['b_lep_E'].Fill(   b_lep.E(),   1 )
 
-        truth_histograms['t_lep_px'].Fill(  t_lep.Px(),  1 )
-        truth_histograms['t_lep_py'].Fill(  t_lep.Py(),  1 )
-        truth_histograms['t_lep_pz'].Fill(  t_lep.Pz(),  1 )
-        truth_histograms['t_lep_pt'].Fill(  t_lep.Pt(),  1 )
-        truth_histograms['t_lep_y'].Fill(   t_lep.Rapidity(), 1 )
-        truth_histograms['t_lep_phi'].Fill( t_lep.Phi(), 1 )
-        truth_histograms['t_lep_E'].Fill(   t_lep.E(),   1 )
+        histograms['t_lep_px'].Fill(  t_lep.Px(),  1 )
+        histograms['t_lep_py'].Fill(  t_lep.Py(),  1 )
+        histograms['t_lep_pz'].Fill(  t_lep.Pz(),  1 )
+        histograms['t_lep_pt'].Fill(  t_lep.Pt(),  1 )
+        histograms['t_lep_y'].Fill(   t_lep.Rapidity(), 1 )
+        histograms['t_lep_phi'].Fill( t_lep.Phi(), 1 )
+        histograms['t_lep_E'].Fill(   t_lep.E(),   1 )
 
-    for key in truth_histograms.keys():
-        Normalize(truth_histograms[key])
+    for key in histograms.keys():
+        Normalize(histograms[key])
 
-    return truth_histograms
+    return histograms
 
 def Normalize( h, sf=1.0 ):
     if h == None: return
