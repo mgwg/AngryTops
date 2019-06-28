@@ -92,13 +92,13 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
     with open( x2_pickle, "wb" ) as file_scaler:
         pickle.dump(chi2tests, file_scaler, protocol=2)
 
-    make_plots(chi2tests, xaxis)
+    make_plots(chi2tests, xaxis, train_dir)
 
 
 
 
 ################################################################################
-def make_plots(chi2tests, xaxis):
+def make_plots(chi2tests, xaxis, train_dir):
     os.mkdir(train_dir + "/x2_tests")
     os.chdir(train_dor + "/x2_tests")
     for key in chi2tests.keys():
