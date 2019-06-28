@@ -2,6 +2,9 @@ import numpy as np
 from AngryTops.ModelTraining.FormatInputOutput import get_input_output
 from hyperopt import fmin, tpe, hp
 from tensorflow.keras.layers import *
+from tensorflow.keras.regularizers import *
+from tensorflow import keras
+import tensorflow as tf
 
 
 def objective2(args): return objective(*args)
@@ -41,33 +44,38 @@ def test_model(learn_rate, size1, size2, size3, size4, size5, size6, size7,\
                act1, act2, act3, act4, reg_weight, rec_weight):
     """Froms our model for testing"""
     """A denser version of model_multi"""
+    print("INPUT")
+    print("learn_rate: {0}\nsize1: {1}\nsize2: {2}\nsize3: {3}\nsize4: {4}\n\
+          size5 {5}\nsize6: {6}\nsize7: {7}\nact1: {8}\nact2: {9}\nact3: {10}\n\
+          act4: {11}\nreg_weight: {12}\nrec_weight: {13}".format(learn_rate, size1, \
+          size2, size3, size4, size5, size6, size7, act1, act2, act3, act4, reg_weight, rec_weight))
 
     input_jets = Input(shape = (20,), name="input_jets")
     input_lep = Input(shape=(5,), name="input_lep")
     # Jets
     x_jets = Reshape(target_shape=(5,4))(input_jets)
-    x_jets = LSTM(size1, return_sequences=True,
+    x_jets = LSTM(int(size1), return_sequences=True,
                   kernel_regularizer=l2(reg_weight),
                   recurrent_regularizer=l2(rec_weight))(x_jets)
-    x_jets = LSTM(size2, return_sequences=True,
+    x_jets = LSTM(int(size2), return_sequences=True,
                   kernel_regularizer=l2(reg_weight),
                   recurrent_regularizer=l2(rec_weight))(x_jets)
-    x_jets = LSTM(size3, return_sequences=False,
+    x_jets = LSTM(int(size3), return_sequences=False,
                   kernel_regularizer=l2(reg_weight),
                   recurrent_regularizer=l2(rec_weight))(x_jets)
-    x_jets = Dense(size4, activation=act1)(x_jets)
+    x_jets = Dense(int(size4), activation=act1)(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
 
     # Lep
-    x_lep = Dense(size5, activation=act2)(input_lep)
+    x_lep = Dense(int(size5), activation=act2)(input_lep)
     x_lep = keras.Model(inputs=input_lep, outputs=x_lep)
 
     # Combine them
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
 
     # Apply some more layers to combined data set
-    final = Dense(size6, activation=act3)(combined)
-    final = Dense(size7, activation=act4)(final)
+    final = Dense(int(size6), activation=act3)(combined)
+    final = Dense(int(size7), activation=act4)(final)
     final = Dense(18, activation='linear')(final)
     final = Reshape(target_shape=(6,3))(final)
 
