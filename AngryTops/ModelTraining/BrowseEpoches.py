@@ -86,6 +86,69 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
                 print("EPOCHE #: {}    Attribute: {}     X2: {:.2f}".format(k, att, X2))
             if k < 10:
               PrintOut(MakeP4(true[k,4,:], m_t, representation), MakeP4(y_fitted[k,4,:], m_t, representation))
+              h_true = truth_histograms['W_had_y']
+              h_fitted = y_fitted['W_had_y']
+              SetTH1FStyle( h_true,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3)
+              SetTH1FStyle( h_fitted, color=kBlack, markersize=0, markerstyle=20, linewidth=3 )
+
+              # DRAW HISTOGRAMS
+              c, pad0, pad1 = MakeCanvas()
+              pad0.cd()
+              gStyle.SetOptTitle(0)
+              h_true.Draw("h")
+              h_fitted.Draw("h same")
+              hmax = 1.5 * max([h_true.GetMaximum(), h_fitted.GetMaximum()])
+              h_fitted.SetMaximum(hmax)
+              h_true.SetMaximum(hmax)
+              h_fitted.SetMinimum(0.)
+              h_true.SetMinimum(0.)
+
+              # Legend
+              leg = TLegend( 0.20, 0.80, 0.50, 0.90 )
+              leg.SetFillColor(0)
+              leg.SetFillStyle(0)
+              leg.SetBorderSize(0)
+              leg.SetTextFont(42)
+              leg.SetTextSize(0.05)
+              leg.AddEntry( h_true, "MG5+Py8", "f" )
+              leg.AddEntry( h_fitted, "fitted", "f" )
+              leg.SetY1( leg.GetY1() - 0.05 * leg.GetNRows() )
+              leg.Draw()
+
+              # Statistical tests
+              KS = h_true.KolmogorovTest( h_fitted )
+              X2 = h_true.Chi2Test( h_fitted, "UU NORM CHI2/NDF" ) # UU NORM
+              l = TLatex()
+              l.SetNDC()
+              l.SetTextFont(42)
+              l.SetTextColor(kBlack)
+              l.DrawLatex( 0.7, 0.80, "KS test: %.2f" % KS )
+              l.DrawLatex( 0.7, 0.75, "#chi^{2}/NDF = %.2f" % X2 )
+
+              # TITLE HISTOGRAM W/ CAPTION
+              gPad.RedrawAxis()
+              newpad = TPad("newpad","a caption",0.1,0,1,1)
+              newpad.SetFillStyle(4000)
+              newpad.Draw()
+              newpad.cd()
+              title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
+              title.SetFillColor(16)
+              title.SetTextFont(52)
+              title.Draw()
+
+              # SAVE AND CLOSE HISTOGRAM
+              gPad.RedrawAxis()
+              pad1.cd()
+              yrange = [0.4, 1.6]
+              frame, tot_unc, ratio = DrawRatio(h_fitted, h_true, xtitle, yrange)
+              gPad.RedrawAxis()
+              c.cd()
+              c.SaveAs("histogram.png")
+              pad0.Close()
+              pad1.Close()
+              c.Close()
+
+
         except Exception as e:
             print(e)
             print("Invalid checkpoint encountered. Skipping checkpoint %i" % k)
@@ -195,6 +258,10 @@ def construct_histogram_dict(arr, label, representation):
 
     for key in histograms.keys():
         Normalize(histograms[key])
+        histograms[key].Sumw2()
+        histograms[key].SetMarkerColor(kRed)
+        histograms[key].SetLineColor(kRed)
+        histograms[key].SetMarkerStyle(24)
 
     return histograms
 
@@ -232,4 +299,4 @@ def PrintOut( p4_true, p4_fitted):
                 p4_fitted.Px(), p4_fitted.Py(), p4_fitted.Pz(), p4_fitted.Pt(), p4_fitted.E() ))
 
 if __name__ == "__main__":
-    IterateEpoches('../../CheckPoints/dense_multi1.1000Epoches', 'pxpypz', 'dense_multi1', learn_rate=10e-5)
+    IterateEpoches('../../CheckPoints/dense_multi1.1000Epoches', 'pxpypz', 'dense_multi1', learn_rate=10e-5, max_evals=1)
