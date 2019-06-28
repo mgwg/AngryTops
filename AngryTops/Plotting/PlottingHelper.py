@@ -6,8 +6,8 @@ from AngryTops.features import *
 
 ################################################################################
 # Set style of plots
-gROOT.LoadMacro("../AtlasDocs/AtlasStyle.C")
-gROOT.LoadMacro( "../AtlasDocs/AtlasUtils.C" )
+gROOT.LoadMacro("../../AtlasDocs/AtlasStyle.C")
+gROOT.LoadMacro( "../../AtlasDocs/AtlasUtils.C" )
 SetAtlasStyle()
 
 gStyle.SetOptStat(0)
