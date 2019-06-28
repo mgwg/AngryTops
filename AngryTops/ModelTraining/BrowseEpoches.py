@@ -9,6 +9,8 @@ import os
 import pickle
 from ROOT import *
 from AngryTops.ModelTraining.models import models
+from AngryTops.Plotting.PlottingHelper import *
+import traceback
 
 plt.rc('legend',fontsize=22)
 plt.rcParams.update({'font.size': 22})
@@ -87,7 +89,9 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
             if k < 10:
               PrintOut(MakeP4(true[k,4,:], m_t, representation), MakeP4(y_fitted[k,4,:], m_t, representation))
               h_true = truth_histograms['W_had_y']
-              h_fitted = y_fitted['W_had_y']
+              h_fitted = fitted_histograms['W_had_y']
+	      xtitle = h_true.GetXaxis().GetTitle()
+              ytitle = h_true.GetYaxis().GetTitle()
               SetTH1FStyle( h_true,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3)
               SetTH1FStyle( h_fitted, color=kBlack, markersize=0, markerstyle=20, linewidth=3 )
 
@@ -131,7 +135,7 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
               newpad.SetFillStyle(4000)
               newpad.Draw()
               newpad.cd()
-              title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
+              title = TPaveLabel(0.1,0.94,0.9,0.99,"caption")
               title.SetFillColor(16)
               title.SetTextFont(52)
               title.Draw()
@@ -144,20 +148,22 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
               gPad.RedrawAxis()
               c.cd()
               c.SaveAs("histogram.png")
+              c.Draw()
               pad0.Close()
               pad1.Close()
               c.Close()
 
 
         except Exception as e:
-            print(e)
+            traceback.print_exc()
+	    print(e)
             print("Invalid checkpoint encountered. Skipping checkpoint %i" % k)
 
     x2_pickle = "{}/x2_epoches.pkl".format(train_dir)
     with open( x2_pickle, "wb" ) as file_scaler:
         pickle.dump(chi2tests, file_scaler, protocol=2)
 
-    make_plots(chi2tests, xaxis, train_dir)
+    make_plots(chi2tests, xaxis, "{0}/epoch{1}".format(train_dir, k))
 
 
 
@@ -299,4 +305,4 @@ def PrintOut( p4_true, p4_fitted):
                 p4_fitted.Px(), p4_fitted.Py(), p4_fitted.Pz(), p4_fitted.Pt(), p4_fitted.E() ))
 
 if __name__ == "__main__":
-    IterateEpoches('../../CheckPoints/dense_multi1.1000Epoches', 'pxpypz', 'dense_multi1', learn_rate=10e-5, max_evals=1)
+    IterateEpoches('../CheckPoints/dense_multi1.1000Epoches', 'pxpypz', 'dense_multi1', learn_rate=10e-5, max_evals=5)
