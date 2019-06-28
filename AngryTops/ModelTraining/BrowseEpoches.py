@@ -87,7 +87,7 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
             if k < 10:
               PrintOut(MakeP4(true[k,4,:], m_t, representation), MakeP4(y_fitted[k,4,:], m_t, representation))
               h_true = truth_histograms['W_had_y']
-              h_fitted = y_fitted['W_had_y']
+              h_fitted = fitted_histograms['W_had_y']
               SetTH1FStyle( h_true,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3)
               SetTH1FStyle( h_fitted, color=kBlack, markersize=0, markerstyle=20, linewidth=3 )
 
