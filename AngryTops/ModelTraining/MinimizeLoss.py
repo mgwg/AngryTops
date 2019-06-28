@@ -37,7 +37,7 @@ def objective(learn_rate, size1, size2, size3, size4, size5, size6, size7,\
     # Evaluating model and saving the predictions
     test_acc = model.evaluate(testing_input, testing_output)
     print('\nTest accuracy:', test_acc)
-    return test_acc[0]
+    return test_acc[-1]
 
 
 def test_model(learn_rate, size1, size2, size3, size4, size5, size6, size7,\
