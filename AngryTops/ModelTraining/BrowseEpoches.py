@@ -18,12 +18,12 @@ m_W = 80.4
 m_b = 4.95
 
 attributes = [
-'W_had_px', 'W_had_py', 'W_had_pz', 'W_had_pt', 'W_had_y', 'W_had_y', 'W_had_phi', 'W_had_E',
-'W_lep_px', 'W_lep_py', 'W_lep_pz', 'W_lep_pt', 'W_lep_y', 'W_lep_y', 'W_lep_phi', 'W_lep_E',
-'b_had_px', 'b_had_py', 'b_had_pz', 'b_had_pt', 'b_had_y', 'b_had_y', 'b_had_phi', 'b_had_E',
-'b_lep_px', 'b_lep_py', 'b_lep_pz', 'b_lep_pt', 'b_lep_y', 'b_lep_y', 'b_lep_phi', 'b_lep_E',
-'t_had_px', 't_had_py', 't_had_pz', 't_had_pt', 't_had_y', 't_had_y', 't_had_phi', 't_had_E',
-'t_lep_px', 't_lep_py', 't_lep_pz', 't_lep_pt', 't_lep_y', 't_lep_y', 't_lep_phi', 't_lep_E']
+'W_had_px', 'W_had_py', 'W_had_pz', 'W_had_pt', 'W_had_y', 'W_had_phi', 'W_had_E',
+'W_lep_px', 'W_lep_py', 'W_lep_pz', 'W_lep_pt', 'W_lep_y', 'W_lep_phi', 'W_lep_E',
+'b_had_px', 'b_had_py', 'b_had_pz', 'b_had_pt', 'b_had_y', 'b_had_phi', 'b_had_E',
+'b_lep_px', 'b_lep_py', 'b_lep_pz', 'b_lep_pt', 'b_lep_y', 'b_lep_phi', 'b_lep_E',
+'t_had_px', 't_had_py', 't_had_pz', 't_had_pt', 't_had_y','t_had_phi', 't_had_E',
+'t_lep_px', 't_lep_py', 't_lep_pz', 't_lep_pt', 't_lep_y', 't_lep_phi', 't_lep_E']
 
 def IterateEpoches(train_dir, representation, model_name, **kwargs):
     # Dictionary of
@@ -165,7 +165,7 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
 ################################################################################
 def make_plots(chi2tests, xaxis, train_dir):
     os.mkdir(train_dir + "/x2_tests")
-    os.chdir(train_dor + "/x2_tests")
+    os.chdir(train_dir + "/x2_tests")
     for key in chi2tests.keys():
         arr = chi2tests[key]
         plt.plot(xaxis, arr, label=key)
