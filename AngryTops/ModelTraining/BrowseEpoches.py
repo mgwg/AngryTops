@@ -85,7 +85,7 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
                 chi2tests[att].append(X2)
                 print("EPOCHE #: {}    Attribute: {}     X2: {:.2f}".format(k, att, X2))
             if k < 10:
-              PrintOut(MakeP4(true[i,4,:], m_t, representation), MakeP4(y_fitted[i,4,:], m_t, representation))
+              PrintOut(MakeP4(true[k,4,:], m_t, representation), MakeP4(y_fitted[k,4,:], m_t, representation))
         except Exception as e:
             print(e)
             print("Invalid checkpoint encountered. Skipping checkpoint %i" % k)
