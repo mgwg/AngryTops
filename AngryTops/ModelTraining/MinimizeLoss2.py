@@ -25,7 +25,8 @@ def objective(learn_rate, size1, size2, size3, size4, size5, size6, size7,\
     ###########################################################################
     # BUILDING / TRAINING MODEL
     model = test_model(learn_rate, size1, size2, size3, size4, size5, size6, size7,\
-                   act1, act2, act3, act4, reg_weight, rec_weight)
+                   size8, size9, size10, act1, act2, act3, act4, act5, act6, act7, \
+                   reg_weight, rec_weight)
     try:
         history = model.fit(training_input, training_output,  epochs=1,
                             batch_size=32, validation_split=0.1,)
