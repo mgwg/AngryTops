@@ -26,7 +26,7 @@ def objective(learn_rate, size1, size2, size3, size4, size5, size6, size7,\
     model = test_model(learn_rate, size1, size2, size3, size4, size5, size6, size7,\
                    act1, act2, act3, act4, reg_weight, rec_weight)
     try:
-        history = model.fit(training_input, training_output,  epochs=10,
+        history = model.fit(training_input, training_output,  epochs=1,
                             batch_size=32, validation_split=0.1,)
     except KeyboardInterrupt:
         print("Training_inerrupted")
@@ -109,5 +109,5 @@ if __name__ == "__main__":
     best = fmin(fn=objective2,
     space=space,
     algo=tpe.suggest,
-    max_evals=100)
+    max_evals=300)
     print(best)
