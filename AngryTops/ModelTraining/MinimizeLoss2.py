@@ -10,7 +10,8 @@ import tensorflow as tf
 def objective2(args): return objective(*args)
 
 def objective(learn_rate, size1, size2, size3, size4, size5, size6, size7,\
-               act1, act2, act3, act4, reg_weight, rec_weight):
+               size8, size9, size10, act1, act2, act3, act4, act5, act6, act7, \
+               reg_weight, rec_weight):
     """
     Trains a DNN model for 10 epoches. Return the loss.
     """
