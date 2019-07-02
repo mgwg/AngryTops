@@ -10,7 +10,6 @@ import pickle
 from ROOT import *
 from AngryTops.ModelTraining.models import models
 from AngryTops.Plotting.PlottingHelper import *
-from AngryTops.FormatInputOutput import *
 import traceback
 
 plt.rc('legend',fontsize=22)
