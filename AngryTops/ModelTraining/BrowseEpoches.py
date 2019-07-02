@@ -42,12 +42,13 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
       output_scalar = pickle.load(file_scaler)
 
     # Load Truth Array
-    output = predictions['true']
+    true = predictions['true']
+    true = rescale(true)
+
+    # Load Input
     lep = predictions['lep']
     jet = predictions['jet']
-
-    # Reverse scaling
-    input, true = scale([lep, jet], output, jets_scalar, lep_scalar, output_scalar)
+    input = [lep, jet]
 
     print("Successfully Loaded input and output")
     # Make histogram of truth values
@@ -68,6 +69,7 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
         try:
             model.load_weights(checkpoint_name)
             y_fitted = model.predict(input)
+            y_fitted = rescale(y_fitted)
             xaxis.append(k)
             fitted_histograms = construct_histogram_dict(y_fitted, label='fitted', representation=representation)
             for att in attributes:
@@ -169,8 +171,6 @@ def make_plots(chi2tests, xaxis, train_dir):
         if os.path.isfile(key):
             os.remove(key)
         plt.savefig(key)
-
-
 
 
 def construct_histogram_dict(arr, label, representation):
@@ -289,6 +289,13 @@ def MakeP4(y, m, representation):
     else:
         raise Exception("Invalid Representation Given: {}".format(representation))
     return p4
+
+def rescale(arr):
+    old_shape = (arr.shape[1], arr.shape[2])
+    new_arr = arr.reshape(arr.shape[0], arr.shape[1]*arr.shape[2])
+    new_arr = output_scalar.inverse_transform(new_arr)
+    new_arr = new_arr.reshape(new_arr.shape[0], old_shape[0], old_shape[1])
+    return new_arr
 
 def PrintOut( p4_true, p4_fitted):
   print("true=( %4.1f, %3.2f, %3.2f, %4.1f ; %3.1f ) :: fitted=( %4.1f, %3.2f, %3.2f, %4.1f ; %3.1f )" % \
