@@ -102,16 +102,16 @@ if __name__ == "__main__":
     hp.quniform('size5', 1, 200, 1),
     hp.quniform('size6', 1, 200, 1),
     hp.quniform('size7', 1, 200, 1),
-    hp.quniform('size8', 1, 200, 1)
-    hp.quniform('size9', 1, 200, 1)
-    hp.quniform('size10', 1, 200, 1)
+    hp.quniform('size8', 1, 200, 1),
+    hp.quniform('size9', 1, 200, 1),
+    hp.quniform('size10', 1, 200, 1),
     hp.choice('act1', ['relu', 'elu', 'tanh']),
     hp.choice('act2', ['relu', 'elu', 'tanh']),
     hp.choice('act3', ['relu', 'elu', 'tanh']),
     hp.choice('act4', ['relu', 'elu', 'tanh']),
     hp.choice('act5', ['relu', 'elu', 'tanh']),
     hp.choice('act6', ['relu', 'elu', 'tanh']),
-    hp.choice('act7', ['relu', 'elu', 'tanh'])
+    hp.choice('act7', ['relu', 'elu', 'tanh']),
     hp.uniform('reg_weight', 0, 1),
     hp.uniform('rec_weight', 0, 1)
     ]
