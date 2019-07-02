@@ -2,10 +2,13 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.layers import *
 from tensorflow.keras.regularizers import *
+from keras.layers.advanced_activations import LeakyReLU
 import sys
 from AngryTops.features import *
 from AngryTops.ModelTraining.custom_loss import *
 from AngryTops.ModelTraining.single_output_models import *
+from AngryTops.ModelTraining.cnn import cnn_models
+
 
 def dense_multi1(**kwargs):
     """A denser version of model_multi"""
@@ -329,6 +332,9 @@ models = {'dense_multi1':dense_multi1,
           'dense_multi8':dense_multi8}
 
 for key, constructor in single_models.items():
+    models[key] = constructor
+
+for key, constructor in cnn_models.items():
     models[key] = constructor
 
 ################################################################################
