@@ -67,7 +67,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, **kwargs):
 
     filepath = train_dir + "/weights-improvement-{epoch:02d}.ckpt"
     print("Checkpoints saved in: ", filepath)
-    cp_callback = ModelCheckpoint(filepath, save_weights_only=True, verbose=1, save_freq=1)
+    cp_callback = ModelCheckpoint(filepath, save_weights_only=True, verbose=1, save_freq=10)
     try:
         history = model.fit(training_input, training_output,  epochs=EPOCHES,
                             batch_size=BATCH_SIZE, validation_split=0.1,
