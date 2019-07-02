@@ -69,7 +69,8 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
 
     # Iterate over checkpoints
     xaxis = []
-    checkpoints = np.sort(glob(train_dir + "/weights-improvement-*"))
+    checkpoints = glob(train_dir + "/weights-improvement-*")
+    checkpoints.sort(key=os.path.getmtime)
     model = models[model_name](**kwargs)
     model.load_weights(train_dir + '/model_weights.h5')
     max_evals = len(checkpoints)
