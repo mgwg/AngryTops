@@ -88,8 +88,8 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
                 print("EPOCHE #: {}    Attribute: {}     X2: {:.2f}".format(k, att, X2))
             if k < 10:
               PrintOut(MakeP4(true[k,4,:], m_t, representation), MakeP4(y_fitted[k,4,:], m_t, representation))
-              h_true = truth_histograms['W_had_y']
-              h_fitted = fitted_histograms['W_had_y']
+              h_true = truth_histograms['W_lep_pt']
+              h_fitted = fitted_histograms['W_lep_pt']
 	      xtitle = h_true.GetXaxis().GetTitle()
 	      ytitle = h_true.GetYaxis().GetTitle()
               SetTH1FStyle( h_true,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3)
@@ -308,4 +308,5 @@ def PrintOut( p4_true, p4_fitted):
                 p4_fitted.Px(), p4_fitted.Py(), p4_fitted.Pz(), p4_fitted.Pt(), p4_fitted.Rapidity() ))
 
 if __name__ == "__main__":
-    IterateEpoches('../CheckPoints/dense_multi1.1000Epoches', 'pxpypz', 'dense_multi1', learn_rate=10e-5, max_evals=1)
+    IterateEpoches('../CheckPoints/dense_multi2.6.1000epoches', 'pxpypz', 'dense_multi2', learn_rate=10e-5)
+    
