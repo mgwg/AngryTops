@@ -42,7 +42,7 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
 
     # Load Truth Array
     true = predictions['true']
-    true = rescale(true)
+    true = rescale(true, output_scalar)
 
     # Load Input
     lep = predictions['lep']
@@ -68,7 +68,7 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
         try:
             model.load_weights(checkpoint_name)
             y_fitted = model.predict(input)
-            y_fitted = rescale(y_fitted)
+            y_fitted = rescale(y_fitted, output_scalar)
             xaxis.append(k)
             fitted_histograms = construct_histogram_dict(y_fitted, label='fitted', representation=representation)
             for att in attributes:
@@ -84,7 +84,7 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
 	    ytitle = h_true.GetYaxis().GetTitle()
             SetTH1FStyle( h_true,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3)
             SetTH1FStyle( h_fitted, color=kBlack, markersize=0, markerstyle=20, linewidth=3 )
-            
+
             # DRAW HISTOGRAMS
             c, pad0, pad1 = MakeCanvas()
             pad0.cd()
@@ -96,7 +96,7 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
             h_true.SetMaximum(hmax)
             h_fitted.SetMinimum(0.)
             h_true.SetMinimum(0.)
-            
+
             # Legend
             leg = TLegend( 0.20, 0.80, 0.50, 0.90 )
             leg.SetFillColor(0)
@@ -118,7 +118,7 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
             l.SetTextColor(kBlack)
             l.DrawLatex( 0.7, 0.80, "KS test: %.2f" % KS )
             l.DrawLatex( 0.7, 0.75, "#chi^{2}/NDF = %.2f" % X2 )
-            
+
             # TITLE HISTOGRAM W/ CAPTION
             gPad.RedrawAxis()
             newpad = TPad("newpad","a caption",0.1,0,1,1)
@@ -129,7 +129,7 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
             title.SetFillColor(16)
             title.SetTextFont(52)
             title.Draw()
-            
+
             # SAVE AND CLOSE HISTOGRAM
             gPad.RedrawAxis()
             pad1.cd()
@@ -289,7 +289,7 @@ def MakeP4(y, m, representation):
         raise Exception("Invalid Representation Given: {}".format(representation))
     return p4
 
-def rescale(arr):
+def rescale(arr, output_scalar):
     old_shape = (arr.shape[1], arr.shape[2])
     new_arr = arr.reshape(arr.shape[0], arr.shape[1]*arr.shape[2])
     new_arr = output_scalar.inverse_transform(new_arr)
@@ -303,4 +303,3 @@ def PrintOut( p4_true, p4_fitted):
 
 if __name__ == "__main__":
     IterateEpoches('../CheckPoints/dense_multi2.6.1000epoches', 'pxpypz', 'dense_multi2', learn_rate=10e-5)
-    
