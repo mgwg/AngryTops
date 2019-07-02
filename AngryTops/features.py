@@ -47,6 +47,15 @@ output_columns_pxpypzE = [
 "target_t_had_Px", "target_t_had_Py", "target_t_had_Pz", "target_t_had_E",
 "target_t_lep_Px", "target_t_lep_Py", "target_t_lep_Pz", "target_t_lep_E"]
 
+# pxpypzM representation
+output_columns_pxpypzM = [
+"target_W_had_Px", "target_W_had_Py", "target_W_had_Pz", "target_W_had_M",
+"target_W_lep_Px", "target_W_lep_Py", "target_W_lep_Pz", "target_W_lep_M",
+"target_b_had_Px", "target_b_had_Py", "target_b_had_Pz", "target_b_had_M",
+"target_b_lep_Px", "target_b_lep_Py", "target_b_lep_Pz", "target_b_lep_M",
+"target_t_had_Px", "target_t_had_Py", "target_t_had_Pz", "target_t_had_M",
+"target_t_lep_Px", "target_t_lep_Py", "target_t_lep_Pz", "target_t_lep_M"]
+
 # ptetaphi representation
 output_columns_ptetaphi = [
 "target_W_had_Pt", "target_W_had_Eta", "target_W_had_Phi",
@@ -195,8 +204,8 @@ plots = ['reso_t_had_phi', 'corr_b_had_phi', 'corr_W_had_pt',
  # lists
 representations = {
  "pxpypz": [lep_cart, jets_pxpypz, output_columns_pxpypz],
- "pxpypzE": [lep_cartE, jets_pxpypzEM, output_columns_ptetaphiE],
- "pxpypzM": [lep_cartE, jets_pxpypzEM, output_columns_ptetaphiM],
+ "pxpypzE": [lep_cartE, jets_pxpypzEM, output_columns_pxpypzE],
+ "pxpypzM": [lep_cartE, jets_pxpypzEM, output_columns_pxpypzM],
  "ptetaphi": [lep_ptetaphi, jets_ptetaphi, output_columns_ptetaphi],
  "ptetaphiE": [lep_ptetaphiE, jets_ptetaphiEM, output_columns_ptetaphiE],
  "ptetaphiM": [lep_ptetaphiE, jets_ptetaphiEM, output_columns_ptetaphiE]
