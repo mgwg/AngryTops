@@ -159,9 +159,8 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
 ################################################################################
 def make_plots(chi2tests, xaxis, train_dir):
     strFile = train_dir + "/x2_tests"
-    if os.path.isfile(strFile):
-        os.mkdir(train_dir + "/x2_tests")
-    os.chdir(strFile)
+    if not os.path.exists(strFile):
+        os.mkdir(strFile)
     for key in chi2tests.keys():
         arr = chi2tests[key]
         plt.plot(xaxis, arr, label=key)
