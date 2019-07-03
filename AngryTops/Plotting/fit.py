@@ -34,15 +34,19 @@ def MakeP4(y, m):
     if representation == "pxpypzE":
         E  = y[3]
         p4.SetPxPyPzE(p0, p1, p2, E)
+    elif representation == "pxpypzM":
+        M  = y[3]
+        E = np.sqrt(p0**2 + p1**2 + p2**2 + M**2)
+        p4.SetPxPyPzE(p0, p1, p2, E)
+    elif representation == "pxpypz":
+        E = np.sqrt(p0**2 + p1**2 + p2**2 + m**2)
+        p4.SetPxPyPzE(p0, p1, p2, E)
     elif representation == "ptetaphiE":
         E  = y[3]
         p4.SetPtEtaPhiE(p0, p1, p2, E)
     elif representation == "ptetaphiM":
         M  = y[3]
         p4.SetPtEtaPhiM(p0, p1, p2, M)
-    elif representation == "pxpypz":
-        E = np.sqrt(p0**2 + p1**2 + p2**2 + m**2)
-        p4.SetPxPyPzE(p0, p1, p2, E)
     elif representation == "ptetaphi":
         p4.SetPtEtaPhiM(p0, p1, p2, m)
     else:
