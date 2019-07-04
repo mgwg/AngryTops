@@ -324,7 +324,7 @@ def dense_multi8(**kwargs):
 
 def dense_multi9(**kwargs):
     """A denser version of model_multi"""
-    reg_weight = 0.09552559544655947,
+    reg_weight = 0.09552559544655947
     rec_weight = 0.48348309859129646
 
     input_jets = Input(shape = (20,), name="input_jets")
@@ -382,4 +382,4 @@ for key, constructor in cnn_models.items():
 ################################################################################
 
 if __name__ == "__main__":
-    print("Compiled")
+    dense_multi9()
