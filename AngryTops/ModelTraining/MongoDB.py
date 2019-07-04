@@ -6,7 +6,9 @@ from tensorflow.keras.layers import *
 from tensorflow.keras.regularizers import *
 from tensorflow import keras
 import tensorflow as tf
-from hyperopt.mongoexp import MongoTrials
+import ray
+from ray import tune
+from ray.tune.suggest import HyperOptSearch
 
 
 def objective2(args): return objective(*args)
@@ -108,7 +110,8 @@ if __name__ == "__main__":
     hp.uniform('rec_weight', 0, 1)
     ]
 
-    trials = MongoTrials('mongo://localhost:1234/foo_db/jobs', exp_key='exp1')
+    algo = HyperOptSearch(space, max_concurrent=5)
+    tune.run(test_model, name="my_exp", num_samples=10, search_alg=algo)
     best = fmin(fn=objective2,
     space=space,
     algo=tpe.suggest,
