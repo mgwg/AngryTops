@@ -322,6 +322,48 @@ def dense_multi8(**kwargs):
 
     return model
 
+def dense_multi9(**kwargs):
+    """A denser version of model_multi"""
+    reg_weight = 0.09552559544655947,
+    rec_weight = 0.48348309859129646
+
+    input_jets = Input(shape = (20,), name="input_jets")
+    input_lep = Input(shape=(5,), name="input_lep")
+    # Jets
+    x_jets = Reshape(target_shape=(5,4))(input_jets)
+    x_jets = LSTM(162, return_sequences=True,
+                  kernel_regularizer=l2(reg_weight),
+                  recurrent_regularizer=l2(rec_weight))(x_jets)
+    x_jets = LSTM(116, return_sequences=True,
+                  kernel_regularizer=l2(reg_weight),
+                  recurrent_regularizer=l2(rec_weight))(x_jets)
+    x_jets = LSTM(179, return_sequences=False,
+                  kernel_regularizer=l2(reg_weight),
+                  recurrent_regularizer=l2(rec_weight))(x_jets)
+    x_jets = Dense(97, activation='tanh')(x_jets)
+    x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
+
+    # Lep
+    x_lep = Dense(135, activation='elu')(input_lep)
+    x_lep = keras.Model(inputs=input_lep, outputs=x_lep)
+
+    # Combine them
+    combined = concatenate([x_lep.output, x_jets.output], axis=1)
+
+    # Apply some more layers to combined data set
+    final = Dense(157, activation='relu')(combined)
+    final = Dense(166, activation='tanh')(final)
+    final = Dense(18, activation='linear')(final)
+    final = Reshape(target_shape=(6,3))(final)
+
+    # Make final model
+    model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
+
+    optimizer = tf.keras.optimizers.Adam(0.0008606121605003719)
+    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+
+    return model
+
 
 ################################################################################
 # List of all models
@@ -329,7 +371,7 @@ models = {'dense_multi1':dense_multi1,
           'dense_multi2':dense_multi2,'dense_multi3':dense_multi3,
           'dense_multi4':dense_multi4,'dense_multi5':dense_multi5,
           'dense_multi6':dense_multi6,'dense_multi7':dense_multi7,
-          'dense_multi8':dense_multi8}
+          'dense_multi8':dense_multi8, 'dense_multi9':dense_multi9}
 
 for key, constructor in single_models.items():
     models[key] = constructor
