@@ -1,0 +1,8 @@
+INFO (hyperopt.mongoexp): Error while unpickling.
+INFO (hyperopt.mongoexp): job exception: Can't get attribute 'objective2' on <module '__main__' from '/home/fsyed/tf/bin/hyperopt-mongo-worker'>
+INFO (hyperopt.mongoexp): Error while unpickling.
+INFO (hyperopt.mongoexp): job exception: Can't get attribute 'objective2' on <module '__main__' from '/home/fsyed/tf/bin/hyperopt-mongo-worker'>
+INFO (hyperopt.mongoexp): Error while unpickling.
+INFO (hyperopt.mongoexp): job exception: Can't get attribute 'objective2' on <module '__main__' from '/home/fsyed/tf/bin/hyperopt-mongo-worker'>
+INFO (hyperopt.mongoexp): Error while unpickling.
+INFO (hyperopt.mongoexp): job exception: Can't get attribute 'objective2' on <module '__main__' from '/home/fsyed/tf/bin/hyperopt-mongo-worker'>

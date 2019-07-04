@@ -7,40 +7,7 @@ from tensorflow.keras.regularizers import *
 from tensorflow import keras
 import tensorflow as tf
 from hyperopt.mongoexp import MongoTrials
-
-
-def objective2(args): return objective(*args)
-
-def objective(learn_rate, size1, size2, size3, size4, size5, size6, size7,\
-               act1, act2, act3, act4, reg_weight, rec_weight):
-    """
-    Trains a DNN model for 10 epoches. Return the loss.
-    """
-    ###########################################################################
-    # LOADING / PRE-PROCESSING DATA
-    (training_input, training_output), (testing_input, testing_output), \
-    (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) \
-    = get_input_output(input_filename='topreco_5dec.csv',
-                        rep='pxpypz', multi_input=True, scaling='standard')
-
-    ###########################################################################
-    # BUILDING / TRAINING MODEL
-    model = test_model(learn_rate, size1, size2, size3, size4, size5, size6, size7,\
-                   act1, act2, act3, act4, reg_weight, rec_weight)
-    try:
-        history = model.fit(training_input, training_output,  epochs=1,
-                            batch_size=32, validation_split=0.1,)
-    except KeyboardInterrupt:
-        print("Training_inerrupted")
-        history = None
-
-    ###########################################################################
-    # EVALUATING MODEL AND MAKE PREDICTIONS
-    # Evaluating model and saving the predictions
-    test_acc = model.evaluate(testing_input, testing_output)
-    print('\nTest accuracy:', test_acc)
-    return test_acc[-1]
-
+from AngryTops.objective import objective2
 
 def test_model(learn_rate, size1, size2, size3, size4, size5, size6, size7,\
                act1, act2, act3, act4, reg_weight, rec_weight):
@@ -108,10 +75,10 @@ if __name__ == "__main__":
     hp.uniform('rec_weight', 0, 1)
     ]
 
-    trials = MongoTrials('mongo://localhost:1234/foo_db/jobs', exp_key='exp1')
+    trials = MongoTrials('mongo://localhost:9876/foo_db/jobs')
     best = fmin(fn=objective2,
     space=space,
     algo=tpe.suggest,
-    max_evals=10),
-    trials=trials,
+    max_evals=10,
+    trials=trials)
     print(best)
