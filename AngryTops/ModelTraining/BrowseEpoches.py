@@ -91,7 +91,7 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
             gStyle.SetOptTitle(0)
             h_true.Draw("h")
             h_fitted.Draw("h same")
-            hmax = 1.5 * max([h_true.GetMaximum(), h_fitted.GetMaximum()])
+            hmax = 0.12
             h_fitted.SetMaximum(hmax)
             h_true.SetMaximum(hmax)
             h_fitted.SetMinimum(0.)
