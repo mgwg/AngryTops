@@ -81,7 +81,7 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
             h_true = truth_histograms['W_lep_pt']
             h_fitted = fitted_histograms['W_lep_pt']
             xtitle = h_true.GetXaxis().GetTitle()
-	    ytitle = h_true.GetYaxis().GetTitle()
+            ytitle = h_true.GetYaxis().GetTitle()
             SetTH1FStyle( h_true,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3)
             SetTH1FStyle( h_fitted, color=kBlack, markersize=0, markerstyle=20, linewidth=3 )
 
