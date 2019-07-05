@@ -39,7 +39,7 @@ if __name__ == "__main__":
         time_attr="training_iteration",
         metric="mse",
         mode="min",
-        max_t=10e6,
+        max_t=10000,
         grace_period=20)
 
     algo = HyperOptSearch(space, max_concurrent=32, metric="mse", mode="min")
