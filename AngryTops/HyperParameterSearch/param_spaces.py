@@ -28,7 +28,7 @@ space1 = {
 'act2': hp.choice('act2', ['relu', 'elu', 'tanh']),
 'act3': hp.choice('act3', ['relu', 'elu', 'tanh']),
 'act4': hp.choice('act4', ['relu', 'elu', 'tanh']),
-'act5': hp.choice('act4', ['relu', 'elu', 'tanh']),
+'act5': hp.choice('act5', ['relu', 'elu', 'tanh']),
 'reg_weight': hp.uniform('reg_weight', 0, 1),
 'rec_weight': hp.uniform('rec_weight', 0, 1)
 }
