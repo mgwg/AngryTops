@@ -89,7 +89,7 @@ if __name__ == "__main__":
         time_attr="training_iteration",
         metric="mse",
         mode="min",
-        max_t=100,
+        max_t=10e6,
         grace_period=20)
     space = {
     'learn_rate': hp.uniform('learn_rate', 10e-6, 10e-4),
@@ -108,6 +108,6 @@ if __name__ == "__main__":
     'rec_weight': hp.uniform('rec_weight', 0, 1)
     }
 
-    algo = HyperOptSearch(space, max_concurrent=8, metric="mse", mode="min")
-    results = tune.run(objective, name="my_exp91", num_samples=10, search_alg=algo, resources_per_trial={"cpu": 4, "gpu": 0}, verbose=2, scheduler=sched, loggers=DEFAULT_LOGGERS)
+    algo = HyperOptSearch(space, max_concurrent=32, metric="mse", mode="min")
+    results = tune.run(objective, name="search1", num_samples=1000, search_alg=algo, resources_per_trial={"cpu": 1, "gpu": 0}, verbose=2, scheduler=sched, loggers=DEFAULT_LOGGERS)
     

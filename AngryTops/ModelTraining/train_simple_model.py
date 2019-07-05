@@ -46,6 +46,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, **kwargs):
         log = open("{}/log.txt".format(train_dir), 'w')
     if log_training:
         sys.stdout = log
+  
     ###########################################################################
     # LOADING / PRE-PROCESSING DATA
     (training_input, training_output), (testing_input, testing_output), \
