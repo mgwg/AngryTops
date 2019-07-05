@@ -57,7 +57,7 @@ def test_model1(config):
     x_jets = LSTM(int(config['size1']), return_sequences=False,
                   kernel_regularizer=l2(config['reg_weight']),
                   recurrent_regularizer=l2(config['rec_weight']))(x_jets)
-    x_jets = Dense(int(config['size2'], activation=config['act1'])(x_jets)
+    x_jets = Dense(int(config['size2'], activation=config['act1']))(x_jets)
     x_jets = keras.Model(inputs=input_jets, outputs=x_jets)
 
     # Lep
@@ -67,9 +67,9 @@ def test_model1(config):
     combined = concatenate([x_lep.output, x_jets.output], axis=1)
 
     # Apply some more layers to combined data set
-    final = Dense(int(config['size3'], activation=config['act2'])(combined)
-    final = Dense(int(config['size4'], activation=config['act3'])(final)
-    final = Dense(int(config['size5'], activation=config['act4'])(final)
+    final = Dense(int(config['size3'], activation=config['act2']))(combined)
+    final = Dense(int(config['size4'], activation=config['act3']))(final)
+    final = Dense(int(config['size5'], activation=config['act4']))(final)
     final = Dense(18, activation=config['act5'])(final)
     final = Reshape(target_shape=(6,3))(final)
     final = Dense(3, activation="linear")(final)
