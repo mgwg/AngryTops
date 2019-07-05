@@ -1,5 +1,6 @@
 """Minimize Loss Using MongoDB"""
 import numpy as np
+import sys
 from AngryTops.ModelTraining.FormatInputOutput import get_input_output
 from AngryTops.HyperParameterSearch.test_models import test_models
 from AngryTops.HyperParameterSearch.param_spaces import parameter_spaces
