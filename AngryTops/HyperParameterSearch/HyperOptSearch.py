@@ -1,6 +1,7 @@
 """Minimize Loss Using MongoDB"""
 import numpy as np
 import sys
+from hyperopt import hp
 from AngryTops.ModelTraining.FormatInputOutput import get_input_output
 from AngryTops.HyperParameterSearch.test_models import test_models
 from AngryTops.HyperParameterSearch.param_spaces import parameter_spaces
@@ -14,6 +15,7 @@ from ray.tune.logger import DEFAULT_LOGGERS
 # The corresponding model and space for testing
 model_name = sys.argv[1]
 space_name = sys.argv[2]
+search_name = sys.argv[3]
 test_model = test_models[model_name]
 space = parameter_spaces[space_name]
 
@@ -43,7 +45,7 @@ if __name__ == "__main__":
         max_t=10000,
         grace_period=20)
 
-    algo = HyperOptSearch(space, max_concurrent=32, metric="mse", mode="min")
-    results = tune.run(objective, name="search1", num_samples=1000, \
-                       search_alg=algo, resources_per_trial={"cpu": 1, "gpu": 0}, \
+    algo = HyperOptSearch(space, max_concurrent=8, metric="mse", mode="min")
+    results = tune.run(objective, name=search_name, num_samples=1000, \
+                       search_alg=algo, resources_per_trial={"cpu": 4, "gpu": 0}, \
                        verbose=2, scheduler=sched, loggers=DEFAULT_LOGGERS)
