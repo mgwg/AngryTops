@@ -46,6 +46,6 @@ if __name__ == "__main__":
         grace_period=20)
 
     algo = HyperOptSearch(space, max_concurrent=8, metric="mse", mode="min")
-    results = tune.run(objective, name=search_name, num_samples=1000, \
-                       search_alg=algo, resources_per_trial={"cpu": 4, "gpu": 0}, \
+    results = tune.run(objective, name=search_name, num_samples=1000, 
+                       search_alg=algo, resources_per_trial={"cpu": 4, "gpu": 0}, 
                        verbose=2, scheduler=sched, loggers=DEFAULT_LOGGERS)
