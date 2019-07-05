@@ -82,4 +82,4 @@ def test_model1(config):
 
     return model
 
-test_models = {'test_model0': test_model0}
+test_models = {'test_model0': test_model0, 'test_model1': test_model1}
