@@ -135,8 +135,8 @@ def test_model3(config):
     input_lep = Input(shape=(5,), name="input_lep")
 
     # Jets
-    x_jets = Reshape(target_shape=(5,4))(x_jets)
-    x_jets = Dense(int(config['size1']), activation=config['act1'], kernel_regularizer=l2(kernel_reg1))(input_jets)
+    x_jets = Reshape(target_shape=(5,4))(input_jets)
+    x_jets = Dense(int(config['size1']), activation=config['act1'], kernel_regularizer=l2(kernel_reg1))(x_jets)
     x_jets = LSTM(int(config['size2']), return_sequences=True, kernel_regularizer=l2(kernel_reg2))(x_jets)
     x_jets = LSTM(int(config['size3']), return_sequences=False, kernel_regularizer=l2(kernel_reg3))(x_jets)
     x_jets = BatchNormalization()(x_jets)
