@@ -28,10 +28,14 @@ def cnn1(**kwargs):
 def cnn2(**kwargs):
     """A simple convolutional network model"""
     model = keras.models.Sequential()
-    model.add(Dense(128, input_shape=(36,)))
+    model.add(Dense(256, input_shape=(36,)))
     model.add(LeakyReLU(alpha=0.2))
-    model.add(Reshape(target_shape=(8,8,2)))
-    model.add(Conv2D(64, (3, 3), activation='relu'))
+    model.add(Reshape(target_shape=(8,8,4)))
+    model.add(Conv2D(128, (3, 3), activation='relu', padding="same"))
+    model.add(MaxPooling2D((2, 2)))
+    model.add(Conv2D(64, (3, 3), activation='relu', padding="same"))
+    model.add(MaxPooling2D((2, 2)))
+    model.add(Conv2D(32, (2, 2), activation='relu', padding="same"))
     model.add(MaxPooling2D((2, 2)))
     model.add(Flatten())
     model.add(Dense(24))
@@ -44,3 +48,7 @@ def cnn2(**kwargs):
     return model
 
 cnn_models = {'cnn1': cnn1, 'cnn2': cnn2}
+
+if __name__ == "__main__":
+    model = cnn2()
+    print(model.summary())
