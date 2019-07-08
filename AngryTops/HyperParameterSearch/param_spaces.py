@@ -77,4 +77,4 @@ space3 = {
 'kernel_reg5': hp.uniform('kernel_reg5', 0, 1)
 }
 
-parameter_spaces = {'space0': space0, 'space1': space1, 'space2': space2}
+parameter_spaces = {'space0': space0, 'space1': space1, 'space2': space2, 'space3': space3}
