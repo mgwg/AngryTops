@@ -4,7 +4,6 @@ from tensorflow.keras.layers import *
 from tensorflow.keras.regularizers import *
 import sys
 from AngryTops.features import *
-from AngryTops.ModelTraining.custom_loss import *
 from AngryTops.ModelTraining.single_output_models import *
 
 
