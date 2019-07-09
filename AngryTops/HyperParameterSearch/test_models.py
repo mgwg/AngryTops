@@ -165,5 +165,33 @@ def test_model3(config):
 
     return model
 
+def cnn_model1(config):
+    """A simple convolutional network model"""
+    conv2d_tuple1 = (int(config['conv2d_tuple1x']), int(config['conv2d_tuple1y']))
+    conv2d_tuple2 = (int(config['conv2d_tuple2x']), int(config['conv2d_tuple2y']))
+    conv2d_tuple3 = (int(config['conv2d_tuple2x']), int(config['conv2d_tuple2y']))
+    maxp_tuple1 = (int(config['maxp1x']), int(config['maxp1y']))
+    maxp_tuple2 = (int(config['maxp2x']), int(config['maxp2y']))
+    maxp_tuple3 = (int(config['maxp3x']), int(config['maxp3y']))
+    model = keras.models.Sequential()
+    model.add(Dense(256, input_shape=(36,)))
+    model.add(LeakyReLU(alpha=config['alpha1']))
+    model.add(Reshape(target_shape=(8,8,4)))
+    model.add(Conv2D(int(config['size1']), conv2d_tuple1, activation=config['act1'], padding="same"))
+    model.add(MaxPooling2D(maxp_tuple1))
+    model.add(Conv2D(int(config['size2']), conv2d_tuple2, activation=config['act2'], padding="same"))
+    model.add(MaxPooling2D(maxp_tuple2))
+    model.add(Conv2D(int(config['size3']), conv2d_tuple3, activation=config['act3'], padding="same"))
+    model.add(MaxPooling2D(maxp_tuple3))
+    model.add(Flatten())
+    model.add(Dense(int(config['size4'])))
+    model.add(LeakyReLU(alpha=config['alpha2']))
+    model.add(Dense(24))
+    model.add(Reshape(target_shape=(6,4)))
+
+    optimizer = tf.keras.optimizers.Adam(10e-5)
+    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    return model
+
 test_models = {'test_model0': test_model0, 'test_model1': test_model1,
                'test_model2': test_model2, 'test_model3': test_model3}
