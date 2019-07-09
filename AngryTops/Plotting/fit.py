@@ -38,7 +38,7 @@ def MakeP4(y, m):
         M  = y[3]
         E = np.sqrt(p0**2 + p1**2 + p2**2 + M**2)
         p4.SetPxPyPzE(p0, p1, p2, E)
-    elif representation == "pxpypz":
+    elif representation == "pxpypz" or representation == "pxpypzEM":
         E = np.sqrt(p0**2 + p1**2 + p2**2 + m**2)
         p4.SetPxPyPzE(p0, p1, p2, E)
     elif representation == "ptetaphiE":
@@ -47,7 +47,7 @@ def MakeP4(y, m):
     elif representation == "ptetaphiM":
         M  = y[3]
         p4.SetPtEtaPhiM(p0, p1, p2, M)
-    elif representation == "ptetaphi":
+    elif representation == "ptetaphi" or representation == "ptetaphiEM":
         p4.SetPtEtaPhiM(p0, p1, p2, m)
     else:
         raise Exception("Invalid Representation Given: {}".format(representation))

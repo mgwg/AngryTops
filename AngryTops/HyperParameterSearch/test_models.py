@@ -1,16 +1,10 @@
+"""Models for hyperparmeter searches"""
 from tensorflow.keras.layers import *
 from tensorflow.keras.regularizers import *
 from tensorflow import keras
 import tensorflow as tf
 
 def test_model0(config):
-    print("INPUT")
-    print("learn_rate: {0}\nsize1: {1}\nsize2: {2}\nsize3: {3}\nsize4: {4}\n\
-          size5 {5}\nsize6: {6}\nsize7: {7}\nact1: {8}\nact2: {9}\nact3: {10}\n\
-          act4: {11}\nreg_weight: {12}\nrec_weight: {13}".format(config['learn_rate'], config['size1'], \
-          config['size2'], config['size3'], config['size4'], config['size5'], config['size6'], config['size7'], \
-          config['act1'], config['act2'], config['act3'], config['act4'], config['reg_weight'], config['rec_weight']))
-
     input_jets = Input(shape = (20,), name="input_jets")
     input_lep = Input(shape=(5,), name="input_lep")
     # Jets
@@ -49,7 +43,6 @@ def test_model0(config):
     return model
 
 def test_model1(config):
-
     input_jets = Input(shape = (20,), name="input_jets")
     input_lep = Input(shape=(5,), name="input_lep")
     # Jets
@@ -83,7 +76,6 @@ def test_model1(config):
     return model
 
 def test_model2(config):
-    """A denser version of model_multi"""
     kernel_reg1 = config['kernel_reg1']
     kernel_reg2 = config['kernel_reg2']
     kernel_reg3 = config['kernel_reg3']
@@ -124,7 +116,6 @@ def test_model2(config):
     return model
 
 def test_model3(config):
-    """A denser version of model_multi"""
     kernel_reg1 = config['kernel_reg1']
     kernel_reg2 = config['kernel_reg2']
     kernel_reg3 = config['kernel_reg3']

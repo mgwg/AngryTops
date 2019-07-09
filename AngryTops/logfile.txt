@@ -1,6 +1,0 @@
-INFO (hyperopt.mongoexp): job exception: name 'get_input_output' is not defined
-INFO (hyperopt.mongoexp): job exception: name 'get_input_output' is not defined
-INFO (hyperopt.mongoexp): job exception: name 'get_input_output' is not defined
-INFO (hyperopt.mongoexp): job exception: name 'get_input_output' is not defined
-INFO (hyperopt.mongoexp): job exception: [Errno 2] File b'../csv/topreco_5dec.csv' does not exist: b'../csv/topreco_5dec.csv'
-INFO (hyperopt.mongoexp): job exception: [Errno 2] File b'../csv/topreco_5dec.csv' does not exist: b'../csv/topreco_5dec.csv'
