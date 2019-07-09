@@ -1,3 +1,4 @@
+"""The HyperParameter spaces. Each space corresponds to a different model"""
 from hyperopt import hp
 
 space0 = {

@@ -17,6 +17,7 @@ model_name = sys.argv[1]
 space_name = sys.argv[2]
 search_name = sys.argv[3]
 
+# Inputs for training
 rep = 'pxpypz'
 scaling = 'standard'
 multi_input = True
@@ -29,7 +30,7 @@ space = parameter_spaces[space_name]
 
 def objective(config, reporter, **kwargs):
     """
-    Trains a DNN model for 10 epoches. Return the loss.
+    Trains a DNN model for 1 epoches.
     """
     # LOADING / PRE-PROCESSING DATA
     (training_input, training_output), (testing_input, testing_output), \

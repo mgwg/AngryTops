@@ -28,7 +28,9 @@ attributes = [
 't_lep_px', 't_lep_py', 't_lep_pz', 't_lep_pt', 't_lep_y', 't_lep_phi', 't_lep_E']
 
 def IterateEpoches(train_dir, representation, model_name, **kwargs):
-    # Dictionary of
+    """Cycles through all of the epoches corresponding, and calculated the Chi2
+    values for each of the attributes at each epoche"""
+    # Dictionary of chi2tests
     chi2tests = {}
     for att in attributes:
         chi2tests[att] = []
@@ -77,70 +79,6 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
                 print("EPOCHE #: {}    Attribute: {}     X2: {:.2f}".format(k, att, X2))
             if k < 10:
               PrintOut(MakeP4(true[k,4,:], m_t, representation), MakeP4(y_fitted[k,4,:], m_t, representation))
-
-            h_true = truth_histograms['W_lep_pt']
-            h_fitted = fitted_histograms['W_lep_pt']
-            xtitle = h_true.GetXaxis().GetTitle()
-            ytitle = h_true.GetYaxis().GetTitle()
-            SetTH1FStyle( h_true,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3)
-            SetTH1FStyle( h_fitted, color=kBlack, markersize=0, markerstyle=20, linewidth=3 )
-
-            # DRAW HISTOGRAMS
-            c, pad0, pad1 = MakeCanvas()
-            pad0.cd()
-            gStyle.SetOptTitle(0)
-            h_true.Draw("h")
-            h_fitted.Draw("h same")
-            hmax = 0.12
-            h_fitted.SetMaximum(hmax)
-            h_true.SetMaximum(hmax)
-            h_fitted.SetMinimum(0.)
-            h_true.SetMinimum(0.)
-
-            # Legend
-            leg = TLegend( 0.20, 0.80, 0.50, 0.90 )
-            leg.SetFillColor(0)
-            leg.SetFillStyle(0)
-            leg.SetBorderSize(0)
-            leg.SetTextFont(42)
-            leg.SetTextSize(0.05)
-            leg.AddEntry( h_true, "MG5+Py8", "f" )
-            leg.AddEntry( h_fitted, "fitted", "f" )
-            leg.SetY1( leg.GetY1() - 0.05 * leg.GetNRows() )
-            leg.Draw()
-
-            # Statistical tests
-            KS = h_true.KolmogorovTest( h_fitted )
-            X2 = h_true.Chi2Test( h_fitted, "UU NORM CHI2/NDF" ) # UU NORM
-            l = TLatex()
-            l.SetNDC()
-            l.SetTextFont(42)
-            l.SetTextColor(kBlack)
-            l.DrawLatex( 0.7, 0.80, "KS test: %.2f" % KS )
-            l.DrawLatex( 0.7, 0.75, "#chi^{2}/NDF = %.2f" % X2 )
-
-            # TITLE HISTOGRAM W/ CAPTION
-            gPad.RedrawAxis()
-            newpad = TPad("newpad","a caption",0.1,0,1,1)
-            newpad.SetFillStyle(4000)
-            newpad.Draw()
-            newpad.cd()
-            title = TPaveLabel(0.1,0.94,0.9,0.99,'caption')
-            title.SetFillColor(16)
-            title.SetTextFont(52)
-            title.Draw()
-
-            # SAVE AND CLOSE HISTOGRAM
-            gPad.RedrawAxis()
-            pad1.cd()
-            yrange = [0.4, 1.6]
-            frame, tot_unc, ratio = DrawRatio(h_fitted, h_true, xtitle, yrange)
-            gPad.RedrawAxis()
-            c.cd()
-            c.SaveAs("histogram.png")
-            pad0.Close()
-            pad1.Close()
-            c.Close()
 
         except Exception as e:
             traceback.print_exc()

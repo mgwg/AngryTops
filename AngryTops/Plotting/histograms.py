@@ -2,7 +2,6 @@
 import os, sys, time
 import argparse
 from AngryTops.features import *
-
 from ROOT import *
 from array import array
 import cPickle as pickle
@@ -28,11 +27,11 @@ def PrintOut( p4_true, p4_fitted, label ):
                 p4_fitted.Pt(), p4_fitted.Rapidity(), p4_fitted.Phi(), p4_fitted.E(), p4_fitted.M() ))
 
 ################################################################################
-# read in input file
+# Read in input file
 infile = TFile.Open( infilename )
 tree   = infile.Get( "nominal")
 
-# open output file
+# Open output file
 ofile = TFile.Open( ofilename, "recreate" )
 ofile.cd()
 
@@ -322,7 +321,6 @@ for i in range(n_events):
     tree.GetEntry( i )
 
     w = tree.weight_mc
-
 
     W_had_true   = TLorentzVector( tree.W_had_px_true, tree.W_had_py_true, tree.W_had_pz_true, tree.W_had_E_true )
     b_had_true   = TLorentzVector( tree.b_had_px_true, tree.b_had_py_true, tree.b_had_pz_true, tree.b_had_E_true )
