@@ -1,9 +1,10 @@
 import json
 import os
+import sys
 print(os.getcwd())
 
 # Change this depending on the experiment name
-filename = 'experiment_state-2019-07-04_18-32-14.json'
+filename = sys.argv[1]
 
 with open(filename, 'rb') as f:
     datastore = json.load(f)
