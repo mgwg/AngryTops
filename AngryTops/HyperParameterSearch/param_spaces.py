@@ -77,4 +77,29 @@ space3 = {
 'kernel_reg5': hp.uniform('kernel_reg5', 0, 1)
 }
 
-parameter_spaces = {'space0': space0, 'space1': space1, 'space2': space2, 'space3': space3}
+cnn_space1 = {
+'learn_rate': hp.uniform('learn_rate', 10e-6, 10e-3),
+'size1': hp.quniform('size1', 1, 200, 1),
+'size2': hp.quniform('size2', 1, 200, 1),
+'size3': hp.quniform('size3', 1, 200, 1),
+'act1': hp.choice('act1', ['relu', 'elu', 'tanh']),
+'act2': hp.choice('act2', ['relu', 'elu', 'tanh']),
+'act3': hp.choice('act3', ['relu', 'elu', 'tanh'])
+}
+
+cnn_space2 = {
+'learn_rate': hp.uniform('learn_rate', 10e-6, 10e-3),
+'size1': hp.quniform('size1', 1, 200, 1),
+'size2': hp.quniform('size2', 1, 200, 1),
+'size3': hp.quniform('size3', 1, 200, 1),
+'size4': hp.quniform('size4', 1, 200, 1),
+'act1': hp.choice('act1', ['relu', 'elu', 'tanh']),
+'act2': hp.choice('act2', ['relu', 'elu', 'tanh']),
+'act3': hp.choice('act3', ['relu', 'elu', 'tanh']),
+'act4': hp.choice('act4', ['relu', 'elu', 'tanh'])
+}
+
+parameter_spaces = {
+'space0': space0, 'space1': space1, 'space2': space2, 'space3': space3,
+'cnn_space1': cnn_space1, 'cnn_space2': cnn_space2
+}
