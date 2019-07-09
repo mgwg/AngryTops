@@ -102,7 +102,6 @@ def scale(input, output, jet_scalar, lep_scalar, output_scalar):
     return true_input, true
 
 
-
 def normalize(arr, scaling):
     """Normalize the arr with StandardScalar and return the normalized array
     and the scalar"""
