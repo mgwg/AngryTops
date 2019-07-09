@@ -206,6 +206,7 @@ representations = {
  "pxpypz": [lep_cart, jets_pxpypz, output_columns_pxpypz],
  "pxpypzE": [lep_cartE, jets_pxpypzEM, output_columns_pxpypzE],
  "pxpypzM": [lep_cartE, jets_pxpypzEM, output_columns_pxpypzM],
+ "pxpypzEM": [lep_cartE, jets_pxpypzEM, output_columns_pxpypz],
  "ptetaphi": [lep_ptetaphi, jets_ptetaphi, output_columns_ptetaphi],
  "ptetaphiE": [lep_ptetaphiE, jets_ptetaphiEM, output_columns_ptetaphiE],
  "ptetaphiM": [lep_ptetaphiE, jets_ptetaphiEM, output_columns_ptetaphiE]
