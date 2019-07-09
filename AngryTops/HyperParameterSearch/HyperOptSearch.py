@@ -16,10 +16,18 @@ from ray.tune.logger import DEFAULT_LOGGERS
 model_name = sys.argv[1]
 space_name = sys.argv[2]
 search_name = sys.argv[3]
+
+rep = 'pxpypz'
+scaling = 'standard'
+multi_input = True
+if len(sys.argv) > 4:
+    rep = sys.argv[4]
+    scaling = sys.argv[5]
+if len(sys.argv) > 6: multi_input = False
 test_model = test_models[model_name]
 space = parameter_spaces[space_name]
 
-def objective(config, reporter):
+def objective(config, reporter, **kwargs):
     """
     Trains a DNN model for 10 epoches. Return the loss.
     """
@@ -27,7 +35,7 @@ def objective(config, reporter):
     (training_input, training_output), (testing_input, testing_output), \
     (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) \
     = get_input_output(input_filename='topreco_5dec.csv',
-                        rep='pxpypz', multi_input=True, scaling='standard')
+                        rep=rep, multi_input=multi_input, scaling=scaling)
     # BUILDING / TRAINING MODEL
     model = test_model(config)
     reporter_callback = TuneReporterCallback(reporter)
@@ -46,6 +54,6 @@ if __name__ == "__main__":
         grace_period=20)
 
     algo = HyperOptSearch(space, max_concurrent=8, metric="mse", mode="min")
-    results = tune.run(objective, name=search_name, num_samples=1000, 
-                       search_alg=algo, resources_per_trial={"cpu": 4, "gpu": 0}, 
+    results = tune.run(objective, name=search_name, num_samples=1000,
+                       search_alg=algo, resources_per_trial={"cpu": 4, "gpu": 0},
                        verbose=2, scheduler=sched, loggers=DEFAULT_LOGGERS)
