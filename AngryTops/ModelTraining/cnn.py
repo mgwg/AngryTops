@@ -78,7 +78,7 @@ def cnn3(**kwargs):
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
-cnn_models = {'cnn1': cnn1, 'cnn2': cnn2}
+cnn_models = {'cnn1': cnn1, 'cnn2': cnn2, 'cnn3': cnn3}
 
 if __name__ == "__main__":
     model = cnn3()
