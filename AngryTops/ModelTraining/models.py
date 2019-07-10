@@ -181,12 +181,10 @@ def dense_multi4(**kwargs):
     return model
 
 def dense_multi5(**kwargs):
-    """A denser version of model_multi"""
+    """A denser version of model_multi. Uses TimeDistributed layers between
+    LSTM laters"""
     reg_weight = 0.0
     rec_weight = 0.0
-    if 'reg_weight' in kwargs.keys(): reg_weight = kwargs['reg_weight']
-    if 'rec_weight' in kwargs.keys(): rec_weight = kwargs['rec_weight']
-    if 'dense_act1' in kwargs.keys(): dense_act1 = kwargs['dense_act1']
     learn_rate = kwargs['learn_rate']
 
     input_jets = Input(shape = (20,), name="input_jets")
