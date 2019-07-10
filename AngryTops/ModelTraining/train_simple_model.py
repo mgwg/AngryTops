@@ -34,8 +34,9 @@ def train_model(model_name, train_dir, csv_file, log_training=True, **kwargs):
     """
     # CONSTANTS
     train_dir = "../CheckPoints/{}".format(train_dir)
+    checkpoint_dir = "../CheckPoints/{}/checkpoints".format(train_dir)
     print("Saving files in: {}".format(train_dir))
-    checkpoint_path = tf.train.latest_checkpoint(train_dir)
+    checkpoint_path = tf.train.latest_checkpoint(checkpoint_dir)
     print("Checkpoint Path: ", checkpoint_path)
     EPOCHES = kwargs["EPOCHES"]
     BATCH_SIZE = kwargs["BATCH_SIZE"]
@@ -46,7 +47,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, **kwargs):
         log = open("{}/log.txt".format(train_dir), 'w')
     if log_training:
         sys.stdout = log
-  
+
     ###########################################################################
     # LOADING / PRE-PROCESSING DATA
     (training_input, training_output), (testing_input, testing_output), \
@@ -66,7 +67,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, **kwargs):
 
     print(model.summary())
 
-    filepath = train_dir + "/weights-improvement-{epoch:02d}.ckpt"
+    filepath = checkpoint_dir + "/weights-improvement-{epoch:02d}.ckpt"
     print("Checkpoints saved in: ", filepath)
     cp_callback = ModelCheckpoint(filepath, save_weights_only=True, verbose=1, save_freq=10)
     try:
