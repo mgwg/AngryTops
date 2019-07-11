@@ -49,7 +49,10 @@ def MakeInput( jets, W_had, b_had, t_had, W_lep, b_lep, t_lep ):
         sjets[i][6] = jet.Pt()
         sjets[i][7] = jet.Eta()
         sjets[i][8] = jet.Phi()
-        sjets[i][9] = jet.
+        sjets[i][9] = jet.charge
+        sjets[i][10] = jet.nneutrals
+        sjets[i][11] = jet.deltaeta
+        sjets[i][12] = jet.deltaphi
 
     # OUTPUT DATA FOR RNN
     # Arrays containing W, b quarks and lepton information

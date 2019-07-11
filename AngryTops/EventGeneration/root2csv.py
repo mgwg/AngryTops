@@ -268,6 +268,12 @@ for ientry in range(n_entries):
         "%.5f" % target_b_lep[5], "%.5f" % target_b_lep[6], "%.5f" % target_b_lep[7],
         "%.5f" % target_t_had[5], "%.5f" % target_t_had[6], "%.5f" % target_t_had[7],
         "%.5f" % target_t_lep[5], "%.5f" % target_t_lep[6], "%.5f" % target_t_lep[7],
+        "%.5f" % lep.sumPT, "%.5f" % met_eta,
+        "%.5f" % sjets0[0][9],  "%.5f" % sjets0[0][10],  "%.5f" % sjets0[0][11], "%.5f" % sjets0[0][12],
+        "%.5f" % sjets0[1][9],  "%.5f" % sjets0[1][10],  "%.5f" % sjets0[1][11], "%.5f" % sjets0[1][12],
+        "%.5f" % sjets0[2][9],  "%.5f" % sjets0[2][10],  "%.5f" % sjets0[2][11], "%.5f" % sjets0[2][12],
+        "%.5f" % sjets0[3][9],  "%.5f" % sjets0[3][10],  "%.5f" % sjets0[3][11], "%.5f" % sjets0[3][12],
+        "%.5f" % sjets0[4][9],  "%.5f" % sjets0[4][10],  "%.5f" % sjets0[4][11], "%.5f" % sjets0[4][12]
             ) )
 
         if flip_eta:
@@ -297,7 +303,12 @@ for ientry in range(n_entries):
             "%.5f" % target_b_lep[5], "%.5f" % target_b_lep[6], "%.5f" % target_b_lep[7],
             "%.5f" % target_t_had[5], "%.5f" % target_t_had[6], "%.5f" % target_t_had[7],
             "%.5f" % target_t_lep[5], "%.5f" % target_t_lep[6], "%.5f" % target_t_lep[7],
-            "%.5f" % lep.sumPT, "%.5f" % met_eta, 
+            "%.5f" % lep.sumPT, "%.5f" % met_eta,
+            "%.5f" % sjets1[0][9],  "%.5f" % sjets1[0][10],  "%.5f" % sjets1[0][11], "%.5f" % sjets1[0][12],
+            "%.5f" % sjets1[1][9],  "%.5f" % sjets1[1][10],  "%.5f" % sjets1[1][11], "%.5f" % sjets1[1][12],
+            "%.5f" % sjets1[2][9],  "%.5f" % sjets1[2][10],  "%.5f" % sjets1[2][11], "%.5f" % sjets1[2][12],
+            "%.5f" % sjets1[3][9],  "%.5f" % sjets1[3][10],  "%.5f" % sjets1[3][11], "%.5f" % sjets1[3][12],
+            "%.5f" % sjets1[4][9],  "%.5f" % sjets1[4][10],  "%.5f" % sjets1[4][11], "%.5f" % sjets1[4][12]
                 ) )
         # Change the angle to rotate by
         phi = np.random.uniform(- np.pi, np.pi)
