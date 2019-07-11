@@ -102,6 +102,7 @@ for ientry in range(n_entries):
                       tree.GetLeaf("Muon.Phi").GetValue(0),
                       tree.GetLeaf("Muon.T").GetValue(0)
                       )
+    lep.sumPT = tree.GetLeaf("Muon.SumPt")
     if lep.Pt() < 20:
         print("Lepton PT below threshold: {}. Applying cuts".format(lep.Pt()))
         continue # Fail to get a muon passing the threshold
@@ -110,8 +111,9 @@ for ientry in range(n_entries):
         continue
 
     # Missing Energy values
-    met_met = tree.GetLeaf("MissingET.MET").GetValue()
-    met_phi = tree.GetLeaf("MissingET.Phi").GetValue()
+    met_met = tree.GetLeaf("MissingET.MET").GetValue(0)
+    met_phi = tree.GetLeaf("MissingET.Phi").GetValue(0)
+    met_eta = tree.GetLeaf("MissingET.Eta").GetValue(0)
 
     # Append jets, check prob of being a bjet, and update bjet number
     # This is what will be fed into the RNN
@@ -131,6 +133,10 @@ for ientry in range(n_entries):
             tree.GetLeaf("Jet.Mass").GetValue(i))
             j.btag = tree.GetLeaf("Jet.BTag").GetValue(i)
             if j.btag > 0.0: bjets_n += 1
+            j.charge = tree.GetLeaf("Jet.Charge").GetValue(i)
+            j.nneutrals = tree.GetLeaf("Jet.NNeutrals").GetValue(i)
+            j.deltaeta = tree.GetLeaf("Jet.DeltaEta").GetValue(i)
+            j.deltaphi = tree.GetLeaf("Jet.DeltaPhi").GetValue(i)
     # Cut based on number of passed jets
     jets_n = len(jets)
     if jets_n < 4:
@@ -291,6 +297,7 @@ for ientry in range(n_entries):
             "%.5f" % target_b_lep[5], "%.5f" % target_b_lep[6], "%.5f" % target_b_lep[7],
             "%.5f" % target_t_had[5], "%.5f" % target_t_had[6], "%.5f" % target_t_had[7],
             "%.5f" % target_t_lep[5], "%.5f" % target_t_lep[6], "%.5f" % target_t_lep[7],
+            "%.5f" % lep.sumPT, "%.5f" % met_eta, 
                 ) )
         # Change the angle to rotate by
         phi = np.random.uniform(- np.pi, np.pi)

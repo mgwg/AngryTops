@@ -22,7 +22,7 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
     if 'single_output' in kwargs.keys(): single_output = kwargs['single_output']
 
     # Load jets, leptons and output columns of the correct representation
-    input_filename = "/home/fsyed/AngryTops/csv/{}".format(input_filename)
+    input_filename = "../csv/{}".format(input_filename)
     df = pd.read_csv(input_filename, names=column_names)
     if 'shuffle' in kwargs.keys():
         print("Shuffling training/testing data")
@@ -55,6 +55,8 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
         testing_input = [lep_norm[cut:], jets_norm[cut:]]
     else:
         input = np.concatenate((lep_norm, jets_norm), axis=1)
+        input = input[input[:,-2].argsort(kind='mergesort')] 
+        input = input[input[:,-1].argsort(kind='mergesort')]
         training_input = input[:cut]
         testing_input = input[cut:]
 
@@ -70,45 +72,16 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
     return (training_input, training_output), (testing_input, testing_output), \
            (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing)
 
-def scale(input, output, jet_scalar, lep_scalar, output_scalar):
-    # The true output array
-    true = output.copy()
-    old_shape = (true.shape[1], true.shape[2])
-    true = true.reshape(true.shape[0], true.shape[1]*true.shape[2])
-    true = output_scalar.inverse_transform(true)
-    true = true.reshape(true.shape[0], old_shape[0], old_shape[1])
-
-    # True input
-    if type(input) == type([]):
-        lep = input[0]
-        jet = input[1]
-    else:
-        lep = input[:,0,:]
-        jet = input[:,1:,:]
-    lep = lep_scalar.inverse_transform(lep)
-    jet = jet.reshape(jet.shape[0], 5, -1)
-    btag = jet[:,:, -1]
-    btag = btag.reshape(btag.shape[0], btag.shape[1], 1)
-    jet = jet[:,:,:-1]
-    jet = jet.reshape(jet.shape[0], -1)
-    jet = jets_scalar.inverse_transform(jet)
-    jet = jet.reshape(jet.shape[0], 5, -1)
-    jet = np.concatenate((jet, btag), axis=2)
-    jet = jet.reshape(jet.shape[0], -1)
-    if type(input) == type([]):
-        true_input = [lep, jet]
-    else:
-        true_input = np.concatenate((lep, jets), axis=1)
-    return true_input, true
-
 
 def normalize(arr, scaling):
     """Normalize the arr with StandardScalar and return the normalized array
     and the scalar"""
-    if type == "standard":
+    if scaling == "standard":
         scalar = sklearn.preprocessing.StandardScaler()
-    else:
+    elif scaling == 'minmax':
         scalar = sklearn.preprocessing.MinMaxScaler(feature_range=(-1, 1))
+    else:
+        return arr.copy(), None
     new_arr = scalar.fit_transform(arr)
     return new_arr, scalar
 
