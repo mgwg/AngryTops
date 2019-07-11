@@ -5,7 +5,7 @@ Meant to be run from the parent directory
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
-from tensorflow.keras.callbacks import ModelCheckpoint
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 import os
 import sys
 import pickle
@@ -13,11 +13,12 @@ from AngryTops.features import *
 from AngryTops.ModelTraining.models import models
 from AngryTops.ModelTraining.plotting_helper import plot_history
 from AngryTops.ModelTraining.FormatInputOutput import get_input_output
+from tensorflow.keras.utils import plot_model
 
 print(tf.__version__)
 print(tf.test.gpu_device_name())
 
-def train_model(model_name, train_dir, csv_file, log_training=True, **kwargs):
+def train_model(model_name, train_dir, csv_file, log_training=True, load_model=False, **kwargs):
     """
     Trains a DNN model.
     ============================================================================
@@ -57,23 +58,26 @@ def train_model(model_name, train_dir, csv_file, log_training=True, **kwargs):
     ###########################################################################
     # BUILDING / TRAINING MODEL
     model = models[model_name](**kwargs)
-    try:
-        model.load_weights(checkpoint_path)
-        print("Loaded weights from previous training session")
-        print("Loaded weights from previous training session", file=sys.stderr)
-    except Exception as e:
-        print(e)
-        print(e, file=sys.stderr)
+    # Load previously trained model if it exists
+    if load_model:
+        try:
+            model.load_weights(checkpoint_path)
+            print("Loaded weights from previous training session")
+            print("Loaded weights from previous training session", file=sys.stderr)
+        except Exception as e:
+            print(e)
+            print(e, file=sys.stderr)
 
     print(model.summary())
 
     filepath = checkpoint_dir + "/weights-improvement-{epoch:02d}.ckpt"
     print("Checkpoints saved in: ", filepath)
     cp_callback = ModelCheckpoint(filepath, save_weights_only=True, verbose=1, save_freq=10)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=0)
     try:
         history = model.fit(training_input, training_output,  epochs=EPOCHES,
                             batch_size=BATCH_SIZE, validation_split=0.1,
-                            callbacks = [cp_callback]
+                            callbacks = [cp_callback, early_stopping]
                             )
     except KeyboardInterrupt:
         print("Training_inerrupted")
@@ -84,6 +88,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, **kwargs):
     # SAVING MODEL, TRAINING HISTORY AND SCALARS
     model.save('{}/simple_model.h5'.format(train_dir))
     model.save_weights('{}/model_weights.h5'.format(train_dir))
+    plot_model(model, to_file='{}/model.png'.format(train_dir))
 
     scaler_filename = "{}/scalers.pkl".format(train_dir)
     with open( scaler_filename, "wb" ) as file_scaler:

@@ -225,11 +225,33 @@ def dense_multi5(**kwargs):
 
     return model
 
+def dense_multi6(**kwargs):
+    """A denser version of model_multi"""
+    model = keras.models.Sequential()
+    model.add(Dense(216, input_shape=(36,)))
+    model.add(Reshape(target_shape=(6,36)))
+    model.add(LSTM(108, return_sequences=True))
+    #model.add(TimeDistributed(Dense(108, activation='tanh')))
+    model.add(LSTM(72, return_sequences=True))
+    #model.add(TimeDistributed(Dense(72, activation='tanh')))
+    model.add(LSTM(36, return_sequences=True))
+    #model.add(TimeDistributed(Dense(36, activation='tanh')))
+    model.add(LSTM(18, return_sequences=True))
+    #model.add(TimeDistributed(Dense(18, activation='tanh')))
+    model.add(LSTM(3, return_sequences=True))
+    #model.add(TimeDistributed(Dense(3, activation='tanh')))
+
+    optimizer = tf.keras.optimizers.Adam(10e-4, decay=0.1)
+    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+
+    return model
+
 ################################################################################
 # List of all models
 models = {'dense_multi1':dense_multi1,
           'dense_multi2':dense_multi2,'dense_multi3':dense_multi3,
-          'dense_multi4':dense_multi4, 'dense_multi5':dense_multi5}
+          'dense_multi4':dense_multi4, 'dense_multi5':dense_multi5,
+          'dense_multi6':dense_multi6}
 
 for key, constructor in single_models.items():
     models[key] = constructor
