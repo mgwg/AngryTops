@@ -55,7 +55,7 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
         testing_input = [lep_norm[cut:], jets_norm[cut:]]
     else:
         input = np.concatenate((lep_norm, jets_norm), axis=1)
-        input = input[input[:,-2].argsort(kind='mergesort')] 
+        input = input[input[:,-2].argsort(kind='mergesort')]
         input = input[input[:,-1].argsort(kind='mergesort')]
         training_input = input[:cut]
         testing_input = input[cut:]
