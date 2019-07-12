@@ -19,6 +19,7 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
     scaling = kwargs['scaling']
     rep = kwargs['rep']
     multi_input = kwargs['multi_input']
+    sort_jets = kwargs['sort_jets']
     if 'single_output' in kwargs.keys(): single_output = kwargs['single_output']
 
     # Load jets, leptons and output columns of the correct representation
@@ -43,6 +44,10 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
     jets_momentum, jets_scalar = normalize(jets, scaling)
     jets_momentum = jets_momentum.reshape(jets.shape[0], 5, -1)
     jets_norm = np.concatenate((jets_momentum, btag), axis=2)
+    if sort_jets:
+        for i in range(jets_norm.shape[0]):
+            jets_norm[i] = jets_norm[i][jets_norm[i][:,-2].argsort(kind='mergesort')]
+            jets_norm[i] = jets_norm[i][jets_norm[i][:,-1].argsort(kind='mergesort')]
     jets_norm = jets_norm.reshape(jets_norm.shape[0], jets_norm.shape[1] * jets_norm.shape[2])
     lep_norm, lep_scalar = normalize(lep, scaling)
 
@@ -55,8 +60,8 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
         testing_input = [lep_norm[cut:], jets_norm[cut:]]
     else:
         input = np.concatenate((lep_norm, jets_norm), axis=1)
-        input = input[input[:,-2].argsort(kind='mergesort')]
-        input = input[input[:,-1].argsort(kind='mergesort')]
+        #input = input[input[:,-2].argsort(kind='mergesort')]
+        #input = input[input[:,-1].argsort(kind='mergesort')]
         training_input = input[:cut]
         testing_input = input[cut:]
 
