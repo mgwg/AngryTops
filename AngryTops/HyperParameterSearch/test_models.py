@@ -156,6 +156,29 @@ def test_model3(config):
 
     return model
 
+def test_model4(config):
+    """A denser version of model_multi"""
+    model = keras.models.Sequential()
+    model.add(Dense(int(config['size1']), input_shape=(36,)))
+    model.add(Reshape(target_shape=(6,36)))
+    model.add(LSTM(int(config['size2']), return_sequences=True))
+    #model.add(TimeDistributed(Dense(108, activation='tanh')))
+    model.add(LSTM(int(config['size3']), return_sequences=True))
+    #model.add(TimeDistributed(Dense(72, activation='tanh')))
+    model.add(LSTM(int(config['size4']), return_sequences=True))
+    #model.add(TimeDistributed(Dense(36, activation='tanh')))
+    model.add(LSTM(int(config['size5']), return_sequences=True))
+    #model.add(TimeDistributed(Dense(18, activation='tanh')))
+    model.add(LSTM(int(config['size6']), return_sequences=True))
+    #model.add(TimeDistributed(Dense(3, activation='tanh')))
+
+    optimizer = tf.keras.optimizers.Adam(config['learn_rate'], decay=0.)
+    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+
+    return model
+
+
+
 def cnn_test1(config):
     """A simple convolutional network model"""
     model = keras.models.Sequential()

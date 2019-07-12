@@ -78,6 +78,16 @@ space3 = {
 'kernel_reg5': hp.uniform('kernel_reg5', 0, 1)
 }
 
+space3 = {
+'learn_rate': hp.uniform('learn_rate', 10e-6, 10e-4),
+'size1': hp.quniform('size1', 1, 200, 1),
+'size2': hp.quniform('size2', 1, 200, 1),
+'size3': hp.quniform('size3', 1, 200, 1),
+'size4': hp.quniform('size4', 1, 200, 1),
+'size5': hp.quniform('size5', 1, 200, 1),
+'size6': hp.quniform('size6', 1, 200, 1)
+}
+
 cnn_space1 = {
 'learn_rate': hp.uniform('learn_rate', 10e-6, 10e-3),
 'size1': hp.quniform('size1', 1, 200, 1),
