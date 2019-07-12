@@ -132,11 +132,11 @@ for ientry in range(n_entries):
             tree.GetLeaf("Jet.Phi").GetValue(i),
             tree.GetLeaf("Jet.Mass").GetValue(i))
             j.btag = tree.GetLeaf("Jet.BTag").GetValue(i)
-            if j.btag > 0.0: bjets_n += 1
             j.charge = tree.GetLeaf("Jet.Charge").GetValue(i)
             j.nneutrals = tree.GetLeaf("Jet.NNeutrals").GetValue(i)
             j.deltaeta = tree.GetLeaf("Jet.DeltaEta").GetValue(i)
             j.deltaphi = tree.GetLeaf("Jet.DeltaPhi").GetValue(i)
+            if j.btag > 0.0: bjets_n += 1
     # Cut based on number of passed jets
     jets_n = len(jets)
     if jets_n < 4:
