@@ -84,8 +84,7 @@ space4 = {
 'size2': hp.quniform('size2', 1, 200, 1),
 'size3': hp.quniform('size3', 1, 200, 1),
 'size4': hp.quniform('size4', 1, 200, 1),
-'size5': hp.quniform('size5', 1, 200, 1),
-'size6': hp.quniform('size6', 1, 200, 1)
+'size5': hp.quniform('size5', 1, 200, 1)
 }
 
 cnn_space1 = {
