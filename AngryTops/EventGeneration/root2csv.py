@@ -102,7 +102,7 @@ for ientry in range(n_entries):
                       tree.GetLeaf("Muon.Phi").GetValue(0),
                       tree.GetLeaf("Muon.T").GetValue(0)
                       )
-    lep.sumPT = tree.GetLeaf("Muon.SumPt")
+    lep.sumPT = tree.GetLeaf("Muon.SumPt").GetValue(0)
     if lep.Pt() < 20:
         print("Lepton PT below threshold: {}. Applying cuts".format(lep.Pt()))
         continue # Fail to get a muon passing the threshold
