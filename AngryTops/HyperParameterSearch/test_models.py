@@ -228,5 +228,5 @@ def cnn_test2(config):
     return model
 
 test_models = {'test_model0': test_model0, 'test_model1': test_model1,
-               'test_model2': test_model2, 'test_model3': test_model3,
+               'test_model2': test_model2, 'test_model3': test_model3, 'test_model4': test_model4
                'cnn_test1': cnn_test1, 'cnn_test2': cnn_test2}
