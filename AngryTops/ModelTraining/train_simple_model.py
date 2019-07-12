@@ -32,6 +32,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     scaling: Choose between 'standard' or 'minmax' scaling of input and outputs
     rep: The representation of the data. ie. pxpypz vs ptetaphiM vs ...
     multi_input: True if the model is a multi_input model. False otherwise.
+    sort_jets: True or False. Sort jets by first btag, then Mass.
     """
     # CONSTANTS
     train_dir = "../CheckPoints/{}".format(train_dir)
