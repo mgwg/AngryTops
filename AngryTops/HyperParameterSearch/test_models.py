@@ -169,7 +169,7 @@ def test_model4(config):
     #model.add(TimeDistributed(Dense(36, activation='tanh')))
     model.add(LSTM(int(config['size5']), return_sequences=True))
     #model.add(TimeDistributed(Dense(18, activation='tanh')))
-    model.add(3, return_sequences=True))
+    model.add(LSTM(3, return_sequences=True))
     #model.add(TimeDistributed(Dense(3, activation='tanh')))
 
     optimizer = tf.keras.optimizers.Adam(config['learn_rate'], decay=0.)
