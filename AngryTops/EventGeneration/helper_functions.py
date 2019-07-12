@@ -9,7 +9,7 @@ import numpy as np
 GeV = 1e3
 TeV = 1e6
 n_jets_per_event = 5
-n_features_per_jet = 9
+n_features_per_jet = 13
 
 #####################
 
