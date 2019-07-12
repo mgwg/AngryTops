@@ -714,8 +714,8 @@ for i in range(n_events):
     n_good += 1
 
     if i < 10:
-      PrintOut( t_had_true, t_had_fitted, "Hadronic top" )
-      PrintOut( t_lep_true, t_lep_fitted, "Leptonic top" )
+      PrintOut( b_had_true, b_had_fitted, "Hadronic b" )
+      PrintOut( b_lep_true, b_lep_fitted, "Leptonic b" )
 for histname in histograms:
     histograms[histname].Write(histname)
 
