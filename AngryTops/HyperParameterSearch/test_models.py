@@ -160,7 +160,7 @@ def test_model4(config):
     """A denser version of model_multi"""
     model = keras.models.Sequential()
     model.add(Reshape(target_shape=(6,6), input_shape=(36,)))
-    model.add(TimeDistributed(Dense(int(config['size2']), activation='tanh')))
+    model.add(TimeDistributed(Dense(int(config['size1']), activation='tanh')))
     model.add(LSTM(int(config['size2']), return_sequences=True))
     #model.add(TimeDistributed(Dense(108, activation='tanh')))
     model.add(LSTM(int(config['size3']), return_sequences=True))
