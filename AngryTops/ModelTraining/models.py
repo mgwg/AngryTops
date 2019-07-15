@@ -269,12 +269,31 @@ def stacked_LSTM1(**kwargs):
 
     return model
 
+def bidirectional_LSTM1(**kwargs):
+    """A denser version of model_multi"""
+    config = {'size1': 800.0, 'size2': 100.0}
+    model = keras.models.Sequential()
+    model.add(Reshape(target_shape=(6,6), input_shape=(36,)))
+    # Initially, due to typo, size1 = size2
+    model.add(TimeDistributed(Dense(int(config['size1']), activation='tanh')))
+    model.add(Bidirectional(LSTM(int(config['size2']), return_sequences=True)))
+    model.add(TimeDistributed(Dense(81, activation='tanh')))
+    model.add(TimeDistributed(Dense(27, activation='tanh')))
+    model.add(TimeDistributed(Dense(9, activation='tanh')))
+    model.add(TimeDistributed(Dense(3, activation='tanh')))
+
+    optimizer = tf.keras.optimizers.Adam(10e-5, decay=0.)
+    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+
+    return model
+
 ################################################################################
 # List of all models
 models = {'dense_multi1':dense_multi1,
           'dense_multi2':dense_multi2,'dense_multi3':dense_multi3,
           'dense_multi4':dense_multi4, 'dense_multi5':dense_multi5,
-          'dense_multi6':dense_multi6, 'stacked_LSTM1':stacked_LSTM1}
+          'dense_multi6':dense_multi6, 'stacked_LSTM1':stacked_LSTM1,
+          'bidirectional_LSTM1':bidirectional_LSTM1}
 
 for key, constructor in single_models.items():
     models[key] = constructor
