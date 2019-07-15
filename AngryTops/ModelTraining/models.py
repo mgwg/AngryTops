@@ -246,12 +246,34 @@ def dense_multi6(**kwargs):
 
     return model
 
+def stacked_LSTM1(**kwargs):
+    """A denser version of model_multi"""
+    configs = {'size1': 3.0, 'size2': 182.0, 'size3': 148.0, 'size4': 88.0, 'size5': 124.0}
+    model = keras.models.Sequential()
+    model.add(Reshape(target_shape=(6,6), input_shape=(36,)))
+    model.add(TimeDistributed(Dense(int(config['size2']), activation='tanh')))
+    model.add(LSTM(int(config['size2']), return_sequences=True))
+    #model.add(TimeDistributed(Dense(108, activation='tanh')))
+    model.add(LSTM(int(config['size3']), return_sequences=True))
+    #model.add(TimeDistributed(Dense(72, activation='tanh')))
+    model.add(LSTM(int(config['size4']), return_sequences=True))
+    #model.add(TimeDistributed(Dense(36, activation='tanh')))
+    model.add(LSTM(int(config['size5']), return_sequences=True))
+    #model.add(TimeDistributed(Dense(18, activation='tanh')))
+    model.add(LSTM(3, return_sequences=True))
+    #model.add(TimeDistributed(Dense(3, activation='tanh')))
+
+    optimizer = tf.keras.optimizers.Adam(10e-5, decay=0.)
+    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+
+    return model
+
 ################################################################################
 # List of all models
 models = {'dense_multi1':dense_multi1,
           'dense_multi2':dense_multi2,'dense_multi3':dense_multi3,
           'dense_multi4':dense_multi4, 'dense_multi5':dense_multi5,
-          'dense_multi6':dense_multi6}
+          'dense_multi6':dense_multi6, 'stacked_LSTM1':stacked_LSTM1}
 
 for key, constructor in single_models.items():
     models[key] = constructor
