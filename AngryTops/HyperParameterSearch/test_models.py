@@ -177,6 +177,23 @@ def test_model4(config):
 
     return model
 
+def test_model5(config):
+    """A denser version of model_multi"""
+    model = keras.models.Sequential()
+    model.add(Reshape(target_shape=(6,6), input_shape=(36,)))
+    # Initially, due to typo, size1 = size2
+    model.add(TimeDistributed(Dense(int(config['size1']), activation=config['act1'])))
+    model.add(Bidirectional(LSTM(int(config['size2']), return_sequences=True)))
+    model.add(TimeDistributed(Dense(int(config['size3']), activation=config['act2'])))
+    model.add(TimeDistributed(Dense(int(config['size4']), activation=config['act3'])))
+    model.add(TimeDistributed(Dense(int(config['size5']), activation=config['act4'])))
+    model.add(TimeDistributed(Dense(3, activation='linear')))
+
+    optimizer = tf.keras.optimizers.Adam(10e-5, decay=0.)
+    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+
+    return model
+
 
 
 def cnn_test1(config):
@@ -229,4 +246,5 @@ def cnn_test2(config):
 
 test_models = {'test_model0': test_model0, 'test_model1': test_model1,
                'test_model2': test_model2, 'test_model3': test_model3, 'test_model4': test_model4,
-               'cnn_test1': cnn_test1, 'cnn_test2': cnn_test2}
+               'cnn_test1': cnn_test1, 'cnn_test2': cnn_test2,
+               'test_model5':test_model5}
