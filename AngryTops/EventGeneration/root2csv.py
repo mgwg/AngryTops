@@ -100,7 +100,7 @@ for ientry in range(n_entries):
     lep.SetPtEtaPhiE( tree.GetLeaf("Muon.PT").GetValue(0),
                       tree.GetLeaf("Muon.Eta").GetValue(0),
                       tree.GetLeaf("Muon.Phi").GetValue(0),
-                      tree.GetLeaf("Muon.T").GetValue(0)
+                      0
                       )
     lep.sumPT = tree.GetLeaf("Muon.SumPt").GetValue(0)
     if lep.Pt() < 20:
@@ -244,7 +244,7 @@ for ientry in range(n_entries):
     # write out
         csvwriter.writerow( (
         "%i" % runNumber, "%i" % eventNumber, "%.5f" % weight, "%i" % jets_n, "%i" % bjets_n,
-        "%.5f" % lep_aug.Px(),     "%.5f" % lep_aug.Py(),     "%.5f" % lep_aug.Pz(),     "%.5f" % (lep_aug.E() * 10e9),      "%.5f" % met_met,      "%.5f" % met_phi_aug,
+        "%.5f" % lep_aug.Px(),     "%.5f" % lep_aug.Py(),     "%.5f" % lep_aug.Pz(),     "%.5f" % lep_aug.E(),      "%.5f" % met_met,      "%.5f" % met_phi_aug,
         "%.5f" % sjets0[0][0],  "%.5f" % sjets0[0][1],  "%.5f" % sjets0[0][2],  "%.5f" % sjets0[0][3],  "%.5f" % sjets0[0][4],  "%.5f" % sjets0[0][5],
         "%.5f" % sjets0[1][0],  "%.5f" % sjets0[1][1],  "%.5f" % sjets0[1][2],  "%.5f" % sjets0[1][3],  "%.5f" % sjets0[1][4],  "%.5f" % sjets0[1][5],
         "%.5f" % sjets0[2][0],  "%.5f" % sjets0[2][1],  "%.5f" % sjets0[2][2],  "%.5f" % sjets0[2][3],  "%.5f" % sjets0[2][4],  "%.5f" % sjets0[2][5],
@@ -279,7 +279,7 @@ for ientry in range(n_entries):
         if flip_eta:
             csvwriter.writerow( (
             "%i" % runNumber, "%i" % eventNumber, "%.5f" % weight, "%i" % jets_n, "%i" % bjets_n,
-            "%.5f" % lep_flipped.Px(),     "%.5f" % lep_flipped.Py(),     "%.5f" % lep_flipped.Pz(),     "%.5f" % (lep_flipped.E() * 10e9),      "%.5f" % met_met,      "%.5f" % met_phi_aug,
+            "%.5f" % lep_flipped.Px(),     "%.5f" % lep_flipped.Py(),     "%.5f" % lep_flipped.Pz(),     "%.5f" % lep_flipped.E(),      "%.5f" % met_met,      "%.5f" % met_phi_aug,
             "%.5f" % sjets1[0][0],  "%.5f" % sjets1[0][1],  "%.5f" % sjets1[0][2],  "%.5f" % sjets1[0][3],  "%.5f" % sjets1[0][4],  "%.5f" % sjets1[0][5],
             "%.5f" % sjets1[1][0],  "%.5f" % sjets1[1][1],  "%.5f" % sjets1[1][2],  "%.5f" % sjets1[1][3],  "%.5f" % sjets1[1][4],  "%.5f" % sjets1[1][5],
             "%.5f" % sjets1[2][0],  "%.5f" % sjets1[2][1],  "%.5f" % sjets1[2][2],  "%.5f" % sjets1[2][3],  "%.5f" % sjets1[2][4],  "%.5f" % sjets1[2][5],
