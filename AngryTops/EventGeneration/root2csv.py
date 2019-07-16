@@ -97,7 +97,7 @@ for ientry in range(n_entries):
     ##############################################################
     # Muon vector. Replaced E w/ T
     lep = TLorentzVector()
-    lep.SetPtEtaPhiE( tree.GetLeaf("Muon.PT").GetValue(0),
+    lep.SetPtEtaPhiM( tree.GetLeaf("Muon.PT").GetValue(0),
                       tree.GetLeaf("Muon.Eta").GetValue(0),
                       tree.GetLeaf("Muon.Phi").GetValue(0),
                       0
@@ -120,6 +120,7 @@ for ientry in range(n_entries):
     # Replaced the mv2c10 value with the bjet tag value, as that is what is
     # recoreded by Delphes
     jets = []
+    bjets = []
     for i in range(jets_n):
         if i >= n_jets_per_event: break
         if tree.GetLeaf("Jet.PT").GetValue(i) > 20 or np.abs(tree.GetLeaf("Jet.Eta").GetValue(i)) < 2.5 :
@@ -132,11 +133,9 @@ for ientry in range(n_entries):
             tree.GetLeaf("Jet.Phi").GetValue(i),
             tree.GetLeaf("Jet.Mass").GetValue(i))
             j.btag = tree.GetLeaf("Jet.BTag").GetValue(i)
-            j.charge = tree.GetLeaf("Jet.Charge").GetValue(i)
-            j.nneutrals = tree.GetLeaf("Jet.NNeutrals").GetValue(i)
-            j.deltaeta = tree.GetLeaf("Jet.DeltaEta").GetValue(i)
-            j.deltaphi = tree.GetLeaf("Jet.DeltaPhi").GetValue(i)
-            if j.btag > 0.0: bjets_n += 1
+            if j.btag > 0.0:
+                bjets_n += 1
+                bjets.append(j)
     # Cut based on number of passed jets
     jets_n = len(jets)
     if jets_n < 4:
@@ -226,6 +225,29 @@ for ientry in range(n_entries):
         continue
 
     ##############################################################
+    # DERIVED EVENT-WISE QUANTITES
+    # Sum of all Pt's
+    H_t = tree.GetLeaf("ScalarHT.HT").GetValue(0)
+    # DeltaPhi( let, closest b) = min DeltaPhi( lep, biets), and mass(l,b)
+    if len(bjets) > 1:
+        closest_b = np.argmin([lep.Phi() - bjets[i].Phi() for i in range(len(bjets))])
+        DeltaPhi = lep.Phi() - bjets[closest_b].Phi()
+        InvPart = bjets[closest_b] + lep
+        InvMass = InvPart.M()
+    elif len(bjets) == 1:
+        closest_b = 0
+        DeltaPhi = lep.Phi() - bjets[0].Phi()
+        InvPart = bjets[0] + lep
+        InvMass = InvPart.M()
+    else:
+        closest_b = -1
+        DeltaPhi = -1
+        InvMass = -1
+
+    vertex_n = tree.GetLeaf("Vertex_size").GetValue(0)
+
+
+    ##############################################################
     # Augment Data By Rotating 5 Different Ways
     n_good += 1
     phi = 0
@@ -268,18 +290,14 @@ for ientry in range(n_entries):
         "%.5f" % target_b_lep[5], "%.5f" % target_b_lep[6], "%.5f" % target_b_lep[7],
         "%.5f" % target_t_had[5], "%.5f" % target_t_had[6], "%.5f" % target_t_had[7],
         "%.5f" % target_t_lep[5], "%.5f" % target_t_lep[6], "%.5f" % target_t_lep[7],
-        "%.5f" % lep.sumPT, "%.5f" % met_eta,
-        "%.5f" % sjets0[0][9],  "%.5f" % sjets0[0][10],  "%.5f" % sjets0[0][11], "%.5f" % sjets0[0][12],
-        "%.5f" % sjets0[1][9],  "%.5f" % sjets0[1][10],  "%.5f" % sjets0[1][11], "%.5f" % sjets0[1][12],
-        "%.5f" % sjets0[2][9],  "%.5f" % sjets0[2][10],  "%.5f" % sjets0[2][11], "%.5f" % sjets0[2][12],
-        "%.5f" % sjets0[3][9],  "%.5f" % sjets0[3][10],  "%.5f" % sjets0[3][11], "%.5f" % sjets0[3][12],
-        "%.5f" % sjets0[4][9],  "%.5f" % sjets0[4][10],  "%.5f" % sjets0[4][11], "%.5f" % sjets0[4][12]
+        "%.5f" % H_t, "%i" % closest_b, "%.5f" % DeltaPhi, "%.5f" % InvMass
             ) )
 
         if flip_eta:
             csvwriter.writerow( (
             "%i" % runNumber, "%i" % eventNumber, "%.5f" % weight, "%i" % jets_n, "%i" % bjets_n,
-            "%.5f" % lep_flipped.Px(),     "%.5f" % lep_flipped.Py(),     "%.5f" % lep_flipped.Pz(),     "%.5f" % lep_flipped.E(),      "%.5f" % met_met,      "%.5f" % met_phi_aug,
+            "%.5f" % lep_flipped.Px(),     "%.5f" % lep_flipped.Py(),     "%.5f" % lep_flipped.Pz(),     "%.5f" % lep_flipped.E(),
+            "%.5f" % met_met,      "%.5f" % met_phi_aug,
             "%.5f" % sjets1[0][0],  "%.5f" % sjets1[0][1],  "%.5f" % sjets1[0][2],  "%.5f" % sjets1[0][3],  "%.5f" % sjets1[0][4],  "%.5f" % sjets1[0][5],
             "%.5f" % sjets1[1][0],  "%.5f" % sjets1[1][1],  "%.5f" % sjets1[1][2],  "%.5f" % sjets1[1][3],  "%.5f" % sjets1[1][4],  "%.5f" % sjets1[1][5],
             "%.5f" % sjets1[2][0],  "%.5f" % sjets1[2][1],  "%.5f" % sjets1[2][2],  "%.5f" % sjets1[2][3],  "%.5f" % sjets1[2][4],  "%.5f" % sjets1[2][5],
@@ -303,12 +321,7 @@ for ientry in range(n_entries):
             "%.5f" % target_b_lep[5], "%.5f" % target_b_lep[6], "%.5f" % target_b_lep[7],
             "%.5f" % target_t_had[5], "%.5f" % target_t_had[6], "%.5f" % target_t_had[7],
             "%.5f" % target_t_lep[5], "%.5f" % target_t_lep[6], "%.5f" % target_t_lep[7],
-            "%.5f" % lep.sumPT, "%.5f" % met_eta,
-            "%.5f" % sjets1[0][9],  "%.5f" % sjets1[0][10],  "%.5f" % sjets1[0][11], "%.5f" % sjets1[0][12],
-            "%.5f" % sjets1[1][9],  "%.5f" % sjets1[1][10],  "%.5f" % sjets1[1][11], "%.5f" % sjets1[1][12],
-            "%.5f" % sjets1[2][9],  "%.5f" % sjets1[2][10],  "%.5f" % sjets1[2][11], "%.5f" % sjets1[2][12],
-            "%.5f" % sjets1[3][9],  "%.5f" % sjets1[3][10],  "%.5f" % sjets1[3][11], "%.5f" % sjets1[3][12],
-            "%.5f" % sjets1[4][9],  "%.5f" % sjets1[4][10],  "%.5f" % sjets1[4][11], "%.5f" % sjets1[4][12]
+            "%.5f" % H_t, "%i" % closest_b, "%.5f" % DeltaPhi, "%.5f" % InvMass
                 ) )
         # Change the angle to rotate by
         phi = np.random.uniform(- np.pi, np.pi)

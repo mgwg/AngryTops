@@ -74,8 +74,11 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
 
     event_training = event_info[cut:]
     event_testing = event_info[:cut]
+    training_event_info = input_event_info[:cut]
+    testing_event_info = input_event_info[cut:]
     return (training_input, training_output), (testing_input, testing_output), \
-           (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing)
+           (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing), \
+           (training_event_info, testing_event_info)
 
 
 def normalize(arr, scaling):

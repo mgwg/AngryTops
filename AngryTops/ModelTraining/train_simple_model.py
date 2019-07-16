@@ -54,7 +54,8 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     # LOADING / PRE-PROCESSING DATA
     (training_input, training_output), (testing_input, testing_output), \
     (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) \
-                           = get_input_output(input_filename=csv_file, **kwargs)
+                           = get_input_output(input_filename=csv_file, **kwargs), \
+                                        (training_event_info, testing_event_info)
 
     ###########################################################################
     # BUILDING / TRAINING MODEL

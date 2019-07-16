@@ -33,10 +33,6 @@ def RotateEvent(lep, jets, met_phi, phi):
         jets_new += [ TLorentzVector(j) ]
         j_new = jets_new[-1]
         j_new.btag = j.btag
-        j_new.charge = j.charge
-        j_new.nneutrals = j.nneutrals
-        j_new.deltaeta = j.deltaeta
-        j_new.deltaphi = j.deltaphi
         j_new.RotateZ(phi)
 
     return lep_new, jets_new, met_phi
@@ -50,9 +46,5 @@ def FlipEta(lep, jets):
         new_jet = new_jets[-1]
         new_jet.SetPtEtaPhiE(lj.Pt(), -lj.Eta(), lj.Phi(), lj.E())
         new_jet.btag = lj.btag
-        new_jet.charge = lj.charge
-        new_jet.nneutrals = lj.nneutrals
-        new_jet.deltaeta = lj.deltaeta
-        new_jet.deltaphi = lj.deltaphi
 
     return lep_new, new_jets

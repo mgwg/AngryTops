@@ -27,12 +27,8 @@ column_names = ["runNumber", "eventNumber", "weight", "jets_n", "bjets_n",
 "target_b_lep_Pt", "target_b_lep_Eta", "target_b_lep_Phi",
 "target_t_had_Pt", "target_t_had_Eta", "target_t_had_Phi",
 "target_t_lep_Pt", "target_t_lep_Eta", "target_t_lep_Phi",
-"lep sum_Pt", 'met_eta',
-"jet0 Charge", "jet0 Nneutrals", "jet0 DeltaEta", "jet0 DeltaPhi",
-"jet1 Charge", "jet1 Nneutrals", "jet1 DeltaEta", "jet1 DeltaPhi",
-"jet2 Charge", "jet2 Nneutrals", "jet2 DeltaEta", "jet2 DeltaPhi",
-"jet3 Charge", "jet3 Nneutrals", "jet3 DeltaEta", "jet3 DeltaPhi",
-"jet4 Charge", "jet4 Nneutrals", "jet4 DeltaEta", "jet4 DeltaPhi"]
+"Event HT", "Closest b Index", "DeltaPhi", "Invariant Mass"
+]
 #================================================================================
 # OUTPUT COLUMNS
 # pxpypz representation
@@ -123,12 +119,6 @@ jets_ptetaphiEM = [
 "jet3 Pt",  "jet3 Eta",  "jet3 Phi",  "jet3 E", "jet3 M",
 "jet4 Pt",  "jet4 Eta",  "jet4 Phi",  "jet4 E", "jet4 M"]
 
-jets_std_ext = [
-"jet0 P_x",  "jet0 P_y",  "jet0 P_z",  "jet0 E",  "jet0 M", "jet0 Charge", "jet0 Nneutrals", "jet0 DeltaEta", "jet0 DeltaPhi",
-"jet1 P_x",  "jet1 P_y",  "jet1 P_z",  "jet1 E",  "jet1 M", "jet1 Charge", "jet1 Nneutrals", "jet1 DeltaEta", "jet1 DeltaPhi",
-"jet2 P_x",  "jet2 P_y",  "jet2 P_z",  "jet2 E",  "jet2 M", "jet2 Charge", "jet2 Nneutrals", "jet2 DeltaEta", "jet2 DeltaPhi",
-"jet3 P_x",  "jet3 P_y",  "jet3 P_z",  "jet3 E",  "jet3 M", "jet3 Charge", "jet3 Nneutrals", "jet3 DeltaEta", "jet3 DeltaPhi",
-"jet4 P_x",  "jet4 P_y",  "jet4 P_z",  "jet4 E",  "jet4 M", "jet4 Charge", "jet4 Nneutrals", "jet4 DeltaEta", "jet4 DeltaPhi"]
 #================================================================================
 # LEPTON + MET COLUMNS
 
@@ -149,7 +139,14 @@ lep_ptetaphiE = ["lep Pt", "lep Eta", "lep Phi", "lep E", "met_met", "met_phi"]
 # BTAG COLUMNS + EVENT INFO
 btags = ["jet0 BTag", "jet1 BTag", "jet2 BTag", "jet3 BTag", "jet4 BTag"]
 
-features_event_info = ["runNumber", "eventNumber", "weight", "jets_n", "bjets_n"]
+features_event_info = ["runNumber", "eventNumber", "weight", "jets_n", "bjets_n",
+"Event HT", "Closest b Index", "DeltaPhi", "Invariant Mass"
+]
+
+# Even info that can be inputted to a model
+input_event_info = ["jets_n", "bjets_n", "Event HT", "Closest b Index", "DeltaPhi",
+"Invariant Mass"
+]
 
 #================================================================================
 # COLUMNS FOR PLOTTING PURPOSES
@@ -223,7 +220,6 @@ representations = {
  "pxpypzE": [lep_cartE, jets_pxpypzEM, output_columns_pxpypzE],
  "pxpypzM": [lep_cartE, jets_pxpypzEM, output_columns_pxpypzM],
  "pxpypzEM": [lep_cartE, jets_pxpypzEM, output_columns_pxpypz],
- 'pxpypzEXT': [lep_cart_ext, jets_std_ext, output_columns_pxpypz],
  "ptetaphi": [lep_ptetaphi, jets_ptetaphi, output_columns_ptetaphi],
  "ptetaphiE": [lep_ptetaphiE, jets_ptetaphiEM, output_columns_ptetaphiE],
  "ptetaphiM": [lep_ptetaphiE, jets_ptetaphiEM, output_columns_ptetaphiE]
