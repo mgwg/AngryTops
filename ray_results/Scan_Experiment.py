@@ -15,9 +15,12 @@ best_model = None
 
 # Go through all of the models in the experiment
 for i in range(len(datastore['checkpoints'])):
-    if datastore['checkpoints'][i]['last_result']['mse'] < best_mse:
-        best_mse = datastore['checkpoints'][i]['last_result']['mse']
-        best_model = datastore['checkpoints'][i]['config']
+    try:
+        if datastore['checkpoints'][i]['last_result']['mse'] < best_mse:
+            best_mse = datastore['checkpoints'][i]['last_result']['mse']
+            best_model = datastore['checkpoints'][i]['config']
+    except Exception as e:
+        print("Skipping trial")
 
 # Print out best result
 print("Best MSE: %.5f" % best_mse)
