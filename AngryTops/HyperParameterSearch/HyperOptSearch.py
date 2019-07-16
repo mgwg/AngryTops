@@ -34,9 +34,10 @@ def objective(config, reporter, **kwargs):
     """
     # LOADING / PRE-PROCESSING DATA
     (training_input, training_output), (testing_input, testing_output), \
-    (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) \
+    (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing), \
+    (training_event_info, testing_event_info) \
     = get_input_output(input_filename='topreco_5dec.csv',
-                        rep=rep, multi_input=multi_input, scaling=scaling, sort_jets=False)
+            rep=rep, multi_input=multi_input, scaling=scaling, sort_jets=False)
     # BUILDING / TRAINING MODEL
     model = test_model(config)
     reporter_callback = TuneReporterCallback(reporter)
