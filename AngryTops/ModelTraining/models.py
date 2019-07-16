@@ -248,10 +248,9 @@ def dense_multi6(**kwargs):
 
 def stacked_LSTM1(**kwargs):
     """A denser version of model_multi"""
-    config = {'size1': 800.0, 'size2': 800.0, 'size3': 885.0, 'size4': 329.0, 'size5': 830.0}
+    config = {'size1': 33.0, 'size2': 800.0, 'size3': 885.0, 'size4': 329.0, 'size5': 830.0}
     model = keras.models.Sequential()
     model.add(Reshape(target_shape=(6,6), input_shape=(36,)))
-    # Initially, due to typo, size1 = size2
     model.add(TimeDistributed(Dense(int(config['size1']), activation='tanh')))
     model.add(LSTM(int(config['size2']), return_sequences=True))
     #model.add(TimeDistributed(Dense(108, activation='tanh')))

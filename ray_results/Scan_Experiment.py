@@ -20,6 +20,7 @@ for i in range(len(datastore['checkpoints'])):
             best_mse = datastore['checkpoints'][i]['last_result']['mse']
             best_model = datastore['checkpoints'][i]['config']
     except Exception as e:
+        print(e)
         print("Skipping trial")
 
 # Print out best result

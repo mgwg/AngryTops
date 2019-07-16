@@ -195,7 +195,6 @@ def test_model5(config):
     return model
 
 
-
 def cnn_test1(config):
     """A simple convolutional network model"""
     model = keras.models.Sequential()
