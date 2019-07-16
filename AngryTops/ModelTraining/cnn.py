@@ -138,6 +138,7 @@ def cnn5(**kwargs):
     model.add(Reshape(target_shape=(16,16,4)))
     model.add(Conv2D(32, (3, 3), activation='relu', padding="same"))
     model.add(MaxPooling2D((2, 2), strides=2))
+    model.add(Dropout(0.2))
     model.add(BatchNormalization())
     model.add(Conv2D(64, (3, 3), activation='relu', padding="same"))
     model.add(MaxPooling2D((2, 2), strides=2))
