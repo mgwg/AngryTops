@@ -71,3 +71,8 @@
 /home/fsyed/mcgenerators/MG5_aMC_v2_6_5/pp2ttj_LO/Events/run_06_27/tag_1_delphes_events.root
 /home/fsyed/mcgenerators/MG5_aMC_v2_6_5/pp2ttj_LO/Events/run_06_28/tag_1_delphes_events.root
 /home/fsyed/mcgenerators/MG5_aMC_v2_6_5/pp2ttj_LO/Events/run_06_29/tag_1_delphes_events.root
+/home/fsyed/mcgenerators/MG5_aMC_v2_6_5/pp2ttj_LO/Events/run_06_30/tag_1_delphes_events.root
+/home/fsyed/mcgenerators/MG5_aMC_v2_6_5/pp2ttj_LO/Events/run_06_31/tag_1_delphes_events.root
+/home/fsyed/mcgenerators/MG5_aMC_v2_6_5/pp2ttj_LO/Events/run_06_32/tag_1_delphes_events.root
+/home/fsyed/mcgenerators/MG5_aMC_v2_6_5/pp2ttj_LO/Events/run_06_33/tag_1_delphes_events.root
+/home/fsyed/mcgenerators/MG5_aMC_v2_6_5/pp2ttj_LO/Events/run_06_34/tag_1_delphes_events.root
