@@ -263,7 +263,7 @@ def stacked_LSTM1(**kwargs):
     model.add(LSTM(3, return_sequences=True))
     #model.add(TimeDistributed(Dense(3, activation='tanh')))
 
-    optimizer = tf.keras.optimizers.Adam(10e-5, decay=0.)
+    optimizer = tf.keras.optimizers.Adam(0.0008965229699400112)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
 
     return model
@@ -298,7 +298,7 @@ def bidirectional_LSTM1(**kwargs):
     model.add(TimeDistributed(Dense(9, activation='tanh')))
     model.add(TimeDistributed(Dense(3, activation='tanh')))
 
-    optimizer = tf.keras.optimizers.Adam(10e-5, decay=0.)
+    optimizer = tf.keras.optimizers.Adam(10e-4, decay=0.)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
 
     return model
