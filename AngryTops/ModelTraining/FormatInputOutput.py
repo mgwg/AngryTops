@@ -53,11 +53,14 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
 
     # INPUT
     assert 0 < training_split < 1, "Invalid training_split given"
+    cut = np.int(np.round(df.shape[0] * training_split))
+    input_event_info = df[input_event_info]
+    print(input_event_info.shape)
     event_training = event_info[cut:]
     event_testing = event_info[:cut]
     training_event_info = input_event_info[:cut]
     testing_event_info = input_event_info[cut:]
-    cut = np.int(np.round(df.shape[0] * training_split))
+    print(len(training_event_info))
     if multi_input:
         training_input = [training_event_info, jets_norm[:cut]]
         testing_input = [testing_event_info, jets_norm[cut:]]
