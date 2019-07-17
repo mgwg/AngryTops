@@ -53,11 +53,14 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
 
     # INPUT
     assert 0 < training_split < 1, "Invalid training_split given"
+    event_training = event_info[cut:]
+    event_testing = event_info[:cut]
+    training_event_info = input_event_info[:cut]
+    testing_event_info = input_event_info[cut:]
     cut = np.int(np.round(df.shape[0] * training_split))
     if multi_input:
-        input = [lep_norm, jets_norm]
-        training_input = [lep_norm[:cut], jets_norm[:cut]]
-        testing_input = [lep_norm[cut:], jets_norm[cut:]]
+        training_input = [training_event_info, jets_norm[:cut]]
+        testing_input = [testing_event_info, jets_norm[cut:]]
     else:
         input = np.concatenate((lep_norm, jets_norm), axis=1)
         #input = input[input[:,-2].argsort(kind='mergesort')]
@@ -72,10 +75,6 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
     training_output = output[:cut]
     testing_output = output[cut:]
 
-    event_training = event_info[cut:]
-    event_testing = event_info[:cut]
-    training_event_info = input_event_info[:cut]
-    testing_event_info = input_event_info[cut:]
     return (training_input, training_output), (testing_input, testing_output), \
            (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing), \
            (training_event_info, testing_event_info)
