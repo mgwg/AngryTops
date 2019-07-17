@@ -1,7 +1,7 @@
 # Use this script to inspect the CSV file outputted from root2csv.py
 import pandas as pd
 import matplotlib.pyplot as plt
-from features import column_names
+from AngryTops.features import column_names
 
 def getRawHists(fname):
     df = pd.read_csv(fname, names=column_names)
@@ -17,10 +17,10 @@ def getRawHists(fname):
         plt.ylabel("Counts")
         plt.yscale('log')
         if "_" in fname:
-            output_filedir = fname.split("/")[2].split(".")[0]
-            plt.savefig("..Plots/{0}/{1}.png".format(output_filedir, column_names[i]))
+            output_filedir = fname.split("/")[-1].split(".")[0]
+            plt.savefig("Plots/{0}/{1}.png".format(output_filedir, column_names[i]))
         else:
-            plt.savefig("../Plots/original/{}.png".format(column_names[i]))
+            plt.savefig("/Plots/original/{}.png".format(column_names[i]))
 
 if __name__ == "__main__":
-    getRawHists(fname='../csv/topreco_aug_eta.csv')
+    getRawHists(fname='csv/topreco_5dec2.csv')

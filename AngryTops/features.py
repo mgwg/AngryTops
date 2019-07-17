@@ -145,7 +145,7 @@ features_event_info = ["runNumber", "eventNumber", "weight", "jets_n", "bjets_n"
 
 # Even info that can be inputted to a model
 input_event_info = ["jets_n", "bjets_n", "Event HT", "Closest b Index", "DeltaPhi",
-"Invariant Mass"
+"Invariant Mass", "lep Px", "lep Py", "lep Pz", "lep E", "met_met", "met_phi"
 ]
 
 #================================================================================
