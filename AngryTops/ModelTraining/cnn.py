@@ -159,7 +159,7 @@ def cnn5(**kwargs):
     model.add(Dense(18))
     model.add(Reshape(target_shape=(6,3)))
 
-    optimizer = tf.keras.optimizers.Adam(10e-3, decay=1e-6)
+    optimizer = tf.keras.optimizers.Adam(0.0008965229699400112)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
     return model
 
