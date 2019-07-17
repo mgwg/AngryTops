@@ -5,6 +5,7 @@ from hyperopt import hp
 from AngryTops.ModelTraining.FormatInputOutput import get_input_output
 from AngryTops.HyperParameterSearch.test_models import test_models
 from AngryTops.HyperParameterSearch.param_spaces import parameter_spaces
+from tensorflow.keras.callbacks import EarlyStopping
 import ray
 from ray import tune
 from ray.tune.suggest.hyperopt import HyperOptSearch
@@ -30,7 +31,7 @@ space = parameter_spaces[space_name]
 
 def objective(config, reporter, **kwargs):
     """
-    Trains a DNN model for 1 epoches.
+    Trains a DNN model for 10 epoches.
     """
     # LOADING / PRE-PROCESSING DATA
     (training_input, training_output), (testing_input, testing_output), \
@@ -40,8 +41,9 @@ def objective(config, reporter, **kwargs):
     # BUILDING / TRAINING MODEL
     model = test_model(config)
     reporter_callback = TuneReporterCallback(reporter)
-    history = model.fit(training_input, training_output,  epochs=1,
-              batch_size=32, validation_split=0.1,callbacks=[reporter_callback])
+    early_stopping = EarlyStopping(monitor='val_loss', patience=0)
+    history = model.fit(training_input, training_output,  epochs=10,
+              batch_size=32, validation_split=0.1,callbacks=[reporter_callback, early_stopping])
 
 
 if __name__ == "__main__":
