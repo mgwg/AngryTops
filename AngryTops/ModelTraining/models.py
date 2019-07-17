@@ -92,8 +92,8 @@ def multiinput_BDLSTM(**kwargs):
     through a BDLSTM block"""
 
     # Model Inputs
-    input_events = Input(shape = (12,), name="input_jets")
-    input_features = Input(shape=(5,6), name="input_lep")
+    input_events = Input(shape = (12,), name="input_events")
+    input_features = Input(shape=(5,6), name="input_features")
 
     # Event Information
     x_events = Dense(36, activation='tanh')(input_events)
