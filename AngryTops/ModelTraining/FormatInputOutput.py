@@ -23,12 +23,11 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
     if 'single_output' in kwargs.keys(): single_output = kwargs['single_output']
 
     # Load jets, leptons and output columns of the correct representation
-    input_filename = "/home/fsyed/AngryTops/csv/{}".format(input_filename)
+    input_filename = "csv/{}".format(input_filename)
     df = pd.read_csv(input_filename, names=column_names)
     if 'shuffle' in kwargs.keys():
         print("Shuffling training/testing data")
         df = shuffle(df)
-    event_info = df[features_event_info].values
     lep = df[representations[rep][0]].values
     jets = df[representations[rep][1]].values
     if single_output is None:
@@ -51,15 +50,15 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
     jets_norm = jets_norm.reshape(jets_norm.shape[0], jets_norm.shape[1] * jets_norm.shape[2])
     lep_norm, lep_scalar = normalize(lep, scaling)
 
-    # INPUT
+    # CUT
     assert 0 < training_split < 1, "Invalid training_split given"
     cut = np.int(np.round(df.shape[0] * training_split))
-    input_event_info = df[input_event_info]
-    print(input_event_info.shape)
-    event_training = event_info[cut:]
-    event_testing = event_info[:cut]
-    training_event_info = input_event_info[:cut]
-    testing_event_info = input_event_info[cut:]
+
+    # MET Info
+    met_info = df[input_event_info]
+    print(met_info.shape)
+    training_event_info = met_info[:cut]
+    testing_event_info = met_info[cut:]
     print(len(training_event_info))
     if multi_input:
         training_input = [training_event_info, jets_norm[:cut]]
@@ -71,6 +70,11 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
         training_input = input[:cut]
         testing_input = input[cut:]
 
+    # EVENT INFO
+    event_info = df[features_event_info].values
+    event_training = event_info[cut:]
+    event_testing = event_info[:cut]
+
     # OUTPUT
     output, output_scalar = normalize(truth, scaling)
     if not single_output:
@@ -79,8 +83,7 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
     testing_output = output[cut:]
 
     return (training_input, training_output), (testing_input, testing_output), \
-           (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing), \
-           (training_event_info, testing_event_info)
+           (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing)
 
 
 def normalize(arr, scaling):
@@ -98,7 +101,8 @@ def normalize(arr, scaling):
 # Testing to see if this works
 if __name__=='__main__':
     (training_input, training_output), (testing_input, testing_output), \
-    (jets_scalar, lep_scalar, output_scalar), \
-    (event_training, event_testing)= get_input_output(input_filename="topreco_5dec.csv", scaling='standard', rep="pxpypzE")
+           (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) = \
+    get_input_output(input_filename="topreco_5dec2.csv", scaling='minmax',
+    rep="pxpypzEM", multi_input=True, sort_jets=False)
     print(np.any(np.isnan(training_input)))
     print(np.any(np.isnan(training_output)))
