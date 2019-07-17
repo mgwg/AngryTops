@@ -80,20 +80,11 @@ space3 = {
 
 space4 = {
 'learn_rate': hp.uniform('learn_rate', 10e-6, 10e-4),
-'size1': hp.quniform('size1', 1, 200, 1),
-'size2': hp.quniform('size2', 1, 200, 1),
-'size3': hp.quniform('size3', 1, 200, 1),
-'size4': hp.quniform('size4', 1, 200, 1),
-'size5': hp.quniform('size5', 1, 200, 1)
-}
-
-space4_1 = {
-'learn_rate': hp.uniform('learn_rate', 10e-6, 10e-4),
-'size1': hp.quniform('size1', 1, 1000, 1),
-'size2': hp.quniform('size2', 1, 1000, 1),
-'size3': hp.quniform('size3', 1, 1000, 1),
-'size4': hp.quniform('size4', 1, 1000, 1),
-'size5': hp.quniform('size5', 1, 1000, 1)
+'size1': hp.quniform('size1', 1, 200, 5),
+'size2': hp.quniform('size2', 1, 200, 5),
+'size3': hp.quniform('size3', 1, 200, 5),
+'size4': hp.quniform('size4', 1, 200, 5),
+'size5': hp.quniform('size5', 1, 200, 5)
 }
 
 space5 = {
@@ -134,5 +125,5 @@ cnn_space2 = {
 parameter_spaces = {
 'space0': space0, 'space1': space1, 'space2': space2, 'space3': space3,
 'cnn_space1': cnn_space1, 'cnn_space2': cnn_space2, 'space4': space4,
-'space4_1': space4_1, 'space5':space5
+'space5':space5
 }

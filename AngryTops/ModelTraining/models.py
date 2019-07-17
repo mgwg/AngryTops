@@ -123,8 +123,6 @@ def multiinput_BDLSTM(**kwargs):
 
     return model
 
-
-
 ################################################################################
 # List of all models
 models = {'stacked_LSTM0':stacked_LSTM0,
