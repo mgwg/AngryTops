@@ -100,16 +100,16 @@ def multiinput_BDLSTM(**kwargs):
     x_events = Dense(108, activation='tanh')(x_events)
     x_events = Dense(216, activation='tanh')(x_events)
     x_events = Dense(108, activation='tanh')(x_events)
-    x_events = Dense(36, activation='tanh')(x_events)
-    x_events = Reshape(target_shape=(6,6))(x_events)
+    x_events = Dense(30, activation='tanh')(x_events)
+    x_events = Reshape(target_shape=(6,5))(x_events)
     x_events = keras.Model(inputs=input_events, outputs=x_events)
 
     # Feature Information
-    x_features = Reshape(target_shape=(5,6))(input_features)
+    x_features = Reshape(target_shape=(6,5))(input_features)
     x_features = keras.Model(inputs=input_features, outputs=x_features)
 
     # BDLSTM BLOCK
-    combined = concatenate([x_events.output, x_features.output], axis=1)
+    combined = concatenate([x_events.output, x_features.output], axis=-1)
     final = TimeDistributed(Dense(486, activation='tanh'))(combined)
     final = Bidirectional(LSTM(81, return_sequences=True))(final)
     final = TimeDistributed(Dense(81, activation='tanh'))(final)
