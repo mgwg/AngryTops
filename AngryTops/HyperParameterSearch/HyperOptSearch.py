@@ -29,27 +29,25 @@ if len(sys.argv) > 6: multi_input = False
 test_model = test_models[model_name]
 space = parameter_spaces[space_name]
 
-# LOADING / PRE-PROCESSING DATA
-(training_input, training_output), (testing_input, testing_output), \
-(jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) \
-= get_input_output(input_filename='topreco_5dec2.csv',
-        rep=rep, multi_input=multi_input, scaling=scaling, sort_jets=False)
-
 def objective(config, reporter, **kwargs):
     """
     Trains a DNN model for 10 epoches.
     """
+    # LOADING / PRE-PROCESSING DATA
+    (training_input, training_output), (testing_input, testing_output), \
+    (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) \
+    = get_input_output(input_filename='topreco_5dec2.csv', rep=rep, multi_input=multi_input, scaling=scaling, sort_jets=False)
     # BUILDING / TRAINING MODEL
     model = test_model(config)
     reporter_callback = TuneReporterCallback(reporter)
     early_stopping = EarlyStopping(monitor='val_loss', patience=0)
-    history = model.fit(training_input, training_output,  epochs=10,
+    history = model.fit(training_input, training_output,  epochs=1,
               batch_size=32, validation_split=0.1,callbacks=[reporter_callback, early_stopping])
 
 
 if __name__ == "__main__":
     tune.register_trainable('objective', objective)
-    ray.init(num_cpus=32, num_gpus=0)
+    ray.init()
     sched = AsyncHyperBandScheduler(
         time_attr="training_iteration",
         metric="mse",

@@ -23,7 +23,7 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
     if 'single_output' in kwargs.keys(): single_output = kwargs['single_output']
 
     # Load jets, leptons and output columns of the correct representation
-    input_filename = "csv/{}".format(input_filename)
+    input_filename = "/home/fsyed/AngryTops/csv/{}".format(input_filename)
     df = pd.read_csv(input_filename, names=column_names)
     if 'shuffle' in kwargs.keys():
         print("Shuffling training/testing data")
@@ -56,10 +56,9 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
 
     # MET Info
     met_info = df[input_event_info]
-    print(met_info.shape)
     training_event_info = met_info[:cut]
     testing_event_info = met_info[cut:]
-    print(len(training_event_info))
+    
     if multi_input:
         training_input = [training_event_info, jets_norm[:cut]]
         testing_input = [testing_event_info, jets_norm[cut:]]
