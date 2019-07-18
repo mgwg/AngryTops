@@ -36,8 +36,12 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     shuffle: If in kwargs.keys, will shuffle the training/testing data.
     """
     # CONSTANTS
-    train_dir = "../CheckPoints/{}".format(train_dir)
-    checkpoint_dir = "../CheckPoints/{}/checkpoints".format(train_dir)
+    if 'train_dir' in kwargs.keys():
+        train_dir = "{0}/{1}".format(kwargs['train_dir'], train_dir)
+        checkpoint_dir = "{}/checkpoints".format(train_dir)
+    else:
+        train_dir = "../CheckPoints/{}".format(train_dir)
+        checkpoint_dir = "{}/checkpoints".format(train_dir)
     print("Saving files in: {}".format(train_dir))
     checkpoint_path = tf.train.latest_checkpoint(checkpoint_dir)
     print("Checkpoint Path: ", checkpoint_path)
@@ -54,7 +58,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     ###########################################################################
     # LOADING / PRE-PROCESSING DATA
     (training_input, training_output), (testing_input, testing_output), \
-    (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing), \
+    (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) \
                         = get_input_output(input_filename=csv_file, **kwargs)
 
     ###########################################################################
@@ -63,7 +67,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     # Load previously trained model if it exists
     if load_model:
         try:
-            model.load_weights(checkpoint_path)
+            model.load_model("{}/simple_model.h5".format(train_dir))
             print("Loaded weights from previous training session")
             print("Loaded weights from previous training session", file=sys.stderr)
         except Exception as e:

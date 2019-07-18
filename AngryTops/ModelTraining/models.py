@@ -140,5 +140,5 @@ for key, constructor in cnn_models.items():
 ################################################################################
 
 if __name__ == "__main__":
-    model = multiinput_BDLSTM()
+    model = stacked_LSTM1()
     print(model.summary())

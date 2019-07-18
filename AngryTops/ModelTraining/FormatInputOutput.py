@@ -23,8 +23,9 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
     if 'single_output' in kwargs.keys(): single_output = kwargs['single_output']
 
     # Load jets, leptons and output columns of the correct representation
-    input_filename = "csv/{}".format(input_filename)
+    input_filename = "../csv/{}".format(input_filename)
     df = pd.read_csv(input_filename, names=column_names)
+    df = df[df['weight'] == 0]
     if 'shuffle' in kwargs.keys():
         print("Shuffling training/testing data")
         df = shuffle(df)
@@ -52,14 +53,13 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
 
     # CUT
     assert 0 < training_split < 1, "Invalid training_split given"
+    print("Training_split: ", training_split)
     cut = np.int(np.round(df.shape[0] * training_split))
 
     # MET Info
     met_info = df[input_event_info]
-    print(met_info.shape)
     training_event_info = met_info[:cut]
     testing_event_info = met_info[cut:]
-    print(len(training_event_info))
     if multi_input:
         training_input = [training_event_info, jets_norm[:cut]]
         testing_input = [testing_event_info, jets_norm[cut:]]
@@ -72,8 +72,8 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
 
     # EVENT INFO
     event_info = df[features_event_info].values
-    event_training = event_info[cut:]
-    event_testing = event_info[:cut]
+    event_training = event_info[:cut]
+    event_testing = event_info[cut:]
 
     # OUTPUT
     output, output_scalar = normalize(truth, scaling)
@@ -104,5 +104,5 @@ if __name__=='__main__':
            (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) = \
     get_input_output(input_filename="topreco_5dec2.csv", scaling='minmax',
     rep="pxpypzEM", multi_input=True, sort_jets=False)
-    print(np.any(np.isnan(training_input)))
-    print(np.any(np.isnan(training_output)))
+    print(event_training.shape)
+    print(event_testing.shape)
