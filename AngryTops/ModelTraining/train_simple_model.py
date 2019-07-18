@@ -36,8 +36,8 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     shuffle: If in kwargs.keys, will shuffle the training/testing data.
     """
     # CONSTANTS
-    if 'train_dir' in kwargs.keys():
-        train_dir = "{0}/{1}".format(kwargs['train_dir'], train_dir)
+    if 'retrain' in kwargs.keys():
+        train_dir = "PostTraining_Analysis/models/{0}".format(train_dir)
         checkpoint_dir = "{}/checkpoints".format(train_dir)
     else:
         train_dir = "../CheckPoints/{}".format(train_dir)
