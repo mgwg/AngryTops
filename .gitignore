@@ -11,3 +11,4 @@ CheckPoints/*
 *.icloud
 AngryTops/PostTraining_Analysis/models/*
 AngryTops/PostTraining_Analysis/models
+*.npz
