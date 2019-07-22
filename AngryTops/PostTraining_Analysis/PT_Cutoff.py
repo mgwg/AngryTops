@@ -71,7 +71,7 @@ def select_pT_events():
     print("Shape of dataframe: ", data.shape)
 
     # Save the smaller csv training file
-    data.to_csv("../csv/b_had_pT.csv")
+    data.to_csv("../csv/b_had_pT.csv", header=False, index=False)
 
 if __name__ == "__main__":
     select_pT_events()
