@@ -23,9 +23,8 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
     if 'single_output' in kwargs.keys(): single_output = kwargs['single_output']
 
     # Load jets, leptons and output columns of the correct representation
-    input_filename = "../csv/{}".format(input_filename)
+    input_filename = "/home/fsyed/AngryTops/csv/{}".format(input_filename)
     df = pd.read_csv(input_filename, names=column_names)
-    df = df[df['weight'] == 0]
     if 'shuffle' in kwargs.keys():
         print("Shuffling training/testing data")
         df = shuffle(df)
