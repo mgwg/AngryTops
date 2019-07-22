@@ -3,18 +3,18 @@ the pT cutoff"""
 import numpy as np
 import pandas as pd
 import pickle
-from AngryTops.features import *
+from AngryTops import features
 
 def select_pT_events():
     """Create a smaller csv file where events are only those which the model
     failed to learn the pT cutoffs"""
     # Load csv file
     csv_filename = "../csv/topreco_5dec2.csv"
-    data = pd.read_csv(input_filename, names=column_names)
-    data.set_index["runNumber", "eventNumber"]
+    data = pd.read_csv(csv_filename, names=features.column_names)
+    data = data.set_index(["runNumber", "eventNumber", "target_W_had_Px"])
 
     # File inputs
-    model_dir = 'AngryTops/PostTraining_Analysis/models/BDLSTM'
+    model_dir = 'PostTraining_Analysis/models/Retrained_LSTM'
     rep = 'pxpypzEM'
     scaling = 'minmax'
     pT_cutoff = 20
@@ -44,24 +44,34 @@ def select_pT_events():
     y_fitted = y_fitted.reshape(y_fitted.shape[0], old_shape[0] * old_shape[1])
 
     # Construct Panda DataFrame
-    column_names = np.array(output_columns_pxpypz).flatten()
+    column_names = np.array(features.output_columns_pxpypz).flatten()
     df = pd.DataFrame(data=y_fitted, columns=column_names)
 
     # Add a pT column
     b_had_Pt = np.sqrt(df['target_b_had_Px']**2 + df['target_b_had_Py']**2)
     df['target_b_had_Pt'] = b_had_Pt
+    target_W_had_Px = true[:,0]
+    df['target_W_had_Px'] = target_W_had_Px
 
     # Add event info columns to dataframe
     df.insert(0, "runNumber", event_info[:,0], True)
     df.insert(1, "eventNumber", event_info[:,1], True)
     df.insert(2, "weight", event_info[:,2], True)
-    df.set_index["runNumber", "eventNumber"]
+    df = df[df['target_b_had_Pt'] < 20]
+    runNumber = np.array(df["runNumber"], dtype='int64').flatten()
+    eventNumber = np.array(df["eventNumber"], dtype='int64').flatten()
+    W_had_Px = np.array(df["target_W_had_Px"], dtype='float64').flatten()
     print(df.head())
 
     # Isolate dataframe to only those with predicted pT less than 20
-    df = df[df['target_b_had_Pt'] < 20]
-    data = data[df["runNumber", "eventNumber"]]
+    indices = [(runNumber[i], eventNumber[i], W_had_Px[i]) for i in range(len(runNumber))]
+    data = data.loc[indices]
+    data = data.reset_index()
+    data = data.dropna(axis=0)
     print("Shape of dataframe: ", data.shape)
 
     # Save the smaller csv training file
     data.to_csv("../csv/b_had_pT.csv")
+
+if __name__ == "__main__":
+    select_pT_events()

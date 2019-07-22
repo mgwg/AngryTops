@@ -67,7 +67,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     # Load previously trained model if it exists
     if load_model:
         try:
-            model.load_model("{}/simple_model.h5".format(train_dir))
+            model = tf.keras.models.load_model("{}/simple_model.h5".format(train_dir))
             print("Loaded weights from previous training session")
             print("Loaded weights from previous training session", file=sys.stderr)
         except Exception as e:
