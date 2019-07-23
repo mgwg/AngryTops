@@ -6,9 +6,16 @@ import sys
 from AngryTops.features import *
 from AngryTops.ModelTraining.single_output_models import *
 from AngryTops.ModelTraining.cnn import cnn_models
+from AngryTops.ModelTraining.custom_loss import *
+
+metrics = ['mae', 'mse', weighted_MSE1, weighted_MSE2, w_HAD, w_LEP, b_HAD, b_LEP, t_HAD, t_LEP]
+losses = {"mse":"mse", "weighted_MSE1": weighted_MSE1, "weighted_MSE2": weighted_MSE2}
 
 def stacked_LSTM0(**kwargs):
     """A denser version of model_multi"""
+    loss_fn = 'mse'
+    if "custom_loss" in kwargs.keys(): loss_fn = losses[kwargs["custom_loss"]]
+
     model = keras.models.Sequential()
     model.add(Dense(216, input_shape=(36,)))
     model.add(Reshape(target_shape=(6,36)))
@@ -24,12 +31,15 @@ def stacked_LSTM0(**kwargs):
     #model.add(TimeDistributed(Dense(3, activation='tanh')))
 
     optimizer = tf.keras.optimizers.Adam(10e-5, decay=0.0)
-    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    model.compile(optimizer=optimizer, loss=loss_fn, metrics=metrics)
 
     return model
 
 def stacked_LSTM1(**kwargs):
     """A denser version of model_multi"""
+    loss_fn = 'mse'
+    if "custom_loss" in kwargs.keys(): loss_fn = losses[kwargs["custom_loss"]]
+
     config = {'size1': 32, 'size2': 128, 'size3': 128, 'size4': 64, 'size5': 32}
     model = keras.models.Sequential()
     model.add(Reshape(target_shape=(6,6), input_shape=(36,)))
@@ -46,12 +56,15 @@ def stacked_LSTM1(**kwargs):
     #model.add(TimeDistributed(Dense(3, activation='tanh')))
 
     optimizer = tf.keras.optimizers.Adam(0.0008965229699400112)
-    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    model.compile(optimizer=optimizer, loss=loss_fn, metrics=metrics)
 
     return model
 
 def bidirectional_LSTM0(**kwargs):
     """A denser version of model_multi"""
+    loss_fn = 'mse'
+    if "custom_loss" in kwargs.keys(): loss_fn = losses[kwargs["custom_loss"]]
+
     config = {'size1': 800.0, 'size2': 54.0}
     model = keras.models.Sequential()
     model.add(Reshape(target_shape=(6,6), input_shape=(36,)))
@@ -63,12 +76,15 @@ def bidirectional_LSTM0(**kwargs):
     model.add(TimeDistributed(Dense(3, activation='tanh')))
 
     optimizer = tf.keras.optimizers.Adam(10e-5, decay=0.)
-    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    model.compile(optimizer=optimizer, loss=loss_fn, metrics=metrics)
 
     return model
 
 def bidirectional_LSTM1(**kwargs):
     """A denser version of model_multi"""
+    loss_fn = 'mse'
+    if "custom_loss" in kwargs.keys(): loss_fn = losses[kwargs["custom_loss"]]
+
     config = {'size1': 800.0, 'size2': 100.0}
     model = keras.models.Sequential()
     model.add(Reshape(target_shape=(6,6), input_shape=(36,)))
@@ -81,12 +97,15 @@ def bidirectional_LSTM1(**kwargs):
     model.add(TimeDistributed(Dense(3, activation='tanh')))
 
     optimizer = tf.keras.optimizers.Adam(10e-4, decay=0.)
-    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    model.compile(optimizer=optimizer, loss=loss_fn, metrics=metrics)
 
     return model
 
 def bidirectional_LSTM2(**kwargs):
     """A denser version of model_multi"""
+    loss_fn = 'mse'
+    if "custom_loss" in kwargs.keys(): loss_fn = losses[kwargs["custom_loss"]]
+
     config = {'size1': 400.0, 'size2': 54.0, 'size3': 27.0}
     model = keras.models.Sequential()
     model.add(Reshape(target_shape=(6,6), input_shape=(36,)))
@@ -100,14 +119,17 @@ def bidirectional_LSTM2(**kwargs):
     model.add(TimeDistributed(Dense(3, activation='tanh')))
 
     optimizer = tf.keras.optimizers.Adam(10e-4, decay=0.)
-    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    model.compile(optimizer=optimizer, loss=loss_fn, metrics=metrics)
 
     return model
 
 def multiinput_BDLSTM(**kwargs):
     """A multi-input BDLSTM that first runs the Event level information through
     a DNN block and then concatenates w/ jet + lepton information and runs it
-    through a BDLSTM block"""
+    through a BDLSTM block
+    """
+    loss_fn = 'mse'
+    if "custom_loss" in kwargs.keys(): loss_fn = losses[kwargs["custom_loss"]]
 
     # Model Inputs
     input_events = Input(shape = (12,), name="input_events")
@@ -137,7 +159,7 @@ def multiinput_BDLSTM(**kwargs):
     model = keras.Model(inputs=[x_events.input, x_features.input], outputs=final)
 
     optimizer = tf.keras.optimizers.Adam(10e-5, decay=0.)
-    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    model.compile(optimizer=optimizer, loss=loss_fn, metrics=metrics)
 
     return model
 
