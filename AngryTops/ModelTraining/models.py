@@ -87,14 +87,14 @@ def bidirectional_LSTM1(**kwargs):
 
 def bidirectional_LSTM2(**kwargs):
     """A denser version of model_multi"""
-    config = {'size1': 800.0, 'size2': 54.0, 'size3': 27.0}
+    config = {'size1': 400.0, 'size2': 54.0, 'size3': 27.0}
     model = keras.models.Sequential()
     model.add(Reshape(target_shape=(6,6), input_shape=(36,)))
     # Initially, due to typo, size1 = size2
     model.add(TimeDistributed(Dense(int(config['size1']), activation='tanh')))
     model.add(Bidirectional(LSTM(int(config['size2']), return_sequences=True)))
     model.add(Bidirectional(LSTM(int(config['size3']), return_sequences=True)))
-    model.add(TimeDistributed(Dense(81, activation='tanh')))
+    model.add(TimeDistributed(Dense(27, activation='tanh')))
     model.add(TimeDistributed(Dense(27, activation='tanh')))
     model.add(TimeDistributed(Dense(9, activation='tanh')))
     model.add(TimeDistributed(Dense(3, activation='tanh')))
