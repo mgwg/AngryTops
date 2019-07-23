@@ -147,6 +147,7 @@ models = {'stacked_LSTM0':stacked_LSTM0,
           'stacked_LSTM1':stacked_LSTM1,
           'bidirectional_LSTM0':bidirectional_LSTM0,
           'bidirectional_LSTM1':bidirectional_LSTM1,
+          'bidirectional_LSTM2':bidirectional_LSTM2,
           'multiinput_BDLSTM':multiinput_BDLSTM}
 
 for key, constructor in single_models.items():

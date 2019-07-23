@@ -189,7 +189,7 @@ def test_model5(config):
     model.add(TimeDistributed(Dense(int(config['size5']), activation=config['act4'])))
     model.add(TimeDistributed(Dense(3, activation='linear')))
 
-    optimizer = tf.keras.optimizers.Adam(10e-5, decay=0.)
+    optimizer = tf.keras.optimizers.Adam(10e-4, decay=0.)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
 
     return model
