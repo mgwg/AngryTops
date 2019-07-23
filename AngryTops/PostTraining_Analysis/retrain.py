@@ -23,4 +23,4 @@ select_pT_events()
 train_model("bidirectional_LSTM1", "Retrained_LSTM", "b_had_pT.csv",
 log_training=False, load_model=True, EPOCHES=100, BATCH_SIZE=32,
 scaling='minmax', rep='pxpypzEM', multi_input=False, sort_jets=False,
-shuffle=False, training_split=0.5)
+shuffle=False, training_split=0.5, retrain=True)
