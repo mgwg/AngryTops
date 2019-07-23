@@ -2,7 +2,6 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.layers import *
 from tensorflow.keras.regularizers import *
-from keras.layers.advanced_activations import LeakyReLU
 import sys
 from AngryTops.features import *
 from AngryTops.ModelTraining.single_output_models import *
