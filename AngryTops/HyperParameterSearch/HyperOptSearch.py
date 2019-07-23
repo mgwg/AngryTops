@@ -41,7 +41,7 @@ def objective(config, reporter, **kwargs):
     model = test_model(config)
     reporter_callback = TuneReporterCallback(reporter)
     early_stopping = EarlyStopping(monitor='val_loss', patience=0)
-    history = model.fit(training_input, training_output,  epochs=1,
+    history = model.fit(training_input, training_output,  epochs=100,
               batch_size=32, validation_split=0.1,callbacks=[reporter_callback, early_stopping])
 
 
