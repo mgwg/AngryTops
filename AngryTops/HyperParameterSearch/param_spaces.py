@@ -88,7 +88,6 @@ space4 = {
 }
 
 space5 = {
-'learn_rate': hp.uniform('learn_rate', 10e-6, 10e-4),
 'size1': hp.quniform('size1', 1, 1000, 1),
 'size2': hp.quniform('size2', 1, 100, 1),
 'size3': hp.quniform('size3', 1, 1000, 1),

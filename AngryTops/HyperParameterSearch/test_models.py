@@ -172,7 +172,7 @@ def test_model4(config):
     model.add(LSTM(3, return_sequences=True))
     #model.add(TimeDistributed(Dense(3, activation='tanh')))
 
-    optimizer = tf.keras.optimizers.Adam(config['learn_rate'], decay=0.)
+    optimizer = tf.keras.optimizers.Adam(10e-4, decay=0.)
     model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
 
     return model
