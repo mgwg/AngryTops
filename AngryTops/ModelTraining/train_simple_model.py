@@ -14,6 +14,8 @@ from AngryTops.ModelTraining.models import models
 from AngryTops.ModelTraining.plotting_helper import plot_history
 from AngryTops.ModelTraining.FormatInputOutput import get_input_output
 from tensorflow.keras.utils import plot_model
+from tensorflow.keras.backend import manual_variable_initialization 
+manual_variable_initialization(True)
 
 print(tf.__version__)
 print(tf.test.gpu_device_name())
