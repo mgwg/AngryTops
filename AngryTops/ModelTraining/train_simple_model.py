@@ -14,7 +14,7 @@ from AngryTops.ModelTraining.models import models
 from AngryTops.ModelTraining.plotting_helper import plot_history
 from AngryTops.ModelTraining.FormatInputOutput import get_input_output
 from tensorflow.keras.utils import plot_model
-from tensorflow.keras.backend import manual_variable_initialization 
+from tensorflow.keras.backend import manual_variable_initialization
 manual_variable_initialization(True)
 
 print(tf.__version__)
@@ -70,6 +70,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     if load_model:
         try:
             model = tf.keras.models.load_model("{}/simple_model.h5".format(train_dir))
+            model.load_weights(checkpoint_path)
             print("Loaded weights from previous training session")
             print("Loaded weights from previous training session", file=sys.stderr)
         except Exception as e:
