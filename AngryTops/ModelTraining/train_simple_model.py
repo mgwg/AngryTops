@@ -29,7 +29,6 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     train_dir: Name of the folder to save the training info + model
     csv_file: The csv file to read data from.
     EPOCHES: # of EPOCHES to train
-    BATCH_SIZE: Batch size for training
     learn_rate: Learn rate for neural network.
     scaling: Choose between 'standard' or 'minmax' scaling of input and outputs
     rep: The representation of the data. ie. pxpypz vs ptetaphiM vs ...
@@ -48,7 +47,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     checkpoint_path = tf.train.latest_checkpoint(checkpoint_dir)
     print("Checkpoint Path: ", checkpoint_path)
     EPOCHES = kwargs["EPOCHES"]
-    BATCH_SIZE = kwargs["BATCH_SIZE"]
+    BATCH_SIZE = 32
     try:
         log = open("{}/log.txt".format(train_dir), 'w')
     except Exception as e:
@@ -110,7 +109,10 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     ###########################################################################
     # EVALUATING MODEL AND MAKE PREDICTIONS
     # Evaluating model and saving the predictions
-    test_acc = model.evaluate(testing_input, testing_output)
+    try:
+        test_acc = model.evaluate(testing_input, testing_output)
+    except Exception as e:
+        print(e))
     print('\nTest accuracy:', test_acc)
     print('\nTest accuracy:', test_acc, file=sys.stderr)
     predictions = model.predict(testing_input)
