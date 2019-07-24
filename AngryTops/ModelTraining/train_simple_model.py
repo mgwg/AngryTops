@@ -111,10 +111,10 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     # Evaluating model and saving the predictions
     try:
         test_acc = model.evaluate(testing_input, testing_output)
+        print('\nTest accuracy:', test_acc)
+        print('\nTest accuracy:', test_acc, file=sys.stderr)
     except Exception as e:
-        print(e))
-    print('\nTest accuracy:', test_acc)
-    print('\nTest accuracy:', test_acc, file=sys.stderr)
+        print(e)
     predictions = model.predict(testing_input)
     if kwargs['multi_input']:
         np.savez("{}/predictions".format(train_dir), lep=testing_input[0], jet=testing_input[1],
