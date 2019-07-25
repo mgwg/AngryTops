@@ -118,10 +118,10 @@ def multiinput_BDLSTM(**kwargs):
     input_features = Input(shape=(30,), name="input_features")
 
     # Event Information
-    x_events = Dense(36, activation='tanh')(input_events)
-    x_events = Dense(108, activation='tanh')(x_events)
-    x_events = Dense(30, activation='tanh')(x_events)
-    x_events = Reshape(target_shape=(6,5))(x_events)
+    x_events = Dense(108, activation='tanh')(input_events)
+    x_events = Dense(36, activation='tanh')(x_events)
+    x_events = Dense(6, activation='tanh')(x_events)
+    x_events = Reshape(target_shape=(6,1))(x_events)
     x_events = keras.Model(inputs=input_events, outputs=x_events)
 
     # Feature Information
