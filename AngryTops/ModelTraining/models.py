@@ -87,7 +87,7 @@ def bidirectional_LSTM3(**kwargs):
     loss_fn = 'mse'
     if "custom_loss" in kwargs.keys(): loss_fn = losses[kwargs["custom_loss"]]
 
-    config = {'size1': 400.0, 'size2': 27.0}
+    config = {'size1': 800.0, 'size2': 27.0}
     model = keras.models.Sequential()
     model.add(Reshape(target_shape=(6,6), input_shape=(36,)))
     # Initially, due to typo, size1 = size2
@@ -95,7 +95,7 @@ def bidirectional_LSTM3(**kwargs):
     model.add(Bidirectional(LSTM(int(config['size2']), return_sequences=True)))
     model.add(Bidirectional(LSTM(int(config['size2']), return_sequences=True)))
     model.add(Bidirectional(LSTM(int(config['size2']), return_sequences=True)))
-    model.add(TimeDistributed(Dense(27, activation='tanh')))
+    model.add(TimeDistributed(Dense(54, activation='tanh')))
     model.add(TimeDistributed(Dense(27, activation='tanh')))
     model.add(TimeDistributed(Dense(9, activation='tanh')))
     model.add(TimeDistributed(Dense(3, activation='tanh')))
