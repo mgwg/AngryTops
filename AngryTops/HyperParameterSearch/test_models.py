@@ -3,6 +3,9 @@ from tensorflow.keras.layers import *
 from tensorflow.keras.regularizers import *
 from tensorflow import keras
 import tensorflow as tf
+from AngryTops.ModelTraining.custom_loss import *
+
+metrics = ['mae', 'mse', weighted_MSE1, weighted_MSE2, w_HAD, w_LEP, b_HAD, b_LEP, t_HAD, t_LEP]
 
 def test_model0(config):
     input_jets = Input(shape = (20,), name="input_jets")
@@ -38,7 +41,7 @@ def test_model0(config):
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
 
     optimizer = tf.keras.optimizers.Adam(config['learn_rate'])
-    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    model.compile(optimizer=optimizer, loss='mse', metrics=metrics)
 
     return model
 
@@ -71,7 +74,7 @@ def test_model1(config):
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
 
     optimizer = tf.keras.optimizers.Adam(config['learn_rate'])
-    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    model.compile(optimizer=optimizer, loss='mse', metrics=metrics)
 
     return model
 
@@ -111,7 +114,7 @@ def test_model2(config):
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
 
     optimizer = tf.keras.optimizers.Adam(config['learn_rate'])
-    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    model.compile(optimizer=optimizer, loss='mse', metrics=metrics)
 
     return model
 
@@ -152,7 +155,7 @@ def test_model3(config):
     model = keras.Model(inputs=[x_lep.input, x_jets.input], outputs=final)
 
     optimizer = tf.keras.optimizers.Adam(config['learn_rate'])
-    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    model.compile(optimizer=optimizer, loss='mse', metrics=metrics)
 
     return model
 
@@ -173,7 +176,7 @@ def test_model4(config):
     #model.add(TimeDistributed(Dense(3, activation='tanh')))
 
     optimizer = tf.keras.optimizers.Adam(10e-4, decay=0.)
-    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    model.compile(optimizer=optimizer, loss='mse', metrics=metrics)
 
     return model
 
@@ -189,8 +192,8 @@ def test_model5(config):
     model.add(TimeDistributed(Dense(int(config['size5']), activation=config['act4'])))
     model.add(TimeDistributed(Dense(3, activation='linear')))
 
-    optimizer = tf.keras.optimizers.Adam(10e-4, decay=0.)
-    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    optimizer = tf.keras.optimizers.Adam(10e-5, decay=0.)
+    model.compile(optimizer=optimizer, loss='mse', metrics=metrics)
 
     return model
 
@@ -214,7 +217,7 @@ def cnn_test1(config):
     model.add(Reshape(target_shape=(6,3)))
 
     optimizer = tf.keras.optimizers.Adam(config['learn_rate'])
-    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    model.compile(optimizer=optimizer, loss='mse', metrics=metrics)
     return model
 
 def cnn_test2(config):
@@ -240,7 +243,7 @@ def cnn_test2(config):
     model.add(Reshape(target_shape=(6,3)))
 
     optimizer = tf.keras.optimizers.Adam(config['learn_rate'])
-    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    model.compile(optimizer=optimizer, loss='mse', metrics=metrics)
     return model
 
 test_models = {'test_model0': test_model0, 'test_model1': test_model1,
