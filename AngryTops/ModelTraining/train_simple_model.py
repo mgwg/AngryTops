@@ -10,7 +10,7 @@ import os
 import sys
 import pickle
 from AngryTops.features import *
-from AngryTops.ModelTraining.models import models
+from AngryTops.ModelTraining.models import models, custom_metrics
 from AngryTops.ModelTraining.plotting_helper import plot_history
 from AngryTops.ModelTraining.FormatInputOutput import get_input_output
 from tensorflow.keras.utils import plot_model
@@ -68,7 +68,8 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     # Load previously trained model if it exists
     if load_model:
         try:
-            model = tf.keras.models.load_model("{}/simple_model.h5".format(train_dir))
+            model = tf.keras.models.load_model("{}/simple_model.h5".format(train_dir),
+                                               custom_objects=custom_metrics)
             model.load_weights(checkpoint_path)
             print("Loaded weights from previous training session")
             print("Loaded weights from previous training session", file=sys.stderr)
