@@ -10,9 +10,9 @@ from AngryTops.ModelTraining.custom_loss import *
 
 custom_metrics={"weighted_MSE1": weighted_MSE1, "weighted_MSE2": weighted_MSE2,
 "w_HAD":w_HAD, "w_LEP":w_LEP, "b_HAD":b_HAD, "b_LEP":b_LEP, "t_HAD":t_HAD,
-"t_LEP":t_LEP}
-metrics = ['mae', 'mse', weighted_MSE1, weighted_MSE2, w_HAD, w_LEP, b_HAD, b_LEP, t_HAD, t_LEP]
-losses = {"mse":"mse", "weighted_MSE1": weighted_MSE1, "weighted_MSE2": weighted_MSE2}
+"t_LEP":t_LEP, "pT_loss":pT_loss}
+metrics = ['mae', 'mse', weighted_MSE1, weighted_MSE2, w_HAD, w_LEP, b_HAD, b_LEP, t_HAD, t_LEP, pT_loss]
+losses = {"mse":"mse", "weighted_MSE1": weighted_MSE1, "weighted_MSE2": weighted_MSE2, "pT_loss":pT_loss}
 
 def stacked_LSTM1(**kwargs):
     """A denser version of model_multi"""
