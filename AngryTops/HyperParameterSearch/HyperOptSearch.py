@@ -2,6 +2,7 @@
 import numpy as np
 import sys
 from hyperopt import hp
+from AngryTops.ModelTraining.custom_loss import *
 from AngryTops.ModelTraining.FormatInputOutput import get_input_output
 from AngryTops.HyperParameterSearch.test_models import test_models
 from AngryTops.HyperParameterSearch.param_spaces import parameter_spaces
