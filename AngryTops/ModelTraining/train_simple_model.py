@@ -43,11 +43,14 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     else:
         train_dir = "../CheckPoints/{}".format(train_dir)
         checkpoint_dir = "{}/checkpoints".format(train_dir)
-    print("Saving files in: {}".format(train_dir))
     checkpoint_path = tf.train.latest_checkpoint(checkpoint_dir)
-    print("Checkpoint Path: ", checkpoint_path)
     EPOCHES = kwargs["EPOCHES"]
     BATCH_SIZE = 32
+    print("Saving files in: {}".format(train_dir))
+    print("Checkpoint Path: ", checkpoint_path)
+
+    ###########################################################################
+    # LOGGING
     try:
         log = open("{}/log.txt".format(train_dir), 'w')
     except Exception as e:
@@ -68,11 +71,10 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     # Load previously trained model if it exists
     if load_model:
         try:
-            model = tf.keras.models.load_model("{}/simple_model.h5".format(train_dir),
+            model = tf.keras.models.load_model("%s/simple_model.h5" % train_dir,
                                                custom_objects=custom_metrics)
-            model.load_weights(checkpoint_path)
-            print("Loaded weights from previous training session")
-            print("Loaded weights from previous training session", file=sys.stderr)
+            print("Loaded weights from previous session")
+            print("Loaded weights from previous session", file=sys.stderr)
         except Exception as e:
             print(e)
             print(e, file=sys.stderr)
@@ -95,9 +97,9 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
 
     ###########################################################################
     # SAVING MODEL, TRAINING HISTORY AND SCALARS
-    model.save('{}/simple_model.h5'.format(train_dir))
-    model.save_weights('{}/model_weights.h5'.format(train_dir))
-    plot_model(model, to_file='{}/model.png'.format(train_dir))
+    model.save('%s/simple_model.h5' % train_dir)
+    model.save_weights('%s/model_weights.h5' % train_dir)
+    plot_model(model, to_file='%s/model.png' % train_dir)
 
     scaler_filename = "{}/scalers.pkl".format(train_dir)
     with open( scaler_filename, "wb" ) as file_scaler:
@@ -108,22 +110,27 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     print("INFO: scalers saved to file:", scaler_filename, file=sys.stderr)
 
     ###########################################################################
-    # EVALUATING MODEL AND MAKE PREDICTIONS
-    # Evaluating model and saving the predictions
+    # EVALUATING MODEL
     try:
         test_acc = model.evaluate(testing_input, testing_output)
         print('\nTest accuracy:', test_acc)
         print('\nTest accuracy:', test_acc, file=sys.stderr)
     except Exception as e:
         print(e)
+
+    ###########################################################################
+    # MAKE AND SAVE PREDICTIONS
     predictions = model.predict(testing_input)
     if kwargs['multi_input']:
-        np.savez("{}/predictions".format(train_dir), lep=testing_input[0], jet=testing_input[1],
-                                      true=testing_output, pred=predictions, events=event_testing)
+        np.savez("%s/predictions" % train_dir, lep=testing_input[0],
+                 jet=testing_input[1], true=testing_output, pred=predictions,
+                 events=event_testing)
     else:
         np.savez("{}/predictions".format(train_dir), input=testing_input,
-                                      true=testing_output, pred=predictions, events=event_testing)
+                 true=testing_output, pred=predictions, events=event_testing)
 
+    ###########################################################################
+    # SAVE TRAINING HISTORY
     if history is not None:
         for key in history.history.keys():
             np.savez("{0}/{1}.npz".format(train_dir, key),
@@ -138,7 +145,6 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     #     print (h)
     sys.stdout = sys.__stdout__
     log.close()
-
 
 if __name__ == "__main__":
     print("Compiled")

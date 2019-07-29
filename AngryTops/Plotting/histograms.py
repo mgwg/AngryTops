@@ -8,8 +8,6 @@ import cPickle as pickle
 
 ################################################################################
 # CONSTANTS
-GeV = 1e3
-TeV = 1e6
 m_t = 172.5
 m_W = 80.4
 m_b = 4.95
@@ -21,10 +19,11 @@ print(infilename)
 ################################################################################
 # HELPER FUNCTIONS
 def PrintOut( p4_true, p4_fitted, label ):
-  print("%s :: true=( %4.1f, %3.2f, %3.2f, %4.1f ; %3.1f ) :: fitted=( %4.1f, %3.2f, %3.2f, %4.1f ; %3.1f )" % \
-               ( label,
-                p4_true.Pt(),   p4_true.Rapidity(),   p4_true.Phi(),   p4_true.E(),   p4_true.M(), \
-                p4_fitted.Pt(), p4_fitted.Rapidity(), p4_fitted.Phi(), p4_fitted.E(), p4_fitted.M() ))
+  print("%s :: true=( %4.1f, %3.2f, %3.2f, %4.1f ; %3.1f ) \
+        :: fitted=( %4.1f, %3.2f, %3.2f, %4.1f ; %3.1f )" % \
+        (label, p4_true.Pt(), p4_true.Rapidity(), p4_true.Phi(), p4_true.E(), p4_true.M(),\
+        p4_fitted.Pt(), p4_fitted.Rapidity(), p4_fitted.Phi(), p4_fitted.E(), p4_fitted.M()
+        ))
 
 ################################################################################
 # Read in input file
@@ -298,7 +297,7 @@ histograms['reso_t_lep_E']   = TH2F( "reso_t_lep_E",   ";Leptonic top E [GeV];Le
 histograms['reso_t_lep_m']   = TH2F( "reso_t_lep_m",   ";Leptonic top M [GeV];Leptonic t M resolution",     30, 0., 300., 100, -2.0, 2.0 )
 
 ################################################################################
-# FORMAT HISTOGRAMS?
+# FORMAT HISTOGRAMS
 for hname, h in histograms.iteritems():
   h.Sumw2()
   if hname.endswith("true")>-1:
@@ -318,22 +317,22 @@ for i in range(n_events):
         perc = 100. * i / float(n_events)
         print("INFO: Event %-9i  (%3.0f %%)" % ( i, perc ))
 
-    tree.GetEntry( i )
+    tree.GetEntry(i)
 
     w = tree.weight_mc
 
-    W_had_true   = TLorentzVector( tree.W_had_px_true, tree.W_had_py_true, tree.W_had_pz_true, tree.W_had_E_true )
-    b_had_true   = TLorentzVector( tree.b_had_px_true, tree.b_had_py_true, tree.b_had_pz_true, tree.b_had_E_true )
-    t_had_true   = TLorentzVector( tree.t_had_px_true, tree.t_had_py_true, tree.t_had_pz_true, tree.t_had_E_true )
-    W_lep_true   = TLorentzVector( tree.W_lep_px_true, tree.W_lep_py_true, tree.W_lep_pz_true, tree.W_lep_E_true )
-    b_lep_true   = TLorentzVector( tree.b_lep_px_true, tree.b_lep_py_true, tree.b_lep_pz_true, tree.b_lep_E_true )
-    t_lep_true   = TLorentzVector( tree.t_lep_px_true, tree.t_lep_py_true, tree.t_lep_pz_true, tree.t_lep_E_true )
-    W_had_fitted   = TLorentzVector( tree.W_had_px_fitted, tree.W_had_py_fitted, tree.W_had_pz_fitted, tree.W_had_E_fitted )
-    b_had_fitted   = TLorentzVector( tree.b_had_px_fitted, tree.b_had_py_fitted, tree.b_had_pz_fitted, tree.b_had_E_fitted )
-    t_had_fitted   = TLorentzVector( tree.t_had_px_fitted, tree.t_had_py_fitted, tree.t_had_pz_fitted, tree.t_had_E_fitted )
-    W_lep_fitted   = TLorentzVector( tree.W_lep_px_fitted, tree.W_lep_py_fitted, tree.W_lep_pz_fitted, tree.W_lep_E_fitted )
-    b_lep_fitted   = TLorentzVector( tree.b_lep_px_fitted, tree.b_lep_py_fitted, tree.b_lep_pz_fitted, tree.b_lep_E_fitted )
-    t_lep_fitted   = TLorentzVector( tree.t_lep_px_fitted, tree.t_lep_py_fitted, tree.t_lep_pz_fitted, tree.t_lep_E_fitted )
+    W_had_true = TLorentzVector(tree.W_had_px_true, tree.W_had_py_true, tree.W_had_pz_true, tree.W_had_E_true)
+    b_had_true = TLorentzVector(tree.b_had_px_true, tree.b_had_py_true, tree.b_had_pz_true, tree.b_had_E_true)
+    t_had_true = TLorentzVector(tree.t_had_px_true, tree.t_had_py_true, tree.t_had_pz_true, tree.t_had_E_true)
+    W_lep_true = TLorentzVector(tree.W_lep_px_true, tree.W_lep_py_true, tree.W_lep_pz_true, tree.W_lep_E_true)
+    b_lep_true = TLorentzVector(tree.b_lep_px_true, tree.b_lep_py_true, tree.b_lep_pz_true, tree.b_lep_E_true)
+    t_lep_true = TLorentzVector(tree.t_lep_px_true, tree.t_lep_py_true, tree.t_lep_pz_true, tree.t_lep_E_true)
+    W_had_fitted = TLorentzVector(tree.W_had_px_fitted, tree.W_had_py_fitted, tree.W_had_pz_fitted, tree.W_had_E_fitted)
+    b_had_fitted = TLorentzVector(tree.b_had_px_fitted, tree.b_had_py_fitted, tree.b_had_pz_fitted, tree.b_had_E_fitted)
+    t_had_fitted = TLorentzVector(tree.t_had_px_fitted, tree.t_had_py_fitted, tree.t_had_pz_fitted, tree.t_had_E_fitted)
+    W_lep_fitted = TLorentzVector(tree.W_lep_px_fitted, tree.W_lep_py_fitted, tree.W_lep_pz_fitted, tree.W_lep_E_fitted)
+    b_lep_fitted = TLorentzVector(tree.b_lep_px_fitted, tree.b_lep_py_fitted, tree.b_lep_pz_fitted, tree.b_lep_E_fitted)
+    t_lep_fitted = TLorentzVector(tree.t_lep_px_fitted, tree.t_lep_py_fitted, tree.t_lep_pz_fitted, tree.t_lep_E_fitted)
 
     try:
         diff_W_had_px  =  W_had_fitted.Px() - W_had_true.Px()
@@ -455,8 +454,7 @@ for i in range(n_events):
 
 ################################################################################
 # FILL TREES
-    # true
-    histograms['W_had_px_true'].Fill(  W_had_true.Px(),  w )
+    histograms['W_had_px_true'].Fill(  W_had_true.Px(),  w)
     histograms['W_had_py_true'].Fill(  W_had_true.Py(),  w )
     histograms['W_had_pz_true'].Fill(  W_had_true.Pz(),  w )
     histograms['W_had_pt_true'].Fill(  W_had_true.Pt(),  w )

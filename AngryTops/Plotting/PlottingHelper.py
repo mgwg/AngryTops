@@ -22,7 +22,8 @@ def Normalize( h, sf=1.0 ):
   h.Scale( sf / A )
 
 
-def SetTH1FStyle(h, color=kBlack, linewidth=1, fillcolor=0, fillstyle=0, markerstyle=21, markersize=1.3, fill_alpha=0):
+def SetTH1FStyle(h, color=kBlack, linewidth=1, fillcolor=0, fillstyle=0,
+                 markerstyle=21, markersize=1.3, fill_alpha=0):
     '''Set the style with a long list of parameters'''
     h.SetLineColor(color)
     h.SetLineWidth(linewidth)
@@ -36,7 +37,7 @@ def SetTH1FStyle(h, color=kBlack, linewidth=1, fillcolor=0, fillstyle=0, markers
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-def MakeCanvas( npads = 1, side = 800, split = 0.25, padding = 0.00 ):
+def MakeCanvas(npads = 1, side = 800, split = 0.25, padding = 0.00):
     # assume that if pads=1 => square plot
     # padding used to be 0.05
     y_plot    = side * ( 1. - ( split + padding ) )

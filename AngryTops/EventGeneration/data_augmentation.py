@@ -38,6 +38,15 @@ def RotateEvent(lep, jets, met_phi, phi):
     return lep_new, jets_new, met_phi
 
 def FlipEta(lep, jets):
+    """Takes in LorentzVector lep, jets and flips the sign of eta for each
+    @==========================================================
+    @ Parameters
+    lep: LorentzVector containing lepton information
+    jets: Array of LorentzVectors containing jet information
+    @==========================================================
+    @ Return
+    Flipped LorentzVectors
+    """
     lep_new = TLorentzVector()
     lep_new.SetPtEtaPhiE(lep.Pt(), -lep.Eta(), lep.Phi(), lep.E())
     new_jets = []

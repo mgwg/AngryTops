@@ -6,38 +6,16 @@ from array import array
 from math import pow, sqrt
 import numpy as np
 
-GeV = 1e3
-TeV = 1e6
-n_jets_per_event = 5
-n_features_per_jet = 13
-
-#####################
-
-def Normalize(h, sf=1.0, opt="width"):
-    area = h.Integral(opt)
-    h.Scale(sf / area)
-
-#~~~~~~~~~~~~~~~~~~~~~~
-
-
-def FlipEta(ljets=[]):
-    for lj in ljets:
-        lj.SetPtEtaPhiE(lj.Pt(), -lj.Eta(), lj.Phi(), lj.E())
-
-###############################
-# ADDED BY FARDIN
 
 def MakeInput( jets, W_had, b_had, t_had, W_lep, b_lep, t_lep ):
     """Format output, returning a jet matrix (detector level), W, b quark and
     lepton arrays (particle leve) and t-quark momenta (parton level)
     """
     # INPUT DATA FOR RNN
-    # Populate 5 x 6 matrix of jet foration
-    # Is there possibly a bug here? What format is Px? Is sjets[0][0] = sjets[1][0] = sjets[2][0] = ...
+    # Populate 5 x 13 matrix of jet foration
+    n_jets_per_event = 5
+    n_features_per_jet = 13
     sjets = np.zeros( [ n_jets_per_event, n_features_per_jet ] )
-    # At first, everything was divided by GeV. This shouldn't be the case, as
-    # the Delphes Tree already outputs everything in GeV according to the
-    # documentation
     for i in range(len(jets)):
         jet = jets[i]
         sjets[i][0] = jet.Px()
@@ -50,7 +28,7 @@ def MakeInput( jets, W_had, b_had, t_had, W_lep, b_lep, t_lep ):
         sjets[i][7] = jet.Eta()
         sjets[i][8] = jet.Phi()
 
-    # OUTPUT DATA FOR RNN
+    # OUTPUT DATA FOR DNN
     # Arrays containing W, b quarks and lepton information
     target_W_had = np.zeros([8])
     target_b_had = np.zeros([8])

@@ -1,5 +1,5 @@
 """
-This script contains custom loss functions for training
+This script contains custom loss functions and metrics
 """
 import numpy as np
 import tensorflow as tf

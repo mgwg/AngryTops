@@ -2,9 +2,10 @@
 import os, sys
 from ROOT import *
 import numpy as np
-
 from AngryTops.features import *
 from AngryTops.Plotting.PlottingHelper import *
+
+# INPUT
 training_dir = sys.argv[1]
 caption = sys.argv[2]
 
@@ -29,12 +30,8 @@ def plot_observables(obs):
         Normalize(h_true)
         Normalize(h_fitted)
 
-    #  DivideByBinWidth( h_GAN )
-    #  DivideByBinWidth( h_MC )
-
-    #SetTH1FStyle( h_MC,  color=kBlack, markerstyle=20, markersize=2)
+    # Set Style
     SetTH1FStyle( h_true,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
-    #SetTH1FStyle( h_GAN, color=kRed, fillstyle=1001, fillcolor=kRed-7, linewidth=2, markersize=0, markerstyle=20, fill_alpha=0.4 )
     SetTH1FStyle( h_fitted, color=kBlack, markersize=0, markerstyle=20, linewidth=3 )
 
     c, pad0, pad1 = MakeCanvas()
@@ -169,10 +166,6 @@ def plot_correlations(hist_name):
     pad0.Draw()
     pad0.cd()
 
-    #pad0.cd()
-    #hist.GetXaxis().SetNdivisions(508)
-    #hist.GetXaxis().SetLabelSize( 0.032 )
-    #hist.GetYaxis().SetLabelSize( 0.032 )
     hist.Draw("colz")
 
     corr = hist.GetCorrelationFactor()

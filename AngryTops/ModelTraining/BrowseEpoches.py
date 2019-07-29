@@ -92,8 +92,6 @@ def IterateEpoches(train_dir, representation, model_name, **kwargs):
     make_plots(chi2tests, xaxis, train_dir)
 
 
-
-
 ################################################################################
 def make_plots(chi2tests, xaxis, train_dir):
     strFile = train_dir + "/x2_tests"

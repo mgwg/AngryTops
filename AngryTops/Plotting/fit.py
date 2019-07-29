@@ -21,16 +21,24 @@ model_filename  = "{}/simple_model.h5".format(training_dir)
 # HELPER FUNCTIONS
 
 def PrintOut( p4_true, p4_fitted, event_info, label ):
-  print("rn=%-10i en=%-10i ) %s :: true=( %4.1f, %3.2f, %3.2f, %4.1f ; %3.1f ) :: fitted=( %4.1f, %3.2f, %3.2f, %4.1f ; %3.1f )" % \
-               ( event_info[0], event_info[1], label,
-                p4_true.Px(),   p4_true.Py(),   p4_true.Pz(),   p4_true.Pt(),   p4_true.E(), \
-                p4_fitted.Px(), p4_fitted.Py(), p4_fitted.Pz(), p4_fitted.Pt(), p4_fitted.E() ))
+    """
+    Prints the true and predicted momentum vector
+    """
+    print("rn=%-10i en=%-10i ) %s :: true=(%4.1f, %3.2f, %3.2f, %4.1f ; %3.1f) \
+           :: fitted=( %4.1f, %3.2f, %3.2f, %4.1f ; %3.1f )" % \
+          (event_info[0], event_info[1], label,
+           p4_true.Px(),   p4_true.Py(),   p4_true.Pz(),   p4_true.Pt(),   p4_true.E(),\
+           p4_fitted.Px(), p4_fitted.Py(), p4_fitted.Pz(), p4_fitted.Pt(), p4_fitted.E()))
 
 def MakeP4(y, m):
+    """
+    Form the momentum vector.
+    """
     p4 = TLorentzVector()
     p0 = y[0]
     p1 = y[1]
     p2 = y[2]
+    # Construction of momentum vector depends on the representation of the input
     if representation == "pxpypzE":
         E  = y[3]
         p4.SetPxPyPzE(p0, p1, p2, E)
@@ -83,8 +91,7 @@ y_fitted = y_fitted.reshape(y_fitted.shape[0], y_fitted.shape[1]*y_fitted.shape[
 y_fitted = output_scalar.inverse_transform(y_fitted)
 y_fitted = y_fitted.reshape(y_fitted.shape[0], old_shape[0], old_shape[1])
 ################################################################################
-
-# Seperate input and truth arrays so that I don't have to edit the code below
+# Truth
 y_true_W_had = true[:,0,:]
 y_true_W_lep = true[:,1,:]
 y_true_b_had = true[:,2,:]
@@ -92,6 +99,7 @@ y_true_b_lep = true[:,3,:]
 y_true_t_had = true[:,4,:]
 y_true_t_lep = true[:,5,:]
 
+# Fitted
 y_fitted_W_had = y_fitted[:,0,:]
 y_fitted_W_lep = y_fitted[:,1,:]
 y_fitted_b_had = y_fitted[:,2,:]
@@ -99,7 +107,7 @@ y_fitted_b_lep = y_fitted[:,3,:]
 y_fitted_t_had = y_fitted[:,4,:]
 y_fitted_t_lep = y_fitted[:,5,:]
 
-#y_fitted = y_scaler.inverse_transform( y_fitted )
+# Event Info
 n_events = true.shape[0]
 w = 1
 print("Shape of tions: ", y_fitted.shape)
@@ -319,6 +327,8 @@ tree.Branch( 't_lep_pt_fitted',   b_t_lep_pt_fitted,   't_lep_pt_fitted/F' )
 tree.Branch( 't_lep_y_fitted',    b_t_lep_y_fitted,    't_lep_y_fitted/F' )
 tree.Branch( 't_lep_phi_fitted',  b_t_lep_phi_fitted,  't_lep_phi_fitted/F' )
 
+################################################################################
+# POPULATE TREE
 print("INFO: starting event loop. Found %i events" % n_events)
 n_good = 0
 # Print out example
@@ -327,13 +337,10 @@ for i in range(n_events):
         perc = 100. * i / float(n_events)
         print("INFO: Event %-9i  (%3.0f %%)" % ( i, perc ))
 
-    #w = event_info[i][2]
     w = 1
     jets_n  = event_info[i][3]
     bjets_n = event_info[i][4]
 
-    #  Originally, all of the fitted values had a max-momentum attribute. I
-    # removed that. Possibly might induce bug?
     W_had_true   = MakeP4( y_true_W_had[i], m_W )
     W_had_fitted = MakeP4( y_fitted_W_had[i],  m_W)
 
@@ -352,7 +359,7 @@ for i in range(n_events):
     t_lep_true   = MakeP4( y_true_t_lep[i], m_t )
     t_lep_fitted = MakeP4( y_fitted_t_lep[i],  m_t)
 
-    # fill branches
+    # Fill branches
     b_eventNumber[0] = int(event_info[i][0])
     b_runNumber[0]   = int(event_info[i][1])
     b_weight_mc[0]   = float(event_info[i][2])
@@ -473,6 +480,8 @@ for i in range(n_events):
       PrintOut( t_had_true, t_had_fitted, event_info[i], "Hadronic top" )
       PrintOut( t_lep_true, t_lep_fitted, event_info[i], "Leptonic top" )
 
+################################################################################
+# CLOSE PROGRAM
 ofile.Write()
 ofile.Close()
 

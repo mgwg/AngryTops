@@ -1,4 +1,4 @@
-"""Minimize Loss Using MongoDB"""
+"""Search hyperparemter spaces for different models"""
 import numpy as np
 import sys
 from hyperopt import hp
@@ -47,6 +47,7 @@ def objective(config, reporter, **kwargs):
 
 
 if __name__ == "__main__":
+    # Configure Ray + Tune
     tune.register_trainable('objective', objective)
     ray.init()
     sched = AsyncHyperBandScheduler(
@@ -56,6 +57,7 @@ if __name__ == "__main__":
         max_t=1000000,
         grace_period=20)
 
+    # Begin the search
     algo = HyperOptSearch(space, max_concurrent=8, metric="mse", mode="min")
     results = tune.run(objective, name=search_name, num_samples=1000,
                        search_alg=algo, resources_per_trial={"cpu": 4, "gpu": 0},

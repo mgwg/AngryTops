@@ -4,9 +4,6 @@ from ROOT import TLorentzVector
 from array import array
 import numpy as np
 
-GeV = 1e3
-TeV = 1e6
-
 def TraverseSelfDecay(tree, entry, index):
     """Returns the index for the last self decay of the particle
     @ Parameters
