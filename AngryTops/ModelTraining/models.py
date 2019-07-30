@@ -71,17 +71,17 @@ def bidirectional_LSTM2(**kwargs):
     if "custom_loss" in kwargs.keys(): loss_fn = losses[kwargs["custom_loss"]]
 
     config = {'act1': 'relu', 'act2': 'relu', 'act3': 'elu',
-              'act4': 'relu', 'size1': 995.0, 'size2': 88.0, 'size3': 659.0,
-              'size4': 188.0, 'size5': 229.0}
+              'act4': 'relu', 'size1': 440, 'size2': 44, 'size3':44, 'size4': 320,
+              'size5': 90, 'size6': 30}
     model = keras.models.Sequential()
     model.add(Reshape(target_shape=(6,6), input_shape=(36,)))
     # Initially, due to typo, size1 = size2
     model.add(TimeDistributed(Dense(int(config['size1']), activation=config['act1'])))
     model.add(Bidirectional(LSTM(int(config['size2']), return_sequences=True)))
     model.add(Bidirectional(LSTM(int(config['size3']), return_sequences=True)))
-    model.add(TimeDistributed(Dense(int(config['size3']), activation=config['act2'])))
-    model.add(TimeDistributed(Dense(int(config['size4']), activation=config['act3'])))
-    model.add(TimeDistributed(Dense(int(config['size4']), activation=config['act3'])))
+    model.add(TimeDistributed(Dense(int(config['size4']), activation=config['act2'])))
+    model.add(TimeDistributed(Dense(int(config['size5']), activation=config['act3'])))
+    model.add(TimeDistributed(Dense(int(config['size6']), activation=config['act3'])))
     model.add(TimeDistributed(Dense(3, activation='tanh')))
 
     optimizer = tf.keras.optimizers.Adam(10e-4, decay=0.)
