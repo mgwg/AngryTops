@@ -57,12 +57,39 @@ def weighted_MSE2(y_true, y_pred):
     loss += tf.math.reduce_sum(tf.math.squared_difference(true_pT,pred_pT))
     return loss / (1 * 20 + 5 * 4)
 
+def pTetaphi_Loss(y_true, y_pred):
+    """
+    @Description
+    The mean squared error for the ptetaphi representation of the output.
+    Assumed y_true and y_pred are both in the cartesian representation.
+    ====================================================================
+    @Input Format
+    "target_W_had_Px", "target_W_had_Py", "target_W_had_Pz",
+    "target_W_lep_Px", "target_W_lep_Py", "target_W_lep_Pz",
+    "target_b_had_Px", "target_b_had_Py", "target_b_had_Pz",
+    "target_b_lep_Px", "target_b_lep_Py", "target_b_lep_Pz",
+    "target_t_had_Px", "target_t_had_Py", "target_t_had_Pz",
+    "target_t_lep_Px", "target_t_lep_Py", "target_t_lep_Pz"
+    ====================================================================
+    """
+    loss = tf.constant(0.0)
+    true_pT = tf.math.sqrt(tf.math.add(tf.math.square(y_true[:,0]), tf.math.square(y_true[:,1])))
+    pred_pT = tf.math.sqrt(tf.math.add(tf.math.square(y_pred[:,0]), tf.math.square(y_pred[:,1])))
+    pxpz_true = tf.reshape(tf.stack([y_true[:,0], y_pred[:,-1]], 1), shape=(-1,2))
+    pxpz_pred = tf.reshape(tf.stack([y_true[:,0], y_pred[:,-1]], 1), shape=(-1,2))
+    # PT contribution
+    loss += tf.math.reduce_sum(tf.math.squared_difference(true_pT,pred_pT))
+    # Eta contribution
+    loss += tf.math.reduce_sum(tf.math.squared_difference(tf.math.angle(y_true[:,:2]), tf.math.angle(y_pred[:,:2])))
+    # Phi contribution
+    loss += tf.math.reduce_sum(tf.math.squared_difference(tf.math.angle(pxpz_true), tf.math.angle(pxpz_pred)))
+    return loss / 18
+
+
 def pT_loss(y_true, y_pred):
     """
     @Description
-    A weighted MSE Loss. This loss function places a heavier weight on px and py
-    values as well as calculated the pT for each particle and uses that as the
-    weight. Expected input is (6 x 3). 6 particles. (px, py, pz) for each.
+    PT loss. Expected input is (6 x 3). 6 particles. (px, py, pz) for each.
     ====================================================================
     @Input Format
     "target_W_had_Px", "target_W_had_Py", "target_W_had_Pz",
@@ -187,3 +214,15 @@ def t_LEP(y_true, y_pred):
     ====================================================================
     """
     return tf.math.reduce_mean(tf.math.squared_difference(y_true[4],y_pred[4]))
+
+def get_phi(y_true, y_pred):
+    """
+    @Description
+    Retrieve eta tensors. Expected input is (1 x 3). 6 particles.
+    (px, py, pz) for each.
+    ====================================================================
+    @Input Format
+    "Px", "Py", "Pz",
+    ====================================================================
+    """
+    return
