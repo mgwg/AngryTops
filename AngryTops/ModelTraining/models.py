@@ -82,6 +82,7 @@ def bidirectional_LSTM2(**kwargs):
     model.add(TimeDistributed(Dense(int(config['size1']), activation=config['act1'])))
     model.add(Bidirectional(LSTM(int(config['size2']), return_sequences=True)))
     model.add(Bidirectional(LSTM(int(config['size3']), return_sequences=True)))
+    model.add(Bidirectional(LSTM(int(config['size3']), return_sequences=True)))
     model.add(TimeDistributed(Dense(int(config['size4']), activation=config['act2'])))
     model.add(TimeDistributed(Dense(int(config['size5']), activation=config['act3'])))
     model.add(TimeDistributed(Dense(int(config['size6']), activation=config['act3'])))
