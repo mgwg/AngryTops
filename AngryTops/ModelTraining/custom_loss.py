@@ -215,14 +215,29 @@ def t_LEP(y_true, y_pred):
     """
     return tf.math.reduce_mean(tf.math.squared_difference(y_true[4],y_pred[4]))
 
-def get_phi(y_true, y_pred):
-    """
-    @Description
-    Retrieve eta tensors. Expected input is (1 x 3). 6 particles.
-    (px, py, pz) for each.
-    ====================================================================
-    @Input Format
-    "Px", "Py", "Pz",
-    ====================================================================
-    """
-    return
+
+def gaussian_kernel(x,y):
+
+  norm = lambda x: tf.reduce_sum(tf.square(x), 1)
+
+  sigmas = [ 1., 1., 1., 1., 1., 1., 1. ]
+  sigmas = tf.constant(sigmas)
+
+  dist = tf.transpose(norm(tf.expand_dims(x, 2) - tf.transpose(y)))
+
+  beta = 1. / (2. * (tf.expand_dims(sigmas, 1)))
+
+  s = tf.matmul(beta, tf.reshape(dist, (1, -1)))
+
+  return tf.reshape(tf.reduce_sum(tf.exp(-s), 0), tf.shape(dist))
+
+def mmd_loss(y_true, y_pred):
+   """ MMD^2(P, Q) = \E{ K(x, x) } + \E{ K(y, y) } - 2 \E{ K(x, y) },
+       where K = <\phi(x), \phi(y)> is a radial basis kernel (gaussian)
+   """
+
+   cost = tf.reduce_mean(gaussian_kernel(y_true, y_true))
+   cost += tf.reduce_mean(gaussian_kernel(y_pred, y_pred))
+   cost -= 2 * tf.reduce_mean(gaussian_kernel(y_true, y_pred))
+   cost = tf.where(cost > 0, cost, 0, name='value')
+   return cost

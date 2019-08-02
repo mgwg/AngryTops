@@ -18,7 +18,7 @@ metrics = ['mae', 'mse', weighted_MSE1, weighted_MSE2, w_HAD, w_LEP, b_HAD,
            b_LEP, t_HAD, t_LEP, pT_loss, pTetaphi_Loss]
 losses = {"mse":"mse", "weighted_MSE1": weighted_MSE1,
           "weighted_MSE2": weighted_MSE2, "pT_loss":pT_loss,
-          "pTetaphi_Loss":pTetaphi_Loss}
+          "pTetaphi_Loss":pTetaphi_Loss, 'mmd_loss':mmd_loss}
 
 def stacked_LSTM1(**kwargs):
     """A denser version of model_multi"""
