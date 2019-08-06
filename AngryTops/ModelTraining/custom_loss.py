@@ -190,34 +190,34 @@ def t_LEP(y_true, y_pred):
 
 
 
-def maximum_mean_discrepancy(x, y, kernel=utils.gaussian_kernel_matrix):
-  r"""Computes the Maximum Mean Discrepancy (MMD) of two samples: x and y.
-  Maximum Mean Discrepancy (MMD) is a distance-measure between the samples of
-  the distributions of x and y. Here we use the kernel two sample estimate
-  using the empirical mean of the two distributions.
-  MMD^2(P, Q) = || \E{\phi(x)} - \E{\phi(y)} ||^2
-              = \E{ K(x, x) } + \E{ K(y, y) } - 2 \E{ K(x, y) },
-  where K = <\phi(x), \phi(y)>,
-    is the desired kernel function, in this case a radial basis kernel.
-  Args:
-      x: a tensor of shape [num_samples, num_features]
-      y: a tensor of shape [num_samples, num_features]
-      kernel: a function which computes the kernel in MMD. Defaults to the
-              GaussianKernelMatrix.
-  Returns:
-      a scalar denoting the squared maximum mean discrepancy loss.
-  """
-  with tf.name_scope('MaximumMeanDiscrepancy'):
-    # \E{ K(x, x) } + \E{ K(y, y) } - 2 \E{ K(x, y) }
-    cost = tf.reduce_mean(kernel(x, x))
-    cost += tf.reduce_mean(kernel(y, y))
-    cost -= 2 * tf.reduce_mean(kernel(x, y))
+# def maximum_mean_discrepancy(x, y, kernel=utils.gaussian_kernel_matrix):
+#   r"""Computes the Maximum Mean Discrepancy (MMD) of two samples: x and y.
+#   Maximum Mean Discrepancy (MMD) is a distance-measure between the samples of
+#   the distributions of x and y. Here we use the kernel two sample estimate
+#   using the empirical mean of the two distributions.
+#   MMD^2(P, Q) = || \E{\phi(x)} - \E{\phi(y)} ||^2
+#               = \E{ K(x, x) } + \E{ K(y, y) } - 2 \E{ K(x, y) },
+#   where K = <\phi(x), \phi(y)>,
+#     is the desired kernel function, in this case a radial basis kernel.
+#   Args:
+#       x: a tensor of shape [num_samples, num_features]
+#       y: a tensor of shape [num_samples, num_features]
+#       kernel: a function which computes the kernel in MMD. Defaults to the
+#               GaussianKernelMatrix.
+#   Returns:
+#       a scalar denoting the squared maximum mean discrepancy loss.
+#   """
+#   with tf.name_scope('MaximumMeanDiscrepancy'):
+#     # \E{ K(x, x) } + \E{ K(y, y) } - 2 \E{ K(x, y) }
+#     cost = tf.reduce_mean(kernel(x, x))
+#     cost += tf.reduce_mean(kernel(y, y))
+#     cost -= 2 * tf.reduce_mean(kernel(x, y))
+#
+#     # We do not allow the loss to become negative.
+#     cost = tf.where(cost > 0, cost, 0, name='value')
+#   return cost
 
-    # We do not allow the loss to become negative.
-    cost = tf.where(cost > 0, cost, 0, name='value')
-  return cost
-
-# 
+#
 # def mmd_loss(source_samples, target_samples, weight, scope=None):
 #   """Adds a similarity loss term, the MMD between two representations.
 #   This Maximum Mean Discrepancy (MMD) loss is calculated with a number of
