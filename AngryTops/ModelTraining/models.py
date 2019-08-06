@@ -57,7 +57,7 @@ def bidirectional_LSTM1(metrics, losses, **kwargs):
     model.add(TimeDistributed(Dense(3, activation='linear')))
 
     optimizer = tf.keras.optimizers.Adam(10e-5, decay=0.)
-    model.compile(optimizer=optimizer, loss='mse', metrics=metrics)
+    model.compile(optimizer=optimizer, loss=loss_fn, metrics=metrics)
 
     return model
 
