@@ -2,6 +2,7 @@
 This script contains custom loss functions and metrics
 """
 import tensorflow as tf
+import numpy as np
 
 def weighted_MSE(weights):
     def weighted_mse(y_true, y_pred):
@@ -27,7 +28,7 @@ def weighted_MSE(weights):
         loss += b_LEP(y_true, y_pred) * weights[3]
         loss += t_HAD(y_true, y_pred) * weights[4]
         loss += t_LEP(y_true, y_pred) * weights[5]
-        return loss
+        return loss / weights.sum()
     return weighted_mse
 
 def pTetaphi_Loss(y_true, y_pred):
@@ -189,88 +190,30 @@ def t_LEP(y_true, y_pred):
     return tf.math.reduce_mean(tf.math.squared_difference(y_true[4],y_pred[4]))
 
 
+def gaussian_kernel(x,y):
 
-# def maximum_mean_discrepancy(x, y, kernel=utils.gaussian_kernel_matrix):
-#   r"""Computes the Maximum Mean Discrepancy (MMD) of two samples: x and y.
-#   Maximum Mean Discrepancy (MMD) is a distance-measure between the samples of
-#   the distributions of x and y. Here we use the kernel two sample estimate
-#   using the empirical mean of the two distributions.
-#   MMD^2(P, Q) = || \E{\phi(x)} - \E{\phi(y)} ||^2
-#               = \E{ K(x, x) } + \E{ K(y, y) } - 2 \E{ K(x, y) },
-#   where K = <\phi(x), \phi(y)>,
-#     is the desired kernel function, in this case a radial basis kernel.
-#   Args:
-#       x: a tensor of shape [num_samples, num_features]
-#       y: a tensor of shape [num_samples, num_features]
-#       kernel: a function which computes the kernel in MMD. Defaults to the
-#               GaussianKernelMatrix.
-#   Returns:
-#       a scalar denoting the squared maximum mean discrepancy loss.
-#   """
-#   with tf.name_scope('MaximumMeanDiscrepancy'):
-#     # \E{ K(x, x) } + \E{ K(y, y) } - 2 \E{ K(x, y) }
-#     cost = tf.reduce_mean(kernel(x, x))
-#     cost += tf.reduce_mean(kernel(y, y))
-#     cost -= 2 * tf.reduce_mean(kernel(x, y))
-#
-#     # We do not allow the loss to become negative.
-#     cost = tf.where(cost > 0, cost, 0, name='value')
-#   return cost
+  norm = lambda x: tf.reduce_sum(tf.square(x), 1)
 
-#
-# def mmd_loss(source_samples, target_samples, weight, scope=None):
-#   """Adds a similarity loss term, the MMD between two representations.
-#   This Maximum Mean Discrepancy (MMD) loss is calculated with a number of
-#   different Gaussian kernels.
-#   Args:
-#     source_samples: a tensor of shape [num_samples, num_features].
-#     target_samples: a tensor of shape [num_samples, num_features].
-#     weight: the weight of the MMD loss.
-#     scope: optional name scope for summary tags.
-#   Returns:
-#     a scalar tensor representing the MMD loss value.
-#   """
-#   sigmas = [
-#       1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1, 5, 10, 15, 20, 25, 30, 35, 100,
-#       1e3, 1e4, 1e5, 1e6
-#   ]
-#   gaussian_kernel = partial(
-#       utils.gaussian_kernel_matrix, sigmas=tf.constant(sigmas))
-#
-#   loss_value = maximum_mean_discrepancy(
-#       source_samples, target_samples, kernel=gaussian_kernel)
-#   loss_value = tf.maximum(1e-4, loss_value) * weight
-#   assert_op = tf.Assert(tf.is_finite(loss_value), [loss_value])
-#   with tf.control_dependencies([assert_op]):
-#     tag = 'MMD Loss'
-#     if scope:
-#       tag = scope + tag
-#     tf.summary.scalar(tag, loss_value)
-#     tf.losses.add_loss(loss_value)
-#
-#   return loss_value
-#
-#
-# def gaussian_kernel(x,y):
-#     norm = lambda x: tf.reduce_sum(tf.square(x), 1)
-#     sigmas = [ 1., 1., 1., 1., 1., 1., 1. ]
-#     sigmas = tf.constant(sigmas)
-#     print(tf.square(x).shape)
-#     print(y.shape)
-#     dist = tf.transpose(norm(x - tf.transpose(y)))
-#     beta = 1. / (2. * (tf.expand_dims(sigmas, 1)))
-#     s = tf.matmul(beta, tf.reshape(dist, (1, -1)))
-#     return tf.reshape(tf.reduce_sum(tf.exp(-s), 0), tf.shape(dist))
+  sigmas = np.ones(36) * 1.
+  sigmas = tf.constant(sigmas)
+  a = tf.expand_dims(x, 2) - tf.transpose(y)
+  dist = tf.transpose(norm(tf.expand_dims(x, 2) - tf.transpose(y)))
 
-#def mmd_loss(y_true, y_pred):
-#    """MMD^2(P, Q) = \E{ K(x, x) } + \E{ K(y, y) } - 2 \E{ K(x, y) },
-#    where K = <\phi(x), \phi(y)> is a radial basis kernel (gaussian)
-#    """
-#    cost = tf.reduce_mean(gaussian_kernel(y_true, y_true))
-#    cost += tf.reduce_mean(gaussian_kernel(y_pred, y_pred))
-#    cost -= 2 * tf.reduce_mean(gaussian_kernel(y_true, y_pred))
-#    cost = tf.where(cost > 0, cost, 0, name='value')
-#    return cost
+  beta = 1. / (2. * (tf.expand_dims(sigmas, 1)))
+
+  s = tf.matmul(beta, tf.reshape(dist, (1, -1)))
+
+  return tf.reshape(tf.reduce_sum(tf.exp(-s), 0), tf.shape(dist))
+
+def mmd_loss(y_true, y_pred):
+   """MMD^2(P, Q) = \E{ K(x, x) } + \E{ K(y, y) } - 2 \E{ K(x, y) },
+   where K = <\phi(x), \phi(y)> is a radial basis kernel (gaussian)
+   """
+   cost = tf.reduce_mean(gaussian_kernel(y_true, y_true))
+   cost += tf.reduce_mean(gaussian_kernel(y_pred, y_pred))
+   cost -= 2 * tf.reduce_mean(gaussian_kernel(y_true, y_pred))
+   cost = tf.where(cost > 0, cost, 0, name='value')
+   return cost
 
 ###############################################################################
 # Default metrics + losses. The weighted metrics get added later
@@ -282,6 +225,6 @@ metrics = ['mae', 'mse', w_HAD, w_LEP, b_HAD, b_LEP, t_HAD, t_LEP, pT_loss,
 losses = {"mse":"mse", "pT_loss":pT_loss, "pTetaphi_Loss":pTetaphi_Loss}
 
 if __name__ == "__main__":
-    a = np.random.randint(low=1, high=100, size=32*6*3).reshape(32,6,3)
-    b = np.random.randint(low=1, high=100, size=32*6*3).reshape(32,6,3)
-    print(mmd_loss(a, b))
+    x = np.random.randint(1, 10, 18).reshape(6, 3) * 1.
+    y = np.random.randint(1, 10, 18).reshape(6, 3) * 1.
+    print(mmd_loss(x, y))
