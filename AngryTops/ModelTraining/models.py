@@ -11,19 +11,12 @@ from AngryTops.ModelTraining.single_output_models import *
 from AngryTops.ModelTraining.cnn import cnn_models
 from AngryTops.ModelTraining.custom_loss import *
 
-custom_metrics={"weighted_MSE1": weighted_MSE1, "weighted_MSE2": weighted_MSE2,
-"w_HAD":w_HAD, "w_LEP":w_LEP, "b_HAD":b_HAD, "b_LEP":b_LEP, "t_HAD":t_HAD,
-"t_LEP":t_LEP, "pT_loss":pT_loss, 'pTetaphi_Loss':pTetaphi_Loss, 'mmd_loss':mmd_loss}
-metrics = ['mae', 'mse', weighted_MSE1, weighted_MSE2, w_HAD, w_LEP, b_HAD,
-           b_LEP, t_HAD, t_LEP, pT_loss, pTetaphi_Loss, 'mmd_loss':mmd_loss]
-losses = {"mse":"mse", "weighted_MSE1": weighted_MSE1,
-          "weighted_MSE2": weighted_MSE2, "pT_loss":pT_loss,
-          "pTetaphi_Loss":pTetaphi_Loss, 'mmd_loss':mmd_loss}
 
-def stacked_LSTM1(**kwargs):
+def stacked_LSTM1(metrics, losses, **kwargs):
     """A denser version of model_multi"""
     loss_fn = 'mse'
     if "custom_loss" in kwargs.keys(): loss_fn = losses[kwargs["custom_loss"]]
+    if "weights" in kwargs.keys(): weights = losses[kwargs["custom_loss"]]
 
     config = {'size1': 32, 'size2': 128, 'size3': 128, 'size4': 64, 'size5': 32}
     model = keras.models.Sequential()
@@ -45,7 +38,7 @@ def stacked_LSTM1(**kwargs):
 
     return model
 
-def bidirectional_LSTM1(**kwargs):
+def bidirectional_LSTM1(metrics, losses, **kwargs):
     """A denser version of model_multi"""
     loss_fn = 'mse'
     if "custom_loss" in kwargs.keys(): loss_fn = losses[kwargs["custom_loss"]]
@@ -68,7 +61,7 @@ def bidirectional_LSTM1(**kwargs):
 
     return model
 
-def bidirectional_LSTM2(**kwargs):
+def bidirectional_LSTM2(metrics, losses, **kwargs):
     """A denser version of model_multi"""
     loss_fn = 'mse'
     if "custom_loss" in kwargs.keys(): loss_fn = losses[kwargs["custom_loss"]]
@@ -100,7 +93,7 @@ def bidirectional_LSTM2(**kwargs):
 
     return model
 
-def bidirectional_LSTM3(**kwargs):
+def bidirectional_LSTM3(metrics, losses, **kwargs):
     """A denser version of model_multi"""
     loss_fn = 'mse'
     if "custom_loss" in kwargs.keys(): loss_fn = losses[kwargs["custom_loss"]]
@@ -123,7 +116,7 @@ def bidirectional_LSTM3(**kwargs):
 
     return model
 
-def multiinput_BDLSTM(**kwargs):
+def multiinput_BDLSTM(metrics, losses, **kwargs):
     """A multi-input BDLSTM that first runs the Event level information through
     a DNN block and then concatenates w/ jet + lepton information and runs it
     through a BDLSTM block

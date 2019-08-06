@@ -10,15 +10,17 @@ import os
 import sys
 import pickle
 from AngryTops.features import *
-from AngryTops.ModelTraining.models import models, custom_metrics
+from AngryTops.ModelTraining.models import models
 from AngryTops.ModelTraining.plotting_helper import plot_history
 from AngryTops.ModelTraining.FormatInputOutput import get_input_output
+from AngryTops.ModelTraining.custom_loss import *
 from tensorflow.keras.utils import plot_model
 from tensorflow.keras.backend import manual_variable_initialization
 manual_variable_initialization(True)
 
 print(tf.__version__)
 print(tf.test.gpu_device_name())
+
 
 def train_model(model_name, train_dir, csv_file, log_training=True, load_model=False, **kwargs):
     """
@@ -29,12 +31,12 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     train_dir: Name of the folder to save the training info + model
     csv_file: The csv file to read data from.
     EPOCHES: # of EPOCHES to train
-    learn_rate: Learn rate for neural network.
     scaling: Choose between 'standard' or 'minmax' scaling of input and outputs
     rep: The representation of the data. ie. pxpypz vs ptetaphiM vs ...
     multi_input: True if the model is a multi_input model. False otherwise.
     sort_jets: True or False. Sort jets by first btag, then Mass.
     shuffle: If in kwargs.keys, will shuffle the training/testing data.
+    weights: The weights for the weighted MSE. Defaults to [1,1,1,1,1,1]
     """
     # CONSTANTS
     if 'retrain' in kwargs.keys():
@@ -67,7 +69,18 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
 
     ###########################################################################
     # BUILDING / TRAINING MODEL
-    model = models[model_name](**kwargs)
+    # For the weighted mean square error metric
+    weights = np.ones(6)
+    if 'weights' in kwargs.keys(): weights = kwargs['weights']
+    print("Weights for Weighted MSE:", weights)
+
+    # Updated the metrics/losses imported from custom_loss.py
+    weighted_mse = weighted_MSE(weights)
+    custom_metrics["Weighted_MSE"] = weighted_mse
+    losses["Weighted_MSE"] = weighted_mse
+    metrics.append(weighted_mse)
+    model = models[model_name](metrics, losses, **kwargs)
+
     # Load previously trained model if it exists
     if load_model:
         try:
@@ -81,6 +94,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
 
     print(model.summary())
 
+    # Checkpoint saving / Model training
     filepath = checkpoint_dir + "/weights-improvement-{epoch:02d}.ckpt"
     print("Checkpoints saved in: ", filepath)
     cp_callback = ModelCheckpoint(filepath, save_weights_only=True, verbose=1)
