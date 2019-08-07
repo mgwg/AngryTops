@@ -191,38 +191,33 @@ def t_LEP(y_true, y_pred):
 
 
 def gaussian_kernel(x,y):
-
-  norm = lambda x: tf.reduce_sum(tf.square(x), 1)
-
-  sigmas = np.ones(36) * 1.
-  sigmas = tf.constant(sigmas)
-  a = tf.expand_dims(x, 2) - tf.transpose(y)
-  dist = tf.transpose(norm(tf.expand_dims(x, 2) - tf.transpose(y)))
-
-  beta = 1. / (2. * (tf.expand_dims(sigmas, 1)))
-
-  s = tf.matmul(beta, tf.reshape(dist, (1, -1)))
-
-  return tf.reshape(tf.reduce_sum(tf.exp(-s), 0), tf.shape(dist))
+    norm = lambda x: tf.reduce_sum(tf.square(x), 1)
+    sigmas = np.ones(36) * 1.
+    sigmas = tf.constant(sigmas)
+    dist = tf.transpose(norm(tf.expand_dims(x, 2) - tf.transpose(y)))
+    beta = 1. / (2. * (tf.expand_dims(sigmas, 1)))
+    s = tf.matmul(beta, tf.reshape(dist, (1, -1)))
+    return tf.reshape(tf.reduce_sum(tf.exp(-s), 0), tf.shape(dist))
 
 def mmd_loss(y_true, y_pred):
-   """MMD^2(P, Q) = \E{ K(x, x) } + \E{ K(y, y) } - 2 \E{ K(x, y) },
-   where K = <\phi(x), \phi(y)> is a radial basis kernel (gaussian)
-   """
-   cost = tf.reduce_mean(gaussian_kernel(y_true, y_true))
-   cost += tf.reduce_mean(gaussian_kernel(y_pred, y_pred))
-   cost -= 2 * tf.reduce_mean(gaussian_kernel(y_true, y_pred))
-   cost = tf.where(cost > 0, cost, 0, name='value')
-   return cost
+    """MMD^2(P, Q) = \E{ K(x, x) } + \E{ K(y, y) } - 2 \E{ K(x, y) },
+    where K = <\phi(x), \phi(y)> is a radial basis kernel (gaussian)
+    """
+    cost = tf.reduce_mean(gaussian_kernel(y_true, y_true))
+    cost += tf.reduce_mean(gaussian_kernel(y_pred, y_pred))
+    cost -= 2 * tf.reduce_mean(gaussian_kernel(y_true, y_pred))
+    cost = tf.where(cost > 0, cost, 0, name='value')
+    return cost
 
 ###############################################################################
 # Default metrics + losses. The weighted metrics get added later
 custom_metrics={"w_HAD":w_HAD, "w_LEP":w_LEP, "b_HAD":b_HAD, "b_LEP":b_LEP,
                 "t_HAD":t_HAD, "t_LEP":t_LEP, "pT_loss":pT_loss,
-                'pTetaphi_Loss':pTetaphi_Loss}
+                'pTetaphi_Loss':pTetaphi_Loss, "mmd_loss":mmd_loss}
 metrics = ['mae', 'mse', w_HAD, w_LEP, b_HAD, b_LEP, t_HAD, t_LEP, pT_loss,
-            pTetaphi_Loss]
-losses = {"mse":"mse", "pT_loss":pT_loss, "pTetaphi_Loss":pTetaphi_Loss}
+            pTetaphi_Loss, mmd_loss]
+losses = {"mse":"mse", "pT_loss":pT_loss, "pTetaphi_Loss":pTetaphi_Loss,
+          "mmd_loss":mmd_loss}
 
 if __name__ == "__main__":
     x = np.random.randint(1, 10, 18).reshape(6, 3) * 1.
