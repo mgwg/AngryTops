@@ -43,8 +43,8 @@ def bidirectional_LSTM1(metrics, losses, **kwargs):
     loss_fn = 'mse'
     if "custom_loss" in kwargs.keys(): loss_fn = losses[kwargs["custom_loss"]]
     config = {'act1': 'relu', 'act2': 'relu', 'act3': 'elu',
-              'act4': 'relu', 'size1': 216, 'size2': 36, 'size3': 30,
-              'size4': 24, 'size5': 18}
+              'act4': 'relu', 'size1': 216, 'size2': 72, 'size3': 36,
+              'size4': 18, 'size5': 18}
 
     model = keras.models.Sequential()
     model.add(Reshape(target_shape=(6,6), input_shape=(36,)))

@@ -37,6 +37,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     sort_jets: True or False. Sort jets by first btag, then Mass.
     shuffle: If in kwargs.keys, will shuffle the training/testing data.
     weights: The weights for the weighted MSE. Defaults to [1,1,1,1,1,1]
+    custom_loss: A custom loss function.
     """
     # CONSTANTS
     if 'retrain' in kwargs.keys():
@@ -66,19 +67,24 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     (training_input, training_output), (testing_input, testing_output), \
     (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) \
                         = get_input_output(input_filename=csv_file, **kwargs)
+    print("Number of training events: ", training_input.shape[0])
+    print("Number of testing events: ", testing_input.shape[0])
 
     ###########################################################################
     # BUILDING / TRAINING MODEL
     # For the weighted mean square error metric
-    weights = np.ones(6)
-    if 'weights' in kwargs.keys(): weights = kwargs['weights']
-    print("Weights for Weighted MSE:", weights)
-
-    # Updated the metrics/losses imported from custom_loss.py
-    weighted_mse = weighted_MSE(weights)
-    custom_metrics["Weighted_MSE"] = weighted_mse
-    losses["Weighted_MSE"] = weighted_mse
-    metrics.append(weighted_mse)
+    if 'weights' in kwargs.keys():
+        weights = kwargs['weights']
+        print("Weights for Weighted MSE:", weights)
+        # Updated the metrics/losses imported from custom_loss.py
+        weighted_mse = weighted_MSE(weights)
+        custom_metrics["Weighted_MSE"] = weighted_mse
+        losses["Weighted_MSE"] = weighted_mse
+        metrics.append(weighted_mse)
+    if 'custom_loss' in kwargs.keys():
+        print("Loss Function: ", kwargs['custom_loss'])
+    else:
+        print("Loss Function: mse")
     model = models[model_name](metrics, losses, **kwargs)
 
     # Load previously trained model if it exists
@@ -97,12 +103,12 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     # Checkpoint saving / Model training
     filepath = checkpoint_dir + "/weights-improvement-{epoch:02d}.ckpt"
     print("Checkpoints saved in: ", filepath)
-    cp_callback = ModelCheckpoint(filepath, save_weights_only=True, verbose=1)
+    cp_callback = ModelCheckpoint(filepath, monitor='val_eloss', save_weights_only=True, verbose=1)
     early_stopping = EarlyStopping(monitor='val_loss', patience=0)
     try:
         history = model.fit(training_input, training_output,  epochs=EPOCHES,
                             batch_size=BATCH_SIZE, validation_split=0.1,
-                            callbacks = [cp_callback, early_stopping]
+                            callbacks = [early_stopping]
                             )
     except KeyboardInterrupt:
         print("Training_inerrupted")

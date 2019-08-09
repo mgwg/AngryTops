@@ -4,9 +4,7 @@ csv/*
 *~
 *.png
 Plots*
-Plots/
 Plots/*
-CheckPoints
 CheckPoints/*
 AngryTops/PostTraining_Analysis/models
 AngryTops/PostTraining_Analysis/models/*
