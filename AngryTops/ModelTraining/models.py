@@ -12,7 +12,33 @@ from AngryTops.ModelTraining.cnn import cnn_models
 from AngryTops.ModelTraining.custom_loss import *
 
 
-def stacked_LSTM1(metrics, losses, **kwargs):
+def cnn_model(metrics, losses, **kwargs):
+    """A simple convolutional network model"""
+    model = keras.models.Sequential()
+    model.add(Dense(256, input_shape=(36,), activation='relu'))
+    model.add(Reshape(target_shape=(8,8,4)))
+    model.add(Conv2D(16, (3, 3), activation='relu', padding="same"))
+    model.add(Conv2D(16, (3, 3), activation='relu', padding="same"))
+    model.add(MaxPooling2D((2, 2), strides=2))
+    model.add(Conv2D(32, (3, 3), activation='relu', padding="same"))
+    model.add(Conv2D(32, (3, 3), activation='relu', padding="same"))
+    model.add(MaxPooling2D((2, 2), strides=2))
+    model.add(Conv2D(64, (3, 3), activation='relu', padding="same"))
+    model.add(Conv2D(64, (3, 3), activation='relu', padding="same"))
+    model.add(MaxPooling2D((2, 2), strides=2))
+    model.add(Flatten())
+    model.add(Dense(64, activation='relu'))
+    model.add(Dense(48, activation='relu'))
+    model.add(Dense(32, activation='relu'))
+    model.add(Dense(24, activation='relu'))
+    model.add(Dense(18))
+    model.add(Reshape(target_shape=(6,3)))
+
+    optimizer = tf.keras.optimizers.Adam(10e-5)
+    model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
+    return model
+
+def LSTM_model(metrics, losses, **kwargs):
     """A denser version of model_multi"""
     loss_fn = 'mse'
     if "custom_loss" in kwargs.keys(): loss_fn = losses[kwargs["custom_loss"]]
@@ -38,30 +64,7 @@ def stacked_LSTM1(metrics, losses, **kwargs):
 
     return model
 
-def bidirectional_LSTM1(metrics, losses, **kwargs):
-    """A denser version of model_multi"""
-    loss_fn = 'mse'
-    if "custom_loss" in kwargs.keys(): loss_fn = losses[kwargs["custom_loss"]]
-    config = {'act1': 'relu', 'act2': 'relu', 'act3': 'elu',
-              'act4': 'relu', 'size1': 216, 'size2': 72, 'size3': 36,
-              'size4': 18, 'size5': 18}
-
-    model = keras.models.Sequential()
-    model.add(Reshape(target_shape=(6,6), input_shape=(36,)))
-    # Initially, due to typo, size1 = size2
-    model.add(TimeDistributed(Dense(int(config['size1']), activation=config['act1'])))
-    model.add(Bidirectional(LSTM(int(config['size2']), return_sequences=True)))
-    model.add(TimeDistributed(Dense(int(config['size3']), activation=config['act2'])))
-    model.add(TimeDistributed(Dense(int(config['size4']), activation=config['act3'])))
-    model.add(TimeDistributed(Dense(int(config['size5']), activation=config['act4'])))
-    model.add(TimeDistributed(Dense(3, activation='linear')))
-
-    optimizer = tf.keras.optimizers.Adam(10e-5, decay=0.)
-    model.compile(optimizer=optimizer, loss=loss_fn, metrics=metrics)
-
-    return model
-
-def bidirectional_LSTM2(metrics, losses, **kwargs):
+def BDLSTM_model(metrics, losses, **kwargs):
     """A denser version of model_multi"""
     loss_fn = 'mse'
     if "custom_loss" in kwargs.keys(): loss_fn = losses[kwargs["custom_loss"]]
@@ -93,75 +96,10 @@ def bidirectional_LSTM2(metrics, losses, **kwargs):
 
     return model
 
-def bidirectional_LSTM3(metrics, losses, **kwargs):
-    """A denser version of model_multi"""
-    loss_fn = 'mse'
-    if "custom_loss" in kwargs.keys(): loss_fn = losses[kwargs["custom_loss"]]
-
-    config = {'size1': 800.0, 'size2': 27.0}
-    model = keras.models.Sequential()
-    model.add(Reshape(target_shape=(6,6), input_shape=(36,)))
-    # Initially, due to typo, size1 = size2
-    model.add(TimeDistributed(Dense(int(config['size1']), activation='tanh')))
-    model.add(Bidirectional(LSTM(int(config['size2']), return_sequences=True)))
-    model.add(Bidirectional(LSTM(int(config['size2']), return_sequences=True)))
-    model.add(Bidirectional(LSTM(int(config['size2']), return_sequences=True)))
-    model.add(TimeDistributed(Dense(54, activation='tanh')))
-    model.add(TimeDistributed(Dense(27, activation='tanh')))
-    model.add(TimeDistributed(Dense(9, activation='tanh')))
-    model.add(TimeDistributed(Dense(3, activation='tanh')))
-
-    optimizer = tf.keras.optimizers.Adam(10e-4, decay=0.)
-    model.compile(optimizer=optimizer, loss=loss_fn, metrics=metrics)
-
-    return model
-
-def multiinput_BDLSTM(metrics, losses, **kwargs):
-    """A multi-input BDLSTM that first runs the Event level information through
-    a DNN block and then concatenates w/ jet + lepton information and runs it
-    through a BDLSTM block
-    """
-    loss_fn = 'mse'
-    if "custom_loss" in kwargs.keys(): loss_fn = losses[kwargs["custom_loss"]]
-
-    # Model Inputs
-    input_events = Input(shape = (12,), name="input_events")
-    input_features = Input(shape=(30,), name="input_features")
-
-    # Event Information
-    x_events = Dense(108, activation='tanh')(input_events)
-    x_events = Dense(36, activation='tanh')(x_events)
-    x_events = Dense(6, activation='tanh')(x_events)
-    x_events = Reshape(target_shape=(6,1))(x_events)
-    x_events = keras.Model(inputs=input_events, outputs=x_events)
-
-    # Feature Information
-    x_features = Reshape(target_shape=(6,5))(input_features)
-    x_features = keras.Model(inputs=input_features, outputs=x_features)
-
-    # BDLSTM BLOCK
-    combined = concatenate([x_events.output, x_features.output], axis=-1)
-    final = TimeDistributed(Dense(243, activation='tanh'))(combined)
-    final = Bidirectional(LSTM(81, return_sequences=True))(final)
-    final = TimeDistributed(Dense(81, activation='tanh'))(final)
-    final = TimeDistributed(Dense(27, activation='tanh'))(final)
-    final = TimeDistributed(Dense(9, activation='tanh'))(final)
-    final = TimeDistributed(Dense(3, activation='tanh'))(final)
-    model = keras.Model(inputs=[x_events.input, x_features.input], outputs=final)
-    # Can add another piece which outputs the bin number 
-
-    optimizer = tf.keras.optimizers.Adam(10e-5, decay=0.)
-    model.compile(optimizer=optimizer, loss=loss_fn, metrics=metrics)
-
-    return model
-
-################################################################################
 # List of all models
-models = {'stacked_LSTM1':stacked_LSTM1,
-          'bidirectional_LSTM1':bidirectional_LSTM1,
-          'bidirectional_LSTM2':bidirectional_LSTM2,
-          'bidirectional_LSTM3':bidirectional_LSTM3,
-          'multiinput_BDLSTM':multiinput_BDLSTM}
+models = {'cnn_model':cnn_model,
+          'LSTM_model':LSTM_model,
+          'BDLSTM_model':BDLSTM_model}
 
 for key, constructor in single_models.items():
     models[key] = constructor
@@ -172,5 +110,5 @@ for key, constructor in cnn_models.items():
 ################################################################################
 
 if __name__ == "__main__":
-    model = bidirectional_LSTM1(metrics, losses)
+    model = cnn_model(metrics, losses)
     print(model.summary())
