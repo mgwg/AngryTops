@@ -108,7 +108,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     try:
         history = model.fit(training_input, training_output,  epochs=EPOCHES,
                             batch_size=BATCH_SIZE, validation_split=0.1,
-                            callbacks = [early_stopping]
+                            callbacks = [early_stopping, cp_callback]
                             )
     except KeyboardInterrupt:
         print("Training_inerrupted")

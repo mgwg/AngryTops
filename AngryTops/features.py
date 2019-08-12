@@ -162,12 +162,18 @@ attributes = ['W_had_px', 'W_had_py', 'W_had_pz', 'W_had_E', 'W_had_m',
 't_lep_phi']
 
 corr_2d = [
-'corr_W_had_pt', 'corr_W_had_y', 'corr_W_had_phi', 'corr_W_had_E',
-'corr_b_had_pt', 'corr_b_had_y', 'corr_b_had_phi','corr_b_had_E',
-'corr_t_had_pt','corr_t_had_y', 'corr_t_had_phi', 'corr_t_had_E',
-'corr_W_lep_pt', 'corr_W_lep_y', 'corr_W_lep_phi', 'corr_W_lep_E',
-'corr_b_lep_pt', 'corr_b_lep_y', 'corr_b_lep_phi','corr_b_lep_E',
- 'corr_t_lep_pt','corr_t_lep_y', 'corr_t_lep_phi', 'corr_t_lep_E']
+'corr_W_had_pt', 'corr_W_had_px', 'corr_W_had_py', 'corr_W_had_pz',
+'corr_W_had_y', 'corr_W_had_phi', 'corr_W_had_E',
+'corr_b_had_pt', 'corr_b_had_px', 'corr_b_had_py', 'corr_b_had_pz',
+'corr_b_had_y', 'corr_b_had_phi', 'corr_b_had_E',
+'corr_t_had_pt', 'corr_t_had_px', 'corr_t_had_py', 'corr_t_had_pz',
+'corr_t_had_y', 'corr_t_had_phi', 'corr_t_had_E',
+'corr_W_lep_pt', 'corr_W_lep_px', 'corr_W_lep_py', 'corr_W_lep_pz',
+'corr_W_lep_y', 'corr_W_lep_phi', 'corr_W_lep_E',
+'corr_b_lep_pt', 'corr_b_lep_px', 'corr_b_lep_py', 'corr_b_lep_pz',
+'corr_b_lep_y', 'corr_b_lep_phi', 'corr_b_lep_E',
+'corr_t_lep_pt', 'corr_t_lep_px', 'corr_t_lep_py', 'corr_t_lep_pz',
+'corr_t_lep_y', 'corr_t_lep_phi', 'corr_t_lep_E']
 
 plots = ['reso_t_had_phi', 'corr_b_had_phi', 'corr_W_had_pt',
  'diff_W_lep_E', 'diff_t_had_y', 'reso_W_lep_pz',

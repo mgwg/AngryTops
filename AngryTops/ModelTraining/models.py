@@ -148,6 +148,7 @@ def multiinput_BDLSTM(metrics, losses, **kwargs):
     final = TimeDistributed(Dense(9, activation='tanh'))(final)
     final = TimeDistributed(Dense(3, activation='tanh'))(final)
     model = keras.Model(inputs=[x_events.input, x_features.input], outputs=final)
+    # Can add another piece which outputs the bin number 
 
     optimizer = tf.keras.optimizers.Adam(10e-5, decay=0.)
     model.compile(optimizer=optimizer, loss=loss_fn, metrics=metrics)
