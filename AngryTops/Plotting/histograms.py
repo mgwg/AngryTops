@@ -155,7 +155,7 @@ histograms['corr_t_had_py']    = TH2F( "corr_t_had_py",      ";True Hadronic top
 histograms['corr_t_had_pz']    = TH2F( "corr_t_had_pz",      ";True Hadronic top p_{z} [GeV];Fitted Hadronic top p_{z} [GeV]", 50, -1000., 1000., 50, -1000., 1000. )
 histograms['corr_t_had_y']     = TH2F( "corr_t_had_y",       ";True Hadronic top y;Fitted Hadronic top y", 25, -5., 5., 25, -5., 5. )
 histograms['corr_t_had_phi']   = TH2F( "corr_t_had_phi",     ";True Hadronic top #phi;Fitted Hadronic top #phi", 16, -3.2, 3.2, 16, -3.2, 3.2 )
-histograms['corr_t_had_E']     = TH2F( "corr_t_had_E",       ";True Hadronic top E [GeV];Fitted Hadronic top E [GeV]", 50, 150., 500., 50, 0., 500. )
+histograms['corr_t_had_E']     = TH2F( "corr_t_had_E",       ";True Hadronic top E [GeV];Fitted Hadronic top E [GeV]", 50, 150., 500., 50, 150., 500. )
 histograms['corr_t_had_m']     = TH2F( "corr_t_had_m",       ";True Hadronic top m [GeV];Fitted Hadronic top m [GeV]", 25, 170., 175., 20, 150., 250. )
 
 histograms['corr_t_lep_pt']    = TH2F( "corr_t_lep_pt",     ";True Leptonic top p_{T} [GeV];Fitted Leptonic top p_{T} [GeV]", 50, 0., 400., 50, 0., 400. )
