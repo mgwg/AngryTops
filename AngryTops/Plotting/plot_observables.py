@@ -53,7 +53,7 @@ def plot_observables(obs):
     leg.SetTextFont(42)
     leg.SetTextSize(0.05)
     leg.AddEntry( h_true, "MG5+Py8", "f" )
-    leg.AddEntry( h_fitted, "fitted", "f" )
+    leg.AddEntry( h_fitted, "Predicted", "f" )
     leg.SetY1( leg.GetY1() - 0.05 * leg.GetNRows() )
     leg.Draw()
 
