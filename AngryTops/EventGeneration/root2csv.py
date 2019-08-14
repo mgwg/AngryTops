@@ -60,6 +60,7 @@ print("INFO: entries found:", n_entries)
 
 # Cap on number of reconstructed events.
 if n_evt_max > 0: n_entries = min( [ n_evt_max, n_entries ] )
+n_jets_per_event = 5
 print("INFO: looping over %i reco-level events" % n_entries)
 print("INFO: using data augmentation: rotateZ %ix" % n_data_aug)
 
