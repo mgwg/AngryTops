@@ -67,8 +67,8 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     (training_input, training_output), (testing_input, testing_output), \
     (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) \
                         = get_input_output(input_filename=csv_file, **kwargs)
-    print("Number of training events: ", training_input.shape[0])
-    print("Number of testing events: ", testing_input.shape[0])
+    print("Shape of training events: ", training_input.shape)
+    print("Shape of testing events: ", testing_input.shape)
 
     ###########################################################################
     # BUILDING / TRAINING MODEL
