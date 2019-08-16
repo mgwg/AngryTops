@@ -1,0 +1,4 @@
+In this Subpackage, we try a new technique for teaching neural networks the
+b distributions: First we train a network to predict the Leptonic W information.
+Then, we train a similar model with the same inputs + the output from the first
+model and have it predict the leptonic b information.

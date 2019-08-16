@@ -110,5 +110,5 @@ for key, constructor in cnn_models.items():
 ################################################################################
 
 if __name__ == "__main__":
-    model = cnn_model(metrics, losses)
+    model = BDLSTM_model(metrics, losses)
     print(model.summary())

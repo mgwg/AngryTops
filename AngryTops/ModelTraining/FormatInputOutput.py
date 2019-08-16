@@ -9,29 +9,32 @@ from AngryTops.features import *
 from sklearn.utils import shuffle
 import sklearn.preprocessing
 
-def get_input_output(input_filename, training_split=0.9, single_output=None, **kwargs):
+def get_input_output(input_filename, training_split=0.9, single_output=None, particle=None, **kwargs):
     """
     Return the training and testing data
     Training Data: Array of 36 elements. I am debating reshaping to matrix of (6 x 6)
     Testing Data: Matrix of Shape (6 x 4)
+    single_output: If given, testing data is from specific kinematic variable
+    partice: If given, testing data is from specific particle
     """
     # Inputs
     scaling = kwargs['scaling']
     rep = kwargs['rep']
     multi_input = kwargs['multi_input']
     sort_jets = kwargs['sort_jets']
-    if 'single_output' in kwargs.keys(): single_output = kwargs['single_output']
 
     # Load jets, leptons and output columns of the correct representation
-    input_filename = "../csv/{}".format(input_filename)
+    input_filename = "csv/{}".format(input_filename)
     df = pd.read_csv(input_filename, names=column_names)
     if 'shuffle' in kwargs.keys():
         print("Shuffling training/testing data")
         df = shuffle(df)
     lep = df[representations[rep][0]].values
     jets = df[representations[rep][1]].values
-    if single_output is None:
+    if single_output is None and particle is None:
         truth = df[representations[rep][2]].values
+    elif single_output is None:
+        truth = df[particles[particle]]
     else:
         truth = df[single_output].values
         truth = truth.reshape(truth.shape[0], -1)
@@ -76,7 +79,7 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, **k
 
     # OUTPUT
     output, output_scalar = normalize(truth, scaling)
-    if not single_output:
+    if not single_output and not particle:
         output = output.reshape(output.shape[0], 6, -1)
     training_output = output[:cut]
     testing_output = output[cut:]
@@ -102,6 +105,6 @@ if __name__=='__main__':
     (training_input, training_output), (testing_input, testing_output), \
            (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) = \
     get_input_output(input_filename="topreco_5dec2.csv", scaling='minmax',
-    rep="pxpypzEM", multi_input=True, sort_jets=False)
-    print(event_training.shape)
-    print(event_testing.shape)
+    rep="experimental", multi_input=False, sort_jets=False, particle="W_had_cart")
+    print(training_input.shape)
+    print(training_output.shape)
