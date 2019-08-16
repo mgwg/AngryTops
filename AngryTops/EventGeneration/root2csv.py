@@ -200,30 +200,30 @@ for ientry in range(n_entries):
     if (t_lep.Pz() == 0.) or (t_lep.M() != t_lep.M()):
         print("Invalid t_lep values, P_z = {0}, M = {1}".format(t_lep.Pz(), t_lep.M()))
         continue
-    if W_had.Pt() < 20:
-        print("Invalid W_had.pt: {}".format(W_had.Pt()))
-        continue
-    if W_lep.Pt() < 20:
-        print("Invalid W_lep.pt: {}".format(W_lep.Pt()))
-        continue
-    if b_had.Pt() < 20:
-        print("Invalid b_had.pt: {}".format(b_had.Pt()))
-        continue
-    if b_lep.Pt() < 20:
-        print("Invalid b_lep.pt: {}".format(b_lep.Pt()))
-        continue
-    if np.abs(W_had.Eta()) > 2.5:
-        print("Invalid W_had.eta: {}".format(W_had.Eta()))
-        continue
-    if np.abs(W_lep.Eta()) > 2.5:
-        print("Invalid W_lep.eta: {}".format(W_lep.Eta()))
-        continue
-    if np.abs(b_had.Eta()) > 2.5:
-        print("Invalid b_had.eta: {}".format(b_had.Eta()))
-        continue
-    if np.abs(b_lep.Eta()) > 2.5:
-        print("Invalid b_lep.eta: {}".format(b_lep.Eta()))
-        continue
+    # if W_had.Pt() < 20:
+    #     print("Invalid W_had.pt: {}".format(W_had.Pt()))
+    #     continue
+    # if W_lep.Pt() < 20:
+    #     print("Invalid W_lep.pt: {}".format(W_lep.Pt()))
+    #     continue
+    # if b_had.Pt() < 20:
+    #     print("Invalid b_had.pt: {}".format(b_had.Pt()))
+    #     continue
+    # if b_lep.Pt() < 20:
+    #     print("Invalid b_lep.pt: {}".format(b_lep.Pt()))
+    #     continue
+    # # if np.abs(W_had.Eta()) > 2.5:
+    # #     print("Invalid W_had.eta: {}".format(W_had.Eta()))
+    # #     continue
+    # # if np.abs(W_lep.Eta()) > 2.5:
+    # #     print("Invalid W_lep.eta: {}".format(W_lep.Eta()))
+    # #     continue
+    # if np.abs(b_had.Eta()) > 2.5:
+    #     print("Invalid b_had.eta: {}".format(b_had.Eta()))
+    #     continue
+    # if np.abs(b_lep.Eta()) > 2.5:
+    #     print("Invalid b_lep.eta: {}".format(b_lep.Eta()))
+    #     continue
 
     ##############################################################
     # DERIVED EVENT-WISE QUANTITES

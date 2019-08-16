@@ -135,6 +135,9 @@ lep_cart_ext = ["lep Px", "lep Py", "lep Pz", "lep sum_Pt", "met_met", "met_phi"
 
 # Lepton info (ptetaphi) + Energy + missing transverse energy info
 lep_ptetaphiE = ["lep Pt", "lep Eta", "lep Phi", "lep E", "met_met", "met_phi"]
+
+# Lepton info experimental
+lep_exp = ["lep Px", "lep Py", "lep Pz", "met_met"]
 #================================================================================
 # BTAG COLUMNS + EVENT INFO
 btags = ["jet0 BTag", "jet1 BTag", "jet2 BTag", "jet3 BTag", "jet4 BTag"]
@@ -229,5 +232,22 @@ representations = {
  "ptetaphi": [lep_ptetaphi, jets_ptetaphi, output_columns_ptetaphi],
  "ptetaphiEM": [lep_ptetaphiE, jets_ptetaphiEM, output_columns_ptetaphi],
  "ptetaphiE": [lep_ptetaphiE, jets_ptetaphiEM, output_columns_ptetaphiE],
- "ptetaphiM": [lep_ptetaphiE, jets_ptetaphiEM, output_columns_ptetaphiE]
+ "ptetaphiM": [lep_ptetaphiE, jets_ptetaphiEM, output_columns_ptetaphiE],
+ "experimental": [lep_exp, jets_pxpypz]
+ }
+
+ # A disctionary containing output information for each particle
+particles = {
+ "b_had_cart": ["target_b_had_Px", "target_b_had_Py", "target_b_had_Pz"],
+ "b_had_ptetaphi": ["target_b_had_Pt", "target_b_had_Eta", "target_b_had_Phi"],
+ "b_lep_cart": ["target_b_lep_Px", "target_b_lep_Py", "target_b_lep_Pz"],
+ "b_lep_ptetaphi": ["target_b_lep_Pt", "target_b_lep_Eta", "target_b_lep_Phi"],
+ "W_had_cart": ["target_W_had_Px", "target_W_had_Py", "target_W_had_Pz"],
+ "W_had_ptetaphi": ["target_W_had_Pt", "target_W_had_Eta", "target_W_had_Phi"],
+ "W_lep_cart": ["target_W_lep_Px", "target_W_lep_Py", "target_W_lep_Pz"],
+ "W_lep_ptetaphi": ["target_W_lep_Pt", "target_W_lep_Eta", "target_W_lep_Phi"],
+ "t_had_cart": ["target_t_had_Px", "target_t_had_Py", "target_t_had_Pz"],
+ "t_had_ptetaphi": ["target_t_had_Pt", "target_t_had_Eta", "target_t_had_Phi"],
+ "t_lep_cart": ["target_t_lep_Px", "target_t_lep_Py", "target_t_lep_Pz"],
+ "t_lep_ptetaphi": ["target_t_lep_Pt", "target_t_lep_Eta", "target_t_lep_Phi"]
  }
