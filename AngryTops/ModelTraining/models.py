@@ -12,6 +12,54 @@ from AngryTops.ModelTraining.cnn import cnn_models
 from AngryTops.ModelTraining.custom_loss import *
 
 
+def BDLSTM_model(metrics, losses, **kwargs):
+    """
+    A denser version of model_multi. For this case, we recommend the parameter
+    input_size to be in kwargs. The valid input sizes are 24 or 36. If no
+    input_size parameter is given, will default to an input size of 32.
+    """
+    # Model customization
+    loss_fn = 'mse'
+    if "custom_loss" in kwargs.keys(): loss_fn = losses[kwargs["custom_loss"]]
+    input_size = 36
+    n_part_output = 6
+    target_shape = (6,6)
+    if "input_size" in kwargs.keys():
+        input_size = int(kwargs["input_size"])
+        assert input_size == 36 or input_size == 24, "Invalid model input size"
+    if input_size == 24:
+        target_shape = (6,4)
+        n_part_output = 2
+
+    config = {'act1': 'relu', 'act2': 'relu', 'act3': 'elu',
+              'act4': 'relu', 'size1': 440, 'size2': 44, 'size3':44, 'size4': 320,
+              'size5': 90, 'size6': 30}
+
+    # Model architecture
+    model = keras.models.Sequential()
+    model.add(Reshape(target_shape=target_shape, input_shape=(input_size,)))
+    model.add(TimeDistributed(Dense(int(config['size1']), activation=config['act1'])))
+    model.add(BatchNormalization())
+    model.add(Bidirectional(LSTM(int(config['size2']), return_sequences=True)))
+    model.add(BatchNormalization())
+    model.add(Bidirectional(LSTM(int(config['size3']), return_sequences=True)))
+    model.add(BatchNormalization())
+    model.add(Bidirectional(LSTM(int(config['size3']), return_sequences=True)))
+    model.add(BatchNormalization())
+    model.add(TimeDistributed(Dense(int(config['size4']), activation=config['act2'])))
+    model.add(BatchNormalization())
+    model.add(TimeDistributed(Dense(int(config['size5']), activation=config['act3'])))
+    model.add(BatchNormalization())
+    model.add(TimeDistributed(Dense(int(config['size6']), activation=config['act3'])))
+    model.add(BatchNormalization())
+    model.add(MaxPooling1D(pool_size=3))
+    model.add(TimeDistributed(Dense(3, activation='linear')))
+
+    optimizer = tf.keras.optimizers.Adam(10e-4, decay=0.)
+    model.compile(optimizer=optimizer, loss=loss_fn, metrics=metrics)
+
+    return model
+
 def cnn_model(metrics, losses, **kwargs):
     """A simple convolutional network model"""
     model = keras.models.Sequential()
@@ -64,38 +112,6 @@ def LSTM_model(metrics, losses, **kwargs):
 
     return model
 
-def BDLSTM_model(metrics, losses, **kwargs):
-    """A denser version of model_multi"""
-    loss_fn = 'mse'
-    if "custom_loss" in kwargs.keys(): loss_fn = losses[kwargs["custom_loss"]]
-
-    config = {'act1': 'relu', 'act2': 'relu', 'act3': 'elu',
-              'act4': 'relu', 'size1': 440, 'size2': 44, 'size3':44, 'size4': 320,
-              'size5': 90, 'size6': 30}
-    model = keras.models.Sequential()
-    model.add(Reshape(target_shape=(6,6), input_shape=(36,)))
-    # Initially, due to typo, size1 = size2
-    model.add(TimeDistributed(Dense(int(config['size1']), activation=config['act1'])))
-    model.add(BatchNormalization())
-    model.add(Bidirectional(LSTM(int(config['size2']), return_sequences=True)))
-    model.add(BatchNormalization())
-    model.add(Bidirectional(LSTM(int(config['size3']), return_sequences=True)))
-    model.add(BatchNormalization())
-    model.add(Bidirectional(LSTM(int(config['size3']), return_sequences=True)))
-    model.add(BatchNormalization())
-    model.add(TimeDistributed(Dense(int(config['size4']), activation=config['act2'])))
-    model.add(BatchNormalization())
-    model.add(TimeDistributed(Dense(int(config['size5']), activation=config['act3'])))
-    model.add(BatchNormalization())
-    model.add(TimeDistributed(Dense(int(config['size6']), activation=config['act3'])))
-    model.add(BatchNormalization())
-    model.add(TimeDistributed(Dense(3, activation='linear')))
-
-    optimizer = tf.keras.optimizers.Adam(10e-4, decay=0.)
-    model.compile(optimizer=optimizer, loss=loss_fn, metrics=metrics)
-
-    return model
-
 # List of all models
 models = {'cnn_model':cnn_model,
           'LSTM_model':LSTM_model,
@@ -110,5 +126,5 @@ for key, constructor in cnn_models.items():
 ################################################################################
 
 if __name__ == "__main__":
-    model = BDLSTM_model(metrics, losses)
+    model = BDLSTM_model(metrics, losses, input_size=24)
     print(model.summary())

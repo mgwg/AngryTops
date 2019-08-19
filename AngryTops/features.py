@@ -242,12 +242,17 @@ particles = {
  "b_had_ptetaphi": ["target_b_had_Pt", "target_b_had_Eta", "target_b_had_Phi"],
  "b_lep_cart": ["target_b_lep_Px", "target_b_lep_Py", "target_b_lep_Pz"],
  "b_lep_ptetaphi": ["target_b_lep_Pt", "target_b_lep_Eta", "target_b_lep_Phi"],
+
  "W_had_cart": ["target_W_had_Px", "target_W_had_Py", "target_W_had_Pz"],
  "W_had_ptetaphi": ["target_W_had_Pt", "target_W_had_Eta", "target_W_had_Phi"],
  "W_lep_cart": ["target_W_lep_Px", "target_W_lep_Py", "target_W_lep_Pz"],
  "W_lep_ptetaphi": ["target_W_lep_Pt", "target_W_lep_Eta", "target_W_lep_Phi"],
+
  "t_had_cart": ["target_t_had_Px", "target_t_had_Py", "target_t_had_Pz"],
  "t_had_ptetaphi": ["target_t_had_Pt", "target_t_had_Eta", "target_t_had_Phi"],
  "t_lep_cart": ["target_t_lep_Px", "target_t_lep_Py", "target_t_lep_Pz"],
- "t_lep_ptetaphi": ["target_t_lep_Pt", "target_t_lep_Eta", "target_t_lep_Phi"]
- }
+ "t_lep_ptetaphi": ["target_t_lep_Pt", "target_t_lep_Eta", "target_t_lep_Phi"],
+
+ "t_had_lep_cart": ["target_t_had_Px", "target_t_had_Py", "target_t_had_Pz",
+                    "target_t_lep_Px", "target_t_lep_Py", "target_t_lep_Pz"]
+}

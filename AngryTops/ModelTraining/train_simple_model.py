@@ -38,6 +38,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     shuffle: If in kwargs.keys, will shuffle the training/testing data.
     weights: The weights for the weighted MSE. Defaults to [1,1,1,1,1,1]
     custom_loss: A custom loss function.
+    particle: If you want to test on a specific particle, specify
     """
     # CONSTANTS
     if 'retrain' in kwargs.keys():
@@ -85,6 +86,8 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
         print("Loss Function: ", kwargs['custom_loss'])
     else:
         print("Loss Function: mse")
+        metrices = ['mse', 'mae']
+        losses = losses = {"mse":"mse"}
     model = models[model_name](metrics, losses, **kwargs)
 
     # Load previously trained model if it exists
