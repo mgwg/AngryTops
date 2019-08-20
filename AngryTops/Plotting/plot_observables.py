@@ -8,6 +8,9 @@ from AngryTops.Plotting.PlottingHelper import *
 # INPUT
 training_dir = sys.argv[1]
 caption = sys.argv[2]
+if len(sys.argv) > 3:
+    attributes = attributes_tquark
+    corr_2d = corr_2d_tquark
 
 def plot_observables(obs):
     # Load the histograms

@@ -221,6 +221,36 @@ plots = ['reso_t_had_phi', 'corr_b_had_phi', 'corr_W_had_pt',
  'diff_b_lep_phi', 'b_lep_pz', 'reso_t_lep_px', 'reso_t_lep_py',
  'reso_W_had_pt', 'reso_t_had_pz', 'corr_t_lep_pt', 'b_had_px']
 
+attributes_tquark = [
+ 't_had_px', 't_had_py', 't_had_pz', 't_had_E', 't_had_m', 't_had_pt', 't_had_y',
+ 't_had_phi','t_lep_px', 't_lep_py', 't_lep_pz','t_lep_E', 't_lep_m', 't_lep_pt',
+ 't_lep_y', 't_lep_phi']
+
+corr_2d_tquark = [
+ 'corr_t_had_pt', 'corr_t_had_px', 'corr_t_had_py', 'corr_t_had_pz',
+ 'corr_t_had_y', 'corr_t_had_phi', 'corr_t_had_E',
+ 'corr_t_lep_pt', 'corr_t_lep_px', 'corr_t_lep_py', 'corr_t_lep_pz',
+ 'corr_t_lep_y', 'corr_t_lep_phi', 'corr_t_lep_E']
+
+plots_tquark = [
+'t_had_px', 't_had_py', 't_had_pz', 't_had_pt', 't_had_y',
+'t_had_phi', 't_had_E',
+'t_lep_px', 't_lep_py', 't_lep_pz', 't_lep_pt', 't_lep_y',
+'t_lep_phi', 't_lep_E',
+'diff_t_had_px', 'diff_t_had_py', 'diff_t_had_pz', 'diff_t_had_pt', 'diff_t_had_y',
+'diff_t_had_phi', 'diff_t_had_E',
+'diff_t_lep_px', 'diff_t_lep_py', 'diff_t_lep_pz', 'diff_t_lep_pt', 'diff_t_lep_y',
+'diff_t_lep_phi', 'diff_t_lep_E',
+'reso_t_had_px', 'reso_t_had_py', 'reso_t_had_pz', 'reso_t_had_pt', 'reso_t_had_y',
+'reso_t_had_phi', 'reso_t_had_E',
+'reso_t_lep_px', 'reso_t_lep_py', 'reso_t_lep_pz', 'reso_t_lep_pt', 'reso_t_lep_y',
+'reso_t_lep_phi', 'reso_t_lep_E',
+'corr_t_had_px', 'corr_t_had_py', 'corr_t_had_pz', 'corr_t_had_pt', 'corr_t_had_y',
+'corr_t_had_phi', 'corr_t_had_E',
+'corr_t_lep_px', 'corr_t_lep_py', 'corr_t_lep_pz', 'corr_t_lep_pt', 'corr_t_lep_y',
+'corr_t_lep_phi', 'corr_t_lep_E'
+]
+
 #================================================================================
  # A dictionary associating each representation with the correct input and output
  # lists
