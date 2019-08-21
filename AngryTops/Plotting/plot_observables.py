@@ -12,6 +12,9 @@ if len(sys.argv) > 3:
     attributes = attributes_tquark
     corr_2d = corr_2d_tquark
 
+gStyle.SetPalette(kGreyScale)
+gROOT.GetColor(52).InvertPalette()
+
 def plot_observables(obs):
     # Load the histograms
     hname_true = "%s_true" % (obs)
@@ -169,8 +172,6 @@ def plot_correlations(hist_name):
     pad0.Draw()
     pad0.cd()
 
-    gStyle.SetPalette(kGreyScale)
-    gROOT.GetColor(52).InvertPalette()
     hist.Draw("colz")
 
     corr = hist.GetCorrelationFactor()
