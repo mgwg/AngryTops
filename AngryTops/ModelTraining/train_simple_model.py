@@ -106,7 +106,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     filepath = checkpoint_dir + "/weights-improvement-{epoch:02d}.ckpt"
     print("Checkpoints saved in: ", filepath)
     cp_callback = ModelCheckpoint(filepath, monitor='val_loss', save_weights_only=False, verbose=1)
-    early_stopping = EarlyStopping(monitor='val_loss', patience=0)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=3)
     try:
         history = model.fit(training_input, training_output,  epochs=EPOCHES,
                             batch_size=BATCH_SIZE, validation_split=0.1,

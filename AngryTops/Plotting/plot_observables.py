@@ -153,7 +153,7 @@ def plot_correlations(hist_name):
 
     #Normalize(hist)
 
-    SetTH1FStyle(hist,  color=kGray+2)
+    SetTH1FStyle(hist,  color=kGray+2, fillstyle=6)
 
     c = TCanvas()
     c.cd()
@@ -169,6 +169,8 @@ def plot_correlations(hist_name):
     pad0.Draw()
     pad0.cd()
 
+    gStyle.SetPalette(kGreyScale)
+    gROOT.GetColor(52).InvertPalette()
     hist.Draw("colz")
 
     corr = hist.GetCorrelationFactor()
