@@ -153,7 +153,7 @@ def plot_correlations(hist_name):
 
     #Normalize(hist)
 
-    #SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
+    SetTH1FStyle(hist,  color=kGray+2)
 
     c = TCanvas()
     c.cd()
@@ -161,7 +161,7 @@ def plot_correlations(hist_name):
     pad0 = TPad( "pad0","pad0",0, 0,1,1,0,0,0 )
     pad0.SetLeftMargin( 0.18 ) #0.16
     pad0.SetRightMargin( 0.05 )
-    pad0.SetBottomMargin( 0.05 )
+    pad0.SetBottomMargin( 0.18 )
     #pad0.SetTopMargin( 0.14 )
     pad0.SetTopMargin( 0.07 ) #0.05
     pad0.SetFillColor(0)
