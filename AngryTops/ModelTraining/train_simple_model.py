@@ -37,8 +37,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     sort_jets: True or False. Sort jets by first btag, then Mass.
     shuffle: If in kwargs.keys, will shuffle the training/testing data.
     weights: The weights for the weighted MSE. Defaults to [1,1,1,1,1,1]
-    custom_loss: A custom loss function.
-    particle: If you want to test on a specific particle, specify
+    custom_loss: A custom loss function particle: If you want to test on a specific particle, specify
     """
     # CONSTANTS
     if 'retrain' in kwargs.keys():
@@ -106,11 +105,12 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     # Checkpoint saving / Model training
     filepath = checkpoint_dir + "/weights-improvement-{epoch:02d}.ckpt"
     print("Checkpoints saved in: ", filepath)
-    cp_callback = ModelCheckpoint(filepath, monitor='val_loss', save_weights_only=True, verbose=1)
+    cp_callback = ModelCheckpoint(filepath, monitor='val_loss', save_weights_only=False, verbose=1)
     early_stopping = EarlyStopping(monitor='val_loss', patience=0)
     try:
         history = model.fit(training_input, training_output,  epochs=EPOCHES,
                             batch_size=BATCH_SIZE, validation_split=0.1,
+                            steps_per_epoch=5000,
                             callbacks = [early_stopping, cp_callback]
                             )
     except KeyboardInterrupt:
@@ -122,7 +122,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     # SAVING MODEL, TRAINING HISTORY AND SCALARS
     model.save('%s/simple_model.h5' % train_dir)
     model.save_weights('%s/model_weights.h5' % train_dir)
-    plot_model(model, to_file='%s/model.png' % train_dir, show_shapes=True, )
+    plot_model(model, to_file='%s/model.png' % train_dir, show_shapes=True)
 
     scaler_filename = "{}/scalers.pkl".format(train_dir)
     with open( scaler_filename, "wb" ) as file_scaler:
@@ -143,6 +143,16 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
 
     ###########################################################################
     # MAKE AND SAVE PREDICTIONS
+    # Try to roll back model by 1 epoche to the least overfit version
+    # Might fail if EPOCHES == 1.
+    try:
+        model.load_weights('checkpoints/weights-improvement-0%i.ckpt' % history.epoch.size)
+        model.save('%s/best_model.h5' % train_dir)
+        model.save_weights('%s/best_weights.h5' % train_dir)
+    except Exception as e:
+        print("Failed to roll model back by 1 EPOCHE")
+        print(e)
+
     predictions = model.predict(testing_input)
     if kwargs['multi_input']:
         np.savez("%s/predictions" % train_dir, lep=testing_input[0],
