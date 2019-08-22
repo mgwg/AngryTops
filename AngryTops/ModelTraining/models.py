@@ -15,21 +15,19 @@ from AngryTops.ModelTraining.custom_loss import *
 def BDLSTM_model(metrics, losses, **kwargs):
     """
     A denser version of model_multi. For this case, we recommend the parameter
-    input_size to be in kwargs. The valid input sizes are 24 or 36. If no
+    input_size to be in kwargs. The valid input sizes are 30 or 36. If no
     input_size parameter is given, will default to an input size of 32.
     """
     # Model customization
     loss_fn = 'mse'
     if "custom_loss" in kwargs.keys(): loss_fn = losses[kwargs["custom_loss"]]
     input_size = 36
-    n_part_output = 6
     target_shape = (6,6)
     if "input_size" in kwargs.keys():
         input_size = int(kwargs["input_size"])
-        assert input_size == 36 or input_size == 24, "Invalid model input size"
-    if input_size == 24:
-        target_shape = (6,4)
-        n_part_output = 2
+        assert input_size == 36 or input_size == 30, "Invalid model input size"
+    if input_size == 30:
+        target_shape = (6,5)
 
     config = {'act1': 'relu', 'act2': 'relu', 'act3': 'elu',
               'act4': 'relu', 'size1': 440, 'size2': 44, 'size3':44, 'size4': 320,

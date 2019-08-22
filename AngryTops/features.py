@@ -103,6 +103,14 @@ jets_pxpypzEM = [
 "jet3 P_x",  "jet3 P_y",  "jet3 P_z",  "jet3 E",  "jet3 M",
 "jet4 P_x",  "jet4 P_y",  "jet4 P_z",  "jet4 E",  "jet4 M"]
 
+# pxpypzE representation
+jets_pxpypzE = [
+"jet0 P_x",  "jet0 P_y",  "jet0 P_z",  "jet0 E",
+"jet1 P_x",  "jet1 P_y",  "jet1 P_z",  "jet1 E",
+"jet2 P_x",  "jet2 P_y",  "jet2 P_z",  "jet2 E",
+"jet3 P_x",  "jet3 P_y",  "jet3 P_z",  "jet3 E",
+"jet4 P_x",  "jet4 P_y",  "jet4 P_z",  "jet4 E"]
+
 # ptetaphiEM representation
 jets_ptetaphi = [
 "jet0 Pt",  "jet0 Eta",  "jet0 Phi",
@@ -263,7 +271,7 @@ representations = {
  "ptetaphiEM": [lep_ptetaphiE, jets_ptetaphiEM, output_columns_ptetaphi],
  "ptetaphiE": [lep_ptetaphiE, jets_ptetaphiEM, output_columns_ptetaphiE],
  "ptetaphiM": [lep_ptetaphiE, jets_ptetaphiEM, output_columns_ptetaphiE],
- "experimental": [lep_exp, jets_pxpypz]
+ "experimental": [lep_cart, jets_pxpypzE]
  }
 
  # A disctionary containing output information for each particle
