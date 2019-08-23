@@ -61,7 +61,7 @@ def ChiSquared(jets, mu, lep):
     """
     Compute the Chi-Squared Value for a predicted event.
     Jets is a list of 4 TLorentz vectors
-    The order of the columns:
+    The order of the list elements:
     b_had, b_lep, W_had_jet1, W_had_jet2
     """
     W_had =  jets[2] + jets[3]
@@ -75,11 +75,11 @@ def ChiSquared(jets, mu, lep):
 
 
 def reconstruct(jets, mu, lep):
-    """Return (6 x 4) matrix with the following columns
+    """Return (6 x 4) matrix with the following jet columns
     (b_had_px, b_lep_px, W_had_j1_px, W_had_j2_px)
     (b_had_py, b_lep_py, W_had_j1_py, W_had_j2_px)
     (b_had_pz, b_lep_pz, W_had_j1_pz, W_had_j2_px)
-    (b_had_px, b_lep_E,  W_had_j1_E,  W_had_j2_px)
+    (b_had_E,  b_lep_E,  W_had_j1_E,  W_had_j2_px)
     """
     # If only four jet event, remove the additional jet
     if np.all(jets[-1] == 0):
@@ -107,7 +107,7 @@ def reconstruct(jets, mu, lep):
 
 def FormatOutput(particles):
     """
-    Format list of TLorentz vectors into a (3 x 3) matrix
+    Format list of TLorentz vectors into a (2 x 3) matrix
     """
     t_had = particles[-2]
     t_lep = particles[-1]
@@ -125,7 +125,7 @@ def FormatOutput(particles):
 
 def Predict(lep_arr, jet_arr):
     """
-    Produced (6 x 3) output array given (6 x 6) input array.
+    Produced (2 x 3) output array given (6 x 6) input array.
     Calls helper functions in the following order:
     MakeNeutrino -> reconstruct -> FormatOutput
     """
