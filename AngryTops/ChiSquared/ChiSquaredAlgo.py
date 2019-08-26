@@ -57,7 +57,7 @@ def MakeNeutrino(lep_Px, lep_Py, lep_Pz, met, met_phi):
 
     return m_neutrino
 
-def ChiSquared(jets, mu, lep):
+def ChiSquared(jets, nu, lep):
     """
     Compute the Chi-Squared Value for a predicted event.
     Jets is a list of 4 TLorentz vectors
@@ -65,7 +65,7 @@ def ChiSquared(jets, mu, lep):
     b_had, b_lep, W_had_jet1, W_had_jet2
     """
     W_had =  jets[2] + jets[3]
-    W_lep = lep + mu
+    W_lep = lep + nu
     t_had = W_had + jets[0]
     t_lep = W_lep + jets[1]
 
@@ -74,7 +74,7 @@ def ChiSquared(jets, mu, lep):
     return chi2, [jets[0], jets[1], W_had, W_lep, t_had, t_lep]
 
 
-def reconstruct(jets, mu, lep):
+def reconstruct(jets, nu, lep):
     """Return (6 x 4) matrix with the following jet columns
     (b_had_px, b_lep_px, W_had_j1_px, W_had_j2_px)
     (b_had_py, b_lep_py, W_had_j1_py, W_had_j2_px)
@@ -97,7 +97,7 @@ def reconstruct(jets, mu, lep):
         permutes = list(itertools.permutations(combo))
         for j in range(len(permutes)):
             permute = permutes[i]
-            chi_squared = ChiSquared(permute, mu, lep)
+            chi_squared = ChiSquared(permute, nu, lep)
             if chi_squared < best_chi_squared:
                 best_chi_squared, best_output = chi_squared
                 best_combo = permute
@@ -129,10 +129,18 @@ def Predict(lep_arr, jet_arr):
     Calls helper functions in the following order:
     MakeNeutrino -> reconstruct -> FormatOutput
     """
+    # Construct lepton
     lep = TLorentzVector()
-    lep.SetPxPyPzE(lep_arr[0], lep_arr[1], lep_arr[2], np.sqrt(lep_arr[0]**2 + lep_arr[1]**2 + lep_arr[2]**2))
+    l_px = lep_arr[0]
+    l_py = lep_arr[1]
+    l_pz = lep_arr[2]
+    l_E = np.sqrt(l_px**2 + l_py**2 + l_pz**2)
+    l_T = lep_arr[3]  # We will remove this in later iterations
+    met_pt = lep_arr[4]
+    met_phi = lep_arr[5]
+    lep.SetPxPyPzE(l_pz, l_py, l_pz, l_E)
     # Skip the fourth element which is the lepton arival time of flight
-    mu = MakeNeutrino(lep_arr[0], lep_arr[1], lep_arr[2], lep_arr[4], lep_arr[5])
+    nu = MakeNeutrino(lep_arr[0], lep_arr[1], lep_arr[2], lep_arr[4], lep_arr[5])
 
     jets = []
     for i in range(len(jet_arr)):
@@ -140,7 +148,7 @@ def Predict(lep_arr, jet_arr):
         j.SetPxPyPzE(jet_arr[i,0], jet_arr[i,1],jet_arr[i,2], jet_arr[i,3])
         jets.append(j)
 
-    best_combo, best_chi_squared = reconstruct(jets, mu, lep)
+    best_combo, best_chi_squared = reconstruct(jets, nu, lep)
     return FormatOutput(best_combo)
 
 if __name__=="__main__":
