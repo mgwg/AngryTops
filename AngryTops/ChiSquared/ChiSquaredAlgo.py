@@ -90,6 +90,7 @@ def reconstruct(jets, nu, lep):
     best_chi_squared = 10e9
     best_combo = combos[0]
     best_output = None
+    chi_squared_array = np.zeros(120)
 
     # Go through all permutations of each combination and pick the best
     for i in range(len(combos)):
@@ -101,8 +102,10 @@ def reconstruct(jets, nu, lep):
             if chi_squared < best_chi_squared:
                 best_chi_squared, best_output = chi_squared
                 best_combo = permute
+                chi_squared_array[i*len(permutes) + j] += best_chi_squared
 
-    return best_combo, best_chi_squared
+
+    return best_combo, chi_squared_array
 
 
 def FormatOutput(particles):
@@ -148,8 +151,8 @@ def Predict(lep_arr, jet_arr):
         j.SetPxPyPzE(jet_arr[i,0], jet_arr[i,1],jet_arr[i,2], jet_arr[i,3])
         jets.append(j)
 
-    best_combo, best_chi_squared = reconstruct(jets, nu, lep)
-    return FormatOutput(best_combo)
+    best_combo, chi_squared = reconstruct(jets, nu, lep)
+    return FormatOutput(best_combo), chi_squared
 
 if __name__=="__main__":
     # Fixed variables dependant on my pipeline
@@ -186,10 +189,14 @@ if __name__=="__main__":
     # Predict each event
     print("Making predictions")
     chi2_pred = np.zeros(shape=(jets.shape[0], 2, 3))
+    chi2_curves = np.zeros(shape=(jets.shape[0], 120))
     for i in range(jets.shape[0]):
-        chi2_pred[i] += Predict(lep[i], jets[i])
+        predicted_jets, chi2_curve = Predict(lep[i], jets[i])
+        chi2_pred[i] += predicted_jets
+        chi2_curves[i] += chi2_curve
         if i < 10:
-            print(chi2_pred[i])
+            print(chi2_pred[i], "\n")
+            print(chi2_curves[i], "\n")
 
     # Save the predictions
     print("Saving predictions")
