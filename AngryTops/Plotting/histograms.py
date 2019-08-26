@@ -406,9 +406,10 @@ for i in range(n_events):
         reso_t_had_phi = diff_t_had_phi / t_had_true.Phi()
         reso_t_had_E   = diff_t_had_E / t_had_true.E()
         reso_t_had_m   = diff_t_had_m  / t_had_true.M()
-    except:
+    except Exception as e:
         print("WARNING: invalid hadronic top, skipping event ( rn=%-10i en=%-10i )" % ( tree.runNumber, tree.eventNumber ))
         PrintOut( t_had_true, t_had_fitted, "Hadronic top" )
+        print(e)
         continue
 
     try:
@@ -465,9 +466,10 @@ for i in range(n_events):
         reso_t_lep_phi = diff_t_lep_phi / t_lep_true.Phi()
         reso_t_lep_E   = diff_t_lep_E / t_lep_true.E()
         reso_t_lep_m   = diff_t_lep_m  / t_lep_true.M()
-    except:
+    except Exception as e:
         print("WARNING: invalid leptonic top, skipping event ( rn=%-10i en=%-10i )" % ( tree.runNumber, tree.eventNumber ))
         PrintOut( t_lep_true, t_lep_fitted, "Leptonic top" )
+        print(e)
         continue
 
 ################################################################################
