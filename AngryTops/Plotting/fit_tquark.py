@@ -81,15 +81,14 @@ if scaling:
       jets_scalar = pickle.load(file_scaler)
       lep_scalar = pickle.load(file_scaler)
       output_scalar = pickle.load(file_scaler)
-        # Rescale the truth array
-        true = true.reshape(true.shape[0], true.shape[1]*true.shape[2])
-        true = output_scalar.inverse_transform(true)
-        true = true.reshape(true.shape[0], old_shape[0], old_shape[1])
-
-        # Rescale the fitted array
-        y_fitted = y_fitted.reshape(y_fitted.shape[0], y_fitted.shape[1]*y_fitted.shape[2])
-        y_fitted = output_scalar.inverse_transform(y_fitted)
-        y_fitted = y_fitted.reshape(y_fitted.shape[0], old_shape[0], old_shape[1])
+      # Rescale the truth array
+      true = true.reshape(true.shape[0], true.shape[1]*true.shape[2])
+      true = output_scalar.inverse_transform(true)
+      true = true.reshape(true.shape[0], old_shape[0], old_shape[1])
+      # Rescale the fitted array
+      y_fitted = y_fitted.reshape(y_fitted.shape[0], y_fitted.shape[1]*y_fitted.shape[2])
+      y_fitted = output_scalar.inverse_transform(y_fitted)
+      y_fitted = y_fitted.reshape(y_fitted.shape[0], old_shape[0], old_shape[1])
 ################################################################################
 # Truth
 y_true_t_had = true[:,0,:]
