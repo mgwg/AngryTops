@@ -11,6 +11,8 @@ from AngryTops.features import *
 # CONSTANTS
 training_dir = sys.argv[1]
 representation = sys.argv[2]
+scaling = True
+if len(sys.argv) > 3: scaling = False
 m_t = 172.5
 m_W = 80.4
 m_b = 4.95
@@ -81,15 +83,16 @@ with open( scaler_filename, "rb" ) as file_scaler:
   lep_scalar = pickle.load(file_scaler)
   output_scalar = pickle.load(file_scaler)
 
-# Rescale the truth array
-true = true.reshape(true.shape[0], true.shape[1]*true.shape[2])
-true = output_scalar.inverse_transform(true)
-true = true.reshape(true.shape[0], old_shape[0], old_shape[1])
+if scaling:
+    # Rescale the truth array
+    true = true.reshape(true.shape[0], true.shape[1]*true.shape[2])
+    true = output_scalar.inverse_transform(true)
+    true = true.reshape(true.shape[0], old_shape[0], old_shape[1])
 
-# Rescale the fitted array
-y_fitted = y_fitted.reshape(y_fitted.shape[0], y_fitted.shape[1]*y_fitted.shape[2])
-y_fitted = output_scalar.inverse_transform(y_fitted)
-y_fitted = y_fitted.reshape(y_fitted.shape[0], old_shape[0], old_shape[1])
+    # Rescale the fitted array
+    y_fitted = y_fitted.reshape(y_fitted.shape[0], y_fitted.shape[1]*y_fitted.shape[2])
+    y_fitted = output_scalar.inverse_transform(y_fitted)
+    y_fitted = y_fitted.reshape(y_fitted.shape[0], old_shape[0], old_shape[1])
 ################################################################################
 # Truth
 y_true_W_had = true[:,0,:]
