@@ -63,6 +63,8 @@ def ChiSquared(jets, nu, lep):
     Jets is a list of 4 TLorentz vectors
     The order of the list elements:
     b_had, b_lep, W_had_jet1, W_had_jet2
+    Returns the chi2 value and a list of 4 particles in the order:
+    [W_had, W_lep, t_had, t_lep]
     """
     W_had =  jets[2] + jets[3]
     W_lep = lep + nu
@@ -71,7 +73,8 @@ def ChiSquared(jets, nu, lep):
 
     chi2 =  (W_had.M() - mW)**2 / sigmaW**2 + (W_lep.M() - mW)**2 / sigmaW**2 + (t_had.M() - mT)**2 / sigmaT**2 + (t_lep.M() - mT)**2 / sigmaT**2
 
-    return chi2
+    particles = [W_had, W_lep, t_had, t_lep]
+    return chi2, particles
 
 
 def reconstruct(jets, nu, lep):
@@ -89,6 +92,7 @@ def reconstruct(jets, nu, lep):
     # These values will be updated in the end
     best_chi_squared = 10e9
     best_combo = combos[0]
+    best_particles = None
     chi_squared_array = []
 
     # Go through all permutations of each combination and pick the best
@@ -97,16 +101,17 @@ def reconstruct(jets, nu, lep):
         permutes = list(itertools.permutations(combo))
         for j in range(len(permutes)):
             permute = permutes[j]
-            chi_squared = ChiSquared(permute, nu, lep)
+            chi_squared, particles = ChiSquared(permute, nu, lep)
             if chi_squared < best_chi_squared:
                 best_chi_squared = chi_squared
                 best_combo = permute
                 chi_squared_array.append(chi_squared)
-                
+                best_particles = particles
+
     for i in range(120 - len(chi_squared_array)):
         chi_squared_array.append(np.nan)
 
-    return best_combo, np.array(chi_squared_array)
+    return best_particles, np.array(chi_squared_array)
 
 
 def FormatOutput(particles):
