@@ -95,15 +95,13 @@ def reconstruct(jets, nu, lep):
     for i in range(len(combos)):
         combo = combos[i]
         permutes = list(itertools.permutations(combo))
-        original = permutes[0]
         for j in range(len(permutes)):
             permute = permutes[j]
-            print(permute == original)
             chi_squared = ChiSquared(permute, nu, lep)
             if chi_squared < best_chi_squared:
                 best_chi_squared = chi_squared
                 best_combo = permute
-            chi_squared_array.append(chi_squared)
+                chi_squared_array.append(chi_squared)
                 
     for i in range(120 - len(chi_squared_array)):
         chi_squared_array.append(np.nan)
