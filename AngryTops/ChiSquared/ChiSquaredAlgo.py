@@ -153,6 +153,7 @@ if __name__=="__main__":
     predictions = np.load('{}/predictions.npz'.format(training_dir))
     testing_input = predictions['input']
     true = predictions['true']
+    events = predictions['events']
     scaler_filename = "{}/scalers.pkl".format(training_dir)
     with open( scaler_filename, "rb" ) as file_scaler:
         jets_scalar = pickle.load(file_scaler)
@@ -172,6 +173,7 @@ if __name__=="__main__":
     jets = jets.reshape(-1, 25)
     jets = jets_scalar.inverse_transform(jets)
     jets = jets.reshape(-1, 5, 5)
+    testing_input = testing_input.reshape(true.shape[0], 36)
 
     # Predict each event
     print("Making predictions")
@@ -183,7 +185,7 @@ if __name__=="__main__":
 
     # Save the predictions
     print("Saving predictions")
-    np.savez("%s/chi2pred" % training_dir, lep=lep, jets=jets, true=true, pred=chi2_pred)
+    np.savez("%s/chi2pred" % training_dir, input=testing_input, true=true, pred=chi2_pred, events=events)
 
     # INPUT BREAKDOWN
     # When I actually load in the array, it is flattened to make things easier
