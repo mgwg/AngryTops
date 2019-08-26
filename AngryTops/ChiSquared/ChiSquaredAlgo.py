@@ -90,7 +90,7 @@ def reconstruct(jets, nu, lep):
     best_chi_squared = 10e9
     best_combo = combos[0]
     best_output = None
-    chi_squared_array = np.zeros(120)
+    chi_squared_array = []
 
     # Go through all permutations of each combination and pick the best
     for i in range(len(combos)):
@@ -102,10 +102,11 @@ def reconstruct(jets, nu, lep):
             if chi_squared < best_chi_squared:
                 best_chi_squared, best_output = chi_squared
                 best_combo = permute
-                chi_squared_array[i*len(permutes) + j] += best_chi_squared
+                chi_squared_array.append(best_chi_squared)
+    for i in range(120 - len(chi_squared_array)):
+        chi_squared_array.append(np.nan)
 
-
-    return best_combo, chi_squared_array
+    return best_combo, np.array(chi_squared_array)
 
 
 def FormatOutput(particles):
@@ -195,8 +196,8 @@ if __name__=="__main__":
         chi2_pred[i] += predicted_jets
         chi2_curves[i] += chi2_curve
         if i < 10:
-            print(chi2_pred[i], "\n")
-            print(chi2_curves[i], "\n")
+            print(chi2_pred[i])
+            print(chi2_curves[i])
 
     # Save the predictions
     print("Saving predictions")
