@@ -19,11 +19,11 @@ gStyle.SetPalette(kGreyScale)
 gROOT.GetColor(52).InvertPalette()
 
 # Make image file and open trees
-os.mkdir('{}/img'.format(training_dir))
+os.mkdir('{}/Comparison'.format(training_dir1))
 infilename = "{}/histograms.root".format(training_dir1)
 chifilename = "{}/histograms.root".format(training_dir2)
 infile = TFile.Open(infilename)
-chifie = TFile.Open(chifilename)
+chifile = TFile.Open(chifilename)
 
 def plot_observables(obs):
     # Load the histograms
@@ -54,8 +54,9 @@ def plot_observables(obs):
                   linewidth=3, markersize=0 )
     SetTH1FStyle( h_fitted, color=kBlack, markersize=0, markerstyle=20,
                   linewidth=3 )
-    SetTH1FStyle( h_chi, color=kBlack+1, fillstyle=3351, fillcolor=kGray,
+    SetTH1FStyle( h_chi, color=kBlack, fillstyle=3351, fillcolor=kGray,
                   markersize=0, markerstyle=20, linewidth=3 )
+    h_chi.SetLineColor(kWhite+8)
 
     c, pad0, pad1 = MakeCanvas()
     pad0.cd()
@@ -63,8 +64,8 @@ def plot_observables(obs):
 
     h_true.Draw("h")
     h_fitted.Draw("h same")
-    h_chi.Draw("h other")
-    hmax = 1.5 * max( [ h_true.GetMaximum(), h_fitted.GetMaximum() ] )
+    h_chi.Draw("h same")
+    hmax = 1.5 * max( [ h_true.GetMaximum(), h_fitted.GetMaximum(), h_chi.GetMaximum() ] )
     h_fitted.SetMaximum( hmax )
     h_true.SetMaximum( hmax )
     h_chi.SetMaximum( hmax )
@@ -92,10 +93,10 @@ def plot_observables(obs):
     l.SetNDC()
     l.SetTextFont(42)
     l.SetTextColor(kBlack)
-    l.DrawLatex( 0.7, 0.80, "BDLSTM KS test: %.2f" % KS1 )
-    l.DrawLatex( 0.7, 0.75, "BDLSTM #chi^{2}/NDF = %.2f" % X21 )
-    l.DrawLatex( 0.7, 0.70, "CHI2 KS test: %.2f" % KS2 )
-    l.DrawLatex( 0.7, 0.65, "CHI2 #chi^{2}/NDF = %.2f" % X22 )
+    l.DrawLatex( 0.55, 0.80, "BDLSTM KS test: %.2f" % KS1 )
+    l.DrawLatex( 0.55, 0.75, "BDLSTM #chi^{2}/NDF = %.2f" % X21 )
+    l.DrawLatex( 0.55, 0.70, "CHI2 KS test: %.2f" % KS2 )
+    l.DrawLatex( 0.55, 0.65, "CHI2 #chi^{2}/NDF = %.2f" % X22 )
 
     gPad.RedrawAxis()
 
@@ -119,7 +120,7 @@ def plot_observables(obs):
 
     c.cd()
 
-    c.SaveAs("{0}/img/{1}.png".format(training_dir, obs))
+    c.SaveAs("{0}/Comparison/{1}.png".format(training_dir1, obs))
     pad0.Close()
     pad1.Close()
     c.Close()
