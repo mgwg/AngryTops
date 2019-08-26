@@ -71,7 +71,7 @@ def ChiSquared(jets, nu, lep):
 
     chi2 =  (W_had.M() - mW)**2 / sigmaW**2 + (W_lep.M() - mW)**2 / sigmaW**2 + (t_had.M() - mT)**2 / sigmaT**2 + (t_lep.M() - mT)**2 / sigmaT**2
 
-    return chi2, [jets[0], jets[1], W_had, W_lep, t_had, t_lep]
+    return chi2
 
 
 def reconstruct(jets, nu, lep):
@@ -89,7 +89,6 @@ def reconstruct(jets, nu, lep):
     # These values will be updated in the end
     best_chi_squared = 10e9
     best_combo = combos[0]
-    best_output = None
     chi_squared_array = []
 
     # Go through all permutations of each combination and pick the best
@@ -97,12 +96,13 @@ def reconstruct(jets, nu, lep):
         combo = combos[i]
         permutes = list(itertools.permutations(combo))
         for j in range(len(permutes)):
-            permute = permutes[i]
+            permute = permutes[j]
             chi_squared = ChiSquared(permute, nu, lep)
             if chi_squared < best_chi_squared:
-                best_chi_squared, best_output = chi_squared
+                best_chi_squared = chi_squared
                 best_combo = permute
-                chi_squared_array.append(best_chi_squared)
+                chi_squared_array.append(chi_squared)
+                
     for i in range(120 - len(chi_squared_array)):
         chi_squared_array.append(np.nan)
 
