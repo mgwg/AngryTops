@@ -200,7 +200,7 @@ if __name__=="__main__":
 
     # Save the predictions
     print("Saving predictions")
-    np.savez("../CheckPoints/Chi2Model/predictions.npz" % training_dir,
+    np.savez("../CheckPoints/Chi2Model/predictions.npz",
                 input=testing_input, true=true, pred=chi2_pred, events=events)
 
     # INPUT BREAKDOWN
