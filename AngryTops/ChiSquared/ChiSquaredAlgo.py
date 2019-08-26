@@ -193,7 +193,8 @@ if __name__=="__main__":
 
     # Save the predictions
     print("Saving predictions")
-    np.savez("%s/chi2pred" % training_dir, input=testing_input, true=true, pred=chi2_pred, events=events)
+    np.savez("../CheckPoints/Chi2Model/predictions.npz" % training_dir,
+                input=testing_input, true=true, pred=chi2_pred, events=events)
 
     # INPUT BREAKDOWN
     # When I actually load in the array, it is flattened to make things easier
