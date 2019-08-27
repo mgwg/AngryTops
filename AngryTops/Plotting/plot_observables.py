@@ -8,6 +8,7 @@ from AngryTops.Plotting.PlottingHelper import *
 # INPUT
 training_dir = sys.argv[1]
 caption = sys.argv[2]
+if caption == "None": caption = None
 if len(sys.argv) > 3:
     attributes = attributes_tquark
     corr_2d = corr_2d_tquark
@@ -73,17 +74,17 @@ def plot_observables(obs):
     l.DrawLatex( 0.7, 0.75, "#chi^{2}/NDF = %.2f" % X2 )
 
     gPad.RedrawAxis()
+    if caption is not None:
+        newpad = TPad("newpad","a caption",0.1,0,1,1)
+        newpad.SetFillStyle(4000)
+        newpad.Draw()
+        newpad.cd()
+        title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
+        title.SetFillColor(16)
+        title.SetTextFont(52)
+        title.Draw()
 
-    newpad = TPad("newpad","a caption",0.1,0,1,1)
-    newpad.SetFillStyle(4000)
-    newpad.Draw()
-    newpad.cd()
-    title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
-    title.SetFillColor(16)
-    title.SetTextFont(52)
-    title.Draw()
-
-    gPad.RedrawAxis()
+        gPad.RedrawAxis()
 
     pad1.cd()
 
@@ -131,14 +132,15 @@ def plot_residuals(obs):
 
     gPad.RedrawAxis()
 
-    newpad = TPad("newpad","a caption",0.1,0,1,1)
-    newpad.SetFillStyle(4000)
-    newpad.Draw()
-    newpad.cd()
-    title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
-    title.SetFillColor(16)
-    title.SetTextFont(52)
-    title.Draw()
+    if caption is not None:
+        newpad = TPad("newpad","a caption",0.1,0,1,1)
+        newpad.SetFillStyle(4000)
+        newpad.Draw()
+        newpad.cd()
+        title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
+        title.SetFillColor(16)
+        title.SetTextFont(52)
+        title.Draw()
 
     c.cd()
 
@@ -183,14 +185,15 @@ def plot_correlations(hist_name):
 
     gPad.RedrawAxis()
 
-    newpad = TPad("newpad","a caption",0.1,0,1,1)
-    newpad.SetFillStyle(4000)
-    newpad.Draw()
-    newpad.cd()
-    title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
-    title.SetFillColor(16)
-    title.SetTextFont(52)
-    title.Draw()
+    if caption is not None:
+        newpad = TPad("newpad","a caption",0.1,0,1,1)
+        newpad.SetFillStyle(4000)
+        newpad.Draw()
+        newpad.cd()
+        title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
+        title.SetFillColor(16)
+        title.SetTextFont(52)
+        title.Draw()
 
     c.cd()
 
@@ -210,14 +213,15 @@ def plot_profile(obs):
 
     hist.Draw()
 
-    newpad = TPad("newpad","a caption",0.1,0,1,1)
-    newpad.SetFillStyle(4000)
-    newpad.Draw()
-    newpad.cd()
-    title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
-    title.SetFillColor(16)
-    title.SetTextFont(52)
-    title.Draw()
+    if caption is not None:
+        newpad = TPad("newpad","a caption",0.1,0,1,1)
+        newpad.SetFillStyle(4000)
+        newpad.Draw()
+        newpad.cd()
+        title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
+        title.SetFillColor(16)
+        title.SetTextFont(52)
+        title.Draw()
 
     c.cd()
 
