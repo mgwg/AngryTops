@@ -53,7 +53,7 @@ def plot_observables(obs):
                   linewidth=3, markersize=0 )
     SetTH1FStyle( h_fitted, color=kBlack, markersize=0, markerstyle=20,
                   linewidth=3 )
-    SetTH1FStyle( h_chi, color=kBlack, fillstyle=3351, fillcolor=kGray,
+    SetTH1FStyle( h_chi, color=kBlack+1, fillstyle=3351, fillcolor=kGray,
                   markersize=0, markerstyle=20, linewidth=3 )
 
     c, pad0, pad1 = MakeCanvas()
