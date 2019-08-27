@@ -44,13 +44,16 @@ def DrawRatio( data, prediction, chi_pred, xtitle = "", yrange=[0.4,1.6] ):
     frame.Draw()
 
     tot_unc  = MakeUncertaintyBand( prediction )
+    tot_unc_chi = MakeUncertaintyBand( chi_pred )
 
     SetTH1FStyle( tot_unc,  color=kGray+1, fillstyle=1001, fillcolor=kGray+1, linewidth=0, markersize=0 )
+    SetTH1FStyle( tot_unc_chi,  color=kGray+1, fillstyle=1002, fillcolor=kBlack, linewidth=0, markersize=0 )
 
     ratio   = MakeRatio( data, prediction, True )
     ratio_chi = MakeRatio(data, chi_pred, True)
 
     tot_unc.Draw( "e2 same" )
+    tot_unc_chi.Draw( "e2 same" )
     ratio.Draw( "p same" )
     ratio_chi.Draw("p same")
 
