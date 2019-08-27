@@ -9,8 +9,7 @@ from AngryTops.Plotting.PlottingHelper import *
 # INPUT
 training_dir1 = sys.argv[1]
 training_dir2 = sys.argv[2]
-caption = sys.argv[3]
-if len(sys.argv) > 4:
+if len(sys.argv) > 3:
     attributes = attributes_tquark
     corr_2d = corr_2d_tquark
 
@@ -56,7 +55,6 @@ def plot_observables(obs):
                   linewidth=3 )
     SetTH1FStyle( h_chi, color=kBlack, fillstyle=3351, fillcolor=kGray,
                   markersize=0, markerstyle=20, linewidth=3 )
-    h_chi.SetLineColor(kWhite+8)
 
     c, pad0, pad1 = MakeCanvas()
     pad0.cd()
@@ -93,21 +91,10 @@ def plot_observables(obs):
     l.SetNDC()
     l.SetTextFont(42)
     l.SetTextColor(kBlack)
-    l.DrawLatex( 0.55, 0.80, "BDLSTM KS test: %.2f" % KS1 )
-    l.DrawLatex( 0.55, 0.75, "BDLSTM #chi^{2}/NDF = %.2f" % X21 )
-    l.DrawLatex( 0.55, 0.70, "CHI2 KS test: %.2f" % KS2 )
-    l.DrawLatex( 0.55, 0.65, "CHI2 #chi^{2}/NDF = %.2f" % X22 )
-
-    gPad.RedrawAxis()
-
-    newpad = TPad("newpad","a caption",0.1,0,1,1)
-    newpad.SetFillStyle(4000)
-    newpad.Draw()
-    newpad.cd()
-    title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
-    title.SetFillColor(16)
-    title.SetTextFont(52)
-    title.Draw()
+    l.DrawLatex( 0.55, 0.85, "BDLSTM KS test: %.2f" % KS1 )
+    l.DrawLatex( 0.55, 0.80, "BDLSTM #chi^{2}/NDF = %.2f" % X21 )
+    l.DrawLatex( 0.55, 0.75, "CHI2 KS test: %.2f" % KS2 )
+    l.DrawLatex( 0.55, 0.70, "CHI2 #chi^{2}/NDF = %.2f" % X22 )
 
     gPad.RedrawAxis()
 
