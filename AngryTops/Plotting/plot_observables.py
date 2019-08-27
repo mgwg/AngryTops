@@ -29,7 +29,7 @@ def plot_observables(obs):
 
     # Axis titles
     xtitle = h_true.GetXaxis().GetTitle()
-    ytitle = h_true.GetYaxis().GetTitle()
+    ytitle = h_true.GetYaxis().SetTitle("A.U.")
     if h_true.Class() == TH2F.Class():
         h_true = h_true.ProfileX("pfx")
         h_true.GetYaxis().SetTitle( ytitle )

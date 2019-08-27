@@ -122,7 +122,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     # SAVING MODEL, TRAINING HISTORY AND SCALARS
     model.save('%s/simple_model.h5' % train_dir)
     model.save_weights('%s/model_weights.h5' % train_dir)
-    plot_model(model, to_file='%s/model.png' % train_dir, show_shapes=True)
+    plot_model(model, to_file='%s/model.png' % train_dir, show_shapes=True, expand_nested=False)
 
     scaler_filename = "{}/scalers.pkl".format(train_dir)
     with open( scaler_filename, "wb" ) as file_scaler:
