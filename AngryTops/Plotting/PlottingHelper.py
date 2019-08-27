@@ -47,7 +47,7 @@ def MakeCanvas(npads = 1, side = 800, split = 0.25, padding = 0.00):
     height_tot = y_plot + npads * ( y_ratio + y_padding )
     height_tot = int(height_tot)
 
-    c = TCanvas( "PredictionData", "FITTED/MC", side, height_tot )
+    c = TCanvas( "PredictionData", "PREDICTED/MC", side, height_tot )
     c.SetFrameFillStyle(4000)
     c.SetFillColor(0)
 
@@ -198,7 +198,7 @@ def DrawRatio( data, prediction, xtitle = "", yrange=[0.4,1.6] ):
     frame.GetXaxis().SetTitleOffset( 1.2 )
 
     frame.GetYaxis().SetLabelSize( 0.15 )
-    frame.GetYaxis().SetTitle( "#frac{FITTED}{MC}" )
+    frame.GetYaxis().SetTitle( "#frac{PREDICTED}{MC}" )
     frame.GetYaxis().SetTitleSize( 0.15 )
     frame.GetYaxis().SetTitleOffset( 0.5 )
 
@@ -228,7 +228,7 @@ def MakeCanvas2( npads = 1, side = 800, padding = 0.00 ):
     height_tot = y_plot + npads * ( y_ratio + y_padding )
     height_tot = int(height_tot)
 
-    c = TCanvas( "Histogram","FITTED/MC", height_tot, height_tot )
+    c = TCanvas( "Histogram","PREDICTED/MC", height_tot, height_tot )
     c.SetFrameFillStyle(4000)
     c.SetFillColor(0)
 
