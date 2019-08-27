@@ -228,7 +228,7 @@ def MakeCanvas2( npads = 1, side = 800, padding = 0.00 ):
     height_tot = y_plot + npads * ( y_ratio + y_padding )
     height_tot = int(height_tot)
 
-    c = TCanvas( "Histogram","PREDICTED/MC", height_tot, height_tot )
+    c = TCanvas( "Histogram","PREDICT/MC", height_tot, height_tot )
     c.SetFrameFillStyle(4000)
     c.SetFillColor(0)
 

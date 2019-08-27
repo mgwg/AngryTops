@@ -73,7 +73,7 @@ def ChiSquared(jets, nu, lep):
 
     chi2 =  (W_had.M() - mW)**2 / sigmaW**2 + (W_lep.M() - mW)**2 / sigmaW**2 + (t_had.M() - mT)**2 / sigmaT**2 + (t_lep.M() - mT)**2 / sigmaT**2
 
-    particles = [W_had, W_lep, t_had, t_lep]
+    particles = [jets[0], jets[1], W_had, W_lep, t_had, t_lep]
     return chi2, particles
 
 
@@ -118,17 +118,39 @@ def FormatOutput(particles):
     """
     Format list of TLorentz vectors into a (2 x 3) matrix
     """
-    t_had = particles[-2]
-    t_lep = particles[-1]
+    b_had = particles[0]
+    b_lep = particles[1]
+    W_had = particles[2]
+    W_lep = particles[3]
+    t_had = particles[4]
+    t_lep = particles[5]
 
     # Fill Output
-    output = np.zeros(shape=(2, 3))
-    output[0,0] += t_had.Px()
-    output[0,1] += t_had.Py()
-    output[0,2] += t_had.Pz()
-    output[1,0] += t_lep.Px()
-    output[1,1] += t_lep.Py()
-    output[1,2] += t_lep.Pz()
+    output = np.zeros(shape=(6, 3))
+    # Hadronic b
+    output[0,0] += b_had.Px()
+    output[0,1] += b_had.Py()
+    output[0,2] += b_had.Pz()
+    # Leptonic b
+    output[1,0] += b_lep.Px()
+    output[1,1] += b_lep.Py()
+    output[1,2] += b_lep.Pz()
+    # Hadronic W
+    output[2,0] += W_had.Px()
+    output[2,1] += W_had.Py()
+    output[2,2] += W_had.Pz()
+    # Leptionic W
+    output[3,0] += W_lep.Px()
+    output[3,1] += W_lep.Py()
+    output[3,2] += W_lep.Pz()
+    # Hadronic t
+    output[4,0] += t_had.Px()
+    output[4,1] += t_had.Py()
+    output[4,2] += t_had.Pz()
+    # Leptonic t
+    output[5,0] += t_lep.Px()
+    output[5,1] += t_lep.Py()
+    output[5,2] += t_lep.Pz()
 
     return output
 
@@ -194,7 +216,7 @@ if __name__=="__main__":
 
     # Predict each event
     print("Making predictions")
-    chi2_pred = np.zeros(shape=(jets.shape[0], 2, 3))
+    chi2_pred = np.zeros(shape=(jets.shape[0], 6, 3))
     chi2_curves = np.zeros(shape=(jets.shape[0], 120))
     for i in range(jets.shape[0]):
         predicted_jets, chi2_curve = Predict(lep[i], jets[i])
