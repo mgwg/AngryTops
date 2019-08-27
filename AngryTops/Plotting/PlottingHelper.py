@@ -47,7 +47,7 @@ def MakeCanvas(npads = 1, side = 800, split = 0.25, padding = 0.00):
     height_tot = y_plot + npads * ( y_ratio + y_padding )
     height_tot = int(height_tot)
 
-    c = TCanvas( "PredictionData", "PREDICTED/MC", side, height_tot )
+    c = TCanvas( "PredictionData", "PREDICT/MC", side, height_tot )
     c.SetFrameFillStyle(4000)
     c.SetFillColor(0)
 
