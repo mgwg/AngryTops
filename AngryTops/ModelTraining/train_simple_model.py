@@ -33,7 +33,6 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     EPOCHES: # of EPOCHES to train
     scaling: Choose between 'standard' or 'minmax' scaling of input and outputs
     rep: The representation of the data. ie. pxpypz vs ptetaphiM vs ...
-    multi_input: True if the model is a multi_input model. False otherwise.
     sort_jets: True or False. Sort jets by first btag, then Mass.
     shuffle: If in kwargs.keys, will shuffle the training/testing data.
     weights: The weights for the weighted MSE. Defaults to [1,1,1,1,1,1]
@@ -68,7 +67,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) \
                         = get_input_output(input_filename=csv_file, **kwargs)
     print("Shape of training events: ", training_input.shape)
-    print("Shape of testing events: ", testing_input.shape)
+    print("Shape of testing events: ", testing_output.shape)
 
     ###########################################################################
     # BUILDING / TRAINING MODEL
@@ -110,7 +109,6 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     try:
         history = model.fit(training_input, training_output,  epochs=EPOCHES,
                             batch_size=BATCH_SIZE, validation_split=0.1,
-                            steps_per_epoch=5000,
                             callbacks = [early_stopping, cp_callback]
                             )
     except KeyboardInterrupt:
@@ -154,13 +152,8 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
         print(e)
 
     predictions = model.predict(testing_input)
-    if kwargs['multi_input']:
-        np.savez("%s/predictions" % train_dir, lep=testing_input[0],
-                 jet=testing_input[1], true=testing_output, pred=predictions,
-                 events=event_testing)
-    else:
-        np.savez("{}/predictions".format(train_dir), input=testing_input,
-                 true=testing_output, pred=predictions, events=event_testing)
+    np.savez("{}/predictions".format(train_dir), input=testing_input,
+             true=testing_output, pred=predictions, events=event_testing)
 
     ###########################################################################
     # SAVE TRAINING HISTORY

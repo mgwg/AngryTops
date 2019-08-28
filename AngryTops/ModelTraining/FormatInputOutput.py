@@ -20,11 +20,10 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, par
     # Inputs
     scaling = kwargs['scaling']
     rep = kwargs['rep']
-    multi_input = kwargs['multi_input']
     sort_jets = kwargs['sort_jets']
 
     # Load jets, leptons and output columns of the correct representation
-    input_filename = "csv/{}".format(input_filename)
+    input_filename = "../csv/{}".format(input_filename)
     df = pd.read_csv(input_filename, names=column_names)
     if 'shuffle' in kwargs.keys():
         print("Shuffling training/testing data")
@@ -62,15 +61,11 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, par
     met_info = df[input_event_info]
     training_event_info = met_info[:cut]
     testing_event_info = met_info[cut:]
-    if multi_input:
-        training_input = [training_event_info, jets_norm[:cut]]
-        testing_input = [testing_event_info, jets_norm[cut:]]
-    else:
-        input = np.concatenate((lep_norm, jets_norm), axis=1)
-        #input = input[input[:,-2].argsort(kind='mergesort')]
-        #input = input[input[:,-1].argsort(kind='mergesort')]
-        training_input = input[:cut]
-        testing_input = input[cut:]
+    input = np.concatenate((lep_norm, jets_norm), axis=1)
+    #input = input[input[:,-2].argsort(kind='mergesort')]
+    #input = input[input[:,-1].argsort(kind='mergesort')]
+    training_input = input[:cut]
+    testing_input = input[cut:]
 
     # EVENT INFO
     event_info = df[features_event_info].values
@@ -105,6 +100,6 @@ if __name__=='__main__':
     (training_input, training_output), (testing_input, testing_output), \
            (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) = \
     get_input_output(input_filename="topreco_5dec2.csv", scaling='minmax',
-    rep="experimental", multi_input=False, sort_jets=False, particle="pxpypzEM")
+    rep="experimental", sort_jets=False)
     print(training_input.shape)
     print(training_output.shape)
