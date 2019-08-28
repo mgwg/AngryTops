@@ -47,26 +47,17 @@ def DrawRatio( data, prediction, chi_pred, xtitle = "", yrange=[0.4,1.6] ):
     tot_unc_chi = MakeUncertaintyBand( chi_pred )
 
     SetTH1FStyle( tot_unc,  color=kGray+1, fillstyle=1001, fillcolor=kGray+1, linewidth=0, markersize=0 )
-    SetTH1FStyle( tot_unc_chi,  color=kGray+1, fillstyle=1002, fillcolor=kBlack, linewidth=0, markersize=0 )
+    SetTH1FStyle( tot_unc_chi,  color=kBlack+1, fillstyle=1001, fillcolor=kBlack+1, linewidth=0, markersize=0 )
 
     ratio   = MakeRatio( data, prediction, True )
-    ratio_chi = MakeRatio(data, chi_pred, True)
+    ratio_chi = MakeRatio(chi_pred, data, True)
 
+    ratio.SetMarkerColor(kBlack)
+    ratio_chi.SetMarkerColor(kRed)
     tot_unc.Draw( "e2 same" )
     tot_unc_chi.Draw( "e2 same" )
     ratio.Draw( "p same" )
     ratio_chi.Draw("p same")
-
-    leg = TLegend( 0.20, 0.80, 0.50, 0.90 )
-    leg.SetFillColor(0)
-    leg.SetFillStyle(0)
-    leg.SetBorderSize(0)
-    leg.SetTextFont(42)
-    leg.SetTextSize(0.05)
-    leg.AddEntry( ratio, "#frac{BDLSTM}{MC}", "f" )
-    leg.AddEntry( ratio_chi, "#frac{CHI2}{MC}", "f" )
-    leg.SetY1( leg.GetY1() - 0.05 * leg.GetNRows() )
-    leg.Draw()
 
     gPad.RedrawAxis()
 
@@ -113,13 +104,14 @@ def plot_observables(obs):
         Normalize(h_true)
         Normalize(h_fitted)
         Normalize(h_chi)
+        h_true.GetYaxis().SetTitle("A.U.")
 
     # Set Style
     SetTH1FStyle( h_true,  color=kGray+2, fillstyle=1001, fillcolor=kGray,
                   linewidth=3, markersize=0 )
     SetTH1FStyle( h_fitted, color=kBlack, markersize=0, markerstyle=20,
                   linewidth=3 )
-    SetTH1FStyle( h_chi, color=kBlack, fillstyle=3351, fillcolor=kGray,
+    SetTH1FStyle( h_chi, color=kBlack+1, fillstyle=3351, fillcolor=kGray,
                   markersize=0, markerstyle=20, linewidth=3 )
 
     c, pad0, pad1 = MakeCanvas()

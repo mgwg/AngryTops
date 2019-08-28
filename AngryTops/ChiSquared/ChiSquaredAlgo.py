@@ -204,6 +204,7 @@ if __name__=="__main__":
     true = true.reshape(true.shape[0], true.shape[1]*true.shape[2])
     true = output_scalar.inverse_transform(true)
     true = true.reshape(true.shape[0], -1, 3)
+    print("True shape: {}".format(true.shape))
 
     # UNDO Scaling
     testing_input = testing_input.reshape(true.shape[0], 6, 6)
