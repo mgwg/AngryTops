@@ -155,22 +155,22 @@ def FormatOutput(particles):
 
     # Fill Output
     output = np.zeros(shape=(6, 3))
-    # Hadronic b
-    output[0,0] += b_had.Px()
-    output[0,1] += b_had.Py()
-    output[0,2] += b_had.Pz()
-    # Leptonic b
-    output[1,0] += b_lep.Px()
-    output[1,1] += b_lep.Py()
-    output[1,2] += b_lep.Pz()
     # Hadronic W
-    output[2,0] += W_had.Px()
-    output[2,1] += W_had.Py()
-    output[2,2] += W_had.Pz()
+    output[0,0] += W_had.Px()
+    output[0,1] += W_had.Py()
+    output[0,2] += W_had.Pz()
     # Leptionic W
-    output[3,0] += W_lep.Px()
-    output[3,1] += W_lep.Py()
-    output[3,2] += W_lep.Pz()
+    output[1,0] += W_lep.Px()
+    output[1,1] += W_lep.Py()
+    output[1,2] += W_lep.Pz()
+    # Hadronic b
+    output[2,0] += b_had.Px()
+    output[2,1] += b_had.Py()
+    output[2,2] += b_had.Pz()
+    # Leptonic b
+    output[3,0] += b_lep.Px()
+    output[3,1] += b_lep.Py()
+    output[3,2] += b_lep.Pz()
     # Hadronic t
     output[4,0] += t_had.Px()
     output[4,1] += t_had.Py()
