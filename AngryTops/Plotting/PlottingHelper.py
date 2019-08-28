@@ -246,3 +246,22 @@ def MakeCanvas2( npads = 1, side = 800, padding = 0.00 ):
 
     pad0.cd()
     return c, pad0
+
+def ChiSquared(h_mc, h_pred):
+    """
+    Calculates the chi-squared values between hist 0 and hist 1.
+    @Parameters:
+    h_mc: TH1 Class. The first histogram
+    h_pred: TH1 Class. The second histogram
+    """
+    nbins = h_mc.GetNBins()
+    chi2 = 0
+    for i in range(1, nbins + 1):
+        y_mc = h_mc.GetBinContent(i)
+        dy_mc = h_mc.GetBinError(i)
+        y_pred = h_pred.GetBinContent(i)
+        dy_pred = h_pred.GetBinError(i)
+        sigma = np.sqrt(dy_mc**2 + dy_pred**2)
+        chi = np.power(y_mc - y_pred, 2) / sigma
+        chi2 += chi
+    return chi2 / (nbins - 1)

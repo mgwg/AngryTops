@@ -24,7 +24,7 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, par
     sort_jets = kwargs['sort_jets']
 
     # Load jets, leptons and output columns of the correct representation
-    input_filename = "../csv/{}".format(input_filename)
+    input_filename = "csv/{}".format(input_filename)
     df = pd.read_csv(input_filename, names=column_names)
     if 'shuffle' in kwargs.keys():
         print("Shuffling training/testing data")
@@ -105,6 +105,6 @@ if __name__=='__main__':
     (training_input, training_output), (testing_input, testing_output), \
            (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) = \
     get_input_output(input_filename="topreco_5dec2.csv", scaling='minmax',
-    rep="experimental", multi_input=False, sort_jets=False, particle="t_had_lep_cart")
+    rep="experimental", multi_input=False, sort_jets=False, particle="pxpypzEM")
     print(training_input.shape)
     print(training_output.shape)
