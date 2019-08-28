@@ -91,7 +91,6 @@ def reconstruct(jets, nu, lep):
 
     # These values will be updated in the end
     best_chi_squared = 10e9
-    best_combo = combos[0]
     best_particles = None
     chi_squared_array = []
 
@@ -104,7 +103,6 @@ def reconstruct(jets, nu, lep):
             chi_squared, particles = ChiSquared(permute, nu, lep)
             if chi_squared < best_chi_squared:
                 best_chi_squared = chi_squared
-                best_combo = permute
                 chi_squared_array.append(chi_squared)
                 best_particles = particles
 
@@ -112,6 +110,35 @@ def reconstruct(jets, nu, lep):
         chi_squared_array.append(np.nan)
 
     return best_particles, np.array(chi_squared_array)
+
+
+def Predict(lep_arr, jet_arr):
+    """
+    Produced (2 x 3) output array given (6 x 6) input array.
+    Calls helper functions in the following order:
+    MakeNeutrino -> reconstruct -> FormatOutput
+    """
+    # Construct lepton
+    lep = TLorentzVector()
+    l_px = lep_arr[0]
+    l_py = lep_arr[1]
+    l_pz = lep_arr[2]
+    l_E = np.sqrt(l_px**2 + l_py**2 + l_pz**2)
+    l_T = lep_arr[3]  # We will remove this in later iterations
+    met_pt = lep_arr[4]
+    met_phi = lep_arr[5]
+    lep.SetPxPyPzE(l_pz, l_py, l_pz, l_E)
+    # Skip the fourth element which is the lepton arival time of flight
+    nu = MakeNeutrino(lep_arr[0], lep_arr[1], lep_arr[2], lep_arr[4], lep_arr[5])
+
+    jets = []
+    for i in range(len(jet_arr)):
+        j = TLorentzVector()
+        j.SetPxPyPzE(jet_arr[i,0], jet_arr[i,1],jet_arr[i,2], jet_arr[i,3])
+        jets.append(j)
+
+    best_particles, chi_squared = reconstruct(jets, nu, lep)
+    return FormatOutput(best_particles), chi_squared
 
 
 def FormatOutput(particles):
@@ -154,33 +181,6 @@ def FormatOutput(particles):
 
     return output
 
-def Predict(lep_arr, jet_arr):
-    """
-    Produced (2 x 3) output array given (6 x 6) input array.
-    Calls helper functions in the following order:
-    MakeNeutrino -> reconstruct -> FormatOutput
-    """
-    # Construct lepton
-    lep = TLorentzVector()
-    l_px = lep_arr[0]
-    l_py = lep_arr[1]
-    l_pz = lep_arr[2]
-    l_E = np.sqrt(l_px**2 + l_py**2 + l_pz**2)
-    l_T = lep_arr[3]  # We will remove this in later iterations
-    met_pt = lep_arr[4]
-    met_phi = lep_arr[5]
-    lep.SetPxPyPzE(l_pz, l_py, l_pz, l_E)
-    # Skip the fourth element which is the lepton arival time of flight
-    nu = MakeNeutrino(lep_arr[0], lep_arr[1], lep_arr[2], lep_arr[4], lep_arr[5])
-
-    jets = []
-    for i in range(len(jet_arr)):
-        j = TLorentzVector()
-        j.SetPxPyPzE(jet_arr[i,0], jet_arr[i,1],jet_arr[i,2], jet_arr[i,3])
-        jets.append(j)
-
-    best_combo, chi_squared = reconstruct(jets, nu, lep)
-    return FormatOutput(best_combo), chi_squared
 
 if __name__=="__main__":
     # Fixed variables dependant on my pipeline
