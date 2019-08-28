@@ -128,7 +128,7 @@ def Predict(lep_arr, jet_arr):
     l_T = lep_arr[3]  # We will remove this in later iterations
     met_pt = lep_arr[4]
     met_phi = lep_arr[5]
-    lep.SetPxPyPzE(l_pz, l_py, l_pz, l_E)
+    lep.SetPxPyPzE(l_px, l_py, l_pz, l_E)
     # Skip the fourth element which is the lepton arival time of flight
     nu = MakeNeutrino(lep_arr[0], lep_arr[1], lep_arr[2], lep_arr[4], lep_arr[5])
 
@@ -180,7 +180,7 @@ def FormatOutput(particles):
     output[5,1] += t_lep.Py()
     output[5,2] += t_lep.Pz()
 
-    if W_lep.Pt() == 0:
+    if b_had.Pt() < 20 or b_lep.Pt() < 20:
         print(output)
 
     return output
