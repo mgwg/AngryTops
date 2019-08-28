@@ -184,8 +184,8 @@ def Predict(lep_arr, jet_arr):
 
 if __name__=="__main__":
     # Fixed variables dependant on my pipeline
-    training_dir = "../CheckPoints/t_part_36_input"
-    rep = "experimental"
+    training_dir = "../CheckPoints/bdlstm.MoreEvents"
+    rep = "pxpypzEM"
 
     # Load Predictions and Scalars
     print("Loading predictions and scalars")
