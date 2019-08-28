@@ -85,8 +85,9 @@ def reconstruct(jets, nu, lep):
     (b_had_E,  b_lep_E,  W_had_j1_E,  W_had_j2_px)
     """
     # If only four jet event, remove the additional jet
-    if np.all(jets[-1] == 0):
+    if jets[-1].Px() == 0 and jets[-1].Px() == 0 and jets[-1].Pz() == 0:
         jets = jets[:-1]
+        #print("Cutting 0 jet")
     combos = list(itertools.combinations(jets, 4))
 
     # These values will be updated in the end
@@ -151,6 +152,9 @@ def FormatOutput(particles):
     output[5,0] += t_lep.Px()
     output[5,1] += t_lep.Py()
     output[5,2] += t_lep.Pz()
+
+    if W_lep.Pt() == 0:
+        print(output)
 
     return output
 
