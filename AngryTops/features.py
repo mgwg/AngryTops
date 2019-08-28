@@ -281,7 +281,7 @@ representations = {
  "ptetaphiEM": [lep_ptetaphiE, jets_ptetaphiEM, output_columns_ptetaphi],
  "ptetaphiE": [lep_ptetaphiE, jets_ptetaphiEM, output_columns_ptetaphiE],
  "ptetaphiM": [lep_ptetaphiE, jets_ptetaphiEM, output_columns_ptetaphiE],
- "experimental": [lep_cart, jets_pxpypzE]
+ "experimental": [lep_cart, jets_pxpypzE, output_columns_pxpypz]
  }
 
  # A disctionary containing output information for each particle

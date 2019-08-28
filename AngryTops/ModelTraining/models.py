@@ -50,7 +50,7 @@ def BDLSTM_model(metrics, losses, **kwargs):
     model.add(BatchNormalization())
     model.add(TimeDistributed(Dense(int(config['size6']), activation=config['act3'])))
     model.add(BatchNormalization())
-    model.add(MaxPooling1D(pool_size=3))
+    #model.add(MaxPooling1D(pool_size=3))
     model.add(TimeDistributed(Dense(3, activation='linear')))
 
     optimizer = tf.keras.optimizers.Adam(10e-4, decay=0.)
