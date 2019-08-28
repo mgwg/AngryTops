@@ -16,11 +16,8 @@ def getRawHists(fname):
         plt.title("Number of Events: {}".format(shape[0]))
         plt.ylabel("Counts")
         plt.yscale('log')
-        if "_" in fname:
-            output_filedir = fname.split("/")[-1].split(".")[0]
-            plt.savefig("Plots/{0}/{1}.png".format(output_filedir, column_names[i]))
-        else:
-            plt.savefig("/Plots/original/{}.png".format(column_names[i]))
+        plt.savefig("Plots/topreco_5dec3/{0}.png".format(column_names[i]))
+        
 
 if __name__ == "__main__":
-    getRawHists(fname='csv/topreco_5dec2.csv')
+    getRawHists(fname='csv/topreco_5dec3.csv')
