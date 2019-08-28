@@ -142,9 +142,9 @@ def plot_observables(obs):
     leg.Draw()
 
     KS1 = h_true.KolmogorovTest( h_fitted )
-    X21 = h_true.Chi2Test( h_fitted, "UU NORM CHI2/NDF" ) # UU NORM
+    X21 = ChiSquared(h_true, h_fitted) # UU NORM
     KS2 = h_true.KolmogorovTest( h_chi )
-    X22 = h_true.Chi2Test( h_chi, "UU NORM CHI2/NDF" ) # UU NORM
+    X22 = ChiSquared(h_true, h_chi) # UU NORM
     l = TLatex()
     l.SetNDC()
     l.SetTextFont(42)
