@@ -254,7 +254,7 @@ def ChiSquared(h_mc, h_pred):
     h_mc: TH1 Class. The first histogram
     h_pred: TH1 Class. The second histogram
     """
-    nbins = h_mc.GetNBins()
+    nbins = h_mc.GetNbinsX()
     chi2 = 0
     for i in range(1, nbins + 1):
         y_mc = h_mc.GetBinContent(i)

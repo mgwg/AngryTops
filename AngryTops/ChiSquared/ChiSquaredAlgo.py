@@ -85,8 +85,9 @@ def reconstruct(jets, nu, lep):
     (b_had_E,  b_lep_E,  W_had_j1_E,  W_had_j2_px)
     """
     # If only four jet event, remove the additional jet
-    if np.all(jets[-1] == 0):
+    if jets[-1].Px() == 0 and jets[-1].Px() == 0 and jets[-1].Pz() == 0:
         jets = jets[:-1]
+        #print("Cutting 0 jet")
     combos = list(itertools.combinations(jets, 4))
 
     # These values will be updated in the end
@@ -127,7 +128,7 @@ def Predict(lep_arr, jet_arr):
     l_T = lep_arr[3]  # We will remove this in later iterations
     met_pt = lep_arr[4]
     met_phi = lep_arr[5]
-    lep.SetPxPyPzE(l_pz, l_py, l_pz, l_E)
+    lep.SetPxPyPzE(l_px, l_py, l_pz, l_E)
     # Skip the fourth element which is the lepton arival time of flight
     nu = MakeNeutrino(lep_arr[0], lep_arr[1], lep_arr[2], lep_arr[4], lep_arr[5])
 
@@ -178,6 +179,9 @@ def FormatOutput(particles):
     output[5,0] += t_lep.Px()
     output[5,1] += t_lep.Py()
     output[5,2] += t_lep.Pz()
+
+    if b_had.Pt() < 20 or b_lep.Pt() < 20:
+        print(output)
 
     return output
 
