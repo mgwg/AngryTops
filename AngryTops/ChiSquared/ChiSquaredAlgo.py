@@ -185,7 +185,6 @@ def FormatOutput(particles):
 if __name__=="__main__":
     # Fixed variables dependant on my pipeline
     training_dir = "../CheckPoints/bdlstm.MoreEvents"
-    rep = "pxpypzEM"
 
     # Load Predictions and Scalars
     print("Loading predictions and scalars")
