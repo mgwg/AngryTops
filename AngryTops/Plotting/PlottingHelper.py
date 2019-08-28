@@ -263,11 +263,7 @@ def ChiSquared(h_mc, h_pred):
         dy_pred = h_pred.GetBinError(i)
         sigma = np.sqrt(dy_mc**2 + dy_pred**2)
         chi = np.power(y_mc - y_pred, 2) / sigma
-        if chi != chi:
-            print("y_mc: {}".format(y_mc))
-            print("dy_mc: {}".format(dy_mc))
-            print("y_pred: {}".format(y_pred))
-            print("dy_pred: {}".format(dy_pred))
-            print("sigma: {}".format(sigma))
-        chi2 += chi
+        # Prevents nan values from being added
+        if chi == chi:
+            chi2 += chi
     return chi2 / (nbins - 1)
