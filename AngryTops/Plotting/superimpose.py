@@ -50,7 +50,7 @@ def DrawRatio( data, prediction, chi_pred, xtitle = "", yrange=[0.4,1.6] ):
     SetTH1FStyle( tot_unc_chi,  color=kBlack+1, fillstyle=1001, fillcolor=kBlack+1, linewidth=0, markersize=0 )
 
     ratio   = MakeRatio( data, prediction, True )
-    ratio_chi = MakeRatio(chi_pred, data, True)
+    ratio_chi = MakeRatio(data, chi_pred, True)
 
     ratio.SetMarkerColor(kBlack)
     ratio_chi.SetMarkerColor(kRed)
@@ -75,7 +75,10 @@ gStyle.SetPalette(kGreyScale)
 gROOT.GetColor(52).InvertPalette()
 
 # Make image file and open trees
-os.mkdir('{}/Comparison'.format(training_dir1))
+try:
+    os.mkdir('{}/Comparison'.format(training_dir1))
+except Exception as e:
+    print("Overwriting existing files")
 infilename = "{}/histograms.root".format(training_dir1)
 chifilename = "{}/histograms.root".format(training_dir2)
 infile = TFile.Open(infilename)
