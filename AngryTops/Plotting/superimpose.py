@@ -126,7 +126,7 @@ def plot_observables(obs):
     leg.SetTextSize(0.05)
     leg.AddEntry( h_true, "MG5+Py8", "f" )
     leg.AddEntry( h_fitted, "BLSTM Model", "f" )
-    leg.AddEntry( h_chi, "#chi^2-Fit", "f" )
+    leg.AddEntry( h_chi, "#chi^{2}-Fit", "f" )
     leg.SetY1( leg.GetY1() - 0.05 * leg.GetNRows() )
     leg.Draw()
 
