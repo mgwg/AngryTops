@@ -6,26 +6,12 @@ import numpy as np
 from AngryTops.features import *
 from AngryTops.Plotting.PlottingHelper import *
 
-def DrawRatio( data, prediction, chi_pred, xtitle = "", yrange=[0.4,1.6] ):
+def DrawTwoRatio( data, prediction, chi_pred, xtitle = "", yrange=[0.4,1.6] ):
 
-    if data.Class() in [ TGraph().Class(), TGraphErrors.Class(), TGraphAsymmErrors().Class() ]:
-       n = data.GetN()
-       x = Double()
-       y = Double()
-       data.GetPoint( 0, x, y )
-       exl = data.GetErrorXlow( 0 )
-       xmin = x - exl
-       data.GetPoint( n-1, x, y )
-       exh = data.GetErrorXhigh( n-1 )
-       xmax = x + exh
-    else:
-       xmin = data.GetXaxis().GetXmin()
-       xmax = data.GetXaxis().GetXmax()
+    xmin = data.GetXaxis().GetXmin()
+    xmax = data.GetXaxis().GetXmax()
 
-    # tt diffxs 7 TeV: [ 0.4, 1.6 ]
-#    frame = gPad.DrawFrame( xmin, 0.7, xmax, 1.3 )
     frame = gPad.DrawFrame( xmin, yrange[0], xmax, yrange[1] ) #2.1
-#    frame = gPad.DrawFrame( xmin, 0.3, xmax, 2.2 )
 
     frame.GetXaxis().SetNdivisions(508)
     frame.GetYaxis().SetNdivisions(504)
@@ -49,14 +35,14 @@ def DrawRatio( data, prediction, chi_pred, xtitle = "", yrange=[0.4,1.6] ):
     SetTH1FStyle( tot_unc,  color=kGray+1, fillstyle=1001, fillcolor=kGray+1, linewidth=0, markersize=0 )
     SetTH1FStyle( tot_unc_chi,  color=kBlack+1, fillstyle=1001, fillcolor=kBlack+1, linewidth=0, markersize=0 )
 
-    ratio   = MakeRatio( data, prediction, True )
-    ratio_chi = MakeRatio(data, chi_pred, True)
+    ratio   = MakeRatio( data, prediction)
+    ratio_chi = MakeRatio(data, chi_pred)
 
     ratio.SetMarkerColor(kBlack)
     ratio_chi.SetMarkerColor(kRed)
-    tot_unc.Draw( "e2 same" )
+    tot_unc.Draw( "e2" )
     tot_unc_chi.Draw( "e2 same" )
-    ratio.Draw( "p same" )
+    ratio.Draw( "p" )
     ratio_chi.Draw("p same")
 
     gPad.RedrawAxis()
@@ -162,7 +148,7 @@ def plot_observables(obs):
     pad1.cd()
 
     yrange = [0.4, 1.6]
-    frame, tot_unc, ratio, ratio_chi = DrawRatio(h_fitted, h_true, h_chi, xtitle, yrange)
+    frame, tot_unc, ratio, ratio_chi = DrawTwoRatio(h_true, h_fitted, h_chi, xtitle, yrange)
 
     gPad.RedrawAxis()
 
