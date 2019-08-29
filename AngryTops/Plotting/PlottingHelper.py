@@ -120,17 +120,10 @@ def MakeUncertaintyBand( prediction ):
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-def MakeRatio( data, prediction, setgr = True ):
+def MakeRatio( data, prediction):
     ratio = TGraphAsymmErrors()
-
-    if setgr:
-        SetTH1FStyle( ratio, color=data.GetMarkerColor(), markerstyle=data.GetMarkerStyle() )
-
-    if data.Class() in [ TGraph().Class(), TGraphErrors.Class(), TGraphAsymmErrors().Class() ]:
-       nbins = data.GetN()
-    else:
-       nbins = data.GetNbinsX()
-
+    SetTH1FStyle( ratio, color=data.GetMarkerColor(), markerstyle=data.GetMarkerStyle() )
+    nbins = data.GetNbinsX()
     i = 0
     for n in range( nbins ):
         x_mc = Double()
@@ -138,25 +131,16 @@ def MakeRatio( data, prediction, setgr = True ):
         x_data = Double()
         y_data = Double()
 
-        if prediction.Class() in [ TGraph().Class(), TGraphErrors.Class(), TGraphAsymmErrors().Class() ]:
-           prediction.GetPoint( n, x_mc, y_mc )
-        else:
-           x_mc = prediction.GetBinCenter( n+1 )
-           y_mc = prediction.GetBinContent( n+1 )
+        x_mc = data.GetBinCenter( n+1 )
+        y_mc = data.GetBinContent( n+1 )
 
         if y_mc == 0.: continue
 
-        if data.Class() in [ TGraph().Class(), TGraphErrors.Class(), TGraphAsymmErrors().Class() ]:
-           data.GetPoint( n, x_data, y_data )
-           bw = data.GetErrorXlow(n) + data.GetErrorXhigh(n)
-           dy_u = data.GetErrorYhigh(n)
-           dy_d = data.GetErrorYlow(n)
-        else:
-           x_data = data.GetBinCenter( n+1 )
-           y_data = data.GetBinContent( n+1 )
-           bw = data.GetBinWidth( n+1 )
-           dy_u = data.GetBinError( n+1 )
-           dy_d = data.GetBinError( n+1 )
+        x_data = prediction.GetBinCenter( n+1 )
+        y_data = prediction.GetBinContent( n+1 )
+        bw = data.GetBinWidth( n+1 )
+        dy_u = data.GetBinError( n+1 )
+        dy_d = data.GetBinError( n+1 )
 
         #print '    setting point %i: %f' % (i,y_data/y_mc,)
 
