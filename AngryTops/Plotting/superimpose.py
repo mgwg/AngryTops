@@ -130,18 +130,16 @@ def plot_observables(obs):
     leg.SetY1( leg.GetY1() - 0.05 * leg.GetNRows() )
     leg.Draw()
 
-    KS1 = h_true.KolmogorovTest( h_fitted )
+    #KS1 = h_true.KolmogorovTest( h_fitted )
     X21 = ChiSquared(h_true, h_fitted) # UU NORM
-    KS2 = h_true.KolmogorovTest( h_chi )
+    #KS2 = h_true.KolmogorovTest( h_chi )
     X22 = ChiSquared(h_true, h_chi) # UU NORM
     l = TLatex()
     l.SetNDC()
     l.SetTextFont(42)
     l.SetTextColor(kBlack)
-    l.DrawLatex( 0.55, 0.85, "BLSTM KS test: %.2f" % KS1 )
-    l.DrawLatex( 0.55, 0.80, "BLSTM #chi^{2}/NDF = %.2f" % X21 )
-    l.DrawLatex( 0.55, 0.75, "CHI2 KS test: %.2f" % KS2 )
-    l.DrawLatex( 0.55, 0.70, "CHI2 #chi^{2}/NDF = %.2f" % X22 )
+    l.DrawLatex( 0.55, 0.85, "BLSTM #chi^{2}/NDF = %.2f" % X21 )
+    l.DrawLatex( 0.55, 0.80, "CHI2 #chi^{2}/NDF = %.2f" % X22 )
 
     gPad.RedrawAxis()
 
