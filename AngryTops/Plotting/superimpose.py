@@ -32,14 +32,14 @@ def DrawTwoRatio( data, prediction, chi_pred, xtitle = "", yrange=[0.4,1.6] ):
     tot_unc  = MakeUncertaintyBand( prediction )
     tot_unc_chi = MakeUncertaintyBand( chi_pred )
 
-    SetTH1FStyle( tot_unc,  color=kGray+1, fillstyle=1001, fillcolor=kGray+1, linewidth=0, markersize=0 )
-    SetTH1FStyle( tot_unc_chi,  color=kBlack+1, fillstyle=1001, fillcolor=kBlack+1, linewidth=0, markersize=0 )
+    SetTH1FStyle( tot_unc,  color=kRed, fillstyle=1001, fillcolor=kGray+1, linewidth=0, markersize=0 )
+    SetTH1FStyle( tot_unc_chi,  color=kBlack, fillstyle=1001, fillcolor=kBlack+1, linewidth=0, markersize=0 )
 
     ratio   = MakeRatio( data, prediction)
     ratio_chi = MakeRatio(data, chi_pred)
 
-    ratio.SetMarkerColor(kBlack)
-    ratio_chi.SetMarkerColor(kRed)
+    ratio.SetMarkerColor(kRed)
+    ratio_chi.SetMarkerColor(kBlack)
     tot_unc.Draw( "e2" )
     tot_unc_chi.Draw( "e2 same" )
     ratio.Draw( "p" )
