@@ -143,13 +143,13 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     # MAKE AND SAVE PREDICTIONS
     # Try to roll back model by 1 epoche to the least overfit version
     # Might fail if EPOCHES == 1.
-    try:
-        model.load_weights('checkpoints/weights-improvement-0%i.ckpt' % history.epoch.size)
-        model.save('%s/best_model.h5' % train_dir)
-        model.save_weights('%s/best_weights.h5' % train_dir)
-    except Exception as e:
-        print("Failed to roll model back by 1 EPOCHE")
-        print(e)
+    # try:
+    #     model.load_weights('checkpoints/weights-improvement-0%i.ckpt' % history.epoch.size)
+    #     model.save('%s/best_model.h5' % train_dir)
+    #     model.save_weights('%s/best_weights.h5' % train_dir)
+    # except Exception as e:
+    #     print("Failed to roll model back by 1 EPOCHE")
+    #     print(e)
 
     predictions = model.predict(testing_input)
     np.savez("{}/predictions".format(train_dir), input=testing_input,
