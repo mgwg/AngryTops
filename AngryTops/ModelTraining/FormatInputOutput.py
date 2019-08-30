@@ -29,6 +29,10 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, par
         print("Shuffling training/testing data")
         df = shuffle(df)
     lep = df[representations[rep][0]].values
+    # Set the lepton arrival time of flight to zero
+    print(lep.shape)
+    print("Setting lepton arrival time of flight to zero")
+    lep[:,3] *= 0
     jets = df[representations[rep][1]].values
     if single_output is None and particle is None:
         truth = df[representations[rep][2]].values
