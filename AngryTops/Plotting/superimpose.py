@@ -98,10 +98,11 @@ def plot_observables(obs):
     # Set Style
     SetTH1FStyle( h_true,  color=kGray+2, fillstyle=1001, fillcolor=kGray,
                   linewidth=3, markersize=0 )
-    SetTH1FStyle( h_fitted, color=kBlack, markersize=0, markerstyle=20,
+    SetTH1FStyle( h_fitted, color=kRed, markersize=0, markerstyle=20,
                   linewidth=3 )
-    SetTH1FStyle( h_chi, color=kBlack+1, fillstyle=3351, fillcolor=kGray,
+    SetTH1FStyle( h_chi, color=kBlack, fillstyle=3351, fillcolor=kGray,
                   markersize=0, markerstyle=20, linewidth=3 )
+    h_chi.SetLineStyle(kDashed)
 
     c, pad0, pad1 = MakeCanvas()
     pad0.cd()
