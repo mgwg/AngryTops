@@ -89,7 +89,7 @@ def plot_observables(obs):
     pad1.cd()
 
     yrange = [0.4, 1.6]
-    frame, tot_unc, ratio = DrawRatio(h_fitted, h_true, xtitle, yrange)
+    frame, tot_unc, ratio = DrawRatio(h_true, h_fitted, xtitle, yrange)
 
     gPad.RedrawAxis()
 

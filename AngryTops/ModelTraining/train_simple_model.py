@@ -46,20 +46,32 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
         train_dir = "../CheckPoints/{}".format(train_dir)
         checkpoint_dir = "{}/checkpoints".format(train_dir)
     checkpoint_path = tf.train.latest_checkpoint(checkpoint_dir)
+    # Get the number of epochs from the input parameter
     EPOCHES = kwargs["EPOCHES"]
+    # Get the representation: pxpypzEM or petaphiEM
+    rep = kwargs["rep"]
+    # Get the scaling type
+    scaling = kwargs["scaling"]
+
     BATCH_SIZE = 32
+
+    print("\n\nArchitecture: {}".format(model_name))
+    print("Total Number of Epochs: {}".format(EPOCHES))
+    print("Representation: {}".format(rep))
+    print("Scaling: {}\n".format(scaling))
     print("Saving files in: {}".format(train_dir))
     print("Checkpoint Path: ", checkpoint_path)
 
     ###########################################################################
     # LOGGING
-    try:
-        log = open("{}/log.txt".format(train_dir), 'w')
-    except Exception as e:
-        os.mkdir(train_dir)
-        log = open("{}/log.txt".format(train_dir), 'w')
-    if log_training:
-        sys.stdout = log
+
+    #try:
+    #    log = open("{}/log.txt".format(train_dir), 'w')
+    #except Exception as e:
+    #    os.mkdir(train_dir)
+    #    log = open("{}/log.txt".format(train_dir), 'w')
+    #if log_training:
+    #    sys.stdout = log
 
     ###########################################################################
     # LOADING / PRE-PROCESSING DATA
@@ -94,26 +106,26 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
             model = tf.keras.models.load_model("%s/simple_model.h5" % train_dir,
                                                custom_objects=custom_metrics)
             print("Loaded weights from previous session")
-            print("Loaded weights from previous session", file=sys.stderr)
+    #        print("Loaded weights from previous session", file=sys.stderr)
         except Exception as e:
             print(e)
-            print(e, file=sys.stderr)
+    #        print(e, file=sys.stderr)
 
     print(model.summary())
 
     # Checkpoint saving / Model training
     filepath = checkpoint_dir + "/weights-improvement-{epoch:02d}.ckpt"
     print("Checkpoints saved in: ", filepath)
-    cp_callback = ModelCheckpoint(filepath, monitor='val_loss', save_weights_only=False, verbose=1)
-    early_stopping = EarlyStopping(monitor='val_loss', patience=3)
+    cp_callback = ModelCheckpoint(filepath, monitor='val_loss', save_weights_only=False, verbose=2)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=100)
     try:
         history = model.fit(training_input, training_output,  epochs=EPOCHES,
                             batch_size=BATCH_SIZE, validation_split=0.1,
-                            callbacks = [early_stopping]
+                            callbacks = [early_stopping], verbose = 2
                             )
     except KeyboardInterrupt:
         print("Training_inerrupted")
-        print("Training_inerrupted", file=sys.stderr)
+    #    print("Training_inerrupted", file=sys.stderr)
         history = None
 
     ###########################################################################
@@ -128,14 +140,14 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
       pickle.dump(lep_scalar, file_scaler, protocol=2)
       pickle.dump(output_scalar, file_scaler, protocol=2)
     print("INFO: scalers saved to file:", scaler_filename)
-    print("INFO: scalers saved to file:", scaler_filename, file=sys.stderr)
+    # print("INFO: scalers saved to file:", scaler_filename, file=sys.stderr)
 
     ###########################################################################
     # EVALUATING MODEL
     try:
-        test_acc = model.evaluate(testing_input, testing_output)
+        test_acc = model.evaluate(testing_input, testing_output, verbose=2)
         print('\nTest accuracy:', test_acc)
-        print('\nTest accuracy:', test_acc, file=sys.stderr)
+    #    print('\nTest accuracy:', test_acc, file=sys.stderr)
     except Exception as e:
         print(e)
 
@@ -169,8 +181,9 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     #     h=layer.get_weights()
     #     print (g)
     #     print (h)
-    sys.stdout = sys.__stdout__
-    log.close()
+    
+    # sys.stdout = sys.__stdout__
+    # log.close()
 
 if __name__ == "__main__":
     print("Compiled")
