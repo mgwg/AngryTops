@@ -187,7 +187,7 @@ def plot_observables(fitted, true):
 
     # set legend labels
     if "_fitted" in fitted and "_true" in true:
-        leg_true = "MG5+Py8 t"
+        leg_true = "MG5+Py8 W+b"
         leg_fitted = "Predicted W+b"
     elif "_fitted" in fitted and "_fitted" in true: 
         leg_true = "Predicted t"
@@ -309,10 +309,10 @@ if __name__==   "__main__":
     infilename_plot = "{}/histograms_W_plus_b.root".format(training_dir)
     infile_plot = TFile.Open(infilename_plot)
 
-    # plot_observables('Wb_had_E_fitted', 'Wb_had_E_true')
-    # plot_observables('Wb_lep_E_fitted', 'Wb_lep_E_true')
-    plot_observables('Wb_had_E_fitted', 't_had_E_fitted')
-    plot_observables('Wb_lep_E_fitted', 't_lep_E_fitted')
+    plot_observables('Wb_had_E_fitted', 'Wb_had_E_true')
+    plot_observables('Wb_lep_E_fitted', 'Wb_lep_E_true')
+    # plot_observables('Wb_had_E_fitted', 't_had_E_fitted')
+    # plot_observables('Wb_lep_E_fitted', 't_lep_E_fitted')
     plot_observables('Wb_had_E_fitted', 't_had_E_true')
     plot_observables('Wb_lep_E_fitted', 't_lep_E_true')  
     plot_observables('Wb_had_E_true', 't_had_E_true')
