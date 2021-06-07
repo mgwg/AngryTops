@@ -187,7 +187,7 @@ def plot_observables(fitted, true):
 
     # set legend labels
     if "_fitted" in fitted and "_true" in true:
-        leg_true = "MG5+Py8 W+b"
+        leg_true = "MG5+Py8 t"
         leg_fitted = "Predicted W+b"
     elif "_fitted" in fitted and "_fitted" in true: 
         leg_true = "Predicted t"
