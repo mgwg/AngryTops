@@ -413,7 +413,7 @@ for key in trueLists:
   else:
       unit = '[GeV]'
 
-  qq = TGraphQQ(len(trueLists[key]), np.array(trueLists[key]), len(fittedLists[key]), np.array(fittedLists[key]))
+  qq = TGraphQQ(len(fittedLists[key]), np.array(fittedLists[key]), len(trueLists[key]), np.array(trueLists[key]))
 
   c1 = TCanvas()
 
