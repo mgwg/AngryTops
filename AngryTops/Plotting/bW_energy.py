@@ -309,12 +309,14 @@ if __name__==   "__main__":
     infilename_plot = "{}/histograms_W_plus_b.root".format(training_dir)
     infile_plot = TFile.Open(infilename_plot)
 
-    plot_observables('Wb_had_E_fitted', 'Wb_had_E_true')
-    plot_observables('Wb_lep_E_fitted', 'Wb_lep_E_true')
+    # plot_observables('Wb_had_E_fitted', 'Wb_had_E_true')
+    # plot_observables('Wb_lep_E_fitted', 'Wb_lep_E_true')
     plot_observables('Wb_had_E_fitted', 't_had_E_fitted')
     plot_observables('Wb_lep_E_fitted', 't_lep_E_fitted')
+    plot_observables('Wb_had_E_fitted', 't_had_E_true')
+    plot_observables('Wb_lep_E_fitted', 't_lep_E_true')  
     plot_observables('Wb_had_E_true', 't_had_E_true')
-    plot_observables('Wb_lep_E_true', 't_lep_E_true')    
+    plot_observables('Wb_lep_E_true', 't_lep_E_true')  
 
     # Draw 2D Correlations
     corr_2d = ["corr_tp_had_E", "corr_tp_lep_E", "corr_pp_had_E", "corr_pp_lep_E", "corr_tt_had_E", "corr_tt_lep_E"]

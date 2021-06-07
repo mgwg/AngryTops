@@ -22,7 +22,7 @@ def MakeP4_lep(y,m):
     p4 = TLorentzVector()
     p0 = y[0]
     p1 = y[1]
-    p2 = y[2]
+    p2 = y[3]
     E = np.sqrt(p0**2 + p1**2 + p2**2 + m**2)
     p4.SetPxPyPzE(p0, p1, p2, E)
     return p4
@@ -82,13 +82,13 @@ if scaling:
       fitted = fitted.reshape(fitted.shape[0], particles_shape[0], particles_shape[1])
       # Rescale the jets array
       jets_lep = jets[:,:6]
-      jets_jets = jets[:,6:]
-      jets_jets = jets_jets.reshape((jets_jets.shape[0],5,6))
-      jets_jets = np.delete(jets_jets, 5, 2)
-      jets_jets = jets_jets.reshape((jets_jets.shape[0], 25))
+      jets_jets = jets[:,6:] # remove muon column
+      jets_jets = jets_jets.reshape((jets_jets.shape[0],5,6)) # reshape to 5 x 6 array
+      jets_jets = np.delete(jets_jets, 5, 2) # delete the b-tagging states
+      jets_jets = jets_jets.reshape((jets_jets.shape[0], 25)) # reshape into 25 element long array
       jets_lep = lep_scalar.inverse_transform(jets_lep)
-      jets_jets = jets_scalar.inverse_transform(jets_jets)
-      jets_jets = jets_jets.reshape((jets_jets.shape[0],5,5))#I think this is the final 6x6 array the arxiv paper was talking about
+      jets_jets = jets_scalar.inverse_transform(jets_jets) # scale values ... ?
+      jets_jets = jets_jets.reshape((jets_jets.shape[0],5,5))#I think this is the final 6x6 array the arxiv paper was talking about - 5 x 5 array containing jets (1 per row) and corresponding px, py, pz, E, m
 
 if not scaling:
     jets_lep = jets[:,:6]
@@ -261,7 +261,7 @@ def make_histograms():
     h_W_lep_met_arr_t = []
     h_W_lep_met_arr_p = []
 
-    for i in range(n_events):
+    for i in range(n_events): # loop through every event
         if ( n_events < 10 ) or ( (i+1) % int(float(n_events)/10.)  == 0 ):
             perc = 100. * i / float(n_events)
             print("INFO: Event %-9i  (%3.0f %%)" % ( i, perc ))
@@ -292,7 +292,7 @@ def make_histograms():
         jet_4_vect = MakeP4(jet_4[i], jet_4[i][4])
         jet_5_vect = MakeP4(jet_5[i], jet_5[i][4])
         
-        jets.append([])
+        jets.append([]) # add list containing jets of correspoonding event
         jets[i].append(jet_1_vect)
         jets[i].append(jet_2_vect)
         jets[i].append(jet_3_vect)
@@ -411,7 +411,7 @@ def make_histograms():
         W_had_dist_true = 10000000
         #W_lep_true_pT = 0
         #W_lep_dist_true = 10000000
-        for k in range(len(jets[i])):
+        for k in range(len(jets[i])): # loop through each of the jets to find the minimum distance for each particle
             b_had_dphi_true = min(np.abs(b_had_true.Phi()-jets[i][k].Phi()), 2*np.pi-np.abs(b_had_true.Phi()-jets[i][k].Phi()))
             b_had_deta_true = b_had_true.Eta()-jets[i][k].Eta()
             b_had_d_true = np.sqrt(b_had_dphi_true**2+b_had_deta_true**2)
@@ -465,7 +465,7 @@ def make_histograms():
         corr_jets_dist = 0.
         corr_p_jets_dist = 0.
 
-        if (b_lep_dist_true <= b_lep_dist_t_lim):
+        if (b_lep_dist_true <= b_lep_dist_t_lim): # if minimum distance is less than the tolearance limits, everything is ok
             corr_jets_dist = corr_jets_dist + 1
             good_b_lep = good_b_lep + 1
         else:
@@ -578,7 +578,7 @@ def make_histograms():
     bad_b_lep = 0.
     bad_W_had = 0.
     bad_W_lep = 0.
-    for i in range(n_events):
+    for i in range(n_events): 
         if (h_b_lep_arr[i] <= b_lep_dist_t_lim):
             good_b_lep = good_b_lep + 1
         else:
