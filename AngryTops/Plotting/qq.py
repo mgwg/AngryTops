@@ -413,6 +413,7 @@ for key in trueLists:
   else:
       unit = '[GeV]'
 
+  # plot fitted vs true 
   qq = TGraphQQ(len(fittedLists[key]), np.array(fittedLists[key]), len(trueLists[key]), np.array(trueLists[key]))
 
   c1 = TCanvas()
@@ -460,8 +461,6 @@ for key in trueLists:
         # crop to [-i, i] because of symmetry
         qq.GetPoint(1, lower[0], lower[1])
         qq.GetPoint(n-1, upper[0], upper[1])
-        print(lower[0], upper[0])
-        print(lower[1], upper[1])
 
     c2 = TCanvas()
     qq.GetXaxis().SetRangeUser(lower[0]*crop, upper[0]*crop)
