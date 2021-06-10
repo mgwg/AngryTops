@@ -376,6 +376,10 @@ labels = {'W_had_px': 'Hadronic W p_{x}',
 ################################################################################
 # MAKE PLOTS
 
+# decrease label size on axes
+gStyle.SetLabelSize(0.02)
+gStyle.SetLabelSize(0.02, 'Y')
+
 try:
     os.mkdir('{}/qq_plots'.format(training_dir))
 except Exception as e:
@@ -400,12 +404,6 @@ l.SetTextSize(0.03)
 l.SetTextColor(kBlack)
 
 for key in trueLists:
-  # sort because points need to be in order to get correct indices
-  if crop:
-    trueLists[key].sort()
-    fittedLists[key].sort()
-    n = len(trueLists[key])
-
   if '_y' in key:
       unit = '#eta'
   elif '_phi' in key:
@@ -416,7 +414,8 @@ for key in trueLists:
   # plot fitted vs true 
   qq = TGraphQQ(len(fittedLists[key]), np.array(fittedLists[key]), len(trueLists[key]), np.array(trueLists[key]))
 
-  c1 = TCanvas()
+  c1 = TCanvas("c1", key, 800, 800)
+  c1.SetLeftMargin( 0.18 )
 
   qq.SetMarkerStyle(20)
   qq.SetMarkerSize(1)
@@ -427,6 +426,22 @@ for key in trueLists:
   qq.GetXaxis().SetTitle("True {}".format(unit)) 
   qq.GetYaxis().SetTitle("Predicted {}".format(unit))
 
+  # change scale to be 1:1, may need to adjust padding based on run
+  if '_m' in key:
+      pad = 0.0001
+  else:
+      pad = 0.1
+  if max(trueLists[key]) > max(fittedLists[key]):
+      upper = qq.GetXaxis().GetXmax()
+  else:
+      upper = max(fittedLists[key])*(1+pad)
+  if min(trueLists[key]) < min(fittedLists[key]):
+      lower = qq.GetXaxis().GetXmin()
+  else:
+      lower = min(fittedLists[key])*(1-pad)
+
+  qq.GetXaxis().SetLimits(lower, upper)
+  qq.GetYaxis().SetRangeUser(lower, upper)
   qq.Draw()
 
   # set y=x line to same range as variable
@@ -434,37 +449,24 @@ for key in trueLists:
   line.Draw("same")
 
   # draw legend
-  l.DrawLatex( 0.15, 0.65, scaling)
-  l.DrawLatex( 0.15, 0.7, representation)
-  l.DrawLatex( 0.15, 0.75, total_epochs)
-  l.DrawLatex( 0.15, 0.8, architecture)
+  l.DrawLatex( 0.24, 0.65, scaling)
+  l.DrawLatex( 0.24, 0.7, representation)
+  l.DrawLatex( 0.24, 0.75, total_epochs)
+  l.DrawLatex( 0.24, 0.8, architecture)
   # Take the date of the run from the third input to make_plots.sh 
-  l.DrawLatex( 0.15, 0.85, sys.argv[3]) 
+  l.DrawLatex( 0.24, 0.85, sys.argv[3]) 
   gPad.RedrawAxis()
 
   c1.SaveAs("{}/qq_plots/qq_{}.png".format(training_dir, key))
   c1.Close()
 
-  if crop:
-    upper = (Double(0), Double(0))
-    lower = (Double(0), Double(0))
+  if crop  and not '_m' in key:
+    lower = qq.GetXaxis().GetXmin()*crop
+    upper = qq.GetXaxis().GetXmax()*crop
 
-    if '_m' in key:
-          continue     
-
-    elif '_E' in key or '_pt' in key:
-        # variables starting at 0
-        lower = (0, 0)
-        qq.GetPoint(n-1, upper[0], upper[1])
-    else:
-        # px, py, pz, y, m
-        # crop to [-i, i] because of symmetry
-        qq.GetPoint(1, lower[0], lower[1])
-        qq.GetPoint(n-1, upper[0], upper[1])
-
-    c2 = TCanvas()
-    qq.GetXaxis().SetRangeUser(lower[0]*crop, upper[0]*crop)
-    qq.GetYaxis().SetRangeUser(lower[1]*crop, upper[1]*crop)
+    c2 = TCanvas("c2", key, 800, 800)
+    qq.GetXaxis().SetRangeUser(lower, upper)
+    qq.GetYaxis().SetRangeUser(lower, upper)
     qq.Draw()
 
     # set y=x line to same range as variable
@@ -472,13 +474,13 @@ for key in trueLists:
     line.Draw("same")
 
     # draw legend
-    l.DrawLatex( 0.15, 0.6, "Zoom: {}".format(crop))
-    l.DrawLatex( 0.15, 0.65, scaling)
-    l.DrawLatex( 0.15, 0.7, representation)
-    l.DrawLatex( 0.15, 0.75, total_epochs)
-    l.DrawLatex( 0.15, 0.8, architecture)
+    l.DrawLatex( 0.24, 0.6, "Zoom: {}".format(crop))
+    l.DrawLatex( 0.24, 0.65, scaling)
+    l.DrawLatex( 0.24, 0.7, representation)
+    l.DrawLatex( 0.24, 0.75, total_epochs)
+    l.DrawLatex( 0.24, 0.8, architecture)
     # Take the date of the run from the third input to make_plots.sh 
-    l.DrawLatex( 0.15, 0.85, sys.argv[3]) 
+    l.DrawLatex( 0.24, 0.85, sys.argv[3]) 
     gPad.RedrawAxis()
 
     c2.SaveAs("{}/qq_plots/cropped/qq_crop_{}.png".format(training_dir, key))
