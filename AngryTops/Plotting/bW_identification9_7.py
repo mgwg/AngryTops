@@ -196,9 +196,6 @@ def make_histograms():
     h_t_lep_true.SetTitle("t Leptonic #phi distances, True vs Observed;true leptonic (radians);A.U.")
     h_t_had_true.SetTitle("t Hadronic #eta-#phi distances, True vs Observed;true hadronic (radians);A.U.")
 
-    # phi_W_lep_true.Fill(np.float(W_lep_true.Phi()))
-    # phi_W_lep_obs.Fill(np.float(lep_phi))
-
     jets = []
 
     b_lep_dist_t_lim = 0.39
@@ -292,9 +289,6 @@ def make_histograms():
         jets[i].append(jet_4_vect)
         jets[i].append(jet_5_vect)
 
-        # met_obs = np.sqrt(2*jet_mu[i][4]*jet_mu_vect.Pt()*(1 - np.cos(jet_mu[i][5])))
-        # met_true = np.sqrt(2*W_lep_true.Pt()*W_lep_true.Et()*(1 - np.cos(W_lep_true.Phi())))
-        # met_pred = np.sqrt(2*W_lep_fitted.Pt()*W_lep_fitted.Et()*(1 - np.cos(W_lep_fitted.Phi())))
         # Observed transverse mass distribution is square root of 2* Etmiss 
         #  * Transverse angle between daughter particles, assuming that they are massless.
         
@@ -310,8 +304,8 @@ def make_histograms():
         obs_daughter_angle = np.arccos(np.dot(muon_pT_obs, nu_pT_obs) / norm(muon_pT_obs) / norm(nu_pT_obs))
         met_obs = np.sqrt(2*jet_mu[i][4]*jet_mu_vect.Pt()*(1 - np.cos(obs_daughter_angle))) 
         # Pt^2 = Px^2 + Py^2
-        met_true = np.sqrt(m_W**2 + W_lep_true.Pt()**2) # np.sqrt(2*W_lep_true.Pt()*W_lep_true.Et()*(1 - np.cos(W_lep_true.Phi())))
-        met_pred = np.sqrt(m_W**2 + W_lep_fitted.Pt()**2) # np.sqrt(2*W_lep_fitted.Pt()*W_lep_fitted.Et()*(1 - np.cos(W_lep_fitted.Phi())))
+        met_true = np.sqrt(W_lep_true.E()**2 - W_lep_true.Pz()**2) #np.sqrt(m_W**2 + W_lep_true.Pt()**2)
+        met_pred = np.sqrt(W_lep_fitted.E()**2 - W_lep_fitted.Pz()**2) #np.sqrt(m_W**2 + W_lep_fitted.Pt()**2)
 
         b_lep_dphi = min(np.abs(b_lep_true.Phi()-b_lep_fitted.Phi()), 2*np.pi-np.abs(b_lep_true.Phi()-b_lep_fitted.Phi()))
         b_lep_deta = b_lep_true.Eta()-b_lep_fitted.Eta()
