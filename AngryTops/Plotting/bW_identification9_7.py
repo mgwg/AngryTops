@@ -299,13 +299,13 @@ def make_histograms():
         # Convert missing transverse energy to a momentum
         missing_px = jet_mu[i][4]*np.cos(jet_mu[i][5]) # x-component of missing momentum
         missing_py = jet_mu[i][4]*np.sin(jet_mu[i][5]) # y-component of missing momentum
-        nu_pT_obs = [ missing_px, missing_px] # Observed neutrino transverse momentum from missing energy.
+        nu_pT_obs = [ missing_px, missing_py] # Observed neutrino transverse momentum from missing energy.
         # Now, calculate the angle.
         obs_daughter_angle = np.arccos(np.dot(muon_pT_obs, nu_pT_obs) / norm(muon_pT_obs) / norm(nu_pT_obs))
         met_obs = np.sqrt(2*jet_mu[i][4]*jet_mu_vect.Pt()*(1 - np.cos(obs_daughter_angle))) 
         # Pt^2 = Px^2 + Py^2
-        met_true = np.sqrt(W_lep_true.E()**2 - W_lep_true.Pz()**2) #np.sqrt(m_W**2 + W_lep_true.Pt()**2)
-        met_pred = np.sqrt(W_lep_fitted.E()**2 - W_lep_fitted.Pz()**2) #np.sqrt(m_W**2 + W_lep_fitted.Pt()**2)
+        met_true = W_lep_true.Mt()
+        met_pred = W_lep_fitted.Mt()
 
         b_lep_dphi = min(np.abs(b_lep_true.Phi()-b_lep_fitted.Phi()), 2*np.pi-np.abs(b_lep_true.Phi()-b_lep_fitted.Phi()))
         b_lep_deta = b_lep_true.Eta()-b_lep_fitted.Eta()
