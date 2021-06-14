@@ -45,6 +45,51 @@ def MakeP4(y, m):
         raise Exception("Invalid Representation Given: {}".format(representation))
     return p4
 
+def compare_true_pred(parton, truth, fitted, dist_lim, phi_lim, R):
+    '''
+    (str, TLorentzVector(), TLorentzVector(), float, float) -> Bool
+    str should be one of b_had, b_lep, W_had, W_lep
+    dist_lim and phi_lim are the R and phi tolerance limits
+    '''
+    phi_recon = False
+    eta_recon = False
+    R_recon = False
+
+    # only compare Phi distances for Leptonic W
+    if parton == 'W_lep':
+        if ( np.abs( truth.Phi() - fitted.Phi() ) <= 37.0/50.0 ):
+            R_recon = True
+        elif R <= (dist_lim + 0.2):
+            R_recon = True
+
+    elif parton in ['b_lep', 'b_had', 'W_had']:
+        # compare phi distances
+        if ( np.abs( truth.Phi() - fitted.Phi() ) <= phi_lim ):
+            phi_recon = True
+
+        # compare eta distances
+        if parton == 'b_lep':
+            if ( (truth.Eta() - 4.0/5.0) <= fitted.Eta() ) and ( fitted.Eta() <= (truth.Eta()*15.0/14.0 + 13.0/14.0) ):
+                if ( np.abs(truth.Eta()) <= 1.8 ) and ( fitted.Eta() <= 2.0 ) and ( -1.8 <= fitted.Eta() ):
+                    eta_recon = True
+        elif parton == 'b_had':
+            if ( np.abs( truth.Eta()*5.0/4.0 - fitted.Eta() ) <= 19.0/20.0 ):
+                if ( np.abs(truth.Eta()) <= 2.2 ) and ( np.abs(fitted.Eta()) <= 2.4 ):
+                    eta_recon = True  
+        elif parton == 'W_had':
+            if ( np.abs(truth.Eta() - fitted.Eta()) <= 4.0/5.0):
+                if ( np.abs(truth.Eta()) <= 1.8 ) and ( np.abs(fitted.Eta()) <= 1.8 ):
+                    eta_recon = True             
+
+        # use eta and phi to determine overall reconstructability
+        # R_recon is False if phi and eta are both False, or if it is greater than the limit + 0.2
+        if (phi_recon == True) and (eta_recon == True):
+            R_recon = True
+        elif R <= (dist_lim + 0.2): #checking condition is to calculate R, and to see if it fits within a constant, hard-coded R value, as determined from the TvO distributions created
+                R_recon = True
+
+    return R_recon
+
 # load data
 predictions = np.load(outputdir + 'predictions.npz')
 jets = predictions['input']
@@ -110,82 +155,81 @@ y_fitted_t_had = fitted[:,4,:]
 y_fitted_t_lep = fitted[:,5,:]
 
 n_events = true.shape[0]
-w = 1
+
+# make histograms to be fillled
+hists = {}
+
+hists['leptonic_W_transverse_mass_observed'] = TH1F("W_lep_met_d","W Leptonic Transverse Mass, Observed", 50, 0, 250)#120)
+hists['leptonic_W_transverse_mass_observed'].SetTitle("W Leptonic Transverse Mass, Observed;Leptonic (GeV);A.U.")
+hists['leptonic_W_transverse_mass_true'] = TH1F("W_lep_met_d","W Leptonic Transverse Mass, Truth", 50, 0, 250) #0, 120)
+hists['leptonic_W_transverse_mass_true'].SetTitle("W Leptonic Transverse Mass, Truth;Leptonic (GeV);A.U.")
+hists['leptonic_W_transverse_mass_predicted'] = TH1F("W_lep_met_d","W Leptonic Transverse Mass, Predicted", 50, 0, 250) #0, 120)
+hists['leptonic_W_transverse_mass_predicted'].SetTitle("W Leptonic Transverse Mass, Predicted;Leptonic (GeV);A.U.")
+
+hists['leptonic_W_true_dist'] = TH1F("h_W_lep_true","W Leptonic Distances, True vs Observed", 50, 0, 3)
+hists['leptonic_W_true_dist'].SetTitle("W Leptonic #phi distances, True vs Observed;true leptonic (radians);A.U.")
+hists['leptonic_W_dist_pred_v_true_recon'] = TH1F("W_lep_d","W Leptonic Distances, Predicted vs Truth Reconstructed", 50, 0, 3)
+hists['leptonic_W_dist_pred_v_true_recon'].SetTitle("W Leptonic #phi distances, Predicted vs Truth Reconstructed;Leptonic (radians);A.U.")
+hists['leptonic_W_dist_pred_v_true_part_recon'] = TH1F("W_lep_d","W Leptonic Distances, Predicted vs Truth Partially Reconstructed", 50, 0, 3)
+hists['leptonic_W_dist_pred_v_true_part_recon'].SetTitle("W Leptonic #phi distances, Predicted vs Truth Partially Reconstructed;Leptonic (radians);A.U.")
+hists['leptonic_W_dist_pred_v_true_un_recon'] = TH1F("W_lep_d","W Leptonic Distances, Predicted vs Truth Not Reconstructed", 50, 0, 3)
+hists['leptonic_W_dist_pred_v_true_un_recon'].SetTitle("W Leptonic #phi distances, Predicted vs Truth Not Reconstructed;Leptonic (radians);A.U.")
+
+hists['hadronic_W_true_pT_dist'] = TH1F("h_pT_W_had_true","W Hadronic p_T, True vs Observed", 50, -500, 500)
+hists['hadronic_W_true_dist'] = TH1F("h_W_had_true","W Hadronic Distances, True vs Observed", 50, 0, 3)
+hists['hadronic_W_true_dist'].SetTitle("W Hadronic #eta-#phi distances, True vs Observed;true hadronic (radians);A.U.")
+hists['hadronic_W_dist_pred_v_true_recon'] = TH1F("W_had_d","W Hadronic Distances Predicted vs Truth Reconstructed", 50, 0, 3)
+hists['hadronic_W_dist_pred_v_true_recon'].SetTitle("W Hadronic #eta-#phi distances, Predicted vs Truth Reconstructed;Hadronic (radians);A.U.")
+hists['hadronic_W_dist_pred_v_true_part_recon'] = TH1F("W_had_d","W Hadronic Distances Predicted vs Truth Partially Reconstructed", 50, 0, 3)
+hists['hadronic_W_dist_pred_v_true_part_recon'].SetTitle("W Hadronic #eta-#phi distances, Predicted vs Truth Partially Reconstructed;Hadronic (radians);A.U.")
+hists['hadronic_W_dist_pred_v_true_un_recon'] = TH1F("W_had_d","W Hadronic Distances Predicted vs Truth Not Reconstructed", 50, 0, 3)
+hists['hadronic_W_dist_pred_v_true_un_recon'].SetTitle("W Hadronic #eta-#phi distances, Predicted vs Truth Not Reconstructed;Hadronic (radians);A.U.")
+
+hists['leptonic_b_true_dist'] = TH1F("h_b_lep_true","b Leptonic Distances, True vs Observed", 50, 0, 3)
+hists['leptonic_b_true_dist'].SetTitle("b Leptonic #eta-#phi distances, True vs Observed;true leptonic (radians);A.U.")
+hists['leptonic_b_dist_pred_v_true_recon'] = TH1F("b_lep_d","b Leptonic Distances, Predicted vs Truth Reconstructed", 50, 0, 3)
+hists['leptonic_b_dist_pred_v_true_recon'].SetTitle("b Leptonic #eta-#phi distances, Predicted vs Truth Reconstructed;Leptonic (R);A.U.")
+hists['leptonic_b_dist_pred_v_true_part_recon'] = TH1F("b_lep_d","b Leptonic Distances, Predicted vs Truth Partially Reconstructed", 50, 0, 3)
+hists['leptonic_b_dist_pred_v_true_part_recon'].SetTitle("b Leptonic #eta-#phi distances, Predicted vs Truth Partially Reconstructed;Leptonic (R);A.U.")
+hists['leptonic_b_dist_pred_v_true_un_recon'] = TH1F("b_lep_d","b Leptonic Distances, Predicted vs Truth Not Reconstructed", 50, 0, 3)
+hists['leptonic_b_dist_pred_v_true_un_recon'].SetTitle("b Leptonic #eta-#phi distances, Predicted vs Truth Not Reconstructed;Leptonic (R);A.U.")
+
+hists['hadronic_b_true_dist'] = TH1F("h_b_had_true","b Hadronic Distances, True vs Observed", 50, 0, 3)
+hists['hadronic_b_true_dist'].SetTitle("b Hadronic #eta-#phi distances, True vs Observed;true hadronic (radians);A.U.")
+hists['hadronic_b_dist_pred_v_true_recon'] = TH1F("b_had_d","b Hadronic Distances, Predicted vs Truth Reconstructed", 50, 0, 3)
+hists['hadronic_b_dist_pred_v_true_recon'].SetTitle("b Hadronic #eta-#phi distances, Predicted vs Truth Reconstructed;Hadronic (R);A.U.")
+hists['hadronic_b_dist_pred_v_true_part_recon'] = TH1F("b_had_d","b Hadronic Distances, Predicted vs Truth Partially Reconstructed", 50, 0, 3)
+hists['hadronic_b_dist_pred_v_true_part_recon'].SetTitle("b Hadronic #eta-#phi distances, Predicted vs Truth Partially Reconstructed;Hadronic (R);A.U.")
+hists['hadronic_b_dist_pred_v_true_un_recon'] = TH1F("b_had_d","b Hadronic Distances, Predicted vs Truth Not Reconstructed", 50, 0, 3)
+hists['hadronic_b_dist_pred_v_true_un_recon'].SetTitle("b Hadronic #eta-#phi distances, Predicted vs Truth Not Reconstructed;Hadronic (R);A.U.")
+
+hists['leptonic_t_true_dist'] = TH1F("h_t_lep_true","t Leptonic Distances, True vs Observed", 50, 0, 3)
+hists['leptonic_t_true_dist'].SetTitle("t Leptonic #phi distances, True vs Observed;true leptonic (radians);A.U.")
+hists['leptonic_t_dist_pred_v_true_recon'] = TH1F("t_lep_d","b Leptonic Distances, Predicted vs Truth Reconstructed", 50, 0, 3)
+hists['leptonic_t_dist_pred_v_true_recon'].SetTitle("t Leptonic #phi distances, Predicted vs Truth Reconstructed;Leptonic (R);A.U.")
+hists['leptonic_t_dist_pred_v_true_part_recon'] = TH1F("t_lep_d","b Leptonic Distances, Predicted vs Truth Partially Reconstructed", 50, 0, 3)
+hists['leptonic_t_dist_pred_v_true_part_recon'].SetTitle("t Leptonic #phi distances, Predicted vs Truth Partially Reconstructed;Leptonic (R);A.U.")
+hists['leptonic_t_dist_pred_v_true_un_recon'] = TH1F("t_lep_d","b Leptonic Distances, Predicted vs Truth Not Reconstructed", 50, 0, 3)
+hists['leptonic_t_dist_pred_v_true_un_recon'].SetTitle("t Leptonic #phi distances, Predicted vs Truth Not Reconstructed;Leptonic (R);A.U.")
+
+hists['hadronic_t_true_dist'] = TH1F("h_t_had_true","t Hadronic Distances, True vs Observed", 50, 0, 3)
+hists['hadronic_t_true_dist'].SetTitle("t Hadronic #eta-#phi distances, True vs Observed;true hadronic (radians);A.U.")
+hists['hadronic_t_dist_pred_v_true_recon'] = TH1F("t_had_d","t Hadronic Distances, Predicted vs Truth Reconstructed", 50, 0, 3)
+hists['hadronic_t_dist_pred_v_true_recon'].SetTitle("t Hadronic #eta-#phi distances, Predicted vs Truth Reconstructed;Hadronic (R);A.U.")
+hists['hadronic_t_dist_pred_v_true_part_recon'] = TH1F("t_had_d","t Hadronic Distances, Predicted vs Truth Partially Reconstructed", 50, 0, 3)
+hists['hadronic_t_dist_pred_v_true_part_recon'].SetTitle("t Hadronic #eta-#phi distances, Predicted vs Truth Partially Reconstructed;Hadronic (R);A.U.")
+hists['hadronic_t_dist_pred_v_true_un_recon'] = TH1F("t_had_d","t Hadronic Distances, Predicted vs Truth Not Reconstructed", 50, 0, 3)
+hists['hadronic_t_dist_pred_v_true_un_recon'].SetTitle("t Hadronic #eta-#phi distances, Predicted vs Truth Not Reconstructed;Hadronic (R);A.U.")
 
 def make_histograms():
-    W_lep_met_d = TH1F("W_lep_met_d","W Leptonic Transverse Mass, Observed", 50, 0, 120)
-    W_lep_met_d.SetTitle("W Leptonic Transverse Mass, Observed;Leptonic (GeV);A.U.")
-    W_lep_met_d_t = TH1F("W_lep_met_d","W Leptonic Transverse Mass, Truth", 50, 0, 120)
-    W_lep_met_d_t.SetTitle("W Leptonic Transverse Mass, Truth;Leptonic (GeV);A.U.")
-    W_lep_met_d_p = TH1F("W_lep_met_d","W Leptonic Transverse Mass, Predicted", 50, 0, 120)
-    W_lep_met_d_p.SetTitle("W Leptonic Transverse Mass, Predicted;Leptonic (GeV);A.U.")
-
-    W_lep_d = TH1F("W_lep_d","W Leptonic Distances, Predicted vs Truth Reconstructed", 50, 0, 3)
-    W_had_d = TH1F("W_had_d","W Hadronic Distances Predicted vs Truth Reconstructed", 50, 0, 3)
-    W_lep_d.SetTitle("W Leptonic #phi distances, Predicted vs Truth Reconstructed;Leptonic (radians);A.U.")
-    W_had_d.SetTitle("W Hadronic #eta-#phi distances, Predicted vs Truth Reconstructed;Hadronic (radians);A.U.")
-
-    b_lep_d = TH1F("b_lep_d","b Leptonic Distances, Predicted vs Truth Reconstructed", 50, 0, 3)
-    b_had_d = TH1F("b_had_d","b Hadronic Distances, Predicted vs Truth Reconstructed", 50, 0, 3)
-    b_lep_d.SetTitle("b Leptonic #eta-#phi distances, Predicted vs Truth Reconstructed;Leptonic (R);A.U.")
-    b_had_d.SetTitle("b Hadronic #eta-#phi distances, Predicted vs Truth Reconstructed;Hadronic (R);A.U.")
-
-    t_lep_d = TH1F("t_lep_d","b Leptonic Distances, Predicted vs Truth Reconstructed", 50, 0, 3)
-    t_had_d = TH1F("t_had_d","t Hadronic Distances, Predicted vs Truth Reconstructed", 50, 0, 3)
-    t_lep_d.SetTitle("t Leptonic #phi distances, Predicted vs Truth Reconstructed;Leptonic (R);A.U.")
-    t_had_d.SetTitle("t Hadronic #eta-#phi distances, Predicted vs Truth Reconstructed;Hadronic (R);A.U.")
-
-    W_lep_d_part = TH1F("W_lep_d","W Leptonic Distances, Predicted vs Truth Partially Reconstructed", 50, 0, 3)
-    W_had_d_part = TH1F("W_had_d","W Hadronic Distances Predicted vs Truth Partially Reconstructed", 50, 0, 3)
-    W_lep_d_part.SetTitle("W Leptonic #phi distances, Predicted vs Truth Partially Reconstructed;Leptonic (radians);A.U.")
-    W_had_d_part.SetTitle("W Hadronic #eta-#phi distances, Predicted vs Truth Partially Reconstructed;Hadronic (radians);A.U.")
-
-    b_lep_d_part = TH1F("b_lep_d","b Leptonic Distances, Predicted vs Truth Partially Reconstructed", 50, 0, 3)
-    b_had_d_part = TH1F("b_had_d","b Hadronic Distances, Predicted vs Truth Partially Reconstructed", 50, 0, 3)
-    b_lep_d_part.SetTitle("b Leptonic #eta-#phi distances, Predicted vs Truth Partially Reconstructed;Leptonic (R);A.U.")
-    b_had_d_part.SetTitle("b Hadronic #eta-#phi distances, Predicted vs Truth Partially Reconstructed;Hadronic (R);A.U.")
-
-    t_lep_d_part = TH1F("t_lep_d","b Leptonic Distances, Predicted vs Truth Partially Reconstructed", 50, 0, 3)
-    t_had_d_part = TH1F("t_had_d","t Hadronic Distances, Predicted vs Truth Partially Reconstructed", 50, 0, 3)
-    t_lep_d_part.SetTitle("t Leptonic #phi distances, Predicted vs Truth Partially Reconstructed;Leptonic (R);A.U.")
-    t_had_d_part.SetTitle("t Hadronic #eta-#phi distances, Predicted vs Truth Partially Reconstructed;Hadronic (R);A.U.")
-
-    W_lep_d_un = TH1F("W_lep_d","W Leptonic Distances, Predicted vs Truth Not Reconstructed", 50, 0, 3)
-    W_had_d_un = TH1F("W_had_d","W Hadronic Distances Predicted vs Truth Not Reconstructed", 50, 0, 3)
-    W_lep_d_un.SetTitle("W Leptonic #phi distances, Predicted vs Truth Not Reconstructed;Leptonic (radians);A.U.")
-    W_had_d_un.SetTitle("W Hadronic #eta-#phi distances, Predicted vs Truth Not Reconstructed;Hadronic (radians);A.U.")
-
-    b_lep_d_un = TH1F("b_lep_d","b Leptonic Distances, Predicted vs Truth Not Reconstructed", 50, 0, 3)
-    b_had_d_un = TH1F("b_had_d","b Hadronic Distances, Predicted vs Truth Not Reconstructed", 50, 0, 3)
-    b_lep_d_un.SetTitle("b Leptonic #eta-#phi distances, Predicted vs Truth Not Reconstructed;Leptonic (R);A.U.")
-    b_had_d_un.SetTitle("b Hadronic #eta-#phi distances, Predicted vs Truth Not Reconstructed;Hadronic (R);A.U.")
-
-    t_lep_d_un = TH1F("t_lep_d","b Leptonic Distances, Predicted vs Truth Not Reconstructed", 50, 0, 3)
-    t_had_d_un = TH1F("t_had_d","t Hadronic Distances, Predicted vs Truth Not Reconstructed", 50, 0, 3)
-    t_lep_d_un.SetTitle("t Leptonic #phi distances, Predicted vs Truth Not Reconstructed;Leptonic (R);A.U.")
-    t_had_d_un.SetTitle("t Hadronic #eta-#phi distances, Predicted vs Truth Not Reconstructed;Hadronic (R);A.U.")
-
-    h_W_had_true = TH1F("h_W_had_true","W Hadronic Distances, True vs Observed", 50, 0, 3)
-    h_pT_W_had_true = TH1F("h_pT_W_had_true","W Hadronic p_T, True vs Observed", 50, -500, 500)
-    h_W_had_true.SetTitle("W Hadronic #eta-#phi distances, True vs Observed;true hadronic (radians);A.U.")
-
-    h_W_lep_true = TH1F("h_W_lep_true","W Leptonic Distances, True vs Observed", 50, 0, 3)
-    h_W_lep_true.SetTitle("W Leptonic #phi distances, True vs Observed;true leptonic (radians);A.U.")
-
-    h_b_lep_true = TH1F("h_b_lep_true","b Leptonic Distances, True vs Observed", 50, 0, 3)
-    h_b_had_true = TH1F("h_b_had_true","b Hadronic Distances, True vs Observed", 50, 0, 3)
-    h_b_lep_true.SetTitle("b Leptonic #eta-#phi distances, True vs Observed;true leptonic (radians);A.U.")
-    h_b_had_true.SetTitle("b Hadronic #eta-#phi distances, True vs Observed;true hadronic (radians);A.U.")
-
-    h_t_lep_true = TH1F("h_t_lep_true","t Leptonic Distances, True vs Observed", 50, 0, 3)
-    h_t_had_true = TH1F("h_t_had_true","t Hadronic Distances, True vs Observed", 50, 0, 3)
-    h_t_lep_true.SetTitle("t Leptonic #phi distances, True vs Observed;true leptonic (radians);A.U.")
-    h_t_had_true.SetTitle("t Hadronic #eta-#phi distances, True vs Observed;true hadronic (radians);A.U.")
-
-    # phi_W_lep_true.Fill(np.float(W_lep_true.Phi()))
-    # phi_W_lep_obs.Fill(np.float(lep_phi))
 
     jets = []
+
+    # define tolerance limits
+    b_lep_dist_t_lim = b_had_dist_t_lim = 0.39
+    t_lep_dist_t_lim = t_had_dist_t_lim = 0.80
+    W_lep_dist_t_lim = 0.82
+    W_had_dist_t_lim = 1.82
 
     b_lep_dist_t_lim = 0.39
     b_had_dist_t_lim = 0.39
@@ -237,8 +281,6 @@ def make_histograms():
     bad_b_lep = 0.
     bad_W_had = 0.
     bad_W_lep = 0.
-
-    jump = 0
 
     for i in range(n_events): # loop through every event
         if ( n_events < 10 ) or ( (i+1) % int(float(n_events)/10.)  == 0 ):
@@ -437,10 +479,6 @@ def make_histograms():
                 if W_had_d_true < W_had_dist_true:
                     W_had_dist_true = W_had_d_true
                     W_had_true_pT = W_had_true.Pt() - sum_vect.Pt()
-
-        # Convert missing transverse energy to a momentum, E_T = p_T
-        # missing_px = jet_mu[i][4]*np.cos(jet_mu[i][5]) 
-        # missing_py = jet_mu[i][4]*np.sin(jet_mu[i][5]) 
         
         # Add muon transverse momentum components to missing momentum components
         lep_x = jet_mu[i][0] + missing_px
@@ -453,108 +491,110 @@ def make_histograms():
         corr_jets_dist = 0.
         corr_p_jets_dist = 0.
 
-        if (b_lep_dist_true <= b_lep_dist_t_lim): # if minimum distance is less than the tolerance limits, everything is ok
-            corr_jets_dist = corr_jets_dist + 1
-            good_b_lep = good_b_lep + 1
+        if (b_lep_dist_true <= b_lep_dist_t_lim): # if minimum distance is less than the tolearance limits, everything is ok
+            corr_jets_dist += 1
+            good_b_lep += 1
         else:
-            bad_b_lep = bad_b_lep + 1
+            bad_b_lep += 1
         if (b_had_dist_true <= b_had_dist_t_lim):
-            corr_jets_dist = corr_jets_dist + 1
-            good_b_had = good_b_had + 1
+            corr_jets_dist += 1
+            good_b_had += 1
         else:
-            bad_b_had = bad_b_had + 1
+            bad_b_had += 1
         if (W_lep_dist_true <= W_lep_dist_t_lim): # mismatch between W_lep_dist_true and good_W_lep
-            corr_jets_dist = corr_jets_dist + 1
-            good_W_lep = good_W_lep + 1
+            corr_jets_dist += 1
+            good_W_lep += 1
         else:
-            bad_W_lep = bad_W_lep + 1
-        # print('distance:', W_lep_dist_true, 'tolerance:', W_lep_dist_t_lim)
+            bad_W_lep += 1
         if (W_had_dist_true <= W_had_dist_t_lim):
-            corr_jets_dist = corr_jets_dist + 1
-            good_W_had = good_W_had + 1
+            corr_jets_dist += 1
+            good_W_had += 1
         else:
-            bad_W_had = bad_W_had + 1
+            bad_W_had += 1
 
-        if corr_jets_dist == 4:
+        # fully reconstructable
+        if corr_jets_dist == 4: 
             full_recon_dist_true = full_recon_dist_true + 1
-            b_lep_d.Fill(b_lep_R)
-            b_had_d.Fill(b_had_R)
-            t_lep_d.Fill(t_lep_R)
-            t_had_d.Fill(t_had_R)
-            W_lep_d.Fill(W_lep_R)
-            W_had_d.Fill(W_had_R)
+            hists['leptonic_b_dist_pred_v_true_recon'].Fill(b_lep_R)
+            hists['hadronic_b_dist_pred_v_true_recon'].Fill(b_had_R)
+            hists['leptonic_t_dist_pred_v_true_recon'].Fill(t_lep_R)
+            hists['hadronic_t_dist_pred_v_true_recon'].Fill(t_had_R)
+            hists['leptonic_W_dist_pred_v_true_recon'].Fill(W_lep_R)
+            hists['hadronic_W_dist_pred_v_true_recon'].Fill(W_had_R)
             if (b_lep_R_recon == True):
-                corr_p_jets_dist = corr_p_jets_dist + 1
+                corr_p_jets_dist += 1
             if (b_had_R_recon == True):
-                corr_p_jets_dist = corr_p_jets_dist + 1
+                corr_p_jets_dist += 1
             if (W_lep_R_recon == True):
-                corr_p_jets_dist = corr_p_jets_dist + 1
+                corr_p_jets_dist += 1
             if (W_had_R_recon == True):
-                corr_p_jets_dist = corr_p_jets_dist + 1
+                corr_p_jets_dist += 1
 
             if corr_p_jets_dist == 4:
-                p_full_recon_t_full_dist = p_full_recon_t_full_dist + 1
+                p_full_recon_t_full_dist += 1
             elif corr_p_jets_dist == 3:
-                p_part_recon_t_full_dist = p_part_recon_t_full_dist + 1
+                p_part_recon_t_full_dist += 1
             else:
-                p_un_recon_t_full_dist = p_un_recon_t_full_dist + 1
-        elif corr_jets_dist == 3:
+                p_un_recon_t_full_dist += 1
+        # partially reconstructable
+        elif corr_jets_dist == 3: 
             part_recon_dist_true = part_recon_dist_true + 1
-            b_lep_d_part.Fill(b_lep_R)
-            b_had_d_part.Fill(b_had_R)
-            t_lep_d_part.Fill(t_lep_R)
-            t_had_d_part.Fill(t_had_R)
-            W_lep_d_part.Fill(W_lep_R)
-            W_had_d_part.Fill(W_had_R)
+            hists['leptonic_b_dist_pred_v_true_part_recon'].Fill(b_lep_R)
+            hists['hadronic_b_dist_pred_v_true_part_recon'].Fill(b_had_R)
+            hists['leptonic_t_dist_pred_v_true_part_recon'].Fill(t_lep_R)
+            hists['hadronic_t_dist_pred_v_true_part_recon'].Fill(t_had_R)
+            hists['leptonic_W_dist_pred_v_true_part_recon'].Fill(W_lep_R)
+            hists['hadronic_W_dist_pred_v_true_part_recon'].Fill(W_had_R)
             if (b_lep_R_recon == True):
-                corr_p_jets_dist = corr_p_jets_dist + 1
+                corr_p_jets_dist += 1
             if (b_had_R_recon == True):
-                corr_p_jets_dist = corr_p_jets_dist + 1
+                corr_p_jets_dist += 1
             if (W_lep_R_recon == True):
-                corr_p_jets_dist = corr_p_jets_dist + 1
+                corr_p_jets_dist += 1
             if (W_had_R_recon == True):
-                corr_p_jets_dist = corr_p_jets_dist + 1
+                corr_p_jets_dist += 1
 
             if corr_p_jets_dist == 4:
-                p_full_recon_t_part_dist = p_full_recon_t_part_dist + 1
+                p_full_recon_t_part_dist += 1
             elif corr_p_jets_dist == 3:
-                p_part_recon_t_part_dist = p_part_recon_t_part_dist + 1
+                p_part_recon_t_part_dist += 1
             else:
-                p_un_recon_t_part_dist = p_un_recon_t_part_dist + 1
-        else:
-            un_recon_dist_true = un_recon_dist_true + 1
-            b_lep_d_un.Fill(b_lep_R)
-            b_had_d_un.Fill(b_had_R)
-            t_lep_d_un.Fill(t_lep_R)
-            t_had_d_un.Fill(t_had_R)
-            W_lep_d_un.Fill(W_lep_R)
-            W_had_d_un.Fill(W_had_R)
+                p_un_recon_t_part_dist += 1
+        # un-reconstructable
+        else: 
+            un_recon_dist_true += 1
+            hists['leptonic_b_dist_pred_v_true_un_recon'].Fill(b_lep_R)
+            hists['hadronic_b_dist_pred_v_true_un_recon'].Fill(b_had_R)
+            hists['leptonic_t_dist_pred_v_true_un_recon'].Fill(t_lep_R)
+            hists['hadronic_t_dist_pred_v_true_un_recon'].Fill(t_had_R)
+            hists['leptonic_W_dist_pred_v_true_un_recon'].Fill(W_lep_R)
+            hists['hadronic_W_dist_pred_v_true_un_recon'].Fill(W_had_R)
             if (b_lep_R_recon == True):
-                corr_p_jets_dist = corr_p_jets_dist + 1
+                corr_p_jets_dist += 1
             if (b_had_R_recon == True):
-                corr_p_jets_dist = corr_p_jets_dist + 1
+                corr_p_jets_dist += 1
             if (W_lep_R_recon == True):
-                corr_p_jets_dist = corr_p_jets_dist + 1
+                corr_p_jets_dist += 1
             if (W_had_R_recon == True):
-                corr_p_jets_dist = corr_p_jets_dist + 1
+                corr_p_jets_dist += 1
 
             if corr_p_jets_dist == 4:
-                p_full_recon_t_un_dist = p_full_recon_t_un_dist + 1
+                p_full_recon_t_un_dist += 1
             elif corr_p_jets_dist == 3:
-                p_part_recon_t_un_dist = p_part_recon_t_un_dist + 1
+                p_part_recon_t_un_dist += 1
             else:
-                p_un_recon_t_un_dist = p_un_recon_t_un_dist + 1
+                p_un_recon_t_un_dist += 1
 
-        h_b_lep_true.Fill(np.float(b_lep_dist_true))
-        h_b_had_true.Fill(np.float(b_had_dist_true))
-        h_t_had_true.Fill(np.float(t_had_dist_true))
-        h_t_lep_true.Fill(np.float(t_lep_dist_true))
-        h_W_had_true.Fill(np.float(W_had_dist_true))
-        h_pT_W_had_true.Fill(np.float(W_had_true_pT))
-        h_W_lep_true.Fill(np.float(W_lep_dist_true)) # see here from line 462
-        W_lep_met_d.Fill(np.float(met_obs))
-        W_lep_met_d_t.Fill(np.float(met_true))
-        W_lep_met_d_p.Fill(np.float(met_pred))
+        hists['leptonic_b_true_dist'].Fill(np.float(b_lep_dist_true))
+        hists['hadronic_b_true_dist'].Fill(np.float(b_had_dist_true))
+        hists['leptonic_t_true_dist'].Fill(np.float(t_lep_dist_true))
+        hists['hadronic_t_true_dist'].Fill(np.float(t_had_dist_true))
+        hists['leptonic_W_true_dist'].Fill(np.float(W_lep_dist_true))
+        hists['leptonic_W_transverse_mass_observed'].Fill(np.float(met_obs))
+        hists['leptonic_W_transverse_mass_true'].Fill(np.float(met_true))
+        hists['leptonic_W_transverse_mass_predicted'].Fill(np.float(met_pred))
+        hists['hadronic_W_true_dist'].Fill(np.float(W_had_dist_true))
+        hists['hadronic_W_true_pT_dist'].Fill(np.float(W_had_true_pT))
 
     print('good_W_had', good_W_had, 'bad_W_had', bad_W_had)
     print('good_W_lep', good_W_lep, 'bad_W_lep', bad_W_lep)
@@ -591,228 +631,12 @@ def make_histograms():
     print(100*good_W_lep/(bad_W_lep + good_W_lep), ' good_W_lep')
     print(100*good_b_had/(bad_b_had + good_b_had), ' good_b_had')
     print(100*good_b_lep/(bad_b_lep + good_b_lep), ' good_b_lep')
-
+    
+def plot_jets(key):
     c1 = TCanvas()
-    W_lep_d.Draw()
-    c1.SaveAs(outputdir + subdir + 'leptonic_W_dist_pred_v_true_recon.png')
+    hists[key].Draw()
+    c1.SaveAs(outputdir + subdir + key +'.png')
     c1.Close()
-
-    c2 = TCanvas()
-    W_had_d.Draw()
-    c2.SaveAs(outputdir + subdir + 'hadronic_W_dist_pred_v_true_recon.png')
-    c2.Close()
-
-    c3 = TCanvas()
-    b_lep_d.Draw()
-    c3.SaveAs(outputdir + subdir + 'leptonic_b_dist_pred_v_true_recon.png')
-    c3.Close()
-
-    c4 = TCanvas()
-    b_had_d.Draw()
-    c4.SaveAs(outputdir + subdir + 'hadronic_b_dist_pred_v_true_recon.png')
-    c4.Close()
-
-    c5 = TCanvas()
-    t_lep_d.Draw()
-    c5.SaveAs(outputdir + subdir + 'leptonic_t_dist_pred_v_true_recon.png')
-    c5.Close()
-
-    c6 = TCanvas()
-    t_had_d.Draw()
-    c6.SaveAs(outputdir + subdir + 'hadronic_t_dist_pred_v_true_recon.png')
-    c6.Close()
-
-    c7 = TCanvas()
-    W_lep_d_part.Draw()
-    c7.SaveAs(outputdir + subdir + 'leptonic_W_dist_pred_v_true_part_recon.png')
-    c7.Close()
-
-    c8 = TCanvas()
-    W_had_d_part.Draw()
-    c8.SaveAs(outputdir + subdir + 'hadronic_W_dist_pred_v_true_part_recon.png')
-    c8.Close()
-
-    c9 = TCanvas()
-    b_lep_d_part.Draw()
-    c9.SaveAs(outputdir + subdir + 'leptonic_b_dist_pred_v_true_part_recon.png')
-    c9.Close()
-
-    c10 = TCanvas()
-    b_had_d_part.Draw()
-    c10.SaveAs(outputdir + subdir + 'hadronic_b_dist_pred_v_true_part_recon.png')
-    c10.Close()
-
-    c11 = TCanvas()
-    t_lep_d_part.Draw()
-    c11.SaveAs(outputdir + subdir + 'leptonic_t_dist_pred_v_true_part_recon.png')
-    c11.Close()
-
-    c12 = TCanvas()
-    t_had_d_part.Draw()
-    c12.SaveAs(outputdir + subdir + 'hadronic_t_dist_pred_v_true_part_recon.png')
-    c12.Close()
-
-    c13 = TCanvas()
-    h_b_lep_true.Draw()
-    c13.SaveAs(outputdir + subdir + 'leptonic_b_true_dist.png')
-    c13.Close()
-
-    c14 = TCanvas()
-    h_b_had_true.Draw()
-    c14.SaveAs(outputdir + subdir + 'hadronic_b_true_dist.png')
-    c14.Close()
-
-    c15 = TCanvas()
-    h_t_lep_true.Draw()
-    c15.SaveAs(outputdir + subdir + 'leptonic_t_true_dist.png')
-    c15.Close()
-
-    c16 = TCanvas()
-    h_t_had_true.Draw()
-    c16.SaveAs(outputdir + subdir + 'hadronic_t_true_dist.png')
-    c16.Close()
-
-    c17 = TCanvas()
-    h_W_had_true.Draw()
-    c17.SaveAs(outputdir + subdir + 'hadronic_W_true_dist.png')
-    c17.Close()
-
-    c18 = TCanvas()
-    h_pT_W_had_true.Draw()
-    c18.SaveAs(outputdir + subdir + 'hadronic_W_true_pT_dist.png')
-    c18.Close()
-
-    c19 = TCanvas()
-    h_W_lep_true.Draw()
-    c19.SaveAs(outputdir + subdir + 'leptonic_W_true_dist.png')
-    c19.Close()
-
-    c21 = TCanvas()
-    W_lep_d_un.Draw()
-    c21.SaveAs(outputdir + subdir + 'leptonic_W_dist_pred_v_true_un_recon.png')
-    c21.Close()
-
-    c22 = TCanvas()
-    W_had_d_un.Draw()
-    c22.SaveAs(outputdir + subdir + 'hadronic_W_dist_pred_v_true_un_recon.png')
-    c22.Close()
-
-    c23 = TCanvas()
-    b_lep_d_un.Draw()
-    c23.SaveAs(outputdir + subdir + 'leptonic_b_dist_pred_v_true_un_recon.png')
-    c23.Close()
-
-    c24 = TCanvas()
-    b_had_d_un.Draw()
-    c24.SaveAs(outputdir + subdir + 'hadronic_b_dist_pred_v_true_un_recon.png')
-    c24.Close()
-
-    c25 = TCanvas()
-    t_lep_d_un.Draw()
-    c25.SaveAs(outputdir + subdir + 'leptonic_t_dist_pred_v_true_un_recon.png')
-    c25.Close()
-
-    c26 = TCanvas()
-    t_had_d_un.Draw()
-    c26.SaveAs(outputdir + subdir + 'hadronic_t_dist_pred_v_true_un_recon.png')
-    c26.Close()
-
-    c27 = TCanvas()
-    W_lep_met_d.Draw()
-    c27.SaveAs(outputdir + subdir + 'leptonic_W_transverse_mass_observed.png')
-    c27.Close()
-
-    c28 = TCanvas()
-    W_lep_met_d_t.Draw()
-    c28.SaveAs(outputdir + subdir + 'leptonic_W_transverse_mass_true.png')
-    c28.Close()
-
-    c29 = TCanvas()
-    W_lep_met_d_p.Draw()
-    c29.SaveAs(outputdir + subdir + 'leptonic_W_transverse_mass_predicted.png')
-    c29.Close()
-
-def make_correlations():
-    c_W_had_true = TH2F( "c_W_had_true", "c_W_had_true", 50, 0., 1000., 50, 0., 1000. )
-    c_W_had_fitted = TH2F( "c_W_had_fitted", "c_W_had_fitted", 50, 0., 1000., 50, 0., 1000. )
-    
-    jets = []
-
-    for i in range(n_events):
-        if ( n_events < 10 ) or ( (i+1) % int(float(n_events)/10.)  == 0 ):
-            perc = 100. * i / float(n_events)
-            print("INFO: Event %-9i  (%3.0f %%)" % ( i, perc ))
-            
-        W_had_true   = MakeP4( y_true_W_had[i], m_W )
-        W_had_fitted = MakeP4( y_fitted_W_had[i],  m_W)
-    
-        jet_mu_vect = MakeP4(jet_mu[i], jet_mu[i][4])
-        jet_1_vect = MakeP4(jet_1[i], jet_1[i][4])
-        jet_2_vect = MakeP4(jet_2[i], jet_2[i][4])
-        jet_3_vect = MakeP4(jet_3[i], jet_3[i][4])
-        jet_4_vect = MakeP4(jet_4[i], jet_4[i][4])
-        jet_5_vect = MakeP4(jet_5[i], jet_5[i][4])
-        
-        jets.append([])
-        jets[i].append(jet_1_vect)
-        jets[i].append(jet_2_vect)
-        jets[i].append(jet_3_vect)
-        jets[i].append(jet_4_vect)
-        jets[i].append(jet_5_vect)
-        
-        W_had_dist_true = 10000000
-        p_had_true_total = 0
-        for k in range(len(jets[i])):
-            for j in range(i, len(jets[i])):
-                #px_total = jets[i][k].Px() + jets[i][j].Px()
-                #py_total = jets[i][k].Py() + jets[i][j].Py()
-                #pz_total = jets[i][k].Pz() + jets[i][j].Pz()
-                #d = np.sqrt((W_had_true.Px()-px_total)**2+(W_had_true.Py()-py_total)**2+(W_had_true.Pz()-pz_total)**2)
-                sum_vect = jets[i][k] + jets[i][j]
-                dphi = min(np.abs(W_had_true.Phi()-sum_vect.Phi()), 2*np.pi-np.abs(W_had_true.Phi()-sum_vect.Phi()))
-                d = np.sqrt(dphi**2+(W_had_true.Eta()-sum_vect.Eta())**2)
-                if d < W_had_dist_true:
-                    W_had_dist_true = d
-                    p_had_true_total = sum_vect.Px()**2 + sum_vect.Py()**2 + sum_vect.Pz()**2
-        c_W_had_true.Fill(W_had_true.Px()**2+W_had_true.Py()**2+W_had_true.Pz()**2, p_had_true_total)
-    
-        W_had_dist_fitted = 10000000
-        p_had_fitted_total = 0
-        for k in range(len(jets[i])):
-            for j in range(i, len(jets[i])):
-                #px_total = jets[i][k].Px() + jets[i][j].Px()
-                #py_total = jets[i][k].Py() + jets[i][j].Py()
-                #pz_total = jets[i][k].Pz() + jets[i][j].Pz()
-                #d = np.sqrt((W_had_fitted.Px()-px_total)**2+(W_had_fitted.Py()-py_total)**2+(W_had_fitted.Pz()-pz_total)**2)
-                sum_vect = jets[i][k] + jets[i][j]
-                dphi = min(np.abs(W_had_fitted.Phi()-sum_vect.Phi()), 2*np.pi-np.abs(W_had_fitted.Phi()-sum_vect.Phi()))
-                d = np.sqrt(dphi**2+(W_had_fitted.Eta()-sum_vect.Eta())**2)
-                if d < W_had_dist_fitted:
-                    W_had_dist_fitted = d
-                    p_had_fitted_total = sum_vect.Px()**2 + sum_vect.Py()**2 + sum_vect.Pz()**2
-        c_W_had_fitted.Fill(W_had_fitted.Px()**2+W_had_fitted.Py()**2+W_had_fitted.Pz()**2, p_had_fitted_total)
-        
-    c11 = TCanvas()
-    c_W_had_true.Draw()
-    corr_had_true = c_W_had_true.GetCorrelationFactor()
-    l3 = TLatex()
-    l3.SetNDC()
-    l3.SetTextFont(42)
-    l3.SetTextColor(kBlack)
-    l3.DrawLatex( 0.2, 0.8, "Corr Coeff: %.2f" % corr_had_true)
-    c11.SaveAs(outputdir + subdir + 'hadronic_W_true_corr.png')
-    c11.Close()
-    
-    c12 = TCanvas()
-    c_W_had_fitted.Draw()
-    corr_had_fitted = c_W_had_fitted.GetCorrelationFactor()
-    l4 = TLatex()
-    l4.SetNDC()
-    l4.SetTextFont(42)
-    l4.SetTextColor(kBlack)
-    l4.DrawLatex( 0.2, 0.8, "Corr Coeff: %.2f" % corr_had_fitted)
-    c11.SaveAs(outputdir + subdir + '/hadronic_W_fitted_corr.png')
-    c11.Close()
     
 if __name__ == "__main__":
     try:
@@ -820,4 +644,5 @@ if __name__ == "__main__":
     except Exception as e:
         print("Overwriting existing files")
     make_histograms()
-    #make_correlations()
+    # for key in hists:
+        # plot_jets(key)
