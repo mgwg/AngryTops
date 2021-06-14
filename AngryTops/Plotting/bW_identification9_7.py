@@ -14,20 +14,6 @@ m_t = 172.5
 m_W = 80.4
 m_b = 4.95
 
-def MakeLimit(tvo):
-	pvt = ((np.pi)/8) * (np.sin(2*tvo - ((np.pi)/2)) + 1)
-	pvt = float(round(pvt, 2))
-	return pvt
-
-def MakeP4_lep(y,m):
-    p4 = TLorentzVector()
-    p0 = y[0]
-    p1 = y[1]
-    p2 = y[3]
-    E = np.sqrt(p0**2 + p1**2 + p2**2 + m**2)
-    p4.SetPxPyPzE(p0, p1, p2, E)
-    return p4
-
 def MakeP4(y, m):
     """
     Form the momentum vector.
@@ -196,14 +182,17 @@ def make_histograms():
     h_t_lep_true.SetTitle("t Leptonic #phi distances, True vs Observed;true leptonic (radians);A.U.")
     h_t_had_true.SetTitle("t Hadronic #eta-#phi distances, True vs Observed;true hadronic (radians);A.U.")
 
+    # phi_W_lep_true.Fill(np.float(W_lep_true.Phi()))
+    # phi_W_lep_obs.Fill(np.float(lep_phi))
+
     jets = []
 
     b_lep_dist_t_lim = 0.39
     b_had_dist_t_lim = 0.39
     t_lep_dist_t_lim = 0.80
     t_had_dist_t_lim = 0.80
-    W_lep_dist_t_lim = 0.82
-    W_had_dist_t_lim = 1.82
+    W_lep_dist_t_lim = 1.28
+    W_had_dist_t_lim = 1.28
 
     full_recon_dist_true = 0.
     part_recon_dist_true = 0.
@@ -289,6 +278,10 @@ def make_histograms():
         jets[i].append(jet_4_vect)
         jets[i].append(jet_5_vect)
 
+        # met_obs = np.sqrt(2*jet_mu[i][4]*jet_mu_vect.Pt()*(1 - np.cos(jet_mu[i][5])))
+        # met_true = np.sqrt(2*W_lep_true.Pt()*W_lep_true.Et()*(1 - np.cos(W_lep_true.Phi())))
+        # met_pred = np.sqrt(2*W_lep_fitted.Pt()*W_lep_fitted.Et()*(1 - np.cos(W_lep_fitted.Phi())))
+        
         # Observed transverse mass distribution is square root of 2* Etmiss 
         #  * Transverse angle between daughter particles, assuming that they are massless.
         
@@ -299,13 +292,13 @@ def make_histograms():
         # Convert missing transverse energy to a momentum
         missing_px = jet_mu[i][4]*np.cos(jet_mu[i][5]) # x-component of missing momentum
         missing_py = jet_mu[i][4]*np.sin(jet_mu[i][5]) # y-component of missing momentum
-        nu_pT_obs = [ missing_px, missing_py] # Observed neutrino transverse momentum from missing energy.
+        nu_pT_obs = [missing_px, missing_py] # Observed neutrino transverse momentum from missing energy.
         # Now, calculate the angle.
         obs_daughter_angle = np.arccos(np.dot(muon_pT_obs, nu_pT_obs) / norm(muon_pT_obs) / norm(nu_pT_obs))
         met_obs = np.sqrt(2*jet_mu[i][4]*jet_mu_vect.Pt()*(1 - np.cos(obs_daughter_angle))) 
         # Pt^2 = Px^2 + Py^2
-        met_true = W_lep_true.Mt()
-        met_pred = W_lep_fitted.Mt()
+        met_true = W_lep_true.Mt() # np.sqrt(2*W_lep_true.Pt()*W_lep_true.Et()*(1 - np.cos(W_lep_true.Phi())))
+        met_pred = W_lep_fitted.Mt() # np.sqrt(2*W_lep_fitted.Pt()*W_lep_fitted.Et()*(1 - np.cos(W_lep_fitted.Phi())))
 
         b_lep_dphi = min(np.abs(b_lep_true.Phi()-b_lep_fitted.Phi()), 2*np.pi-np.abs(b_lep_true.Phi()-b_lep_fitted.Phi()))
         b_lep_deta = b_lep_true.Eta()-b_lep_fitted.Eta()
@@ -446,8 +439,8 @@ def make_histograms():
                     W_had_true_pT = W_had_true.Pt() - sum_vect.Pt()
 
         # Convert missing transverse energy to a momentum, E_T = p_T
-        missing_px = jet_mu[i][4]*np.cos(jet_mu[i][5]) # x-component of missing momentum
-        missing_py = jet_mu[i][4]*np.sin(jet_mu[i][5]) # y-component of missing momentum
+        # missing_px = jet_mu[i][4]*np.cos(jet_mu[i][5]) 
+        # missing_py = jet_mu[i][4]*np.sin(jet_mu[i][5]) 
         
         # Add muon transverse momentum components to missing momentum components
         lep_x = jet_mu[i][0] + missing_px
@@ -460,7 +453,7 @@ def make_histograms():
         corr_jets_dist = 0.
         corr_p_jets_dist = 0.
 
-        if (b_lep_dist_true <= b_lep_dist_t_lim): # if minimum distance is less than the tolearance limits, everything is ok
+        if (b_lep_dist_true <= b_lep_dist_t_lim): # if minimum distance is less than the tolerance limits, everything is ok
             corr_jets_dist = corr_jets_dist + 1
             good_b_lep = good_b_lep + 1
         else:
@@ -823,7 +816,7 @@ def make_correlations():
     
 if __name__ == "__main__":
     try:
-        os.mkdir('{}/closejets_img'.format(outputdir))
+        os.mkdir('{}/closejets_img_test'.format(outputdir))
     except Exception as e:
         print("Overwriting existing files")
     make_histograms()
