@@ -11,8 +11,7 @@ from AngryTops.features import *
 from AngryTops.Plotting.PlottingHelper import *
 
 # To create histograms of the angle between the t momentum and the vector sum of the W and b momenta. 
-#  Also, to create histograms of the "resolution": 
-#  the norm of the vector difference divided by the t momentum. 
+#  Also, to create histograms of the "projection" of the vector sum onto the t momentum. 
 # fitted.root must already be created using fit.py, which is usually done with make_plots.sh 
 
 ################################################################################
@@ -62,19 +61,19 @@ histograms = {}
 histograms['Wbt_had_angle_true']        = TH1F( "Wbt_had_angle_true",   ";Hadronic Angle [Rad]", 50, 0.0, 3.2)
 histograms['Wbt_lep_angle_true']        = TH1F( "Wbt_lep_angle_true",   ";Leptonic Angle [Rad]", 50, 0.0, 3.2)
 
-histograms['Wbt_had_reso_true'] = TH1F( "Wbt_had_reso_true",\
-       ";Hadronic #frac{||(#vec{p}_{W}+#vec{p}_{b}) - #vec{p}_{top}||}{||#vec{p}_{top}||}", 50, 0.0, 10)
-histograms['Wbt_lep_reso_true'] = TH1F( "Wbt_lep_reso_true",\
-       ";Leptonic #frac{||(#vec{p}_{W}+#vec{p}_{b}) - #vec{p}_{top}||}{||#vec{p}_{top}||}", 50, 0.0, 10)
+histograms['Wbt_had_proj_true'] = TH1F( "Wbt_had_proj_true", ";Hadronic \
+    #frac{(#vec{p}_{W}+#vec{p}_{b}) #upoint #vec{p}_{top}}{#vec{p}_{top} #upoint #vec{p}_{top}}", 80, -3, 5)
+histograms['Wbt_lep_proj_true'] = TH1F( "Wbt_lep_proj_true",\
+       ";Leptonic #frac{(#vec{p}_{W}+#vec{p}_{b}) #upoint #vec{p}_{top}}{#vec{p}_{top} #upoint #vec{p}_{top}}", 80, -3, 5)
 
 # Fitted
 histograms['Wbt_had_angle_fitted']        = TH1F( "Wbt_had_angle_fitted",   ";Hadronic Angle [Rad]", 50, 0.0, 3.2)
 histograms['Wbt_lep_angle_fitted']        = TH1F( "Wbt_lep_angle_fitted",   ";Leptonic Angle [Rad]", 50, 0.0, 3.2)
 
-histograms['Wbt_had_reso_fitted'] = TH1F( "Wbt_had_reso_fitted",\
-       ";Hadronic #frac{||(#vec{p}_{W}+#vec{p}_{b}) - #vec{p}_{top}||}{||#vec{p}_{top}||}", 50, 0.0, 10)
-histograms['Wbt_lep_reso_fitted'] = TH1F( "Wbt_lep_reso_fitted",\
-       ";Leptonic #frac{||(#vec{p}_{W}+#vec{p}_{b}) - #vec{p}_{top}||}{||#vec{p}_{top}||}", 50, 0.0, 10)
+histograms['Wbt_had_proj_fitted'] = TH1F( "Wbt_had_proj_fitted",\
+       ";Hadronic #frac{(#vec{p}_{W}+#vec{p}_{b}) #upoint #vec{p}_{top}}{#vec{p}_{top} #upoint #vec{p}_{top}}", 80, -3, 5)
+histograms['Wbt_lep_proj_fitted'] = TH1F( "Wbt_lep_proj_fitted",\
+       ";Leptonic #frac{(#vec{p}_{W}+#vec{p}_{b}) #upoint #vec{p}_{top}}{#vec{p}_{top} #upoint #vec{p}_{top}}", 80, -3, 5)
 
 ################################################################################
 # FORMAT HISTOGRAMS
@@ -131,11 +130,11 @@ for i in range(n_events):
         Wbt_had_angle_fitted = np.arccos(np.dot(Wb_had_fitted, t_had_fitted) / norm(Wb_had_fitted) / norm(t_had_fitted))
         Wbt_lep_angle_fitted = np.arccos(np.dot(Wb_lep_fitted, t_lep_fitted) / norm(Wb_lep_fitted) / norm(t_lep_fitted))
         
-        # resolution is norm of vector difference between p_W + p_b and p_t divided by norm of p_t
-        Wbt_had_reso_true = norm(np.subtract(Wb_had_true, t_had_true)) / norm(t_had_true)
-        Wbt_lep_reso_true = norm(np.subtract(Wb_lep_true, t_lep_true)) / norm(t_lep_true)
-        Wbt_had_reso_fitted = norm(np.subtract(Wb_had_fitted, t_had_fitted)) / norm(t_had_fitted)
-        Wbt_lep_reso_fitted = norm(np.subtract(Wb_lep_fitted, t_lep_fitted)) / norm(t_lep_fitted)
+        # projection is dot product between p_W + p_b and p_t divided by norm squared of p_t
+        Wbt_had_proj_true = np.dot(Wb_had_true, t_had_true) / np.dot(t_had_true, t_had_true)
+        Wbt_lep_proj_true = np.dot(Wb_lep_true, t_lep_true) / np.dot(t_lep_true, t_lep_true)
+        Wbt_had_proj_fitted = np.dot(Wb_had_fitted, t_had_fitted) / np.dot(t_had_fitted, t_had_fitted)
+        Wbt_lep_proj_fitted = np.dot(Wb_lep_fitted, t_lep_fitted) / np.dot(t_lep_fitted, t_lep_fitted)
 
     except Exception as e:
         print("WARNING: invalid, skipping event ( rn=%-10i en=%-10i )" % ( tree.runNumber, tree.eventNumber ))
@@ -151,10 +150,10 @@ for i in range(n_events):
     histograms['Wbt_had_angle_fitted'].Fill(  Wbt_had_angle_fitted,  w )
     histograms['Wbt_lep_angle_fitted'].Fill(  Wbt_lep_angle_fitted,  w )
 
-    histograms['Wbt_had_reso_true'].Fill(  Wbt_had_reso_true,  w )
-    histograms['Wbt_lep_reso_true'].Fill(  Wbt_lep_reso_true,  w )
-    histograms['Wbt_had_reso_fitted'].Fill(  Wbt_had_reso_fitted,  w )
-    histograms['Wbt_lep_reso_fitted'].Fill(  Wbt_lep_reso_fitted,  w )
+    histograms['Wbt_had_proj_true'].Fill(  Wbt_had_proj_true,  w )
+    histograms['Wbt_lep_proj_true'].Fill(  Wbt_lep_proj_true,  w )
+    histograms['Wbt_had_proj_fitted'].Fill(  Wbt_had_proj_fitted,  w )
+    histograms['Wbt_lep_proj_fitted'].Fill(  Wbt_lep_proj_fitted,  w )
 
     n_good += 1
 
@@ -227,14 +226,13 @@ def plot_observables(obs):
     leg.SetY1( leg.GetY1() - 0.05 * leg.GetNRows() )
     leg.Draw()
 
-    KS = h_true.KolmogorovTest( h_fitted )
-    X2 = ChiSquared(h_true, h_fitted) # UU NORM
+    # Display bin width
+    binWidth = h_true.GetBinWidth(0)
     l = TLatex()
     l.SetNDC()
     l.SetTextFont(42)
     l.SetTextColor(kBlack)
-    l.DrawLatex( 0.7, 0.80, "KS test: %.2f" % KS )
-    l.DrawLatex( 0.7, 0.75, "#chi^{2}/NDF = %.2f" % X2 )
+    l.DrawLatex( 0.65, 0.80, "Bin Width: %.2f" % binWidth )
 
     gPad.RedrawAxis()
     if caption is not None:
@@ -280,7 +278,7 @@ if __name__==   "__main__":
     infile_plot = TFile.Open(infilename_plot)
 
     # attributes = list of histograms for which to compare true and fitted
-    attributes = ['Wbt_had_angle', 'Wbt_lep_angle', 'Wbt_had_reso', 'Wbt_lep_reso']
+    attributes = ['Wbt_had_angle', 'Wbt_lep_angle', 'Wbt_had_proj', 'Wbt_lep_proj']
 
     # Make a plot for each observable
     for obs in attributes:
