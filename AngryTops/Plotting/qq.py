@@ -422,7 +422,7 @@ for key in trueLists:
   qq.SetMarkerColor(kGray+2)
   qq.SetLineWidth(0)
 
-  qq.SetTitle("QQ Plot of True vs Predicted {}".format(labels[key]))
+  qq.SetTitle("QQ Plot of Predicted vs True{}".format(labels[key]))
   qq.GetXaxis().SetTitle("True {}".format(unit)) 
   qq.GetYaxis().SetTitle("Predicted {}".format(unit))
 
