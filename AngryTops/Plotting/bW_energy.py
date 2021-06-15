@@ -41,108 +41,109 @@ def PrintOut( p4_true, p4_fitted, label ):
         p4_fitted.Pt(), p4_fitted.Rapidity(), p4_fitted.Phi(), p4_fitted.E(), p4_fitted.M()
         ))
 
-################################################################################
-# Read in input file
-infile = TFile.Open( infilename )
-tree   = infile.Get( "nominal")
+def make_histograms():
+    ################################################################################
+    # Read in input file
+    infile = TFile.Open( infilename )
+    tree   = infile.Get( "nominal")
 
-# Open output file
-ofile = TFile.Open( ofilename, "recreate" )
-ofile.cd()
+    # Open output file
+    ofile = TFile.Open( ofilename, "recreate" )
+    ofile.cd()
 
-################################################################################
-# MAKE EMPTY DICTIONARY OF DIFFERENT HISTOGRAMS
-histograms = {}
+    ################################################################################
+    # MAKE EMPTY DICTIONARY OF DIFFERENT HISTOGRAMS
+    histograms = {}
 
-# True
-histograms['Wb_had_E_true']        = TH1F( "Wb_had_E_true",   ";Hadronic W+b E [GeV]", 50, 0., 500. )
-histograms['Wb_lep_E_true']        = TH1F( "Wb_lep_E_true",   ";Leptonic W+b E [GeV]", 50, 0., 500. )
-histograms['t_had_E_true']        = TH1F( "t_had_E_true",   ";Hadronic t E [GeV]", 50, 0., 500. )
-histograms['t_lep_E_true']        = TH1F( "t_lep_E_true",    ";Leptonic t E [GeV]", 50, 0., 500. )
-# # Fitted
-histograms['Wb_had_E_fitted']        = TH1F( "Wb_had_E_fitted",   ";Hadronic W+b E [GeV]", 50, 0., 500. )
-histograms['Wb_lep_E_fitted']        = TH1F( "Wb_lep_E_fitted",   ";Leptonic W+b E [GeV]", 50, 0., 500. )
-histograms['t_had_E_fitted']        = TH1F( "t_had_E_fitted",   ";Hadronic t E [GeV]", 50, 0., 500. )
-histograms['t_lep_E_fitted']        = TH1F( "t_lep_E_fitted",    ";Leptonic t E [GeV]", 50, 0., 500. )
-# Correlations; t for true, p for predicted
-histograms['corr_tp_had_E']        = TH2F( "corr_tp_had_E",   ";True Hadronic W+b E [GeV];Predicted Hadronic W+b E [GeV]", 50, 150., 500., 50, 150., 500. )
-histograms['corr_tp_lep_E']        = TH2F( "corr_tp_lep_E",   ";True Leptonic W+b E [GeV];Predicted Leptonic W+b E [GeV]", 50, 150., 500., 50, 150., 500. )
-histograms['corr_pp_had_E']        = TH2F( "corr_pp_had_E",   ";Predicted Hadronic t E [GeV];Predicted Hadronic W+b E [GeV]", 50, 150., 500., 50, 150., 500. )
-histograms['corr_pp_lep_E']        = TH2F( "corr_pp_lep_E",    ";Predicted Leptonic t E [GeV];Predicted Leptonic W+b E [GeV]", 50, 150., 500., 50, 150., 500. )
-histograms['corr_tt_had_E']        = TH2F( "corr_tt_had_E",   ";True Hadronic t E [GeV];True Hadronic W+b E [GeV]", 50, 150., 500., 50, 150., 500. )
-histograms['corr_tt_lep_E']        = TH2F( "corr_tt_lep_E",    ";True Leptonic t E [GeV];True Leptonic W+b E [GeV]", 50, 150., 500., 50, 150., 500. )
+    # True
+    histograms['Wb_had_E_true']        = TH1F( "Wb_had_E_true",   ";Hadronic W+b E [GeV]", 50, 0., 500. )
+    histograms['Wb_lep_E_true']        = TH1F( "Wb_lep_E_true",   ";Leptonic W+b E [GeV]", 50, 0., 500. )
+    histograms['t_had_E_true']        = TH1F( "t_had_E_true",   ";Hadronic t E [GeV]", 50, 0., 500. )
+    histograms['t_lep_E_true']        = TH1F( "t_lep_E_true",    ";Leptonic t E [GeV]", 50, 0., 500. )
+    # # Fitted
+    histograms['Wb_had_E_fitted']        = TH1F( "Wb_had_E_fitted",   ";Hadronic W+b E [GeV]", 50, 0., 500. )
+    histograms['Wb_lep_E_fitted']        = TH1F( "Wb_lep_E_fitted",   ";Leptonic W+b E [GeV]", 50, 0., 500. )
+    histograms['t_had_E_fitted']        = TH1F( "t_had_E_fitted",   ";Hadronic t E [GeV]", 50, 0., 500. )
+    histograms['t_lep_E_fitted']        = TH1F( "t_lep_E_fitted",    ";Leptonic t E [GeV]", 50, 0., 500. )
+    # Correlations; t for true, p for predicted
+    histograms['corr_tp_had_E']        = TH2F( "corr_tp_had_E",   ";True Hadronic W+b E [GeV];Predicted Hadronic W+b E [GeV]", 50, 150., 500., 50, 150., 500. )
+    histograms['corr_tp_lep_E']        = TH2F( "corr_tp_lep_E",   ";True Leptonic W+b E [GeV];Predicted Leptonic W+b E [GeV]", 50, 150., 500., 50, 150., 500. )
+    histograms['corr_pp_had_E']        = TH2F( "corr_pp_had_E",   ";Predicted Hadronic t E [GeV];Predicted Hadronic W+b E [GeV]", 50, 150., 500., 50, 150., 500. )
+    histograms['corr_pp_lep_E']        = TH2F( "corr_pp_lep_E",    ";Predicted Leptonic t E [GeV];Predicted Leptonic W+b E [GeV]", 50, 150., 500., 50, 150., 500. )
+    histograms['corr_tt_had_E']        = TH2F( "corr_tt_had_E",   ";True Hadronic t E [GeV];True Hadronic W+b E [GeV]", 50, 150., 500., 50, 150., 500. )
+    histograms['corr_tt_lep_E']        = TH2F( "corr_tt_lep_E",    ";True Leptonic t E [GeV];True Leptonic W+b E [GeV]", 50, 150., 500., 50, 150., 500. )
 
-################################################################################
-# POPULATE HISTOGRAMS
-n_events = tree.GetEntries()
+    ################################################################################
+    # POPULATE HISTOGRAMS
+    n_events = tree.GetEntries()
 
-print("INFO: starting event loop. Found %i events" % n_events)
-n_good = 0
-# Print out example
-for i in range(n_events):
-    if ( n_events < 10 ) or ( (i+1) % int(float(n_events)/10.)  == 0 ):
-        perc = 100. * i / float(n_events)
-        print("INFO: Event %-9i  (%3.0f %%)" % ( i, perc ))
+    print("INFO: starting event loop. Found %i events" % n_events)
+    n_good = 0
+    # Print out example
+    for i in range(n_events):
+        if ( n_events < 10 ) or ( (i+1) % int(float(n_events)/10.)  == 0 ):
+            perc = 100. * i / float(n_events)
+            print("INFO: Event %-9i  (%3.0f %%)" % ( i, perc ))
 
-    tree.GetEntry(i)
+        tree.GetEntry(i)
 
-    w = tree.weight_mc
+        w = tree.weight_mc
 
-    W_had_true = TLorentzVector(tree.W_had_px_true, tree.W_had_py_true, tree.W_had_pz_true, tree.W_had_E_true)
-    b_had_true = TLorentzVector(tree.b_had_px_true, tree.b_had_py_true, tree.b_had_pz_true, tree.b_had_E_true)
-    t_had_true = TLorentzVector(tree.t_had_px_true, tree.t_had_py_true, tree.t_had_pz_true, tree.t_had_E_true)
-    W_lep_true = TLorentzVector(tree.W_lep_px_true, tree.W_lep_py_true, tree.W_lep_pz_true, tree.W_lep_E_true)
-    b_lep_true = TLorentzVector(tree.b_lep_px_true, tree.b_lep_py_true, tree.b_lep_pz_true, tree.b_lep_E_true)
-    t_lep_true = TLorentzVector(tree.t_lep_px_true, tree.t_lep_py_true, tree.t_lep_pz_true, tree.t_lep_E_true)
-    W_had_fitted = TLorentzVector(tree.W_had_px_fitted, tree.W_had_py_fitted, tree.W_had_pz_fitted, tree.W_had_E_fitted)
-    b_had_fitted = TLorentzVector(tree.b_had_px_fitted, tree.b_had_py_fitted, tree.b_had_pz_fitted, tree.b_had_E_fitted)
-    t_had_fitted = TLorentzVector(tree.t_had_px_fitted, tree.t_had_py_fitted, tree.t_had_pz_fitted, tree.t_had_E_fitted)
-    W_lep_fitted = TLorentzVector(tree.W_lep_px_fitted, tree.W_lep_py_fitted, tree.W_lep_pz_fitted, tree.W_lep_E_fitted)
-    b_lep_fitted = TLorentzVector(tree.b_lep_px_fitted, tree.b_lep_py_fitted, tree.b_lep_pz_fitted, tree.b_lep_E_fitted)
-    t_lep_fitted = TLorentzVector(tree.t_lep_px_fitted, tree.t_lep_py_fitted, tree.t_lep_pz_fitted, tree.t_lep_E_fitted)
+        W_had_true = TLorentzVector(tree.W_had_px_true, tree.W_had_py_true, tree.W_had_pz_true, tree.W_had_E_true)
+        b_had_true = TLorentzVector(tree.b_had_px_true, tree.b_had_py_true, tree.b_had_pz_true, tree.b_had_E_true)
+        t_had_true = TLorentzVector(tree.t_had_px_true, tree.t_had_py_true, tree.t_had_pz_true, tree.t_had_E_true)
+        W_lep_true = TLorentzVector(tree.W_lep_px_true, tree.W_lep_py_true, tree.W_lep_pz_true, tree.W_lep_E_true)
+        b_lep_true = TLorentzVector(tree.b_lep_px_true, tree.b_lep_py_true, tree.b_lep_pz_true, tree.b_lep_E_true)
+        t_lep_true = TLorentzVector(tree.t_lep_px_true, tree.t_lep_py_true, tree.t_lep_pz_true, tree.t_lep_E_true)
+        W_had_fitted = TLorentzVector(tree.W_had_px_fitted, tree.W_had_py_fitted, tree.W_had_pz_fitted, tree.W_had_E_fitted)
+        b_had_fitted = TLorentzVector(tree.b_had_px_fitted, tree.b_had_py_fitted, tree.b_had_pz_fitted, tree.b_had_E_fitted)
+        t_had_fitted = TLorentzVector(tree.t_had_px_fitted, tree.t_had_py_fitted, tree.t_had_pz_fitted, tree.t_had_E_fitted)
+        W_lep_fitted = TLorentzVector(tree.W_lep_px_fitted, tree.W_lep_py_fitted, tree.W_lep_pz_fitted, tree.W_lep_E_fitted)
+        b_lep_fitted = TLorentzVector(tree.b_lep_px_fitted, tree.b_lep_py_fitted, tree.b_lep_pz_fitted, tree.b_lep_E_fitted)
+        t_lep_fitted = TLorentzVector(tree.t_lep_px_fitted, tree.t_lep_py_fitted, tree.t_lep_pz_fitted, tree.t_lep_E_fitted)
 
-    try:
-        Wb_had_E_true = W_had_true.E() + b_had_true.E()
-        Wb_lep_E_true = W_lep_true.E() + b_lep_true.E()
-        Wb_had_E_fitted = W_had_fitted.E() + b_had_fitted.E()
-        Wb_lep_E_fitted = W_lep_fitted.E() + b_lep_fitted.E()
+        try:
+            Wb_had_E_true = W_had_true.E() + b_had_true.E()
+            Wb_lep_E_true = W_lep_true.E() + b_lep_true.E()
+            Wb_had_E_fitted = W_had_fitted.E() + b_had_fitted.E()
+            Wb_lep_E_fitted = W_lep_fitted.E() + b_lep_fitted.E()
 
-    except Exception as e:
-        print("WARNING: invalid, skipping event ( rn=%-10i en=%-10i )" % ( tree.runNumber, tree.eventNumber ))
-        PrintOut( t_lep_true, t_lep_fitted, "Leptonic top" )
-        print(e)
-        continue
+        except Exception as e:
+            print("WARNING: invalid, skipping event ( rn=%-10i en=%-10i )" % ( tree.runNumber, tree.eventNumber ))
+            PrintOut( t_lep_true, t_lep_fitted, "Leptonic top" )
+            print(e)
+            continue
 
-################################################################################
-# FILL TREES
+    ################################################################################
+    # FILL TREES
 
-    histograms['Wb_had_E_true'].Fill(  Wb_had_E_true,  w )
-    histograms['Wb_lep_E_true'].Fill(  Wb_lep_E_true,  w )
-    histograms['Wb_had_E_fitted'].Fill(  Wb_had_E_fitted,  w )
-    histograms['Wb_lep_E_fitted'].Fill(  Wb_lep_E_fitted,  w )
-    histograms['t_had_E_true'].Fill( t_had_true.E(), w)
-    histograms['t_lep_E_true'].Fill( t_lep_true.E(), w)
-    histograms['t_had_E_fitted'].Fill( t_had_fitted.E(), w)
-    histograms['t_lep_E_fitted'].Fill( t_lep_fitted.E(), w)
-  
-    histograms['corr_tp_had_E'].Fill( Wb_had_E_true, Wb_had_E_fitted, w )  
-    histograms['corr_tp_lep_E'].Fill( Wb_lep_E_true, Wb_lep_E_fitted, w )
-    histograms['corr_pp_had_E'].Fill( t_had_fitted.E(), Wb_had_E_fitted, w )  
-    histograms['corr_pp_lep_E'].Fill( t_lep_fitted.E(), Wb_lep_E_fitted, w )  
-    histograms['corr_tt_had_E'].Fill( t_had_true.E(), Wb_had_E_true, w )
-    histograms['corr_tt_lep_E'].Fill( t_lep_true.E(), Wb_lep_E_true, w )
+        histograms['Wb_had_E_true'].Fill(  Wb_had_E_true,  w )
+        histograms['Wb_lep_E_true'].Fill(  Wb_lep_E_true,  w )
+        histograms['Wb_had_E_fitted'].Fill(  Wb_had_E_fitted,  w )
+        histograms['Wb_lep_E_fitted'].Fill(  Wb_lep_E_fitted,  w )
+        histograms['t_had_E_true'].Fill( t_had_true.E(), w)
+        histograms['t_lep_E_true'].Fill( t_lep_true.E(), w)
+        histograms['t_had_E_fitted'].Fill( t_had_fitted.E(), w)
+        histograms['t_lep_E_fitted'].Fill( t_lep_fitted.E(), w)
+    
+        histograms['corr_tp_had_E'].Fill( Wb_had_E_true, Wb_had_E_fitted, w )  
+        histograms['corr_tp_lep_E'].Fill( Wb_lep_E_true, Wb_lep_E_fitted, w )
+        histograms['corr_pp_had_E'].Fill( t_had_fitted.E(), Wb_had_E_fitted, w )  
+        histograms['corr_pp_lep_E'].Fill( t_lep_fitted.E(), Wb_lep_E_fitted, w )  
+        histograms['corr_tt_had_E'].Fill( t_had_true.E(), Wb_had_E_true, w )
+        histograms['corr_tt_lep_E'].Fill( t_lep_true.E(), Wb_lep_E_true, w )
 
-    n_good += 1
+        n_good += 1
 
-for histname in histograms:
-    histograms[histname].Write(histname)
+    for histname in histograms:
+        histograms[histname].Write(histname)
 
-ofile.Write()
-ofile.Close()
+    ofile.Write()
+    ofile.Close()
 
-print("Finished. Saved output file:", ofilename)
-f_good = 100. * float( n_good ) / float( n_events )
-print("Good events: %.2f" % f_good)
+    print("Finished. Saved output file:", ofilename)
+    f_good = 100. * float( n_good ) / float( n_events )
+    print("Good events: %.2f" % f_good)
 
 # plotting
 gStyle.SetPalette(kGreyScale)
@@ -156,8 +157,9 @@ def plot_observables(fitted, true):
     # True and fitted leaf
     h_true = infile_plot.Get(hname_true)
     h_fitted = infile_plot.Get(hame_fitted)
+
     if h_true == None:
-        print ("ERROR: invalid histogram for", obs)
+        print ("ERROR: invalid histogram for", fitted, true)
 
     # Axis titles
     xtitle = h_true.GetXaxis().GetTitle()
@@ -207,19 +209,25 @@ def plot_observables(fitted, true):
     leg.SetY1( leg.GetY1() - 0.05 * leg.GetNRows() )
     leg.Draw()
 
-    KS = h_true.KolmogorovTest( h_fitted )
-    X2 = ChiSquared(h_true, h_fitted) # UU NORM
-    
     # get mean and standard deviation
     h_true.GetMean() #axis=1 by default for x-axis
     h_true.GetStdDev()
 
+    # KS = h_true.KolmogorovTest( h_fitted )
+    # X2 = ChiSquared(h_true, h_fitted) # UU NORM
+    # l = TLatex()
+    # l.SetNDC()
+    # l.SetTextFont(42)
+    # l.SetTextColor(kBlack)
+    # l.DrawLatex( 0.7, 0.80, "KS test: %.2f" % KS )
+    # l.DrawLatex( 0.7, 0.75, "#chi^{2}/NDF = %.2f" % X2 )
+
+    binWidth = h_true.GetBinWidth(0)
     l = TLatex()
     l.SetNDC()
     l.SetTextFont(42)
     l.SetTextColor(kBlack)
-    l.DrawLatex( 0.7, 0.80, "KS test: %.2f" % KS )
-    l.DrawLatex( 0.7, 0.75, "#chi^{2}/NDF = %.2f" % X2 )
+    l.DrawLatex( 0.65, 0.80, "Bin Width: %.2f GeV" % binWidth )
 
     gPad.RedrawAxis()
     if caption is not None:
@@ -306,13 +314,13 @@ if __name__==   "__main__":
         os.mkdir('{}/E_fit'.format(training_dir))
     except Exception as e:
         print("Overwriting existing files")
-    infilename_plot = "{}/histograms_W_plus_b.root".format(training_dir)
-    infile_plot = TFile.Open(infilename_plot)
+    make_histograms()
+    infile_plot = TFile.Open(ofilename)
 
     plot_observables('Wb_had_E_fitted', 'Wb_had_E_true')
     plot_observables('Wb_lep_E_fitted', 'Wb_lep_E_true')
-    # plot_observables('Wb_had_E_fitted', 't_had_E_fitted')
-    # plot_observables('Wb_lep_E_fitted', 't_lep_E_fitted')
+    plot_observables('Wb_had_E_fitted', 't_had_E_fitted')
+    plot_observables('Wb_lep_E_fitted', 't_lep_E_fitted')
     plot_observables('Wb_had_E_fitted', 't_had_E_true')
     plot_observables('Wb_lep_E_fitted', 't_lep_E_true')  
     plot_observables('Wb_had_E_true', 't_had_E_true')
