@@ -45,51 +45,6 @@ def MakeP4(y, m):
         raise Exception("Invalid Representation Given: {}".format(representation))
     return p4
 
-def compare_true_pred(parton, truth, fitted, dist_lim, phi_lim, R):
-    '''
-    (str, TLorentzVector(), TLorentzVector(), float, float) -> Bool
-    str should be one of b_had, b_lep, W_had, W_lep
-    dist_lim and phi_lim are the R and phi tolerance limits
-    '''
-    phi_recon = False
-    eta_recon = False
-    R_recon = False
-
-    # only compare Phi distances for Leptonic W
-    if parton == 'W_lep':
-        if ( np.abs( truth.Phi() - fitted.Phi() ) <= 37.0/50.0 ):
-            R_recon = True
-        elif R <= (dist_lim + 0.2):
-            R_recon = True
-
-    elif parton in ['b_lep', 'b_had', 'W_had']:
-        # compare phi distances
-        if ( np.abs( truth.Phi() - fitted.Phi() ) <= phi_lim ):
-            phi_recon = True
-
-        # compare eta distances
-        if parton == 'b_lep':
-            if ( (truth.Eta() - 4.0/5.0) <= fitted.Eta() ) and ( fitted.Eta() <= (truth.Eta()*15.0/14.0 + 13.0/14.0) ):
-                if ( np.abs(truth.Eta()) <= 1.8 ) and ( fitted.Eta() <= 2.0 ) and ( -1.8 <= fitted.Eta() ):
-                    eta_recon = True
-        elif parton == 'b_had':
-            if ( np.abs( truth.Eta()*5.0/4.0 - fitted.Eta() ) <= 19.0/20.0 ):
-                if ( np.abs(truth.Eta()) <= 2.2 ) and ( np.abs(fitted.Eta()) <= 2.4 ):
-                    eta_recon = True  
-        elif parton == 'W_had':
-            if ( np.abs(truth.Eta() - fitted.Eta()) <= 4.0/5.0):
-                if ( np.abs(truth.Eta()) <= 1.8 ) and ( np.abs(fitted.Eta()) <= 1.8 ):
-                    eta_recon = True             
-
-        # use eta and phi to determine overall reconstructability
-        # R_recon is False if phi and eta are both False, or if it is greater than the limit + 0.2
-        if (phi_recon == True) and (eta_recon == True):
-            R_recon = True
-        elif R <= (dist_lim + 0.2): #checking condition is to calculate R, and to see if it fits within a constant, hard-coded R value, as determined from the TvO distributions created
-                R_recon = True
-
-    return R_recon
-
 # load data
 predictions = np.load(outputdir + 'predictions.npz')
 jets = predictions['input']
@@ -222,15 +177,7 @@ hists['hadronic_t_dist_pred_v_true_un_recon'] = TH1F("t_had_d","t Hadronic Dista
 hists['hadronic_t_dist_pred_v_true_un_recon'].SetTitle("t Hadronic #eta-#phi distances, Predicted vs Truth Not Reconstructed;Hadronic (R);A.U.")
 
 def make_histograms():
-
-    jets = []
-
     # define tolerance limits
-    b_lep_dist_t_lim = b_had_dist_t_lim = 0.39
-    t_lep_dist_t_lim = t_had_dist_t_lim = 0.80
-    W_lep_dist_t_lim = 0.82
-    W_had_dist_t_lim = 1.82
-
     b_lep_dist_t_lim = 0.39
     b_had_dist_t_lim = 0.39
     t_lep_dist_t_lim = 0.80
@@ -238,49 +185,26 @@ def make_histograms():
     W_lep_dist_t_lim = 1.28
     W_had_dist_t_lim = 1.28
 
-    full_recon_dist_true = 0.
-    part_recon_dist_true = 0.
-    un_recon_dist_true = 0.
-    full_recon_phi_true = 0.
-    part_recon_phi_true = 0.
-    un_recon_phi_true = 0.
-    full_recon_eta_true = 0.
-    part_recon_eta_true = 0.
-    un_recon_eta_true = 0.
+    full_recon_dist_true = part_recon_dist_true = un_recon_dist_true = 0.
+    full_recon_phi_true = part_recon_phi_true = un_recon_phi_true = 0.
+    full_recon_eta_true = part_recon_eta_true = un_recon_eta_true = 0.
 
-    p_full_recon_t_full_dist = 0.
-    p_part_recon_t_full_dist = 0.
-    p_un_recon_t_full_dist = 0.
-    p_full_recon_t_part_dist = 0.
-    p_part_recon_t_part_dist = 0.
-    p_un_recon_t_part_dist = 0.
-    p_full_recon_t_un_dist = 0.
-    p_part_recon_t_un_dist = 0.
-    p_un_recon_t_un_dist = 0.
+    p_full_recon_t_full_dist = p_part_recon_t_full_dist = p_un_recon_t_full_dist = 0.
+    p_full_recon_t_part_dist = p_part_recon_t_part_dist = p_un_recon_t_part_dist = 0.
+    p_full_recon_t_un_dist = p_part_recon_t_un_dist = p_un_recon_t_un_dist = 0.
 
-    b_lep_dist_p_corr_t_full = 0.
-    b_had_dist_p_corr_t_full = 0.
-    t_lep_dist_p_corr_t_full = 0.
-    t_had_dist_p_corr_t_full = 0.
-    W_lep_dist_p_corr_t_full = 0.
-    W_had_dist_p_corr_t_full = 0.
+    b_lep_dist_p_corr_t_full = b_had_dist_p_corr_t_full = 0.
+    t_lep_dist_p_corr_t_full = t_had_dist_p_corr_t_full = 0.
+    W_lep_dist_p_corr_t_full = W_had_dist_p_corr_t_full = 0.
 
-    b_lep_dist_p_corr_t_part = 0.
-    b_had_dist_p_corr_t_part = 0.
-    t_lep_dist_p_corr_t_part = 0.
-    t_had_dist_p_corr_t_part = 0.
-    W_lep_dist_p_corr_t_part = 0.
-    W_had_dist_p_corr_t_part = 0.
+    b_lep_dist_p_corr_t_part = b_had_dist_p_corr_t_part = 0.
+    t_lep_dist_p_corr_t_part = t_had_dist_p_corr_t_part = 0.
+    W_lep_dist_p_corr_t_part = W_had_dist_p_corr_t_part = 0.
 
-    good_b_had = 0.
-    good_b_lep = 0.
-    good_W_had = 0.
-    good_W_lep = 0.
-
-    bad_b_had = 0.
-    bad_b_lep = 0.
-    bad_W_had = 0.
-    bad_W_lep = 0.
+    good_b_lep = good_b_had = 0.
+    good_W_lep = good_W_had = 0.
+    bad_b_lep = bad_b_had = 0.
+    bad_W_lep = bad_W_had = 0.
 
     for i in range(n_events): # loop through every event
         if ( n_events < 10 ) or ( (i+1) % int(float(n_events)/10.)  == 0 ):
@@ -313,17 +237,14 @@ def make_histograms():
         jet_4_vect = MakeP4(jet_4[i], jet_4[i][4])
         jet_5_vect = MakeP4(jet_5[i], jet_5[i][4])
         
-        jets.append([]) # add list containing jets of correspoonding event
-        jets[i].append(jet_1_vect)
-        jets[i].append(jet_2_vect)
-        jets[i].append(jet_3_vect)
-        jets[i].append(jet_4_vect)
-        jets[i].append(jet_5_vect)
+        jets = []
+        # jets.append([]) # add list containing jets of correspoonding event
+        jets.append(jet_1_vect)
+        jets.append(jet_2_vect)
+        jets.append(jet_3_vect)
+        jets.append(jet_4_vect)
+        jets.append(jet_5_vect)
 
-        # met_obs = np.sqrt(2*jet_mu[i][4]*jet_mu_vect.Pt()*(1 - np.cos(jet_mu[i][5])))
-        # met_true = np.sqrt(2*W_lep_true.Pt()*W_lep_true.Et()*(1 - np.cos(W_lep_true.Phi())))
-        # met_pred = np.sqrt(2*W_lep_fitted.Pt()*W_lep_fitted.Et()*(1 - np.cos(W_lep_fitted.Phi())))
-        
         # Observed transverse mass distribution is square root of 2* Etmiss 
         #  * Transverse angle between daughter particles, assuming that they are massless.
         
@@ -342,6 +263,7 @@ def make_histograms():
         met_true = W_lep_true.Mt() # np.sqrt(2*W_lep_true.Pt()*W_lep_true.Et()*(1 - np.cos(W_lep_true.Phi())))
         met_pred = W_lep_fitted.Mt() # np.sqrt(2*W_lep_fitted.Pt()*W_lep_fitted.Et()*(1 - np.cos(W_lep_fitted.Phi())))
 
+        ################################################# true vs predicted #################################################
         b_lep_dphi = min(np.abs(b_lep_true.Phi()-b_lep_fitted.Phi()), 2*np.pi-np.abs(b_lep_true.Phi()-b_lep_fitted.Phi()))
         b_lep_deta = b_lep_true.Eta()-b_lep_fitted.Eta()
         b_lep_R = np.sqrt(b_lep_dphi**2 + b_lep_deta**2)
@@ -356,111 +278,73 @@ def make_histograms():
         t_had_dphi = min(np.abs(t_had_true.Phi()-t_had_fitted.Phi()), 2*np.pi-np.abs(t_had_true.Phi()-t_had_fitted.Phi()))
         t_had_deta = t_had_true.Eta()-t_had_fitted.Eta()
         t_had_R = np.sqrt(t_had_dphi**2 + t_had_deta**2)
-
+        ##### fix this part
         W_lep_dphi = min(np.abs(W_lep_true.Phi()-W_lep_fitted.Phi()), 2*np.pi-np.abs(W_lep_true.Phi()-W_lep_fitted.Phi()))
         W_lep_R = np.abs(W_lep_dphi**2)
-        #W_lep_met = np.sqrt(2*W_lep_true.Et()*W_lep_fitted.Et()*(1 - np.cos(W_lep_R)))
 
         W_had_dphi = min(np.abs(W_had_true.Phi()-W_had_fitted.Phi()), 2*np.pi-np.abs(W_had_true.Phi()-W_had_fitted.Phi()))
         W_had_deta = W_had_true.Eta()-W_had_fitted.Eta()
         W_had_R = np.sqrt(W_had_dphi**2 + W_had_deta**2)
 
-        b_lep_phi_recon = False
-        b_lep_eta_recon = False
-        b_lep_R_recon = False
-        b_had_phi_recon = False
-        b_had_eta_recon = False
-        b_had_R_recon = False
-        W_lep_phi_recon = False
-        W_lep_eta_recon = False
-        W_lep_R_recon = False
-        W_had_phi_recon = False
-        W_had_eta_recon = False
-        W_had_R_recon = False
+        # determine whether or not the jets were reconstructed
+        b_lep_phi_recon = b_lep_eta_recon = b_lep_R_recon = False
+        b_had_phi_recon = b_had_eta_recon = b_had_R_recon = False
+        W_lep_phi_recon = W_lep_eta_recon = W_lep_R_recon = False
+        W_had_phi_recon = W_had_eta_recon = W_had_R_recon = False
 
         if ((b_lep_true.Phi() - 37.0/50.0) <= b_lep_fitted.Phi()) and (b_lep_fitted.Phi() <= (b_lep_true.Phi() + 37.0/50.0)):
             b_lep_phi_recon = True
-        else:
-            b_lep_phi_recon = False
         if ((b_lep_true.Eta() - 4.0/5.0) <= b_lep_fitted.Eta()) and (b_lep_fitted.Eta() <= (b_lep_true.Eta()*15.0/14.0 + 13.0/14.0)):
             if (np.abs(b_lep_true.Eta()) <= 1.8) and (b_lep_fitted.Eta() <= 2.0) and (-1.8 <= b_lep_fitted.Eta()):
                 b_lep_eta_recon = True
-        else:
-            b_lep_eta_recon = False
         if (b_lep_phi_recon == True) and (b_lep_eta_recon == True):
             b_lep_R_recon = True
-        elif (b_lep_phi_recon == False) and (b_lep_eta_recon == False):
-            b_lep_R_recon = False
-        else:
-            if b_lep_R <= (b_lep_dist_t_lim + 0.2): #checking condition is to calculate R, and to see if it fits within a constant, hard-coded R value, as determined from the TvO distributions created
+        elif b_lep_R <= (b_lep_dist_t_lim + 0.2): #checking condition is to calculate R, and to see if it fits within a constant, hard-coded R value, as determined from the TvO distributions created
                 b_lep_R_recon = True
-            else:
-                b_lep_R_recon = False
 
         if ((b_had_true.Phi() - 37.0/50.0) <= b_had_fitted.Phi()) and (b_had_fitted.Phi() <= (b_had_true.Phi() + 37.0/50.0)):
             b_had_phi_recon = True
-        else:
-            b_had_phi_recon = False
         if ((b_had_true.Eta()*5.0/4.0 - 19.0/20.0) <= b_had_fitted.Eta()) and (b_had_fitted.Eta() <= (b_had_true.Eta()*5.0/4.0 + 19.0/20.0)):
             if (np.abs(b_had_true.Eta()) <= 2.2) and (np.abs(b_had_fitted.Eta()) <= 2.4):
                 b_had_eta_recon = True
-        else:
-            b_had_eta_recon = False
         if (b_had_phi_recon == True) and (b_had_eta_recon == True):
             b_had_R_recon = True
-        elif (b_had_phi_recon == False) and (b_had_eta_recon == False):
-            b_had_R_recon = False
-        else:
-            if b_had_R <= (b_had_dist_t_lim + 0.2): #checking condition is to calculate R, and to see if it fits within a constant, hard-coded R value, as determined from the TvO distributions created
+        elif b_had_R <= (b_had_dist_t_lim + 0.2): #checking condition is to calculate R, and to see if it fits within a constant, hard-coded R value, as determined from the TvO distributions created
                 b_had_R_recon = True
-            else:
-                b_had_R_recon = False
 
         if ((W_lep_true.Phi() - 37.0/50.0) <= W_lep_fitted.Phi()) and (W_lep_fitted.Phi() <= (W_lep_true.Phi() + 37.0/50.0)):
             W_lep_R_recon = True
         elif W_lep_R <= (W_lep_dist_t_lim + 0.2):
             W_lep_R_recon = True
-        else:
-            W_lep_R_recon = False
 
         if ((W_had_true.Phi() - 57.0/50.0) <= W_had_fitted.Phi()) and (W_had_fitted.Phi() <= (W_had_true.Phi() + 57.0/50.0)):
             W_had_phi_recon = True
-        else:
-            W_had_phi_recon = False
         if ((W_had_true.Eta() - 4.0/5.0) <= W_had_fitted.Eta()) and (W_had_fitted.Eta() <= (W_had_true.Eta() + 4.0/5.0)):
             if (np.abs(W_had_true.Eta()) <= 1.8) and (np.abs(W_had_fitted.Eta()) <= 1.8):
                 W_had_eta_recon = True
-        else:
-            W_had_eta_recon = False
         if (W_had_phi_recon == True) and (W_had_eta_recon == True):
             W_had_R_recon = True
-        elif (W_had_phi_recon == False) and (W_had_eta_recon == False):
-            W_had_R_recon = False
-        else:
-            if W_had_R <= (W_had_dist_t_lim + 0.2): #checking condition is to calculate R, and to see if it fits within a constant, hard-coded R value, as determined from the TvO distributions created
+        elif W_had_R <= (W_had_dist_t_lim + 0.2): #checking condition is to calculate R, and to see if it fits within a constant, hard-coded R value, as determined from the TvO distributions created
                 W_had_R_recon = True
-            else:
-                W_had_R_recon = False
 
+        ################################################# true vs observed ################################################# 
         b_had_dist_true = 1000
         b_lep_dist_true = 1000
         t_had_dist_true = 1000
         t_lep_dist_true = 1000
         W_had_true_pT = 0
         W_had_dist_true = 10000000
-        #W_lep_true_pT = 0
-        #W_lep_dist_true = 10000000
-        for k in range(len(jets[i])): # loop through each of the jets to find the minimum distance for each particle
-            b_had_dphi_true = min(np.abs(b_had_true.Phi()-jets[i][k].Phi()), 2*np.pi-np.abs(b_had_true.Phi()-jets[i][k].Phi()))
-            b_had_deta_true = b_had_true.Eta()-jets[i][k].Eta()
+        for k in range(len(jets)): # loop through each of the jets to find the minimum distance for each particle
+            b_had_dphi_true = min(np.abs(b_had_true.Phi()-jets[k].Phi()), 2*np.pi-np.abs(b_had_true.Phi()-jets[k].Phi()))
+            b_had_deta_true = b_had_true.Eta()-jets[k].Eta()
             b_had_d_true = np.sqrt(b_had_dphi_true**2+b_had_deta_true**2)
-            b_lep_dphi_true = min(np.abs(b_lep_true.Phi()-jets[i][k].Phi()), 2*np.pi-np.abs(b_lep_true.Phi()-jets[i][k].Phi()))
-            b_lep_deta_true = b_lep_true.Eta()-jets[i][k].Eta()
+            b_lep_dphi_true = min(np.abs(b_lep_true.Phi()-jets[k].Phi()), 2*np.pi-np.abs(b_lep_true.Phi()-jets[k].Phi()))
+            b_lep_deta_true = b_lep_true.Eta()-jets[k].Eta()
             b_lep_d_true = np.sqrt(b_lep_dphi_true**2+b_lep_deta_true**2)
-            t_had_dphi_true = min(np.abs(t_had_true.Phi()-jets[i][k].Phi()), 2*np.pi-np.abs(t_had_true.Phi()-jets[i][k].Phi()))
-            t_had_deta_true = t_had_true.Eta()-jets[i][k].Eta()#CHECK A RUN TO SEE IF NOT CHECKING ETA FOR T WILL IMPROVE RESULTS
+            t_had_dphi_true = min(np.abs(t_had_true.Phi()-jets[k].Phi()), 2*np.pi-np.abs(t_had_true.Phi()-jets[k].Phi()))
+            t_had_deta_true = t_had_true.Eta()-jets[k].Eta()#CHECK A RUN TO SEE IF NOT CHECKING ETA FOR T WILL IMPROVE RESULTS
             t_had_d_true = np.sqrt(t_had_dphi_true**2+t_had_deta_true**2)
-            t_lep_dphi_true = min(np.abs(t_lep_true.Phi()-jets[i][k].Phi()), 2*np.pi-np.abs(t_lep_true.Phi()-jets[i][k].Phi()))
+            t_lep_dphi_true = min(np.abs(t_lep_true.Phi()-jets[k].Phi()), 2*np.pi-np.abs(t_lep_true.Phi()-jets[k].Phi()))
             t_lep_d_true = np.sqrt(t_lep_dphi_true**2)
             if b_had_d_true < b_had_dist_true:
                 b_had_dist_true = b_had_d_true
@@ -470,8 +354,8 @@ def make_histograms():
                 t_had_dist_true = t_had_d_true
             if t_lep_d_true < t_lep_dist_true:
                 t_lep_dist_true = t_lep_d_true
-            for j in range(k + 1, len(jets[i])):
-                sum_vect = jets[i][k] + jets[i][j] #W_lep_eta values commented out, if that doesn't work try to look into sum_vect since I think this adds a missing E_T jet
+            for j in range(k + 1, len(jets)):
+                sum_vect = jets[k] + jets[j] #W_lep_eta values commented out, if that doesn't work try to look into sum_vect since I think this adds a missing E_T jet
                 W_had_dphi_true = min(np.abs(W_had_true.Phi()-sum_vect.Phi()), 2*np.pi-np.abs(W_had_true.Phi()-sum_vect.Phi()))
                 W_had_deta_true = W_had_true.Eta()-sum_vect.Eta()
                 W_had_d_true = np.sqrt(W_had_dphi_true**2+W_had_deta_true**2)
@@ -480,6 +364,7 @@ def make_histograms():
                     W_had_dist_true = W_had_d_true
                     W_had_true_pT = W_had_true.Pt() - sum_vect.Pt()
         
+        # Calculate W leptonic distances
         # Add muon transverse momentum components to missing momentum components
         lep_x = jet_mu[i][0] + missing_px
         lep_y = jet_mu[i][1] + missing_py
@@ -487,13 +372,13 @@ def make_histograms():
         lep_phi = np.arctan2( lep_y, lep_x )
         # Calculate the distance between jets, if it is less than the the current minimum, update it.
         W_lep_dist_true = np.abs( min( np.abs(W_lep_true.Phi()-lep_phi), 2*np.pi-np.abs(W_lep_true.Phi()-lep_phi) ) )
-
+ 
+        # add the number of jets that are within the tolerance limit, or reconstructable
+        corr_p_jets_dist = b_lep_R_recon + b_had_R_recon + W_lep_R_recon + W_had_R_recon
         corr_jets_dist = 0.
-        corr_p_jets_dist = 0.
-
         if (b_lep_dist_true <= b_lep_dist_t_lim): # if minimum distance is less than the tolearance limits, everything is ok
             corr_jets_dist += 1
-            good_b_lep += 1
+            good_b_lep += (b_lep_dist_true <= b_lep_dist_t_lim)
         else:
             bad_b_lep += 1
         if (b_had_dist_true <= b_had_dist_t_lim):
@@ -512,6 +397,8 @@ def make_histograms():
         else:
             bad_W_had += 1
 
+        ################################################# check percentages #################################################
+
         # fully reconstructable
         if corr_jets_dist == 4: 
             full_recon_dist_true = full_recon_dist_true + 1
@@ -521,21 +408,13 @@ def make_histograms():
             hists['hadronic_t_dist_pred_v_true_recon'].Fill(t_had_R)
             hists['leptonic_W_dist_pred_v_true_recon'].Fill(W_lep_R)
             hists['hadronic_W_dist_pred_v_true_recon'].Fill(W_had_R)
-            if (b_lep_R_recon == True):
-                corr_p_jets_dist += 1
-            if (b_had_R_recon == True):
-                corr_p_jets_dist += 1
-            if (W_lep_R_recon == True):
-                corr_p_jets_dist += 1
-            if (W_had_R_recon == True):
-                corr_p_jets_dist += 1
-
             if corr_p_jets_dist == 4:
                 p_full_recon_t_full_dist += 1
             elif corr_p_jets_dist == 3:
                 p_part_recon_t_full_dist += 1
             else:
                 p_un_recon_t_full_dist += 1
+
         # partially reconstructable
         elif corr_jets_dist == 3: 
             part_recon_dist_true = part_recon_dist_true + 1
@@ -545,21 +424,13 @@ def make_histograms():
             hists['hadronic_t_dist_pred_v_true_part_recon'].Fill(t_had_R)
             hists['leptonic_W_dist_pred_v_true_part_recon'].Fill(W_lep_R)
             hists['hadronic_W_dist_pred_v_true_part_recon'].Fill(W_had_R)
-            if (b_lep_R_recon == True):
-                corr_p_jets_dist += 1
-            if (b_had_R_recon == True):
-                corr_p_jets_dist += 1
-            if (W_lep_R_recon == True):
-                corr_p_jets_dist += 1
-            if (W_had_R_recon == True):
-                corr_p_jets_dist += 1
-
             if corr_p_jets_dist == 4:
                 p_full_recon_t_part_dist += 1
             elif corr_p_jets_dist == 3:
                 p_part_recon_t_part_dist += 1
             else:
                 p_un_recon_t_part_dist += 1
+
         # un-reconstructable
         else: 
             un_recon_dist_true += 1
@@ -569,15 +440,6 @@ def make_histograms():
             hists['hadronic_t_dist_pred_v_true_un_recon'].Fill(t_had_R)
             hists['leptonic_W_dist_pred_v_true_un_recon'].Fill(W_lep_R)
             hists['hadronic_W_dist_pred_v_true_un_recon'].Fill(W_had_R)
-            if (b_lep_R_recon == True):
-                corr_p_jets_dist += 1
-            if (b_had_R_recon == True):
-                corr_p_jets_dist += 1
-            if (W_lep_R_recon == True):
-                corr_p_jets_dist += 1
-            if (W_had_R_recon == True):
-                corr_p_jets_dist += 1
-
             if corr_p_jets_dist == 4:
                 p_full_recon_t_un_dist += 1
             elif corr_p_jets_dist == 3:
@@ -644,5 +506,5 @@ if __name__ == "__main__":
     except Exception as e:
         print("Overwriting existing files")
     make_histograms()
-    # for key in hists:
-        # plot_jets(key)
+    for key in hists:
+        plot_jets(key)
