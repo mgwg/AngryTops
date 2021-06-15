@@ -116,10 +116,8 @@ hists = {}
 
 hists['leptonic_W_transverse_mass_observed'] = TH1F("W_lep_met_d","W Leptonic Transverse Mass, Observed", 50, 0, 250)#120)
 hists['leptonic_W_transverse_mass_observed'].SetTitle("W Leptonic Transverse Mass, Observed;Leptonic (GeV);A.U.")
-hists['leptonic_W_transverse_mass_true'] = TH1F("W_lep_met_d","W Leptonic Transverse Mass, Truth", 50, 0, 250) #0, 120)
-hists['leptonic_W_transverse_mass_true'].SetTitle("W Leptonic Transverse Mass, Truth;Leptonic (GeV);A.U.")
-hists['leptonic_W_transverse_mass_predicted'] = TH1F("W_lep_met_d","W Leptonic Transverse Mass, Predicted", 50, 0, 250) #0, 120)
-hists['leptonic_W_transverse_mass_predicted'].SetTitle("W Leptonic Transverse Mass, Predicted;Leptonic (GeV);A.U.")
+hists['leptonic_W_transverse_energy'] = TH1F("W_lep_Et_d","W Leptonic Transverse Energy Difference, Observed - Truth", 50, -120, 120)
+hists['leptonic_W_transverse_energy'].SetTitle("W Leptonic Transverse Energy Difference, Observed - Truth;Leptonic (GeV);A.U.")
 
 hists['leptonic_W_true_dist'] = TH1F("h_W_lep_true","W Leptonic Distances, True vs Observed", 50, 0, 3)
 hists['leptonic_W_true_dist'].SetTitle("W Leptonic #phi distances, True vs Observed;true leptonic (radians);A.U.")
@@ -253,15 +251,17 @@ def make_histograms():
         #  px and py, but for the missing Et, we have the vector in polar representation.
         muon_pT_obs = [jet_mu[i][0], jet_mu[i][1]] # Observed transverse momentum of muon
         # Convert missing transverse energy to a momentum
-        missing_px = jet_mu[i][4]*np.cos(jet_mu[i][5]) # x-component of missing momentum
-        missing_py = jet_mu[i][4]*np.sin(jet_mu[i][5]) # y-component of missing momentum
-        nu_pT_obs = [missing_px, missing_py] # Observed neutrino transverse momentum from missing energy.
-        # Now, calculate the angle.
+        nu_pT_obs = [ jet_mu[i][4]*np.cos(jet_mu[i][5]), jet_mu[i][4]*np.sin(jet_mu[i][5])] # Observed neutrino transverse momentum from missing energy as [x, y].
+        # Now, calculate the angle
         obs_daughter_angle = np.arccos(np.dot(muon_pT_obs, nu_pT_obs) / norm(muon_pT_obs) / norm(nu_pT_obs))
         met_obs = np.sqrt(2*jet_mu[i][4]*jet_mu_vect.Pt()*(1 - np.cos(obs_daughter_angle))) 
-        # Pt^2 = Px^2 + Py^2
-        met_true = W_lep_true.Mt() # np.sqrt(2*W_lep_true.Pt()*W_lep_true.Et()*(1 - np.cos(W_lep_true.Phi())))
-        met_pred = W_lep_fitted.Mt() # np.sqrt(2*W_lep_fitted.Pt()*W_lep_fitted.Et()*(1 - np.cos(W_lep_fitted.Phi())))
+
+        # Calculate the transverse energy of the observed leptonic W summing rest mass and total transverse momentum.
+        W_lep_Px_observed = muon_pT_obs[0] + nu_pT_obs[0]
+        W_lep_Py_observed = muon_pT_obs[1] + nu_pT_obs[1]
+        W_Et_observed = np.sqrt( m_W**2 + W_lep_Px_observed**2 + W_lep_Py_observed**2)
+        # difference
+        W_lep_Et_diff = W_Et_observed - W_lep_true.Et()
 
         ################################################# true vs predicted #################################################
         b_lep_dphi = min(np.abs(b_lep_true.Phi()-b_lep_fitted.Phi()), 2*np.pi-np.abs(b_lep_true.Phi()-b_lep_fitted.Phi()))
@@ -278,9 +278,9 @@ def make_histograms():
         t_had_dphi = min(np.abs(t_had_true.Phi()-t_had_fitted.Phi()), 2*np.pi-np.abs(t_had_true.Phi()-t_had_fitted.Phi()))
         t_had_deta = t_had_true.Eta()-t_had_fitted.Eta()
         t_had_R = np.sqrt(t_had_dphi**2 + t_had_deta**2)
-        ##### fix this part
-        W_lep_dphi = min(np.abs(W_lep_true.Phi()-W_lep_fitted.Phi()), 2*np.pi-np.abs(W_lep_true.Phi()-W_lep_fitted.Phi()))
-        W_lep_R = np.abs(W_lep_dphi**2)
+        
+        W_lep_R = min(np.abs(W_lep_true.Phi()-W_lep_fitted.Phi()), 2*np.pi-np.abs(W_lep_true.Phi()-W_lep_fitted.Phi()))
+        # W_lep_R = np.abs(W_lep_dphi**2)
 
         W_had_dphi = min(np.abs(W_had_true.Phi()-W_had_fitted.Phi()), 2*np.pi-np.abs(W_had_true.Phi()-W_had_fitted.Phi()))
         W_had_deta = W_had_true.Eta()-W_had_fitted.Eta()
@@ -366,8 +366,8 @@ def make_histograms():
         
         # Calculate W leptonic distances
         # Add muon transverse momentum components to missing momentum components
-        lep_x = jet_mu[i][0] + missing_px
-        lep_y = jet_mu[i][1] + missing_py
+        lep_x = jet_mu[i][0] + nu_pT_obs[0]
+        lep_y = jet_mu[i][1] + nu_pT_obs[1]
         # Calculate phi using definition in Kuunal's report 
         lep_phi = np.arctan2( lep_y, lep_x )
         # Calculate the distance between jets, if it is less than the the current minimum, update it.
@@ -453,8 +453,7 @@ def make_histograms():
         hists['hadronic_t_true_dist'].Fill(np.float(t_had_dist_true))
         hists['leptonic_W_true_dist'].Fill(np.float(W_lep_dist_true))
         hists['leptonic_W_transverse_mass_observed'].Fill(np.float(met_obs))
-        hists['leptonic_W_transverse_mass_true'].Fill(np.float(met_true))
-        hists['leptonic_W_transverse_mass_predicted'].Fill(np.float(met_pred))
+        hists['leptonic_W_transverse_energy'].Fill(np.float(W_lep_Et_diff))
         hists['hadronic_W_true_dist'].Fill(np.float(W_had_dist_true))
         hists['hadronic_W_true_pT_dist'].Fill(np.float(W_had_true_pT))
 
