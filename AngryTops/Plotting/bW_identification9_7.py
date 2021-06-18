@@ -8,7 +8,7 @@ import pickle
 
 representation = sys.argv[2]
 outputdir = sys.argv[1]
-subdir = '/closejets_img/'
+subdir = '/closejets_img_test/'
 scaling = True
 m_t = 172.5
 m_W = 80.4
@@ -118,6 +118,8 @@ hists['leptonic_W_transverse_mass_observed'] = TH1F("W_lep_met_d","W Leptonic Tr
 hists['leptonic_W_transverse_mass_observed'].SetTitle("W Leptonic Transverse Mass, Observed;Leptonic (GeV);A.U.")
 hists['leptonic_W_transverse_energy'] = TH1F("W_lep_Et_d","W Leptonic Transverse Energy Difference, Observed - Truth", 50, -120, 120)
 hists['leptonic_W_transverse_energy'].SetTitle("W Leptonic Transverse Energy Difference, Observed - Truth;Leptonic (GeV);A.U.")
+hists['leptonic_W_transverse_energy_high'] = TH1F("W_lep_Et_d","W Leptonic Transverse Energy Difference (High Energy), Observed - Truth", 50, -120, 120)
+hists['leptonic_W_transverse_energy_high'].SetTitle("W Leptonic Transverse Energy Difference (High Energy), Observed - Truth;Leptonic (GeV);A.U.")
 
 hists['leptonic_W_true_v_obs_dist'] = TH1F("h_W_lep_true","W Leptonic Distances, True vs Observed", 50, 0, 3)
 hists['leptonic_W_true_v_obs_dist'].SetTitle("W Leptonic #phi distances, True vs Observed;true leptonic (radians);A.U.")
@@ -204,6 +206,8 @@ def make_histograms():
     bad_b_lep = bad_b_had = 0.
     bad_W_lep = bad_W_had = 0.
 
+    high_E = 0
+
     for i in range(n_events): # loop through every event
         if ( n_events < 10 ) or ( (i+1) % int(float(n_events)/10.)  == 0 ):
             perc = 100. * i / float(n_events)
@@ -236,13 +240,13 @@ def make_histograms():
         jet_5_vect = MakeP4(jet_5[i], jet_5[i][4])
         
         jets = []
-        # jets.append([]) # add list containing jets of correspoonding event
+        # add list containing jets of correspoonding event
         jets.append(jet_1_vect)
         jets.append(jet_2_vect)
         jets.append(jet_3_vect)
         jets.append(jet_4_vect)
         jets.append(jet_5_vect)
-
+        
         # Observed transverse mass distribution is square root of 2* Etmiss 
         #  * Transverse angle between daughter particles, assuming that they are massless.
         
@@ -279,8 +283,8 @@ def make_histograms():
         t_had_deta = t_had_true.Eta()-t_had_fitted.Eta()
         t_had_R = np.sqrt(t_had_dphi**2 + t_had_deta**2)
         
-        W_lep_R = min(np.abs(W_lep_true.Phi()-W_lep_fitted.Phi()), 2*np.pi-np.abs(W_lep_true.Phi()-W_lep_fitted.Phi()))
-        # W_lep_R = np.abs(W_lep_dphi**2)
+        W_lep_dphi = min(np.abs(W_lep_true.Phi()-W_lep_fitted.Phi()), 2*np.pi-np.abs(W_lep_true.Phi()-W_lep_fitted.Phi()))
+        W_lep_R = np.sqrt(W_lep_dphi**2)
 
         W_had_dphi = min(np.abs(W_had_true.Phi()-W_had_fitted.Phi()), 2*np.pi-np.abs(W_had_true.Phi()-W_had_fitted.Phi()))
         W_had_deta = W_had_true.Eta()-W_had_fitted.Eta()
@@ -326,7 +330,7 @@ def make_histograms():
             W_had_R_recon = True
         elif W_had_R <= (W_had_dist_t_lim + 0.2): #checking condition is to calculate R, and to see if it fits within a constant, hard-coded R value, as determined from the TvO distributions created
                 W_had_R_recon = True
-
+        
         ################################################# true vs observed ################################################# 
         b_had_dist_true = 1000
         b_lep_dist_true = 1000
@@ -342,7 +346,7 @@ def make_histograms():
             b_lep_deta_true = b_lep_true.Eta()-jets[k].Eta()
             b_lep_d_true = np.sqrt(b_lep_dphi_true**2+b_lep_deta_true**2)
             t_had_dphi_true = min(np.abs(t_had_true.Phi()-jets[k].Phi()), 2*np.pi-np.abs(t_had_true.Phi()-jets[k].Phi()))
-            t_had_deta_true = t_had_true.Eta()-jets[k].Eta()#CHECK A RUN TO SEE IF NOT CHECKING ETA FOR T WILL IMPROVE RESULTS
+            t_had_deta_true = t_had_true.Eta()-jets[k].Eta()
             t_had_d_true = np.sqrt(t_had_dphi_true**2+t_had_deta_true**2)
             t_lep_dphi_true = min(np.abs(t_lep_true.Phi()-jets[k].Phi()), 2*np.pi-np.abs(t_lep_true.Phi()-jets[k].Phi()))
             t_lep_d_true = np.sqrt(t_lep_dphi_true**2)
@@ -354,8 +358,9 @@ def make_histograms():
                 t_had_dist_true = t_had_d_true
             if t_lep_d_true < t_lep_dist_true:
                 t_lep_dist_true = t_lep_d_true
+            # go through each pair of jets and chekck their sum
             for j in range(k + 1, len(jets)):
-                sum_vect = jets[k] + jets[j] #W_lep_eta values commented out, if that doesn't work try to look into sum_vect since I think this adds a missing E_T jet
+                sum_vect = jets[k] + jets[j] 
                 W_had_dphi_true = min(np.abs(W_had_true.Phi()-sum_vect.Phi()), 2*np.pi-np.abs(W_had_true.Phi()-sum_vect.Phi()))
                 W_had_deta_true = W_had_true.Eta()-sum_vect.Eta()
                 W_had_d_true = np.sqrt(W_had_dphi_true**2+W_had_deta_true**2)
@@ -454,6 +459,9 @@ def make_histograms():
         hists['leptonic_W_true_v_obs_dist'].Fill(np.float(W_lep_dist_true))
         hists['leptonic_W_transverse_mass_observed'].Fill(np.float(met_obs))
         hists['leptonic_W_transverse_energy'].Fill(np.float(W_lep_Et_diff))
+        if W_Et_observed() >= 150:
+            high_E += 1
+            hists['leptonic_W_transverse_energy_high'].Fill(np.float(W_lep_Et_diff))
         hists['hadronic_W_true_v_obs_dist'].Fill(np.float(W_had_dist_true))
         hists['hadronic_W_true_pT_dist'].Fill(np.float(W_had_true_pT))
 
@@ -488,10 +496,11 @@ def make_histograms():
     print('SUM CHECK:                                                                                ', p_full_recon_t_un_dist + p_part_recon_t_un_dist + p_un_recon_t_un_dist, ' events, ', 100*(p_full_recon_t_un_dist + p_part_recon_t_un_dist + p_un_recon_t_un_dist)/un_recon_dist_true, '%')
     print('=================================================================')
     print('=================================================================')
-    print(100*good_W_had/(bad_W_had + good_W_had), ' good_W_had')
-    print(100*good_W_lep/(bad_W_lep + good_W_lep), ' good_W_lep')
-    print(100*good_b_had/(bad_b_had + good_b_had), ' good_b_had')
-    print(100*good_b_lep/(bad_b_lep + good_b_lep), ' good_b_lep')
+    print(100*good_W_had/n_events, ' good_W_had')
+    print(100*good_W_lep/n_events, ' good_W_lep')
+    print(100*good_b_had/n_events, ' good_b_had')
+    print(100*good_b_lep/n_events, ' good_b_lep')
+    print(100*high_E/n_events, 'high_E')
     
 def plot_jets(key):
     c1 = TCanvas()
@@ -501,7 +510,7 @@ def plot_jets(key):
     
 if __name__ == "__main__":
     try:
-        os.mkdir('{}/closejets_img'.format(outputdir))
+        os.mkdir('{}/closejets_img_test'.format(outputdir))
     except Exception as e:
         print("Overwriting existing files")
     make_histograms()
