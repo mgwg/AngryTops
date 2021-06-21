@@ -8,7 +8,7 @@ import pickle
 
 representation = sys.argv[2]
 outputdir = sys.argv[1]
-subdir = '/closejets_img_test/'
+subdir = '/closejets_img/'
 scaling = True
 m_t = 172.5
 m_W = 80.4
@@ -113,13 +113,12 @@ n_events = true.shape[0]
 
 # make histograms to be fillled
 hists = {}
-
-hists['leptonic_W_transverse_mass_observed'] = TH1F("W_lep_met_d","W Leptonic Transverse Mass, Observed", 50, 0, 250)#120)
-hists['leptonic_W_transverse_mass_observed'].SetTitle("W Leptonic Transverse Mass, Observed;Leptonic (GeV);A.U.")
-hists['leptonic_W_transverse_energy'] = TH1F("W_lep_Et_d","W Leptonic Transverse Energy Difference, Observed - Truth", 50, -120, 120)
-hists['leptonic_W_transverse_energy'].SetTitle("W Leptonic Transverse Energy Difference, Observed - Truth;Leptonic (GeV);A.U.")
-hists['leptonic_W_transverse_energy_high'] = TH1F("W_lep_Et_d","W Leptonic Transverse Energy Difference (High Energy), Observed - Truth", 50, -120, 120)
-hists['leptonic_W_transverse_energy_high'].SetTitle("W Leptonic Transverse Energy Difference (High Energy), Observed - Truth;Leptonic (GeV);A.U.")
+# hists['leptonic_W_transverse_mass_observed'] = TH1F("W_lep_met_d","W Leptonic Transverse Mass, Observed", 50, 0, 250)#120)
+# hists['leptonic_W_transverse_mass_observed'].SetTitle("W Leptonic Transverse Mass, Observed;Leptonic (GeV);A.U.")
+# hists['leptonic_W_transverse_energy'] = TH1F("W_lep_Et_d","W Leptonic Transverse Energy Difference, Observed - Truth", 50, -120, 120)
+# hists['leptonic_W_transverse_energy'].SetTitle("W Leptonic Transverse Energy Difference, Observed - Truth;Leptonic (GeV);A.U.")
+# hists['leptonic_W_transverse_energy_high'] = TH1F("W_lep_Et_d","W Leptonic Transverse Energy Difference (High Energy), Observed - Truth", 50, -120, 120)
+# hists['leptonic_W_transverse_energy_high'].SetTitle("W Leptonic Transverse Energy Difference (High Energy), Observed - Truth;Leptonic (GeV);A.U.")
 
 hists['leptonic_W_true_v_obs_dist'] = TH1F("h_W_lep_true","W Leptonic Distances, True vs Observed", 50, 0, 3)
 hists['leptonic_W_true_v_obs_dist'].SetTitle("W Leptonic #phi distances, True vs Observed;true leptonic (radians);A.U.")
@@ -129,8 +128,10 @@ hists['leptonic_W_dist_pred_v_true_part_recon'] = TH1F("W_lep_d","W Leptonic Dis
 hists['leptonic_W_dist_pred_v_true_part_recon'].SetTitle("W Leptonic #phi distances, Predicted vs Truth Partially Reconstructed;Leptonic (radians);A.U.")
 hists['leptonic_W_dist_pred_v_true_un_recon'] = TH1F("W_lep_d","W Leptonic Distances, Predicted vs Truth Not Reconstructed", 50, 0, 3)
 hists['leptonic_W_dist_pred_v_true_un_recon'].SetTitle("W Leptonic #phi distances, Predicted vs Truth Not Reconstructed;Leptonic (radians);A.U.")
+hists['leptonic_W_dist_pred_v_true'] = TH1F("W_lep_d","W Leptonic Distances, Predicted vs Truth", 50, 0, 3)
+hists['leptonic_W_dist_pred_v_true'].SetTitle("W Leptonic #phi distances, Predicted vs Truth;Leptonic (radians);A.U.")
 
-hists['hadronic_W_true_pT_dist'] = TH1F("h_pT_W_had_true","W Hadronic p_T, True vs Observed", 50, -500, 500)
+# hists['hadronic_W_true_pT_dist'] = TH1F("h_pT_W_had_true","W Hadronic p_T, True vs Observed", 50, -500, 500)
 hists['hadronic_W_true_v_obs_dist'] = TH1F("h_W_had_true","W Hadronic Distances, True vs Observed", 50, 0, 3)
 hists['hadronic_W_true_v_obs_dist'].SetTitle("W Hadronic #eta-#phi distances, True vs Observed;true hadronic (radians);A.U.")
 hists['hadronic_W_dist_pred_v_true_recon'] = TH1F("W_had_d","W Hadronic Distances Predicted vs Truth Reconstructed", 50, 0, 3)
@@ -257,15 +258,15 @@ def make_histograms():
         # Convert missing transverse energy to a momentum
         nu_pT_obs = [ jet_mu[i][4]*np.cos(jet_mu[i][5]), jet_mu[i][4]*np.sin(jet_mu[i][5])] # Observed neutrino transverse momentum from missing energy as [x, y].
         # Now, calculate the angle
-        obs_daughter_angle = np.arccos(np.dot(muon_pT_obs, nu_pT_obs) / norm(muon_pT_obs) / norm(nu_pT_obs))
-        met_obs = np.sqrt(2*jet_mu[i][4]*jet_mu_vect.Pt()*(1 - np.cos(obs_daughter_angle))) 
+        # obs_daughter_angle = np.arccos(np.dot(muon_pT_obs, nu_pT_obs) / norm(muon_pT_obs) / norm(nu_pT_obs))
+        # met_obs = np.sqrt(2*jet_mu[i][4]*jet_mu_vect.Pt()*(1 - np.cos(obs_daughter_angle))) 
 
         # Calculate the transverse energy of the observed leptonic W summing rest mass and total transverse momentum.
         W_lep_Px_observed = muon_pT_obs[0] + nu_pT_obs[0]
         W_lep_Py_observed = muon_pT_obs[1] + nu_pT_obs[1]
         W_Et_observed = np.sqrt( W_lep_Px_observed**2 + W_lep_Py_observed**2)
         # difference
-        W_lep_Et_diff = W_Et_observed - W_lep_true.Et()
+        # W_lep_Et_diff = W_Et_observed - W_lep_true.Et()
 
         ################################################# true vs predicted #################################################
         b_lep_dphi = min(np.abs(b_lep_true.Phi()-b_lep_fitted.Phi()), 2*np.pi-np.abs(b_lep_true.Phi()-b_lep_fitted.Phi()))
@@ -463,13 +464,14 @@ def make_histograms():
         hists['leptonic_t_true_v_obs_dist'].Fill(np.float(t_lep_dist_true))
         hists['hadronic_t_true_v_obs_dist'].Fill(np.float(t_had_dist_true))
         hists['leptonic_W_true_v_obs_dist'].Fill(np.float(W_lep_dist_true))
-        hists['leptonic_W_transverse_mass_observed'].Fill(np.float(met_obs))
-        hists['leptonic_W_transverse_energy'].Fill(np.float(W_lep_Et_diff))
-        if W_Et_observed >= 150:
-            high_E += 1
-            hists['leptonic_W_transverse_energy_high'].Fill(np.float(W_lep_Et_diff))
+        hists['leptonic_W_dist_pred_v_true'].Fill(np.float(W_lep_R))
+        # hists['leptonic_W_transverse_mass_observed'].Fill(np.float(met_obs))
+        # hists['leptonic_W_transverse_energy'].Fill(np.float(W_lep_Et_diff))
+        # if W_Et_observed >= 150:
+        #     high_E += 1
+        #     hists['leptonic_W_transverse_energy_high'].Fill(np.float(W_lep_Et_diff))
         hists['hadronic_W_true_v_obs_dist'].Fill(np.float(W_had_dist_true))
-        hists['hadronic_W_true_pT_dist'].Fill(np.float(W_had_true_pT))
+        # hists['hadronic_W_true_pT_dist'].Fill(np.float(W_had_true_pT))
 
     print('good_W_had', good_W_had, 'bad_W_had', bad_W_had)
     print('good_W_lep', good_W_lep, 'bad_W_lep', bad_W_lep)
@@ -516,7 +518,7 @@ def plot_jets(key):
     
 if __name__ == "__main__":
     try:
-        os.mkdir('{}/closejets_img_test'.format(outputdir))
+        os.mkdir('{}/closejets_img'.format(outputdir))
     except Exception as e:
         print("Overwriting existing files")
     make_histograms()
