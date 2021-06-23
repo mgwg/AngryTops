@@ -113,12 +113,12 @@ n_events = true.shape[0]
 
 # make histograms to be fillled
 hists = {}
-# hists['leptonic_W_transverse_mass_observed'] = TH1F("W_lep_met_d","W Leptonic Transverse Mass, Observed", 50, 0, 250)#120)
-# hists['leptonic_W_transverse_mass_observed'].SetTitle("W Leptonic Transverse Mass, Observed;Leptonic (GeV);A.U.")
-# hists['leptonic_W_transverse_energy'] = TH1F("W_lep_Et_d","W Leptonic Transverse Energy Difference, Observed - Truth", 50, -120, 120)
-# hists['leptonic_W_transverse_energy'].SetTitle("W Leptonic Transverse Energy Difference, Observed - Truth;Leptonic (GeV);A.U.")
-# hists['leptonic_W_transverse_energy_high'] = TH1F("W_lep_Et_d","W Leptonic Transverse Energy Difference (High Energy), Observed - Truth", 50, -120, 120)
-# hists['leptonic_W_transverse_energy_high'].SetTitle("W Leptonic Transverse Energy Difference (High Energy), Observed - Truth;Leptonic (GeV);A.U.")
+hists['leptonic_W_transverse_mass_observed'] = TH1F("W_lep_met_d","W Leptonic Transverse Mass, Observed", 50, 0, 250)#120)
+hists['leptonic_W_transverse_mass_observed'].SetTitle("W Leptonic Transverse Mass, Observed;Leptonic (GeV);A.U.")
+hists['leptonic_W_transverse_energy_diff'] = TH1F("W_lep_Et_d","W Leptonic Transverse Energy Difference, Observed - Truth", 50, -120, 120)
+hists['leptonic_W_transverse_energy_diff'].SetTitle("W Leptonic Transverse Energy Difference, Observed - Truth;Leptonic (GeV);A.U.")
+hists['leptonic_W_transverse_energy_diff_high'] = TH1F("W_lep_Et_d","W Leptonic Transverse Energy Difference (High Energy), Observed - Truth", 50, -120, 120)
+hists['leptonic_W_transverse_energy_diff_high'].SetTitle("W Leptonic Transverse Energy Difference (High Energy), Observed - Truth;Leptonic (GeV);A.U.")
 
 hists['leptonic_W_true_v_obs_dist'] = TH1F("h_W_lep_true","W Leptonic Distances, True vs Observed", 50, 0, 3)
 hists['leptonic_W_true_v_obs_dist'].SetTitle("W Leptonic #phi distances, True vs Observed;true leptonic (radians);A.U.")
@@ -258,15 +258,15 @@ def make_histograms():
         # Convert missing transverse energy to a momentum
         nu_pT_obs = [ jet_mu[i][4]*np.cos(jet_mu[i][5]), jet_mu[i][4]*np.sin(jet_mu[i][5])] # Observed neutrino transverse momentum from missing energy as [x, y].
         # Now, calculate the angle
-        # obs_daughter_angle = np.arccos(np.dot(muon_pT_obs, nu_pT_obs) / norm(muon_pT_obs) / norm(nu_pT_obs))
-        # met_obs = np.sqrt(2*jet_mu[i][4]*jet_mu_vect.Pt()*(1 - np.cos(obs_daughter_angle))) 
+        obs_daughter_angle = np.arccos( np.dot(muon_pT_obs, nu_pT_obs) / norm(muon_pT_obs) / norm(nu_pT_obs) )
+        met_obs = np.sqrt(2*jet_mu[i][4]*jet_mu_vect.Pt()*(1 - np.cos(obs_daughter_angle))) 
 
         # Calculate the transverse energy of the observed leptonic W summing rest mass and total transverse momentum.
         W_lep_Px_observed = muon_pT_obs[0] + nu_pT_obs[0]
         W_lep_Py_observed = muon_pT_obs[1] + nu_pT_obs[1]
         W_Et_observed = np.sqrt( W_lep_Px_observed**2 + W_lep_Py_observed**2)
         # difference
-        # W_lep_Et_diff = W_Et_observed - W_lep_true.Et()
+        W_lep_Et_diff = W_Et_observed - W_lep_true.Et()
 
         ################################################# true vs predicted #################################################
         b_lep_dphi = min(np.abs(b_lep_true.Phi()-b_lep_fitted.Phi()), 2*np.pi-np.abs(b_lep_true.Phi()-b_lep_fitted.Phi()))
@@ -370,7 +370,7 @@ def make_histograms():
         lep_y = jet_mu[i][1] + nu_pT_obs[1]
         # Calculate phi using definition in Kuunal's report 
         lep_phi = np.arctan2( lep_y, lep_x )
-        # Calculate the distance between jets, if it is less than the the current minimum, update it.
+        # Calculate the distance between true and observed phi.
         W_lep_dist_true = np.abs( min( np.abs(W_lep_true.Phi()-lep_phi), 2*np.pi-np.abs(W_lep_true.Phi()-lep_phi) ) )
  
         # compare hadronic t distances
@@ -465,11 +465,11 @@ def make_histograms():
         hists['hadronic_t_true_v_obs_dist'].Fill(np.float(t_had_dist_true))
         hists['leptonic_W_true_v_obs_dist'].Fill(np.float(W_lep_dist_true))
         hists['leptonic_W_dist_pred_v_true'].Fill(np.float(W_lep_R))
-        # hists['leptonic_W_transverse_mass_observed'].Fill(np.float(met_obs))
-        # hists['leptonic_W_transverse_energy'].Fill(np.float(W_lep_Et_diff))
-        # if W_Et_observed >= 150:
-        #     high_E += 1
-        #     hists['leptonic_W_transverse_energy_high'].Fill(np.float(W_lep_Et_diff))
+        hists['leptonic_W_transverse_mass_observed'].Fill(np.float(met_obs))
+        hists['leptonic_W_transverse_energy_diff'].Fill(np.float(W_lep_Et_diff))
+        if W_Et_observed >= 150:
+            high_E += 1
+            hists['leptonic_W_transverse_energy_diff_high'].Fill(np.float(W_lep_Et_diff))
         hists['hadronic_W_true_v_obs_dist'].Fill(np.float(W_had_dist_true))
         # hists['hadronic_W_true_pT_dist'].Fill(np.float(W_had_true_pT))
 
@@ -513,6 +513,15 @@ def make_histograms():
 def plot_jets(key):
     c1 = TCanvas()
     hists[key].Draw()
+
+    # Display bin width
+    binWidth = hists[key].GetBinWidth(0)
+    l = TLatex()
+    l.SetNDC()
+    l.SetTextFont(42)
+    l.SetTextColor(kBlack)
+    l.DrawLatex( 0.65, 0.70, "Bin Width: %.2f" % binWidth )
+
     c1.SaveAs(outputdir + subdir + key +'.png')
     c1.Close()
     
