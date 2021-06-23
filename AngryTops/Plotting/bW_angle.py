@@ -144,8 +144,6 @@ histograms['t_lep_phi_fitted']        = TH1F( "t_lep_phi_fitted",    ";Leptonic 
 # Observed
 histograms['bW_had_phi_observed']        = TH1F( "bW_had_phi_observed",   ";Hadronic W+b #phi [rad]", 50, -3.2, 3.2 )
 histograms['bW_lep_phi_observed']        = TH1F( "bW_lep_phi_observed",   ";Leptonic W+b #phi [rad]", 50, -3.2, 3.2 )
-histograms['t_had_phi_observed']        = TH1F( "t_had_phi_observed",   ";Hadronic t #phi [rad]", 50, -3.2, 3.2 )
-histograms['t_lep_phi_observed']        = TH1F( "t_lep_phi_observed",    ";Leptonic t #phi [rad]", 50, -3.2, 3.2 )
 # Correlations; t for true, p for predicted, o for observed; labels are as xy
 histograms['corr_bW_tp_had_phi']        = TH2F( "corr_tp_had_phi",   ";True Hadronic W+b #phi [rad];Predicted Hadronic W+b #phi [rad]", 50, -3.2, 3.2 , 50, -3.2, 3.2  )
 histograms['corr_bW_tp_lep_phi']        = TH2F( "corr_tp_lep_phi",   ";True Leptonic W+b #phi [rad];Predicted Leptonic W+b #phi [rad]", 50, -3.2, 3.2 , 50, -3.2, 3.2  )
@@ -158,8 +156,6 @@ histograms['corr_pp_had_phi']        = TH2F( "corr_pp_had_phi",   ";Predicted Ha
 histograms['corr_pp_lep_phi']        = TH2F( "corr_pp_lep_phi",    ";Predicted Leptonic t #phi [rad];Predicted Leptonic W+b #phi [rad]", 50, -3.2, 3.2 , 50, -3.2, 3.2  )
 histograms['corr_tt_had_phi']        = TH2F( "corr_tt_had_phi",   ";True Hadronic t #phi [rad];True Hadronic W+b #phi [rad]", 50, -3.2, 3.2 , 50, -3.2, 3.2  )
 histograms['corr_tt_lep_phi']        = TH2F( "corr_tt_lep_phi",    ";True Leptonic t #phi [rad];True Leptonic W+b #phi [rad]", 50, -3.2, 3.2 , 50, -3.2, 3.2  )
-histograms['corr_oo_had_phi']        = TH2F( "corr_pp_had_phi",   ";Observed Hadronic t #phi [rad];Observed Hadronic W+b #phi [rad]", 50, -3.2, 3.2 , 50, -3.2, 3.2  )
-histograms['corr_oo_lep_phi']        = TH2F( "corr_pp_lep_phi",    ";Observed Leptonic t #phi [rad];Observed Leptonic W+b #phi [rad]", 50, -3.2, 3.2 , 50, -3.2, 3.2  )
 
 def make_histograms():
 
@@ -235,42 +231,18 @@ def make_histograms():
         W_lep_x = jet_mu[i][0] + nu_pT_obs[0]
         W_lep_y = jet_mu[i][1] + nu_pT_obs[1]
 
-        # find t's
-        t_had_jets = closest_b_had + closest_W_had
-        t_lep_x = W_lep_x + closest_b_lep.Px()
-        t_lep_y = W_lep_y + closest_b_lep.Py()
+        # find bW and angles
+        bW_had_jets = closest_b_had + closest_W_had
+        bW_had_phi_obs = bW_had_jets.Phi()
+        bW_lep_phi_obs = np.arctan2( W_lep_y + closest_b_lep.Py(), W_lep_x + closest_b_lep.Px() )
 
-        # convert to between (0, 2*pi)
-        b_had_phi = convertAngle(closest_b_had.Phi())
-        b_lep_phi = convertAngle(closest_b_lep.Phi())
-        W_had_phi = convertAngle(closest_W_had.Phi())
-        W_lep_phi = convertAngle( np.arctan2(W_lep_y, W_lep_x) )
-        # convert back to (-pi, pi)
-        bW_had_phi_obs =  convertAngle(b_had_phi + W_had_phi)
-        bW_lep_phi_obs =  convertAngle(b_lep_phi + W_lep_phi)
-
-        t_had_phi_obs = t_had_jets.Phi()
-        t_lep_phi_obs = np.arctan2(t_lep_y, t_lep_x)
-
-        ################################################# predicted #################################################
-        # convert to between (0, 2*pi)
-        b_had_phi = convertAngle(b_had_fitted.Phi())
-        b_lep_phi = convertAngle(b_lep_fitted.Phi())
-        W_had_phi = convertAngle(W_had_fitted.Phi())
-        W_lep_phi = convertAngle(W_lep_fitted.Phi())
-        # convert back to (-pi, pi)
-        bW_had_phi_fitted =  convertAngle(b_had_phi + W_had_phi)
-        bW_lep_phi_fitted =  convertAngle(b_lep_phi + W_lep_phi)
+        # ################################################# predicted #################################################
+        bW_had_phi_fitted = np.arctan2( b_had_fitted.Py() + W_had_fitted.Py() , b_had_fitted.Px() + W_had_fitted.Px() )
+        bW_lep_phi_fitted = np.arctan2( b_lep_fitted.Py() + W_lep_fitted.Py() , b_lep_fitted.Px() + W_lep_fitted.Px() )
 
         ################################################# true #################################################
-        # convert to between (0, 2*pi)
-        b_had_phi = convertAngle(b_had_true.Phi())
-        b_lep_phi = convertAngle(b_lep_true.Phi())
-        W_had_phi = convertAngle(W_had_true.Phi())
-        W_lep_phi = convertAngle(W_lep_true.Phi())
-        # convert back to (-pi, pi)
-        bW_had_phi_true =  convertAngle(b_had_phi + W_had_phi)
-        bW_lep_phi_true =  convertAngle(b_lep_phi + W_lep_phi)
+        bW_had_phi_true = np.arctan2( b_had_true.Py() + W_had_true.Py() , b_had_true.Px() + W_had_true.Px() )
+        bW_lep_phi_true = np.arctan2( b_lep_true.Py() + W_lep_true.Py() , b_lep_true.Px() + W_lep_true.Px() )
 
         ################################################# fill histograms #################################################
 
@@ -286,8 +258,6 @@ def make_histograms():
         # Observed
         histograms['bW_had_phi_observed'].Fill(np.float( bW_had_phi_obs))
         histograms['bW_lep_phi_observed'].Fill(np.float( bW_lep_phi_obs))
-        histograms['t_had_phi_observed'].Fill(np.float( t_had_phi_obs ))
-        histograms['t_lep_phi_observed'].Fill(np.float( t_lep_phi_obs ))
 
         histograms['corr_bW_tp_had_phi'].Fill(np.float( bW_had_phi_true), np.float(bW_had_phi_fitted ))
         histograms['corr_bW_tp_lep_phi'].Fill(np.float( bW_lep_phi_true), np.float(bW_lep_phi_fitted ))
@@ -300,8 +270,6 @@ def make_histograms():
         histograms['corr_pp_lep_phi'].Fill(np.float( t_lep_fitted.Phi()), np.float(bW_had_phi_fitted ))
         histograms['corr_tt_had_phi'].Fill(np.float( t_had_true.Phi()), np.float(bW_had_phi_true ))
         histograms['corr_tt_lep_phi'].Fill(np.float( t_lep_true.Phi()), np.float(bW_lep_phi_true ))
-        histograms['corr_oo_had_phi'].Fill(np.float( t_had_phi_obs), np.float(bW_had_phi_obs ))
-        histograms['corr_oo_lep_phi'].Fill(np.float( t_lep_phi_obs), np.float(bW_lep_phi_obs ))
 
 # plotting
 gStyle.SetPalette(kGreyScale)
@@ -484,12 +452,10 @@ if __name__==   "__main__":
     plot_observables('bW_had_phi_fitted', 't_had_phi_fitted')
     plot_observables('bW_lep_phi_fitted', 't_lep_phi_fitted')
     plot_observables('bW_had_phi_true', 't_had_phi_true')
-    plot_observables('bW_lep_phi_true', 't_lep_phi_true')  
-    plot_observables('bW_had_phi_observed', 't_had_phi_observed')
-    plot_observables('bW_lep_phi_observed', 't_lep_phi_observed')  
+    plot_observables('bW_lep_phi_true', 't_lep_phi_true')    
 
     # Draw 2D Correlations
     corr_2d = ["corr_bW_tp_had_phi", "corr_bW_tp_lep_phi", "corr_bW_to_had_phi", "corr_bW_to_lep_phi", "corr_bW_op_had_phi", "corr_bW_op_lep_phi",\
-                "corr_pp_had_phi", "corr_pp_lep_phi", "corr_tt_had_phi", "corr_tt_lep_phi", "corr_oo_had_phi", "corr_oo_lep_phi"]
+                "corr_pp_had_phi", "corr_pp_lep_phi", "corr_tt_had_phi", "corr_tt_lep_phi"] 
     for corr in corr_2d:
         plot_correlations(corr)
