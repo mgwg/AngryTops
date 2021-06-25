@@ -494,7 +494,7 @@ def make_histograms():
         corr_jets_dist = 0.
         if (b_lep_dist_true <= b_lep_dist_t_lim): # if minimum distance is less than the tolearance limits, everything is ok
             corr_jets_dist += 1
-            good_b_lep += (b_lep_dist_true <= b_lep_dist_t_lim)
+            good_b_lep += 1
         else:
             bad_b_lep += 1
         if (b_had_dist_true <= b_had_dist_t_lim):
