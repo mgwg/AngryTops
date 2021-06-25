@@ -732,5 +732,5 @@ if __name__ == "__main__":
     except Exception as e:
         print("Overwriting existing files")
     make_histograms()
-    # for key in hists:
-    #     plot_jets(key)
+    for key in hists:
+        plot_jets(key)
