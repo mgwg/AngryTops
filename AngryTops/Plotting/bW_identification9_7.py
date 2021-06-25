@@ -50,6 +50,16 @@ def MakeP4(y, m):
         raise Exception("Invalid Representation Given: {}".format(representation))
     return p4
 
+def find_dist(a, b):
+    '''
+    a, b are both TLorentz Vectors
+    returns the eta-phi distances between true and sum_vect
+    '''
+    dphi_true = min(np.abs(a.Phi() - b.Phi()), 2*np.pi-np.abs(a.Phi() - b.Phi()))
+    deta_true = a.Eta() - b.Eta()
+    d_true = np.sqrt(dphi_true**2 + deta_true**2)
+    return d_true
+
 # load data
 predictions = np.load(outputdir + 'predictions.npz')
 jets = predictions['input']
@@ -114,25 +124,23 @@ y_fitted_b_lep = fitted[:,3,:]
 y_fitted_t_had = fitted[:,4,:]
 y_fitted_t_lep = fitted[:,5,:]
 
-n_events = true.shape[0]
-
 # define indixes
-jet_index = range(n_events)
+jet_index = range(true.shape[0])
 if event_type == "4":
     jet_index = np.where(jet_5 == 0)
     jet_index = np.unique(jet_index[0])
     subdir += "_four" 
-
 elif event_type == "5":
     jet_index = np.nonzero(jet_5)
     jet_index = np.unique(jet_index[0])
     subdir += "_five"
 
+n_events = len(jet_index)
+
 # make histograms to be filled
 hists = {}
 
-# Leptonic W
-# Miscellaneous histograms
+# Leptonic W miscellaneous histograms
 hists['leptonic_W_transverse_mass_observed'] = TH1F("W_lep_met_d","W Leptonic Transverse Mass, Observed", 50, 0, 250)#120)
 hists['leptonic_W_transverse_mass_observed'].SetTitle("W Leptonic Transverse Mass, Observed;Leptonic (GeV);A.U.")
 hists['leptonic_W_transverse_energy_diff'] = TH1F("W_lep_Et_d","W Leptonic Transverse Energy Difference, Observed - Truth", 50, -120, 120)
@@ -162,7 +170,6 @@ hists['leptonic_W_dist_pred_v_obs_un_recon'] = TH1F("W_lep_d","W Leptonic Distan
 hists['leptonic_W_dist_pred_v_obs_un_recon'].SetTitle("W Leptonic #phi distances, Predicted vs Observed Not Reconstructed;Leptonic (radians);A.U.")
 
 # Hadronic W
-hists['hadronic_W_true_pT_diff'] = TH1F("h_pT_W_had_true","W Hadronic p_T, True vs Observed", 50, -500, 500)
 # True vs. obs
 hists['hadronic_W_dist_true_v_obs'] = TH1F("h_W_had_true","W Hadronic Distances, True vs Observed", 50, 0, 3)
 hists['hadronic_W_dist_true_v_obs'].SetTitle("W Hadronic #eta-#phi distances, True vs Observed;Hadronic (radians);A.U.")
@@ -308,6 +315,7 @@ def make_histograms():
     bad_W_lep = bad_W_had = 0.
 
     high_E = 0
+    w_had_jets = [0, 0, 0]
 
     for i in jet_index: # loop through every event
         if ( n_events < 10 ) or ( (i+1) % int(float(n_events)/10.)  == 0 ):
@@ -350,13 +358,10 @@ def make_histograms():
             jets.append(jet_5_vect)
 
         # Special calculations for the observed leptonic W
-
-        # Observed transverse mass distribution is square root of 2* Etmiss 
-        #  * Transverse angle between daughter particles, assuming that they are massless.
+        # Observed transverse mass distribution is square root of 2* Etmiss * Transverse angle between daughter particles, assuming that they are massless.
         
-        # First, find the transverse angle between the daughter particles, which is the angle 
-        #  between the muon momentum vector and the missing Et vector. For the muon, we have 
-        #  px and py, but for the missing Et, we have the vector in polar representation.
+        # First, find the transverse angle between the daughter particles, the muon and missing Et. 
+        # For the muon, we have px and py, but for the missing Et, we have the vector in polar representation.
         muon_pT_obs = [jet_mu[i][0], jet_mu[i][1]] # Observed transverse momentum of muon
         # Convert missing transverse energy to a momentum
         nu_pT_obs = [ jet_mu[i][4]*np.cos(jet_mu[i][5]), jet_mu[i][4]*np.sin(jet_mu[i][5])] # Observed neutrino transverse momentum from missing energy as [x, y].
@@ -372,27 +377,16 @@ def make_histograms():
         W_lep_Et_diff = W_Et_observed - W_lep_true.Et()
 
         ################################################# true vs predicted #################################################
-        b_lep_dphi = min(np.abs(b_lep_true.Phi()-b_lep_fitted.Phi()), 2*np.pi-np.abs(b_lep_true.Phi()-b_lep_fitted.Phi()))
-        b_lep_deta = b_lep_true.Eta()-b_lep_fitted.Eta()
-        b_lep_R = np.sqrt(b_lep_dphi**2 + b_lep_deta**2)
-
-        b_had_dphi = min(np.abs(b_had_true.Phi()-b_had_fitted.Phi()), 2*np.pi-np.abs(b_had_true.Phi()-b_had_fitted.Phi()))
-        b_had_deta = b_had_true.Eta()-b_had_fitted.Eta()
-        b_had_R = np.sqrt(b_had_dphi**2 + b_had_deta**2)
+        b_lep_R = find_dist(b_lep_true, b_lep_fitted)
+        b_had_R = find_dist(b_had_true, b_had_fitted)
+        t_had_R = find_dist(t_had_true, t_had_fitted)
+        W_had_R = find_dist(W_had_true, W_had_fitted)
 
         t_lep_dphi = min(np.abs(t_lep_true.Phi()-t_lep_fitted.Phi()), 2*np.pi-np.abs(t_lep_true.Phi()-t_lep_fitted.Phi()))
         t_lep_R = np.sqrt(t_lep_dphi**2) # No eta distances for apples-to-apples comparison with true vs. observed leptonic t
-
-        t_had_dphi = min(np.abs(t_had_true.Phi()-t_had_fitted.Phi()), 2*np.pi-np.abs(t_had_true.Phi()-t_had_fitted.Phi()))
-        t_had_deta = t_had_true.Eta()-t_had_fitted.Eta()
-        t_had_R = np.sqrt(t_had_dphi**2 + t_had_deta**2)
         
         W_lep_dphi = min(np.abs(W_lep_true.Phi()-W_lep_fitted.Phi()), 2*np.pi-np.abs(W_lep_true.Phi()-W_lep_fitted.Phi()))
         W_lep_R = np.sqrt(W_lep_dphi**2)
-
-        W_had_dphi = min(np.abs(W_had_true.Phi()-W_had_fitted.Phi()), 2*np.pi-np.abs(W_had_true.Phi()-W_had_fitted.Phi()))
-        W_had_deta = W_had_true.Eta()-W_had_fitted.Eta()
-        W_had_R = np.sqrt(W_had_dphi**2 + W_had_deta**2)
 
         # determine whether or not the jets were reconstructed
         b_lep_phi_recon = b_lep_eta_recon = b_lep_R_recon = False
@@ -440,33 +434,43 @@ def make_histograms():
         b_lep_dist_true = 1000
         t_had_dist_true = 1000
         t_lep_dist_true = 1000
-        W_had_true_pT = 0
         W_had_dist_true = 10000000
-        for k in range(len(jets)): # loop through each of the jets to find the minimum distance for each particle
-            b_had_dphi_true = min(np.abs(b_had_true.Phi()-jets[k].Phi()), 2*np.pi-np.abs(b_had_true.Phi()-jets[k].Phi()))
-            b_had_deta_true = b_had_true.Eta()-jets[k].Eta()
-            b_had_d_true = np.sqrt(b_had_dphi_true**2+b_had_deta_true**2)
-            b_lep_dphi_true = min(np.abs(b_lep_true.Phi()-jets[k].Phi()), 2*np.pi-np.abs(b_lep_true.Phi()-jets[k].Phi()))
-            b_lep_deta_true = b_lep_true.Eta()-jets[k].Eta()
-            b_lep_d_true = np.sqrt(b_lep_dphi_true**2+b_lep_deta_true**2)
+
+        # loop through each of the jets to find the minimum distance for each particle
+        for k in range(len(jets)): 
+            b_had_d_true = find_dist(b_had_true, jets[k])
+            b_lep_d_true = find_dist(b_lep_true, jets[k])
             if b_had_d_true < b_had_dist_true:
                 b_had_dist_true = b_had_d_true
+                # Save the closest sum vector
                 closest_b_had = jets[k]
             if b_lep_d_true < b_lep_dist_true:
                 b_lep_dist_true = b_lep_d_true
                 closest_b_lep = jets[k]
-            # go through each pair of jets and check their sum
+
+            # check 1, 2, 3 jet combinations for hadronic W
+            sum_vect = jets[k]    
+            W_had_d_true = find_dist(W_had_true, sum_vect)
+            if W_had_d_true < W_had_dist_true:
+                W_had_dist_true = W_had_d_true
+                closest_W_had = sum_vect
+                w_jets = 0
             for j in range(k + 1, len(jets)):
                 sum_vect = jets[k] + jets[j] 
-                W_had_dphi_true = min(np.abs(W_had_true.Phi()-sum_vect.Phi()), 2*np.pi-np.abs(W_had_true.Phi()-sum_vect.Phi()))
-                W_had_deta_true = W_had_true.Eta()-sum_vect.Eta()
-                W_had_d_true = np.sqrt(W_had_dphi_true**2+W_had_deta_true**2)
-
+                W_had_d_true = find_dist(W_had_true, sum_vect)
                 if W_had_d_true < W_had_dist_true:
                     W_had_dist_true = W_had_d_true
-                    W_had_true_pT = W_had_true.Pt() - sum_vect.Pt()
-                    # Save the closest sum vector after comparing all ten pairs
                     closest_W_had = sum_vect
+                    w_jets = 1
+                for l in range(j+1, len(jets)):
+                    sum_vect = jets[k] + jets[j] + jets[l]
+                    W_had_d_true = find_dist(W_had_true, sum_vect)
+                    if W_had_d_true < W_had_dist_true:
+                        W_had_dist_true = W_had_d_true
+                        closest_W_had = sum_vect
+                        w_jets = 2
+                        
+        w_had_jets[w_jets] += 1       
         
         # Calculate W leptonic distances
         # Add muon transverse momentum components to missing momentum components
@@ -476,18 +480,16 @@ def make_histograms():
         lep_phi = np.arctan2( lep_y, lep_x )
         # Calculate the distance between true and observed phi.
         W_lep_dist_true = np.abs( min( np.abs(W_lep_true.Phi()-lep_phi), 2*np.pi-np.abs(W_lep_true.Phi()-lep_phi) ) )
- 
-        # compare hadronic t distances
-        t_had_jets = closest_b_had + closest_W_had
-        t_had_dphi_true = min(np.abs(t_had_true.Phi() - t_had_jets.Phi()), 2*np.pi-np.abs(t_had_true.Phi() - t_had_jets.Phi()))
-        t_had_deta_true = t_had_true.Eta() - t_had_jets.Eta()
-        t_had_dist_true = np.sqrt(t_had_dphi_true**2+t_had_deta_true**2)
-        
+
         # compare leptonic t distances
         t_lep_x = lep_x + closest_b_lep.Px()
         t_lep_y = lep_y + closest_b_lep.Py()
         obs_t_phi = np.arctan2(t_lep_y, t_lep_x)
         t_lep_dist_true = np.abs( min( np.abs(t_lep_true.Phi()-obs_t_phi), 2*np.pi-np.abs(t_lep_true.Phi() - obs_t_phi) ) )
+
+        # compare hadronic t distances
+        t_had_jets = closest_b_had + closest_W_had
+        t_had_dist_true = find_dist(t_had_true, t_had_jets)
 
         # add the number of jets that are within the tolerance limit, or reconstructable
         corr_p_jets_dist = b_lep_R_recon + b_had_R_recon + W_lep_R_recon + W_had_R_recon
@@ -663,7 +665,6 @@ def make_histograms():
         hists['hadronic_W_dist_true_v_obs'].Fill(np.float(W_had_dist_true))
         hists['hadronic_W_dist_pred_v_true'].Fill(np.float(W_had_R))
         hists['hadronic_W_dist_pred_v_obs'].Fill(np.float(W_had_R_po))
-        hists['hadronic_W_true_pT_diff'].Fill(np.float(W_had_true_pT))
 
     # Print data regarding percentage of each class of event
 
@@ -703,6 +704,10 @@ def make_histograms():
     print(100*good_b_had/n_events, ' good_b_had')
     print(100*good_b_lep/n_events, ' good_b_lep')
     print(100*high_E/n_events, 'high_E')
+    print('=================================================================')
+    print(100*w_had_jets[0]/n_events, '1 event Hadronic W')
+    print(100*w_had_jets[1]/n_events, '2 event Hadronic W')
+    print(100*w_had_jets[2]/n_events, '3 event Hadronic W')
 
 # Helper function to output and save the plots 
 def plot_jets(key):
@@ -727,5 +732,5 @@ if __name__ == "__main__":
     except Exception as e:
         print("Overwriting existing files")
     make_histograms()
-    for key in hists:
-        plot_jets(key)
+    # for key in hists:
+    #     plot_jets(key)
