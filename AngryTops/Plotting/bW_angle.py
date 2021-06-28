@@ -18,6 +18,10 @@ m_t = 172.5
 m_W = 80.4
 m_b = 4.95
 
+date = ''
+if len(sys.argv) > 4:
+    date = sys.argv[4]
+
 def MakeP4(y, m):
     """
     Form the momentum vector.
@@ -145,8 +149,16 @@ histograms['t_lep_phi_fitted']        = TH1F( "t_lep_phi_fitted",    ";Leptonic 
 histograms['bW_had_phi_observed']        = TH1F( "bW_had_phi_observed",   ";Hadronic W+b #phi [rad]", 50, -3.2, 3.2 )
 histograms['bW_lep_phi_observed']        = TH1F( "bW_lep_phi_observed",   ";Leptonic W+b #phi [rad]", 50, -3.2, 3.2 )
 # Correlations; t for true, p for predicted, o for observed; labels are as xy
-histograms['corr_bW_tp_had_phi']        = TH2F( "corr_tp_had_phi",   ";True Hadronic W+b #phi [rad];Predicted Hadronic W+b #phi [rad]", 50, -3.2, 3.2 , 50, -3.2, 3.2  )
-histograms['corr_bW_tp_lep_phi']        = TH2F( "corr_tp_lep_phi",   ";True Leptonic W+b #phi [rad];Predicted Leptonic W+b #phi [rad]", 50, -3.2, 3.2 , 50, -3.2, 3.2  )
+# histograms['corr_bW_to_had_phi']        = TH2F( "corr_to_had_phi",   ";True Hadronic W+b #phi [rad];Observed Hadronic W+b #phi [rad]", 50, 0, 3.2 , 50, 0, 3.2  )
+# histograms['corr_bW_to_lep_phi']        = TH2F( "corr_to_lep_phi",   ";True Leptonic W+b #phi [rad];Observed Leptonic W+b #phi [rad]", 50, 0, 3.2 , 50, 0, 3.2  )
+# histograms['corr_bW_op_had_phi']        = TH2F( "corr_op_had_phi",   ";Observed Hadronic W+b #phi [rad];Predicted Hadronic W+b #phi [rad]", 50, 0, 3.2 , 50, 0, 3.2  )
+# histograms['corr_bW_op_lep_phi']        = TH2F( "corr_op_lep_phi",   ";Observed Leptonic W+b #phi [rad];Predicted Leptonic W+b #phi [rad]", 50, 0, 3.2 , 50, 0, 3.2  )
+
+# histograms['corr_pp_had_phi']        = TH2F( "corr_pp_had_phi",   ";Predicted Hadronic t #phi [rad];Predicted Hadronic W+b #phi [rad]", 50, 0, 3.2 , 50, 0, 3.2  )
+# histograms['corr_pp_lep_phi']        = TH2F( "corr_pp_lep_phi",    ";Predicted Leptonic t #phi [rad];Predicted Leptonic W+b #phi [rad]", 50, 0, 3.2 , 50, 0, 3.2  )
+# histograms['corr_tt_had_phi']        = TH2F( "corr_tt_had_phi",   ";True Hadronic t #phi [rad];True Hadronic W+b #phi [rad]", 50, 0, 3.2 , 50, 0, 3.2  )
+# histograms['corr_tt_lep_phi']        = TH2F( "corr_tt_lep_phi",    ";True Leptonic t #phi [rad];True Leptonic W+b #phi [rad]", 50, 0, 3.2 , 50, 0, 3.2  )
+
 histograms['corr_bW_to_had_phi']        = TH2F( "corr_to_had_phi",   ";True Hadronic W+b #phi [rad];Observed Hadronic W+b #phi [rad]", 50, -3.2, 3.2 , 50, -3.2, 3.2  )
 histograms['corr_bW_to_lep_phi']        = TH2F( "corr_to_lep_phi",   ";True Leptonic W+b #phi [rad];Observed Leptonic W+b #phi [rad]", 50, -3.2, 3.2 , 50, -3.2, 3.2  )
 histograms['corr_bW_op_had_phi']        = TH2F( "corr_op_had_phi",   ";Observed Hadronic W+b #phi [rad];Predicted Hadronic W+b #phi [rad]", 50, -3.2, 3.2 , 50, -3.2, 3.2  )
@@ -259,18 +271,79 @@ def make_histograms():
         histograms['bW_had_phi_observed'].Fill(np.float( bW_had_phi_obs))
         histograms['bW_lep_phi_observed'].Fill(np.float( bW_lep_phi_obs))
 
-        histograms['corr_bW_tp_had_phi'].Fill(np.float( bW_had_phi_true), np.float(bW_had_phi_fitted ))
-        histograms['corr_bW_tp_lep_phi'].Fill(np.float( bW_lep_phi_true), np.float(bW_lep_phi_fitted ))
-        histograms['corr_bW_to_had_phi'].Fill(np.float( bW_had_phi_true), np.float(bW_had_phi_obs ))
-        histograms['corr_bW_to_lep_phi'].Fill(np.float( bW_lep_phi_true), np.float(bW_lep_phi_obs ))
-        histograms['corr_bW_op_had_phi'].Fill(np.float( bW_had_phi_obs), np.float(bW_had_phi_fitted ))
-        histograms['corr_bW_op_lep_phi'].Fill(np.float( bW_lep_phi_obs), np.float(bW_lep_phi_fitted ))
+        # histograms['corr_bW_to_had_phi'].Fill(np.float(bW_had_phi_true), np.float(bW_had_phi_obs ))
+        # histograms['corr_bW_to_lep_phi'].Fill(np.float(bW_lep_phi_true), np.float(bW_lep_phi_obs ))
+        # histograms['corr_bW_op_had_phi'].Fill(np.float(bW_had_phi_obs), np.float(bW_had_phi_fitted ))
+        # histograms['corr_bW_op_lep_phi'].Fill(np.float(bW_lep_phi_obs), np.float(bW_lep_phi_fitted ))
 
-        histograms['corr_pp_had_phi'].Fill(np.float( t_had_fitted.Phi()), np.float(bW_had_phi_fitted ))
-        histograms['corr_pp_lep_phi'].Fill(np.float( t_lep_fitted.Phi()), np.float(bW_had_phi_fitted ))
-        histograms['corr_tt_had_phi'].Fill(np.float( t_had_true.Phi()), np.float(bW_had_phi_true ))
-        histograms['corr_tt_lep_phi'].Fill(np.float( t_lep_true.Phi()), np.float(bW_lep_phi_true ))
+        # histograms['corr_pp_had_phi'].Fill(np.float(t_had_fitted.Phi()), np.float(bW_had_phi_fitted ))
+        # histograms['corr_pp_lep_phi'].Fill(np.float(t_lep_fitted.Phi()), np.float(bW_lep_phi_fitted ))
+        # histograms['corr_tt_had_phi'].Fill(np.float(t_had_true.Phi()), np.float(bW_had_phi_true ))
+        # histograms['corr_tt_lep_phi'].Fill(np.float(t_lep_true.Phi()), np.float(bW_lep_phi_true ))
 
+        # abs val
+        # histograms['corr_bW_to_had_phi'].Fill(np.float( abs(bW_had_phi_true)), np.float( abs(bW_had_phi_obs )))
+        # histograms['corr_bW_to_lep_phi'].Fill(np.float( abs(bW_lep_phi_true)), np.float( abs(bW_lep_phi_obs )))
+        # histograms['corr_bW_op_had_phi'].Fill(np.float( abs(bW_had_phi_obs)), np.float( abs(bW_had_phi_fitted )))
+        # histograms['corr_bW_op_lep_phi'].Fill(np.float( abs(bW_lep_phi_obs)), np.float( abs(bW_lep_phi_fitted )))
+
+        # histograms['corr_pp_had_phi'].Fill(np.float( abs(t_had_fitted.Phi())), np.float( abs(bW_had_phi_fitted )))
+        # histograms['corr_pp_lep_phi'].Fill(np.float( abs(t_lep_fitted.Phi())), np.float( abs(bW_lep_phi_fitted )))
+        # histograms['corr_tt_had_phi'].Fill(np.float( abs(t_had_true.Phi())), np.float( abs(bW_had_phi_true )))
+        # histograms['corr_tt_lep_phi'].Fill(np.float( abs(t_lep_true.Phi())), np.float( abs(bW_lep_phi_true )))
+
+        # if abs(np.float(bW_had_phi_true)) < 2.8:
+        #     histograms['corr_bW_to_had_phi'].Fill(np.float(bW_had_phi_true), np.float(bW_had_phi_obs ))
+        # if abs(np.float(bW_lep_phi_true)) < 2.8:
+        #     histograms['corr_bW_to_lep_phi'].Fill(np.float(bW_lep_phi_true), np.float(bW_lep_phi_obs ))
+        # if abs(np.float(bW_had_phi_obs)) < 2.8:
+        #     histograms['corr_bW_op_had_phi'].Fill(np.float(bW_had_phi_obs), np.float(bW_had_phi_fitted ))
+        # if abs(np.float(bW_lep_phi_obs)) < 2.8:
+        #     histograms['corr_bW_op_lep_phi'].Fill(np.float(bW_lep_phi_obs), np.float(bW_lep_phi_fitted ))
+
+        # if abs(np.float(t_had_fitted.Phi())) < 2.8:
+        #     histograms['corr_pp_had_phi'].Fill(np.float(t_had_fitted.Phi()), np.float(bW_had_phi_fitted ))
+        # if abs(np.float(t_lep_fitted.Phi())) < 2.8:
+        #     histograms['corr_pp_lep_phi'].Fill(np.float(t_lep_fitted.Phi()), np.float(bW_lep_phi_fitted ))
+        # if abs(np.float(t_had_true.Phi())) < 2.8:
+        #     histograms['corr_tt_had_phi'].Fill(np.float(t_had_true.Phi()), np.float(bW_had_phi_true ))
+        # if abs(np.float(t_lep_true.Phi())) < 2.8:
+        #     histograms['corr_tt_lep_phi'].Fill(np.float(t_lep_true.Phi()), np.float(bW_lep_phi_true ))
+
+        # flip sign
+        if abs(np.float(bW_had_phi_true)) < 0:
+            histograms['corr_bW_to_had_phi'].Fill(np.float( bW_had_phi_true), -1.0*np.float( abs(bW_had_phi_obs )))
+        else:
+            histograms['corr_bW_to_had_phi'].Fill(np.float( bW_had_phi_true), np.float( abs(bW_had_phi_obs )))
+        if abs(np.float(bW_lep_phi_true)) < 0:
+            histograms['corr_bW_to_lep_phi'].Fill(np.float( bW_lep_phi_true), -1.0*np.float( abs(bW_lep_phi_obs )))
+        else:
+            histograms['corr_bW_to_lep_phi'].Fill(np.float( bW_lep_phi_true), np.float( abs(bW_lep_phi_obs )))
+        if abs(np.float(bW_had_phi_obs)) < 0:
+            histograms['corr_bW_op_had_phi'].Fill(np.float( bW_had_phi_obs), -1.0*np.float( abs(bW_had_phi_fitted )))
+        else:
+            histograms['corr_bW_op_had_phi'].Fill(np.float( bW_had_phi_obs), np.float( abs(bW_had_phi_fitted )))
+        if abs(np.float(bW_lep_phi_obs)) < 0:
+            histograms['corr_bW_op_lep_phi'].Fill(np.float( bW_lep_phi_obs), -1.0*np.float( abs(bW_lep_phi_fitted )))
+        else:
+            histograms['corr_bW_op_lep_phi'].Fill(np.float( bW_lep_phi_obs), np.float( abs(bW_lep_phi_fitted )))
+
+        if abs(np.float(t_had_fitted.Phi())) < 0:
+            histograms['corr_pp_had_phi'].Fill(np.float( t_had_fitted.Phi()), -1.0*np.float( abs(bW_had_phi_fitted )))
+        else:
+            histograms['corr_pp_had_phi'].Fill(np.float( t_had_fitted.Phi()), np.float( abs(bW_had_phi_fitted )))
+        if abs(np.float(t_lep_fitted.Phi())) < 0:
+            histograms['corr_pp_lep_phi'].Fill(np.float( t_lep_fitted.Phi()), -1.0*np.float( abs(bW_lep_phi_fitted )))
+        else:
+            histograms['corr_pp_lep_phi'].Fill(np.float( t_lep_fitted.Phi()), np.float( abs(bW_lep_phi_fitted )))
+        if abs(np.float(t_had_true.Phi())) < 0:
+            histograms['corr_tt_had_phi'].Fill(np.float( t_had_true.Phi()), -1.0*np.float( abs(bW_had_phi_true )))
+        else:
+            histograms['corr_tt_had_phi'].Fill(np.float( t_had_true.Phi()), np.float( abs(bW_had_phi_true )))
+        if abs(np.float(t_lep_true.Phi())) < 0:
+            histograms['corr_tt_lep_phi'].Fill(np.float( t_lep_true.Phi()), -1.0*np.float( abs(bW_lep_phi_true )))
+        else:
+            histograms['corr_tt_lep_phi'].Fill(np.float( t_lep_true.Phi()), np.float( abs(bW_lep_phi_true )))
 # plotting
 gStyle.SetPalette(kGreyScale)
 gROOT.GetColor(52).InvertPalette()
@@ -380,7 +453,7 @@ def plot_observables(fitted, true):
 
     c.cd()
 
-    c.SaveAs("{0}/phi_fit/{1}_{2}.png".format(training_dir, fitted, true))
+    c.SaveAs("{0}/phi_fit{1}/{2}_{3}.png".format(training_dir, date, fitted, true))
     pad0.Close()
     pad1.Close()
     c.Close()
@@ -430,14 +503,14 @@ def plot_correlations(hist_name):
 
     c.cd()
 
-    c.SaveAs("{0}/phi_fit/{1}.png".format(training_dir, hist_name))
+    c.SaveAs("{0}/phi_fit{1}/{2}.png".format(training_dir, date, hist_name))
     pad0.Close()
     c.Close()
 
 ################################################################################
 if __name__==   "__main__":
     try:
-        os.mkdir('{}/phi_fit'.format(training_dir))
+        os.mkdir('{}/phi_fit{}'.format(training_dir, date))
     except Exception as e:
         print("Overwriting existing files")
     make_histograms()
@@ -455,7 +528,7 @@ if __name__==   "__main__":
     plot_observables('bW_lep_phi_true', 't_lep_phi_true')    
 
     # Draw 2D Correlations
-    corr_2d = ["corr_bW_tp_had_phi", "corr_bW_tp_lep_phi", "corr_bW_to_had_phi", "corr_bW_to_lep_phi", "corr_bW_op_had_phi", "corr_bW_op_lep_phi",\
+    corr_2d = ["corr_bW_to_had_phi", "corr_bW_to_lep_phi", "corr_bW_op_had_phi", "corr_bW_op_lep_phi",\
                 "corr_pp_had_phi", "corr_pp_lep_phi", "corr_tt_had_phi", "corr_tt_lep_phi"] 
     for corr in corr_2d:
         plot_correlations(corr)
