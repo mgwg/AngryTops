@@ -193,6 +193,13 @@ hists['hadronic_W_dist_pred_v_obs_part_recon'].SetTitle("W Hadronic #eta-#phi di
 hists['hadronic_W_dist_pred_v_obs_un_recon'] = TH1F("W_had_d","W Hadronic Distances, Predicted vs Observed Not Reconstructed", 50, 0, 3)
 hists['hadronic_W_dist_pred_v_obs_un_recon'].SetTitle("W Hadronic #eta-#phi distances, Predicted vs Observed Not Reconstructed;Hadronic (radians);A.U.")
 
+hists['hadronic_W_dist_obs_1_mass'] = TH1F("W_had_m","1 jet W Hadronic mass, Observed", 30, 0., 300. )
+hists['hadronic_W_dist_obs_1_mass'].SetTitle("1 jet W Hadronic mass, Observed; Hadronic (GeV); A.U.")
+hists['hadronic_W_dist_obs_2_mass'] = TH1F("W_had_m","2 jet W Hadronic mass, Observed", 30, 0., 300. )
+hists['hadronic_W_dist_obs_2_mass'].SetTitle("2 jet W Hadronic mass, Observed; Hadronic (GeV); A.U.")
+hists['hadronic_W_dist_obs_3_mass'] = TH1F("W_had_m","31 jet W Hadronic mass, Observed", 30, 0., 300. )
+hists['hadronic_W_dist_obs_3_mass'].SetTitle("3 jet W Hadronic mass, Observed; Hadronic (GeV); A.U.")
+
 # Leptonic b
 # True vs. obs
 hists['leptonic_b_dist_true_v_obs'] = TH1F("h_b_lep_true","b Leptonic Distances, True vs Observed", 50, 0, 3)
@@ -449,7 +456,7 @@ def make_histograms():
                 b_lep_dist_true = b_lep_d_true
                 closest_b_lep = jets[k]
 
-            # check 1, 2, 3 jet combinations for hadronic W
+            check 1, 2, 3 jet combinations for hadronic W
             sum_vect = jets[k]    
             W_had_d_true = find_dist(W_had_true, sum_vect)
             if W_had_d_true < W_had_dist_true:
@@ -470,8 +477,8 @@ def make_histograms():
                         W_had_dist_true = W_had_d_true
                         closest_W_had = sum_vect
                         w_jets = 2
-                        
-        w_had_jets[w_jets] += 1       
+
+        w_had_jets[w_jets] += 1    
         
         # Calculate W leptonic distances
         # Add muon transverse momentum components to missing momentum components
@@ -528,31 +535,19 @@ def make_histograms():
         # No eta distance for comparison with truth vs. obs and pred vs. true
         W_lep_dphi_po = np.abs( min( np.abs(W_lep_fitted.Phi()-lep_phi), 2*np.pi-np.abs(W_lep_fitted.Phi()-lep_phi) ) )
         W_lep_R_po = np.sqrt(W_lep_dphi_po**2)
-
         # Hadronic W
-        W_had_dphi_po = min(np.abs(W_had_fitted.Phi()-closest_W_had.Phi()), 2*np.pi-np.abs(W_had_fitted.Phi()-closest_W_had.Phi()))
-        W_had_deta_po = W_had_fitted.Eta()-closest_W_had.Eta()
-        W_had_R_po = np.sqrt(W_had_dphi_po**2 + W_had_deta_po**2)
+        W_had_R_po = find_dist( W_had_fitted, closest_W_had )
 
         # Leptonic b
-        b_lep_dphi_po = min(np.abs(b_lep_fitted.Phi()-closest_b_lep.Phi()), 2*np.pi-np.abs(b_lep_fitted.Phi()-closest_b_lep.Phi()))
-        b_lep_deta_po = b_lep_fitted.Eta()-closest_b_lep.Eta()
-        b_lep_R_po = np.sqrt(b_lep_dphi_po**2 + b_lep_deta_po**2)
-
+        b_lep_R_po = find_dist( b_lep_fitted, closest_b_lep )
         # Hadronic b
-        b_had_dphi_po = min(np.abs(b_had_fitted.Phi()-closest_b_had.Phi()), 2*np.pi-np.abs(b_had_fitted.Phi()-closest_b_had.Phi()))
-        b_had_deta_po = b_had_fitted.Eta()-closest_b_had.Eta()
-        b_had_R_po = np.sqrt(b_had_dphi_po**2 + b_had_deta_po**2)
+        b_had_R_po = find_dist( b_had_fitted, closest_b_had )
 
         # Leptonic t
         t_lep_dphi_po = min(np.abs(t_lep_fitted.Phi()-obs_t_phi), 2*np.pi-np.abs(t_lep_fitted.Phi()-obs_t_phi))
         t_lep_R_po = np.sqrt(t_lep_dphi_po**2) # Again, no eta
-
         # Hadronic t
-        t_had_dphi_po = min(np.abs(t_had_fitted.Phi()-t_had_jets.Phi()), 2*np.pi-np.abs(t_had_fitted.Phi()-t_had_jets.Phi()))
-        t_had_deta_po = t_had_fitted.Eta() - t_had_jets.Eta()
-        t_had_R_po = np.sqrt(t_had_dphi_po**2 + t_had_deta_po**2)
-
+        t_had_R_po = find_dist( t_had_fitted, t_had_jets )
 
         ################################################# populate histograms and check percentages #################################################
 
@@ -666,6 +661,12 @@ def make_histograms():
         hists['hadronic_W_dist_true_v_obs'].Fill(np.float(W_had_dist_true))
         hists['hadronic_W_dist_pred_v_true'].Fill(np.float(W_had_R))
         hists['hadronic_W_dist_pred_v_obs'].Fill(np.float(W_had_R_po))
+        if w_jets == 0:
+            hists['hadronic_W_dist_obs_1_mass'].Fill(closest_W_had.M())
+        if w_jets == 1:
+            hists['hadronic_W_dist_obs_2_mass'].Fill(closest_W_had.M())
+        if w_jets == 2:
+            hists['hadronic_W_dist_obs_3_mass'].Fill(closest_W_had.M())
 
     # Print data regarding percentage of each class of event
 
