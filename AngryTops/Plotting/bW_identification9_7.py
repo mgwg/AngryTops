@@ -456,7 +456,7 @@ def make_histograms():
                 b_lep_dist_true = b_lep_d_true
                 closest_b_lep = jets[k]
 
-            check 1, 2, 3 jet combinations for hadronic W
+            #check 1, 2, 3 jet combinations for hadronic W
             sum_vect = jets[k]    
             W_had_d_true = find_dist(W_had_true, sum_vect)
             if W_had_d_true < W_had_dist_true:
