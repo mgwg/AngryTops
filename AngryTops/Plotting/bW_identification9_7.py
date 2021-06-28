@@ -8,15 +8,18 @@ import pickle
 
 representation = sys.argv[2]
 outputdir = sys.argv[1]
-subdir = '/closejets_img'
+event_type = 0
+if len(sys.argv) > 4:
+    event_type = sys.argv[4]
+date = ''
+if len(sys.argv) > 3:
+    date = sys.argv[3]
+
+subdir = '/closejets_img{}/'.format(date)
 scaling = True
 m_t = 172.5
 m_W = 80.4
 m_b = 4.95
-
-event_type = 0
-if len(sys.argv) > 3:
-    event_type = sys.argv[3]
 
 # Helper function to create histograms of eta-phi distance distributions
 def MakeP4(y, m):
@@ -129,11 +132,9 @@ jet_index = range(true.shape[0])
 if event_type == "4":
     jet_index = np.where(jet_5 == 0)
     jet_index = np.unique(jet_index[0])
-    subdir += "_four" 
 elif event_type == "5":
     jet_index = np.nonzero(jet_5)
     jet_index = np.unique(jet_index[0])
-    subdir += "_five"
 
 n_events = len(jet_index)
 
@@ -722,7 +723,7 @@ def plot_jets(key):
     l.SetTextColor(kBlack)
     l.DrawLatex( 0.65, 0.70, "Bin Width: %.2f" % binWidth )
 
-    c1.SaveAs(outputdir + subdir + "/" + key +'.png')
+    c1.SaveAs(outputdir + subdir + key +'.png')
     c1.Close()
     
 # Run the two helper functions above   
