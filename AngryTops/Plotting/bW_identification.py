@@ -215,6 +215,11 @@ hists['had_W_corr_1_mass_Pt'] = TH2F( "W_had_corr_m",   ";1 Jet W Hadronic Invar
 hists['had_W_corr_2_mass_Pt'] = TH2F( "W_had_corr_m",   ";2 Jet W Hadronic Invariant Mass [GeV];2 Jet W Hadronic p_{T} Diff [GeV]", 50, 10, 300 , 50, -200, 200  )
 hists['had_W_corr_3_mass_Pt'] = TH2F( "W_had_corr_m",   ";3 Jet W Hadronic Invariant Mass [GeV];3 Jet W Hadronic p_{T} diff [GeV]", 50, 40, 350 , 50, -200, 200  )
 hists['had_W_corr_mass_Pt'] = TH2F( "W_had_corr_m",   ";W Hadronic Invariant Mass [GeV];W Hadronic p_{T} diff [GeV]", 50, 0, 350 , 50, -200, 200  )
+# dist vs Pt
+hists['had_W_corr_1_dist_Pt'] = TH2F( "W_had_corr_d",   ";1 Jet W Hadronic #eta-#phi Distances [rad];1 Jet W Hadronic p_{T} Diff [GeV]", 50, 0, 3.2 , 50, -200, 200  )
+hists['had_W_corr_2_dist_Pt'] = TH2F( "W_had_corr_d",   ";2 Jet W Hadronic #eta-#phi Distances [rad];2 Jet W Hadronic p_{T} Diff [GeV]", 50, 0, 3.2 , 50, -200, 200  )
+hists['had_W_corr_3_dist_Pt'] = TH2F( "W_had_corr_d",   ";3 Jet W Hadronic #eta-#phi Distances [rad];3 Jet W Hadronic p_{T} diff [GeV]", 50, 0, 3.2 , 50, -200, 200  )
+hists['had_W_corr_dist_Pt'] = TH2F( "W_had_corr_d",   ";W Hadronic #eta-#phi Distances [rad];W Hadronic p_{T} diff [GeV]", 50, 0, 3.2 , 50, -200, 200  )
 
 # Leptonic b
 # True vs. obs
@@ -684,18 +689,22 @@ def make_histograms():
         hists['had_W_dist_obs_mass'].Fill(np.float(closest_W_had.M()))
         hists['had_W_corr_mass_dist'].Fill(closest_W_had.M(), np.float(W_had_dist_true))
         hists['had_W_corr_mass_Pt'].Fill(closest_W_had.M(), W_had_true_pT)
+        hists['had_W_corr_dist_Pt'].Fill(np.float(W_had_dist_true), W_had_true_pT)
         if w_jets == 0:
             hists['had_W_dist_obs_1_mass'].Fill(closest_W_had.M())
             hists['had_W_corr_1_mass_dist'].Fill(closest_W_had.M(), np.float(W_had_dist_true))
             hists['had_W_corr_1_mass_Pt'].Fill(closest_W_had.M(), W_had_true_pT)
+            hists['had_W_corr_1_dist_Pt'].Fill(np.float(W_had_dist_true), W_had_true_pT)
         if w_jets == 1:
             hists['had_W_dist_obs_2_mass'].Fill(closest_W_had.M())
             hists['had_W_corr_2_mass_dist'].Fill(closest_W_had.M(), np.float(W_had_dist_true))
             hists['had_W_corr_2_mass_Pt'].Fill(closest_W_had.M(), W_had_true_pT)
+            hists['had_W_corr_2_dist_Pt'].Fill(np.float(W_had_dist_true), W_had_true_pT)
         if w_jets == 2:
             hists['had_W_dist_obs_3_mass'].Fill(closest_W_had.M())
             hists['had_W_corr_3_mass_dist'].Fill(closest_W_had.M(), np.float(W_had_dist_true))
             hists['had_W_corr_3_mass_Pt'].Fill(closest_W_had.M(), W_had_true_pT)
+            hists['had_W_corr_3_dist_Pt'].Fill(np.float(W_had_dist_true), W_had_true_pT)
 
    # Print data regarding percentage of each class of event
 
@@ -811,8 +820,8 @@ if __name__ == "__main__":
     gStyle.SetPalette(kGreyScale)
     gROOT.GetColor(52).InvertPalette()
 
-    for key in hist_list:
-        if 'corr' in key:
+    for key in hists:
+        if 'corr' not in key:
             plot_hists(key)
         else:
             plot_corr(key)
