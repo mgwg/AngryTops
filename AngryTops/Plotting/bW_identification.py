@@ -682,7 +682,7 @@ def make_histograms():
         hists['had_W_dist_pred_v_obs'].Fill(np.float(W_had_R_po))
         hists['had_W_true_pT_diff'].Fill(np.float(W_had_true_pT))
         hists['had_W_dist_obs_mass'].Fill(np.float(closest_W_had.M()))
-        hists['haw_W_corr_mass_dist'].Fill(closest_W_had.M(), np.float(W_had_dist_true))
+        hists['had_W_corr_mass_dist'].Fill(closest_W_had.M(), np.float(W_had_dist_true))
         hists['had_W_corr_mass_Pt'].Fill(closest_W_had.M(), W_had_true_pT)
         if w_jets == 0:
             hists['had_W_dist_obs_1_mass'].Fill(closest_W_had.M())
@@ -808,16 +808,11 @@ if __name__ == "__main__":
         print("Overwriting existing files")
     make_histograms()
 
-    hist_list = [key for key in hists.keys() if 'corr' not in key]
-    corr_list = [key for key in hists.keys() if 'corr' in key]
-
-    for key in hist_list:
-        plot_hists(key)
-
     gStyle.SetPalette(kGreyScale)
     gROOT.GetColor(52).InvertPalette()
-    for key in corr_list:
-        plot_corr(key)
 
-# combined corr plot
-# combined mass plot
+    for key in hist_list:
+        if 'corr' in key:
+            plot_hists(key)
+        else:
+            plot_corr(key)

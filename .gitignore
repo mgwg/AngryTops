@@ -10,3 +10,5 @@ AngryTops/PostTraining_Analysis/models
 AngryTops/PostTraining_Analysis/models/*
 *.icloud
 AngryTops/test.py
+AngryTops/Plotting/W_identification.py
+AngryTops/make_comparisons_W.sh
