@@ -835,10 +835,13 @@ if __name__ == "__main__":
             hists_key.append(key)
         else:
             corr_key.append(key)
+
     for key in hists_key:
         plot_hists(key)
+
     # The following two lines must be run only once for all correlation plots, 
     #  so the correlation plots must be separated out from the other histograms.    
+    
     gStyle.SetPalette(kGreyScale)
     gROOT.GetColor(52).InvertPalette()
     for key in corr_key:
