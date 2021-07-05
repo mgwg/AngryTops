@@ -22,7 +22,6 @@ scaling = True
 m_t = 172.5
 m_W = 80.4
 m_b = 4.95
-b_tagging = True
 
 # Helper function to create histograms of eta-phi distance distributions
 def MakeP4(y, m):
@@ -92,25 +91,11 @@ if scaling:
         jets_lep = jets[:,:6]
         jets_jets = jets[:,6:] # remove muon column
         jets_jets = jets_jets.reshape((jets_jets.shape[0],5,6)) # reshape to 5 x 6 array
-      
-        # Retain b-tagging states depending on value of b-tagging
-        if b_tagging:
-            # Remove the b-tagging states and put them into a new array to be re-appended later.
-            b_tags = jets_jets[:,:,5]
-            jets_jets = np.delete(jets_jets, 5, 2) # delete the b-tagging states
-            jets_jets = jets_jets.reshape((jets_jets.shape[0], 25)) # reshape into 25 element long array
-            jets_lep = lep_scalar.inverse_transform(jets_lep)
-            jets_jets = jets_scalar.inverse_transform(jets_jets) # scale values ... ?
-            #I think this is the final 6x6 array the arxiv paper was talking about - 5 x 5 array containing jets (1 per row) and corresponding px, py, pz, E, m
-            jets_jets = jets_jets.reshape((jets_jets.shape[0],5,5))
-            # Re-append the b-tagging states as a column at the end of jets_jets 
-            jets_jets = np.append(jets_jets, np.expand_dims(b_tags, 2), 2)
-        else:
-            jets_jets = np.delete(jets_jets, 5, 2) # delete the b-tagging states
-            jets_jets = jets_jets.reshape((jets_jets.shape[0], 25)) # reshape into 25 element long array
-            jets_lep = lep_scalar.inverse_transform(jets_lep)
-            jets_jets = jets_scalar.inverse_transform(jets_jets) # scale values ... ?
-            jets_jets = jets_jets.reshape((jets_jets.shape[0],5,5))#I think this is the final 6x6 array the arxiv paper was talking about - 5 x 5 array containing jets (1 per row) and corresponding px, py, pz, E, m
+        jets_jets = np.delete(jets_jets, 5, 2) # delete the b-tagging states
+        jets_jets = jets_jets.reshape((jets_jets.shape[0], 25)) # reshape into 25 element long array
+        jets_lep = lep_scalar.inverse_transform(jets_lep)
+        jets_jets = jets_scalar.inverse_transform(jets_jets) # scale values ... ?
+        jets_jets = jets_jets.reshape((jets_jets.shape[0],5,5))#I think this is the final 6x6 array the arxiv paper was talking about - 5 x 5 array containing jets (1 per row) and corresponding px, py, pz, E, m
 
 if not scaling:
     jets_lep = jets[:,:6]
@@ -499,34 +484,31 @@ def make_histograms():
             # check 1, 2, 3 jet combinations for hadronic W
 
             # one jet
-            if (not jet_list[k,i,5] and b_tagging) or (not b_tagging): 
-                sum_vect = jets[k]    
+            sum_vect = jets[k]    
+            W_had_d_true = find_dist(W_had_true, sum_vect)
+            if W_had_d_true < W_had_dist_true:
+                W_had_dist_true = W_had_d_true
+                W_had_true_pT = W_had_true.Pt() - sum_vect.Pt()
+                closest_W_had = sum_vect
+                w_jets = 0
+            # two jets
+            for j in range(k + 1, len(jets)):
+                sum_vect = jets[k] + jets[j] 
                 W_had_d_true = find_dist(W_had_true, sum_vect)
                 if W_had_d_true < W_had_dist_true:
                     W_had_dist_true = W_had_d_true
                     W_had_true_pT = W_had_true.Pt() - sum_vect.Pt()
                     closest_W_had = sum_vect
-                    w_jets = 0
-                # two jets
-                for j in range(k + 1, len(jets)):
-                    if (not jet_list[j,i,5] and b_tagging) or (not b_tagging):
-                        sum_vect = jets[k] + jets[j] 
-                        W_had_d_true = find_dist(W_had_true, sum_vect)
-                        if W_had_d_true < W_had_dist_true:
-                            W_had_dist_true = W_had_d_true
-                            W_had_true_pT = W_had_true.Pt() - sum_vect.Pt()
-                            closest_W_had = sum_vect
-                            w_jets = 1
-                    # three jets
-                    for l in range(j+1, len(jets)):
-                        if (not jet_list[l,i,5] and b_tagging) or (not b_tagging):
-                            sum_vect = jets[k] + jets[j] + jets[l]
-                            W_had_d_true = find_dist(W_had_true, sum_vect)
-                            if W_had_d_true < W_had_dist_true:
-                                W_had_dist_true = W_had_d_true
-                                W_had_true_pT = W_had_true.Pt() - sum_vect.Pt()
-                                closest_W_had = sum_vect
-                                w_jets = 2
+                    w_jets = 1
+                # three jets
+                for l in range(j+1, len(jets)):
+                    sum_vect = jets[k] + jets[j] + jets[l]
+                    W_had_d_true = find_dist(W_had_true, sum_vect)
+                    if W_had_d_true < W_had_dist_true:
+                        W_had_dist_true = W_had_d_true
+                        W_had_true_pT = W_had_true.Pt() - sum_vect.Pt()
+                        closest_W_had = sum_vect
+                        w_jets = 2
 
         w_had_jets[w_jets] += 1    
         
@@ -572,7 +554,6 @@ def make_histograms():
             good_W_had += 1
         else:
             bad_W_had += 1
-
 
         ################################################# predicted vs observed #################################################
 
