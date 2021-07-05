@@ -4,8 +4,6 @@ from numpy.linalg import norm
 from scipy.spatial import distance
 from ROOT import *
 import pickle
-from AngryTops.features import *
-from AngryTops.Plotting.PlottingHelper import *
 
 representation = sys.argv[2]
 outputdir = sys.argv[1]
@@ -178,7 +176,7 @@ hists['had_W_true_pT_diff'].SetTitle("W Hadronic p_{T} Diff, True - Observed; Ha
 hists['had_W_true_3_pT_diff'] = TH1F("h_pT_W_had_true","3 Jet W Hadronic p_{T} Diff, True - Observed", 30, -300, 300. )
 hists['had_W_true_3_pT_diff'].SetTitle("3 Jet W Hadronic p_{T} Diff, True - Observed; Hadronic (GeV); A.U.")
 hists['had_W_true_2_pT_diff'] = TH1F("h_pT_W_had_true","2 Jet W Hadronic p_{T} Diff, True - Observed", 30, -300, 300. )
-hists['had_W_true_2_pT_diff'].SetTitle("1 Jet W Hadronic p_{T} Diff, True - Observed; Hadronic (GeV); A.U.")
+hists['had_W_true_2_pT_diff'].SetTitle("2 Jet W Hadronic p_{T} Diff, True - Observed; Hadronic (GeV); A.U.")
 hists['had_W_true_1_pT_diff'] = TH1F("h_pT_W_had_true","1 Jet W Hadronic p_{T} Diff, True - Observed", 30, -300, 300. )
 hists['had_W_true_1_pT_diff'].SetTitle("1 Jet W Hadronic p_{T} Diff, True - Observed; Hadronic (GeV); A.U.")
 # True vs. obs
@@ -693,29 +691,35 @@ def make_histograms():
             high_E += 1
             hists['lep_W_transverse_energy_diff_high'].Fill(np.float(W_lep_Et_diff))
         # Hadronic W
-        hists['had_W_true_pT_diff'].Fill(np.float(W_had_true_pT))
         hists['had_W_dist_true_v_obs'].Fill(np.float(W_had_dist_true))
         hists['had_W_dist_pred_v_true'].Fill(np.float(W_had_R))
         hists['had_W_dist_pred_v_obs'].Fill(np.float(W_had_R_po))
+        # pT diff and Invariant mass:
+        hists['had_W_true_pT_diff'].Fill(np.float(W_had_true_pT))
         hists['had_W_obs_mass'].Fill(np.float(closest_W_had.M()))
+        # Jet matching criteria correlation plots
         hists['had_W_corr_mass_dist'].Fill(closest_W_had.M(), np.float(W_had_dist_true))
         hists['had_W_corr_mass_Pt'].Fill(closest_W_had.M(), W_had_true_pT)
         hists['had_W_corr_dist_Pt'].Fill(np.float(W_had_dist_true), W_had_true_pT)
+        # Plots that depend on whether a 1,2, or 3-jet sum is the best match to truth:
         if w_jets == 0:
             hists['had_W_obs_1_mass'].Fill(closest_W_had.M())
             hists['had_W_corr_1_mass_dist'].Fill(closest_W_had.M(), np.float(W_had_dist_true))
             hists['had_W_corr_1_mass_Pt'].Fill(closest_W_had.M(), W_had_true_pT)
             hists['had_W_corr_1_dist_Pt'].Fill(np.float(W_had_dist_true), W_had_true_pT)
+            hists['had_W_true_1_pT_diff'].Fill(np.float(W_had_true_pT))
         if w_jets == 1:
             hists['had_W_obs_2_mass'].Fill(closest_W_had.M())
             hists['had_W_corr_2_mass_dist'].Fill(closest_W_had.M(), np.float(W_had_dist_true))
             hists['had_W_corr_2_mass_Pt'].Fill(closest_W_had.M(), W_had_true_pT)
             hists['had_W_corr_2_dist_Pt'].Fill(np.float(W_had_dist_true), W_had_true_pT)
+            hists['had_W_true_2_pT_diff'].Fill(np.float(W_had_true_pT))
         if w_jets == 2:
             hists['had_W_obs_3_mass'].Fill(closest_W_had.M())
             hists['had_W_corr_3_mass_dist'].Fill(closest_W_had.M(), np.float(W_had_dist_true))
             hists['had_W_corr_3_mass_Pt'].Fill(closest_W_had.M(), W_had_true_pT)
             hists['had_W_corr_3_dist_Pt'].Fill(np.float(W_had_dist_true), W_had_true_pT)
+            hists['had_W_true_3_pT_diff'].Fill(np.float(W_had_true_pT))
 
    # Print data regarding percentage of each class of event
 
@@ -842,6 +846,8 @@ if __name__ == "__main__":
     # The following two lines must be run only once for all correlation plots, 
     #  so the correlation plots must be separated out from the other histograms.    
     
+    from AngryTops.features import *
+    from AngryTops.Plotting.PlottingHelper import *
     gStyle.SetPalette(kGreyScale)
     gROOT.GetColor(52).InvertPalette()
     for key in corr_key:
