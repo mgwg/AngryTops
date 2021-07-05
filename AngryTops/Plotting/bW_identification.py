@@ -364,7 +364,7 @@ def make_histograms():
     high_E = 0.
     w_had_jets = [0., 0., 0.]
 
-    for i in jet_index: # loop through every event
+    for i in event_index: # loop through every event
         if ( n_events < 10 ) or ( (i+1) % int(float(n_events)/10.)  == 0 ):
             perc = 100. * i / float(n_events)
             print("INFO: Event %-9i  (%3.0f %%)" % ( i, perc ))
