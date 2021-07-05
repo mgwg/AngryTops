@@ -19,6 +19,7 @@ scaling = True
 m_t = 172.5
 m_W = 80.4
 m_b = 4.95
+b_tagging = False
 
 # Helper function to create histograms of eta-phi distance distributions
 def MakeP4(y, m):
@@ -88,11 +89,29 @@ if scaling:
         jets_lep = jets[:,:6]
         jets_jets = jets[:,6:] # remove muon column
         jets_jets = jets_jets.reshape((jets_jets.shape[0],5,6)) # reshape to 5 x 6 array
-        jets_jets = np.delete(jets_jets, 5, 2) # delete the b-tagging states
-        jets_jets = jets_jets.reshape((jets_jets.shape[0], 25)) # reshape into 25 element long array
-        jets_lep = lep_scalar.inverse_transform(jets_lep)
-        jets_jets = jets_scalar.inverse_transform(jets_jets) # scale values ... ?
-        jets_jets = jets_jets.reshape((jets_jets.shape[0],5,5))#I think this is the final 6x6 array the arxiv paper was talking about - 5 x 5 array containing jets (1 per row) and corresponding px, py, pz, E, m
+
+        # Retain b-tagging states depending on value of b-tagging
+        if b_tagging:
+            # Remove the b-tagging states and put them into a new array to be re-appended later.
+            b_tags = jets_jets[:,:,5]
+            jets_jets = np.delete(jets_jets, 5, 2) # delete the b-tagging states
+            jets_jets = jets_jets.reshape((jets_jets.shape[0], 25)) # reshape into 25 element long array
+            jets_lep = lep_scalar.inverse_transform(jets_lep)
+            jets_jets = jets_scalar.inverse_transform(jets_jets) # scale values ... ?
+            #I think this is the final 6x6 array the arxiv paper was talking about - 5 x 5 array containing jets (1 per row) and corresponding px, py, pz, E, m
+            jets_jets = jets_jets.reshape((jets_jets.shape[0],5,5))
+            # Re-append the b-tagging states as a column at the end of jets_jets 
+            jets_jets = np.append(jets_jets, np.expand_dims(b_tags, 2), 2)
+        else:
+            # Rescale the jets array
+            jets_lep = jets[:,:6]
+            jets_jets = jets[:,6:] # remove muon column
+            jets_jets = jets_jets.reshape((jets_jets.shape[0],5,6)) # reshape to 5 x 6 array
+            jets_jets = np.delete(jets_jets, 5, 2) # delete the b-tagging states
+            jets_jets = jets_jets.reshape((jets_jets.shape[0], 25)) # reshape into 25 element long array
+            jets_lep = lep_scalar.inverse_transform(jets_lep)
+            jets_jets = jets_scalar.inverse_transform(jets_jets) # scale values ... ?
+            jets_jets = jets_jets.reshape((jets_jets.shape[0],5,5))#I think this is the final 6x6 array the arxiv paper was talking about - 5 x 5 array containing jets (1 per row) and corresponding px, py, pz, E, m
 
 if not scaling:
     jets_lep = jets[:,:6]
@@ -109,6 +128,8 @@ jet_2 = jets_jets[:,1]
 jet_3 = jets_jets[:,2]
 jet_4 = jets_jets[:,3]
 jet_5 = jets_jets[:,4]
+# Create an array with each jet's arrays for accessing b-tagging states later.
+jet_list = np.stack([jet_1, jet_2, jet_3, jet_4, jet_5]) # I suppose you could use a dictionary here but the keys would just be indices.
 
 # truth
 y_true_W_had = true[:,0,:]
@@ -141,7 +162,8 @@ elif event_type == "5":
 # make histograms to be filled
 hists = {}
 
-# Leptonic W miscellaneous histograms
+# Leptonic W 
+# Miscellaneous histograms
 hists['lep_W_transverse_mass_observed'] = TH1F("W_lep_met_d","W Leptonic Transverse Mass, Observed", 50, 0, 250)#120)
 hists['lep_W_transverse_mass_observed'].SetTitle("W Leptonic Transverse Mass, Observed;Leptonic (GeV);A.U.")
 hists['lep_W_transverse_energy_diff'] = TH1F("W_lep_Et_d","W Leptonic Transverse Energy Difference, Observed - Truth", 50, -120, 120)
@@ -318,6 +340,7 @@ hists['had_t_dist_pred_v_obs_part_recon'].SetTitle("t Hadronic #eta-#phi distanc
 hists['had_t_dist_pred_v_obs_un_recon'] = TH1F("t_had_d","t Hadronic Distances, Predicted vs Observed Not Reconstructed", 50, 0, 3)
 hists['had_t_dist_pred_v_obs_un_recon'].SetTitle("t Hadronic #eta-#phi distances, Predicted vs Observed Not Reconstructed;Hadronic (radians);A.U.")
 
+# Function to make histograms
 def make_histograms():
     # define tolerance limits
     b_lep_dist_t_lim = 0.39
@@ -388,6 +411,7 @@ def make_histograms():
         jets.append(jet_2_vect)
         jets.append(jet_3_vect)
         jets.append(jet_4_vect)
+        # If there is no fifth jet, do not append it to list of jets to avoid considering it in the pairs of jets.
         if np.all(jet_5[i] == 0.):
             jets.append(jet_5_vect)
 
@@ -427,6 +451,16 @@ def make_histograms():
         b_had_phi_recon = b_had_eta_recon = b_had_R_recon = False
         W_lep_phi_recon = W_lep_eta_recon = W_lep_R_recon = False
         W_had_phi_recon = W_had_eta_recon = W_had_R_recon = False
+
+        # Check reconstructed status by comparing R distances to the same tolerances as true vs. observed
+        # if b_lep_R <= b_lep_dist_t_lim:
+        #     b_lep_R_recon = True
+        # if b_had_R <= b_had_dist_t_lim:
+        #     b_had_R_recon = True
+        # if W_lep_R <= W_lep_dist_t_lim:
+        #     W_lep_R_recon = True
+        # if W_had_R <= W_had_dist_t_lim:
+        #     W_had_R_recon = True  
 
         if ((b_lep_true.Phi() - 37.0/50.0) <= b_lep_fitted.Phi()) and (b_lep_fitted.Phi() <= (b_lep_true.Phi() + 37.0/50.0)):
             b_lep_phi_recon = True
@@ -476,7 +510,6 @@ def make_histograms():
             b_lep_d_true = find_dist(b_lep_true, jets[k])
             if b_had_d_true < b_had_dist_true:
                 b_had_dist_true = b_had_d_true
-                # Save the closest sum vector
                 closest_b_had = jets[k]
             if b_lep_d_true < b_lep_dist_true:
                 b_lep_dist_true = b_lep_d_true
@@ -485,32 +518,38 @@ def make_histograms():
             # For hadronic Ws
             # check 1, 2, 3 jet combinations for hadronic W
 
-            # one jet
-            sum_vect = jets[k]    
-            W_had_d_true = find_dist(W_had_true, sum_vect)
-            if W_had_d_true < W_had_dist_true:
-                W_had_dist_true = W_had_d_true
-                W_had_true_pT = W_had_true.Pt() - sum_vect.Pt()
-                closest_W_had = sum_vect
-                w_jets = 0
-            # two jets
-            for j in range(k + 1, len(jets)):
-                sum_vect = jets[k] + jets[j] 
+            # Single jets
+            if (not b_tagging) or (not jet_list[k,i,5]): 
+                # Check if jet k is not b-tagged, k ranges from 0 to 4 or 5 depending on event type
+                sum_vect = jets[k]    
                 W_had_d_true = find_dist(W_had_true, sum_vect)
                 if W_had_d_true < W_had_dist_true:
                     W_had_dist_true = W_had_d_true
                     W_had_true_pT = W_had_true.Pt() - sum_vect.Pt()
                     closest_W_had = sum_vect
-                    w_jets = 1
-                # three jets
-                for l in range(j+1, len(jets)):
-                    sum_vect = jets[k] + jets[j] + jets[l]
-                    W_had_d_true = find_dist(W_had_true, sum_vect)
-                    if W_had_d_true < W_had_dist_true:
-                        W_had_dist_true = W_had_d_true
-                        W_had_true_pT = W_had_true.Pt() - sum_vect.Pt()
-                        closest_W_had = sum_vect
-                        w_jets = 2
+                    w_jets = 0
+            # Dijets
+                for j in range(k + 1, len(jets)):
+                    # Check if jet j is not b-tagged, j ranges from k+1 to 4 or 5 depending on event type     
+                    if (not b_tagging) or (not jet_list[j,i,5]):
+                        sum_vect = jets[k] + jets[j] 
+                        W_had_d_true = find_dist(W_had_true, sum_vect)
+                        if W_had_d_true < W_had_dist_true:
+                            W_had_dist_true = W_had_d_true
+                            W_had_true_pT = W_had_true.Pt() - sum_vect.Pt()
+                            closest_W_had = sum_vect
+                            w_jets = 1
+                # Trijets
+                        for l in range(j+1, len(jets)):
+                            # Check if jet l is not b-tagged, l ranges from j+k+1 to 4 or 5 depending on event type
+                            if (not b_tagging) or  (not jet_list[l,i,5]):
+                                sum_vect = jets[k] + jets[j] + jets[l]
+                                W_had_d_true = find_dist(W_had_true, sum_vect)
+                                if W_had_d_true < W_had_dist_true:
+                                    W_had_dist_true = W_had_d_true
+                                    W_had_true_pT = W_had_true.Pt() - sum_vect.Pt()
+                                    closest_W_had = sum_vect
+                                    w_jets = 2
 
         w_had_jets[w_jets] += 1    
         
@@ -687,9 +726,6 @@ def make_histograms():
         hists['lep_W_dist_pred_v_obs'].Fill(np.float(W_lep_R_po))
         hists['lep_W_transverse_mass_observed'].Fill(np.float(met_obs))
         hists['lep_W_transverse_energy_diff'].Fill(np.float(W_lep_Et_diff))
-        if W_Et_observed >= 150: # High transverse energy cutoff for difference histograms 
-            high_E += 1
-            hists['lep_W_transverse_energy_diff_high'].Fill(np.float(W_lep_Et_diff))
         # Hadronic W
         hists['had_W_dist_true_v_obs'].Fill(np.float(W_had_dist_true))
         hists['had_W_dist_pred_v_true'].Fill(np.float(W_had_R))
@@ -758,13 +794,11 @@ def make_histograms():
     print(100*good_W_lep/n_events, ' good_W_lep')
     print(100*good_b_had/n_events, ' good_b_had')
     print(100*good_b_lep/n_events, ' good_b_lep')
-    print(100*high_E/n_events, 'high_E')
     print('=================================================================')
     print(100*w_had_jets[0]/n_events, '1 event Hadronic W')
     print(100*w_had_jets[1]/n_events, '2 event Hadronic W')
     print(100*w_had_jets[2]/n_events, '3 event Hadronic W')
 
-# Helper function to output and save the plots 
 def plot_hists(key):
     c1 = TCanvas()
     hists[key].Draw()
@@ -823,8 +857,7 @@ def plot_corr(key):
     c.SaveAs(outputdir + subdir + key +'.png')
     pad0.Close()
     c.Close()
-    
-# Run the two helper functions above   
+   
 if __name__ == "__main__":
     try:
         os.mkdir('{}/{}'.format(outputdir, subdir))
