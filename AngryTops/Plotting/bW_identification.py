@@ -103,10 +103,6 @@ if scaling:
             # Re-append the b-tagging states as a column at the end of jets_jets 
             jets_jets = np.append(jets_jets, np.expand_dims(b_tags, 2), 2)
         else:
-            # Rescale the jets array
-            jets_lep = jets[:,:6]
-            jets_jets = jets[:,6:] # remove muon column
-            jets_jets = jets_jets.reshape((jets_jets.shape[0],5,6)) # reshape to 5 x 6 array
             jets_jets = np.delete(jets_jets, 5, 2) # delete the b-tagging states
             jets_jets = jets_jets.reshape((jets_jets.shape[0], 25)) # reshape into 25 element long array
             jets_lep = lep_scalar.inverse_transform(jets_lep)
