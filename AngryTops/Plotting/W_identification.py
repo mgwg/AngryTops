@@ -128,6 +128,8 @@ jet_2 = jets_jets[:,1]
 jet_3 = jets_jets[:,2]
 jet_4 = jets_jets[:,3]
 jet_5 = jets_jets[:,4]
+# Create an array with each jet's arrays for accessing b-tagging states later.
+jet_list = np.stack([jet_1, jet_2, jet_3, jet_4, jet_5]) # I suppose you could use a dictionary here but the keys would just be indices.
 
 # truth
 y_true_W_had = true[:,0,:]
