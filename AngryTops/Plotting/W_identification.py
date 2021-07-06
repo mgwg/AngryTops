@@ -390,18 +390,8 @@ def make_histograms():
 
         # loop through each of the jets to find the minimum distance for each particle
         for k in range(len(jets)): 
-            b_had_d_true = find_dist(b_had_true, jets[k])
-            b_lep_d_true = find_dist(b_lep_true, jets[k])
-            if b_had_d_true < b_had_dist_true:
-                b_had_dist_true = b_had_d_true
-                closest_b_had = jets[k]
-            if b_lep_d_true < b_lep_dist_true:
-                b_lep_dist_true = b_lep_d_true
-                closest_b_lep = jets[k]
-
             # For hadronic Ws
             # check 1, 2, 3 jet combinations for hadronic W
-
             # Single jets
             if (not b_tagging) or (not jet_list[k,i,5]): 
                 # Check if jet k is not b-tagged, k ranges from 0 to 4 or 5 depending on event type
