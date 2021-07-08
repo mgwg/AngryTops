@@ -77,7 +77,8 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, par
     event_testing = event_info[cut:]
 
     # OUTPUT
-    output, output_scalar = normalize(truth, scaling)
+    # output, output_scalar = normalize(truth, scaling)
+    output, output_scalar = (truth, scaling)
     if not single_output:
         output = output.reshape(output.shape[0], -1, 3)
     training_output = output[:cut]

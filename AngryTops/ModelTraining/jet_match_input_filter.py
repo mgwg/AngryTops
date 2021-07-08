@@ -78,6 +78,62 @@ def filter_events(csv_file, **kwargs):
     (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) \
                         = get_input_output(input_filename=csv_file, **kwargs)
 
+    # Format training arrays into right shape:
+    # Rescale the jets array
+    jets_lep = training_input[:,:6]
+    jets_jets = training_input[:,6:] # remove muon columns
+    jets_jets = jets_jets.reshape((jets_jets.shape[0],5,6)) # reshape to 5 x 6 array
+
+    # Retain b-tagging states depending on value of b-tagging
+    if b_tagging != "All":
+        # Remove the b-tagging states and put them into a new array to be re-appended later.
+        b_tags = jets_jets[:,:,5]
+        jets_jets = np.delete(jets_jets, 5, 2) # delete the b-tagging states
+
+        jets_jets = jets_jets.reshape((jets_jets.shape[0], 25)) # reshape into 25 element long array
+        #jets_lep = lep_scalar.inverse_transform(jets_lep) # No inverse transform needed at this stage since everything is unscaled.
+        #jets_jets = jets_scalar.inverse_transform(jets_jets) # scale values ... ?
+        #I think this is the final 6x6 array the arxiv paper was talking about - 5 x 5 array containing jets (1 per row) and corresponding px, py, pz, E, m
+        jets_jets = jets_jets.reshape((jets_jets.shape[0],5,5))
+        # Re-append the b-tagging states as a column at the end of jets_jets 
+        jets_jets = np.append(jets_jets, np.expand_dims(b_tags, 2), 2)
+    else:
+        # Don't care about b-tagging states
+        # Rescale the jets array
+        jets_lep = jets[:,:6]
+        jets_jets = jets[:,6:] # remove muon column
+        jets_jets = jets_jets.reshape((jets_jets.shape[0],5,6)) # reshape to 5 x 6 array
+        jets_jets = np.delete(jets_jets, 5, 2) # delete the b-tagging states
+        jets_jets = jets_jets.reshape((jets_jets.shape[0], 25)) # reshape into 25 element long array
+        #jets_lep = lep_scalar.inverse_transform(jets_lep)
+        #jets_jets = jets_scalar.inverse_transform(jets_jets) # scale values ... ?
+        jets_jets = jets_jets.reshape((jets_jets.shape[0],5,5))#I think this is the final 6x6 array the arxiv paper was talking about - 5 x 5 array containing jets (1 per row) and corresponding px, py, pz, E, m
+
+    # jets
+    jet_mu = jets_lep
+    # First jet for every event
+    jet_1 = jets_jets[:,0]
+    # Second jet for every event
+    jet_2 = jets_jets[:,1]
+    jet_3 = jets_jets[:,2]
+    jet_4 = jets_jets[:,3]
+    jet_5 = jets_jets[:,4]
+    # Create an array with each jet's arrays for accessing b-tagging states later.
+    jet_list = np.stack([jet_1, jet_2, jet_3, jet_4, jet_5]) # I suppose you could use a dictionary here but the keys would just be indices.
+
+    # truth
+    y_true_W_had = training_output[:,0,:]
+    y_true_W_lep = training_output[:,1,:]
+    y_true_b_had = training_output[:,2,:]
+    y_true_b_lep = training_output[:,3,:]
+    y_true_t_had = training_output[:,4,:]
+    y_true_t_lep = training_output[:,5,:]
+
+    # A meaningful name for the number of events
+    n_events = training_output.shape[0]
+    # define indices
+    event_index = range(n_events)
+
     # define tolerance limits
     b_lep_dist_t_lim = 0.39
     b_had_dist_t_lim = 0.39
@@ -228,47 +284,19 @@ def filter_events(csv_file, **kwargs):
         obs_t_phi = np.arctan2(t_lep_y, t_lep_x)
         t_lep_dist_true = np.abs( min( np.abs(t_lep_true.Phi()-obs_t_phi), 2*np.pi-np.abs(t_lep_true.Phi() - obs_t_phi) ) )
 
-        # Add the number of jets that are within the tolerance limit, or reconstructable
-        corr_p_jets_dist = b_lep_R_recon + b_had_R_recon + W_lep_R_recon + W_had_R_recon
-        corr_jets_dist = 0.
         if (b_lep_dist_true <= b_lep_dist_t_lim): # if minimum distance is less than the tolearance limits, everything is ok
-            corr_jets_dist += 1
             good_b_lep += 1
         else:
             bad_b_lep += 1
         if (b_had_dist_true <= b_had_dist_t_lim):
-            corr_jets_dist += 1
             good_b_had += 1
         else:
             bad_b_had += 1
         if (W_lep_dist_true <= W_lep_dist_t_lim): # mismatch between W_lep_dist_true and good_W_lep
-            corr_jets_dist += 1
             good_W_lep += 1
         else:
             bad_W_lep += 1
         if (W_had_dist_true <= W_had_dist_t_lim):
-            corr_jets_dist += 1
             good_W_had += 1
         else:
             bad_W_had += 1
-
-        # Populate cut histograms
-        # Use only the observed jet(s) that pass all three cuts simultaneously: 
-        # if (W_had_dist_true <= dist_true_v_obs_max) and \
-        #     (W_had_true_pT_diff >= pT_diff_true_v_obs_min) and \
-        #         (W_had_true_pT_diff <= pT_diff_true_v_obs_max) and \
-        #             (closest_W_had.M() >= mass_obs_min) and \
-        #                 (closest_W_had.M() <= mass_obs_max)
-
-
-# def normalize(arr, scaling):
-#     """Normalize the arr with StandardScalar and return the normalized array
-#     and the scalar"""
-#     if scaling == "standard":
-#         scalar = sklearn.preprocessing.StandardScaler()
-#     elif scaling == 'minmax':
-#         scalar = sklearn.preprocessing.MinMaxScaler(feature_range=(-1, 1))
-#     else:
-#         return arr.copy(), None
-#     new_arr = scalar.fit_transform(arr)
-#     return new_arr, scalar
