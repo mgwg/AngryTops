@@ -375,7 +375,7 @@ def make_histograms():
         jets.append(jet_3_vect)
         jets.append(jet_4_vect)
         # If there is no fifth jet, do not append it to list of jets to avoid considering it in the pairs of jets.
-        if np.all(jet_5[i] != 0.):
+        if not np.all(jet_5[i] == 0.):
             jets.append(jet_5_vect)
 
         # Special calculations for the observed leptonic W
