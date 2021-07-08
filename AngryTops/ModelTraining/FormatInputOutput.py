@@ -15,7 +15,7 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, par
     Training Data: Array of 36 elements. I am debating reshaping to matrix of (6 x 6)
     Testing Data: Matrix of Shape (6 x 4)
     single_output: If given, testing data is from specific kinematic variable
-    partice: If given, testing data is from specific particle
+    particle: If given, testing data is from specific particle
     """
     # Inputs
     scaling = kwargs['scaling']
@@ -77,7 +77,8 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, par
     event_testing = event_info[cut:]
 
     # OUTPUT
-    output, output_scalar = normalize(truth, scaling)
+    # output, output_scalar = normalize(truth, scaling)
+    output, output_scalar = (truth, scaling)
     if not single_output:
         output = output.reshape(output.shape[0], -1, 3)
     training_output = output[:cut]
