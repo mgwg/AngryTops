@@ -20,7 +20,7 @@ m_t = 172.5
 m_W = 80.4
 m_b = 4.95
 b_tagging = True
-cut_mass = cut_pT = cut_dist = False
+cut_mass = cut_pT = cut_dist = True
 mass_cut = (25, 100)
 pT_cut = (-50, 50)
 dist_cut = (0, 0.5)
@@ -290,25 +290,25 @@ if cut_pT:
     hists['had_W_pT_cut_corr_dist_Pt'] = TH2F( "W_had_corr_pt",   ";W Hadronic #eta-#phi Distances [rad];W Hadronic p_{T} diff [GeV]", 50, 0, 3.2 , 50, pT_cut[0], pT_cut[1] )
 if cut_dist:
     ################################ dist cut-offs #################################
-    hists['had_W_dist_cut_pT'] = TH1F("W_had_m","W Hadronic pT Diff, pT Cutoff", 50, -200., 200. )
-    hists['had_W_dist_cut_pT'].SetTitle("W Hadronic pT Diff, pT Cutoff {} - {} GeV; Hadronic (radians); A.U.".format(dist_cut[0], dist_cut[1]))
+    hists['had_W_dist_cut_pT'] = TH1F("W_had_m","W Hadronic pT Diff, dist Cutoff", 50, -200., 200. )
+    hists['had_W_dist_cut_pT'].SetTitle("W Hadronic pT Diff, dist Cutoff {} - {} rad; Hadronic (radians); A.U.".format(dist_cut[0], dist_cut[1]))
     hists['had_W_dist_cut_mass'] = TH1F("W_had_m","W Hadronic Invariant Mass, dist Cutoff", 50, 0., 300. )
-    hists['had_W_dist_cut_mass'].SetTitle("W Hadronic Invariant Mass, dist Cutoff {} - {} GeV; Hadronic (radians); A.U.".format(dist_cut[0], dist_cut[1]))
+    hists['had_W_dist_cut_mass'].SetTitle("W Hadronic Invariant Mass, dist Cutoff {} - {} rad; Hadronic (radians); A.U.".format(dist_cut[0], dist_cut[1]))
 
     hists['had_W_dist_cut_1_pT'] = TH1F("W_had_m","1 Jet W Hadronic pT Diff, dist Cutoff", 50, -200., 200. )
-    hists['had_W_dist_cut_1_pT'].SetTitle("1 Jet W Hadronic pT Diff, dist Cutoff {} - {} GeV; Hadronic (radians); A.U.".format(dist_cut[0], dist_cut[1]))
+    hists['had_W_dist_cut_1_pT'].SetTitle("1 Jet W Hadronic pT Diff, dist Cutoff {} - {} rad; Hadronic (radians); A.U.".format(dist_cut[0], dist_cut[1]))
     hists['had_W_dist_cut_1_mass'] = TH1F("W_had_m","1 Jet W Hadronic Invariant Mass, dist Cutoff", 50, 0., 300. )
-    hists['had_W_dist_cut_1_mass'].SetTitle("1 Jet W Hadronic Invariant Mass, dist Cutoff {} - {} GeV; Hadronic (radians); A.U.".format(dist_cut[0], dist_cut[1]))
+    hists['had_W_dist_cut_1_mass'].SetTitle("1 Jet W Hadronic Invariant Mass, dist Cutoff {} - {} rad; Hadronic (radians); A.U.".format(dist_cut[0], dist_cut[1]))
 
     hists['had_W_dist_cut_2_pT'] = TH1F("W_had_m","2 Jet W Hadronic pT Diff, dist Cutoff", 50, -200., 200. )
-    hists['had_W_dist_cut_2_pT'].SetTitle("2 Jet W Hadronic pT Diff, dist Cutoff {} - {} GeV; Hadronic (radians); A.U.".format(dist_cut[0], dist_cut[1]))
+    hists['had_W_dist_cut_2_pT'].SetTitle("2 Jet W Hadronic pT Diff, dist Cutoff {} - {} rad; Hadronic (radians); A.U.".format(dist_cut[0], dist_cut[1]))
     hists['had_W_dist_cut_2_mass'] = TH1F("W_had_m","2 Jet W Hadronic Invariant Mass, dist Cutoff", 50, 0., 300. )
-    hists['had_W_dist_cut_2_mass'].SetTitle("2 Jet W Hadronic Invariant Mass, dist Cutoff {} - {} GeV; Hadronic (radians); A.U.".format(dist_cut[0], dist_cut[1]))
+    hists['had_W_dist_cut_2_mass'].SetTitle("2 Jet W Hadronic Invariant Mass, dist Cutoff {} - {} rad; Hadronic (radians); A.U.".format(dist_cut[0], dist_cut[1]))
 
     hists['had_W_dist_cut_3_pT'] = TH1F("W_had_m","3 Jet W Hadronic pT Diff, dist Cutoff", 50, -200., 200. )
-    hists['had_W_dist_cut_3_pT'].SetTitle("3 Jet W Hadronic pT Diff, dist Cutoff {} - {} GeV; Hadronic (radians); A.U.".format(dist_cut[0], dist_cut[1]))
+    hists['had_W_dist_cut_3_pT'].SetTitle("3 Jet W Hadronic pT Diff, dist Cutoff {} - {} rad; Hadronic (radians); A.U.".format(dist_cut[0], dist_cut[1]))
     hists['had_W_dist_cut_3_mass'] = TH1F("W_had_m","3 Jet W Hadronic Invariant Mass, dist Cutoff", 50, 0., 300. )
-    hists['had_W_dist_cut_3_mass'].SetTitle("3 Jet W Hadronic Invariant Mass, dist Cutoff {} - {} GeV; Hadronic (radians); A.U.".format(dist_cut[0], dist_cut[1]))
+    hists['had_W_dist_cut_3_mass'].SetTitle("3 Jet W Hadronic Invariant Mass, dist Cutoff {} - {} rad; Hadronic (radians); A.U.".format(dist_cut[0], dist_cut[1]))
 
     # correlations
     # invariant mass vs eta-phi dist
