@@ -595,18 +595,16 @@ def make_histograms():
 
         # counter for hadronic W
         # Update tally for which jet combination is the closest
+        mass_cut = (closest_W_had.M() >= W_had_m_cut[0] and closest_W_had.M() <= W_had_m_cut[1])
+        pT_cut = (W_had_true_pT_diff >= W_had_pT_cut[0] and W_had_true_pT_diff <= W_had_pT_cut[1])
+        dist_cut = (W_had_dist_true <= W_had_dist_cut[1]) 
+        good_W_had = (mass_cut and pT_cut and dist_cut)
+
         w_had_jets[w_jets] += 1.
-        if (W_had_dist_true <= W_had_dist_cut[1]) and \
-            (W_had_true_pT_diff >= W_had_pT_cut[0] and W_had_true_pT_diff <= W_had_pT_cut[1]) and\
-            (closest_W_had.M() >= W_had_m_cut[0] and closest_W_had.M() <= W_had_m_cut[1]):
-                w_had_total_cuts[w_jets] += 1.
-                good_W_had = True
-        if (closest_W_had.M() >= W_had_m_cut[0] and closest_W_had.M() <= W_had_m_cut[1]):
-            w_had_mass_cuts[w_jets] += 1.
-        if (W_had_true_pT_diff >= W_had_pT_cut[0] and W_had_true_pT_diff <= W_had_pT_cut[1]):
-            w_had_pT_cuts[w_jets] += 1.
-        if (W_had_dist_true <= W_had_dist_cut[1]):
-            w_had_dist_cuts[w_jets] += 1.
+        w_had_total_cuts[w_jets] += good_W_had
+        w_had_mass_cuts[w_jets] += mass_cut
+        w_had_pT_cuts[w_jets] += pT_cut
+        w_had_dist_cuts[w_jets] += dist_cut
 
     # Print data regarding percentage of each class of event
     print('Total number of events: {} \n'.format(n_events))
