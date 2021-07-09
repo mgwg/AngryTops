@@ -173,6 +173,7 @@ hists['leptonic_W_dist_pred_v_true'].SetTitle("W Leptonic #phi distances, Predic
 # Pred vs. obs
 hists['leptonic_W_dist_pred_v_obs'] = TH1F("h_W_lep_d","W Leptonic Distances, Predicted vs Observed", 50, 0, 3)
 hists['leptonic_W_dist_pred_v_obs'].SetTitle("W Leptonic #phi distances, Predicted vs Observed; Leptonic (radians);A.U.")
+# Correlations
 
 # Hadronic W
 hists['hadronic_W_true_pT_diff'] = TH1F("h_pT_W_had_diff","W Hadronic {p}_{T} diffs, True - Observed", 80, -400, 400)
@@ -308,6 +309,10 @@ hists['hadronic_t_dist_pred_v_obs'].SetTitle("t Hadronic #eta-#phi distances, Pr
 def make_histograms():
 
     w_had_jets = [0., 0., 0.] # List of number of events best matched by 1,2,3 jets respectively.
+    w_had_mass_cuts = [0., 0., 0.]
+    w_had_pT_cuts = [0., 0., 0.]
+    w_had_dist_cuts = [0., 0., 0.]
+    w_had_total_cuts = [0., 0., 0.]
 
     for i in event_index: # loop through every event
         if ( n_events < 10 ) or ( (i+1) % int(float(n_events)/10.)  == 0 ):
@@ -349,7 +354,6 @@ def make_histograms():
         # If there is no fifth jet, do not append it to list of jets to avoid considering it in the pairs of jets.
         if not np.all(jet_5[i] == 0.):
             jets.append(jet_5_vect)
-
         
         # Special calculations for the observed leptonic W
 
@@ -471,9 +475,7 @@ def make_histograms():
                                 closest_W_had = sum_vect
                                 w_jets = 2
 
-        # Update tally for which jet combination is the closest
-        w_had_jets[w_jets] += 1    
-        
+
         # Calculate W leptonic distances
         # Add muon transverse momentum components to missing momentum components
         lep_x = jet_mu[i][0] + nu_pT_obs[0]
@@ -591,19 +593,45 @@ def make_histograms():
             hists['hadronic_W_3_corr_pT_diff_true_v_obs_mass'].Fill(closest_W_had.M(), W_had_true_pT_diff)
             hists['hadronic_W_3_corr_pT_diff_dist_true_v_obs'].Fill(W_had_dist_true, W_had_true_pT_diff)
 
+        # counter for hadronic W
+        # Update tally for which jet combination is the closest
+        w_had_jets[w_jets] += 1.
+        if (W_had_dist_true <= W_had_dist_cut[1]) and \
+            (W_had_true_pT_diff >= W_had_pT_cut[0] and W_had_true_pT_diff <= W_had_pT_cut[1]) and\
+            (closest_W_had.M() >= W_had_m_cut[0] and closest_W_had.M() <= W_had_m_cut[1]):
+                w_had_total_cuts[w_jets] += 1.
+                good_W_had = True
+        if (closest_W_had.M() >= W_had_m_cut[0] and closest_W_had.M() <= W_had_m_cut[1]):
+            w_had_mass_cuts[w_jets] += 1.
+        if (W_had_true_pT_diff >= W_had_pT_cut[0] and W_had_true_pT_diff <= W_had_pT_cut[1]):
+            w_had_pT_cuts[w_jets] += 1.
+        if (W_had_dist_true <= W_had_dist_cut[1]):
+            w_had_dist_cuts[w_jets] += 1.
 
     # Print data regarding percentage of each class of event
     print('Total number of events: {} \n'.format(n_events))
-    print('=================================================================')
-    
+    print('\n=================================================================\n')
     print('Jet matching percentages for hadronic W')
-    print('{}% 1 jet Hadronic W, {} events'.format(100*w_had_jets[0]/n_events, w_had_jets[0]))
-    print('{}% 2 jet Hadronic W, {} events'.format(100*w_had_jets[1]/n_events, w_had_jets[1]))
-    print('{}% 3 jet Hadronic W, {} events'.format(100*w_had_jets[2]/n_events, w_had_jets[2]))
+    print('{}% 1 jet Hadronic W, {} events'.format(100.*w_had_jets[0]/n_events, w_had_jets[0]))
+    print('{}% 2 jet Hadronic W, {} events'.format(100.*w_had_jets[1]/n_events, w_had_jets[1]))
+    print('{}% 3 jet Hadronic W, {} events'.format(100.*w_had_jets[2]/n_events, w_had_jets[2]))
+    print('\n=================================================================\n')
     print("Number of hadronic W's satisfying cut criteria")
-    print('1 jet Hadronic Ws within cut')
-    print('2 jet Hadronic Ws within cut')
-    print('3 jet Hadronic Ws within cut')
+    print('{}% 1 jet Hadronic Ws within cut, {} events'.format(100.*w_had_total_cuts[0]/n_events, w_had_total_cuts[0]))
+    print('{}% 2 jet Hadronic Ws within cut, {} events'.format(100.*w_had_total_cuts[1]/n_events, w_had_total_cuts[2]))
+    print('{}% 3 jet Hadronic Ws within cut, {} events\n'.format(100.*w_had_total_cuts[2]/n_events, w_had_total_cuts[2]))
+    print("Number of hadronic W's satisfying mass cut criteria")
+    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*w_had_mass_cuts[0]/n_events, w_had_mass_cuts[0]))
+    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*w_had_mass_cuts[1]/n_events, w_had_mass_cuts[2]))
+    print('{}% 3 jet Hadronic Ws, {} events\n'.format(100.*w_had_mass_cuts[2]/n_events, w_had_mass_cuts[2]))
+    print("Number of hadronic W's satisfying pT cut criteria")
+    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*w_had_pT_cuts[0]/n_events, w_had_pT_cuts[0]))
+    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*w_had_pT_cuts[1]/n_events, w_had_pT_cuts[2]))
+    print('{}% 3 jet Hadronic Ws, {} events\n'.format(100.*w_had_pT_cuts[2]/n_events, w_had_pT_cuts[2]))
+    print("Number of hadronic W's satisfying distance cut criteria")
+    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*w_had_dist_cuts[0]/n_events, w_had_dist_cuts[0]))
+    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*w_had_dist_cuts[1]/n_events, w_had_dist_cuts[2]))
+    print('{}% 3 jet Hadronic Ws, {} events'.format(100.*w_had_dist_cuts[2]/n_events, w_had_dist_cuts[2]))
 
 # Helper function to output and save the histograms and scatterplots 
 def plot_hists(key):
@@ -680,15 +708,6 @@ if __name__ == "__main__":
     except Exception as e:
         print("Overwriting existing files")
     make_histograms()
-
-    # gStyle.SetPalette(kGreyScale)
-    # gROOT.GetColor(52).InvertPalette()
-
-    # for key in hists:
-    #     if 'corr' not in key:
-    #         plot_hists(key)
-    #     else:
-    #         plot_corr(key)
 
     hists_key = []
     corr_key = []
