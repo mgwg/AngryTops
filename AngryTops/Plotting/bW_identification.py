@@ -15,12 +15,12 @@ if len(sys.argv) > 4:
     date = sys.argv[4]
 
 
-subdir = '/closejets_img_btag_none/'
+subdir = '/closejets_img_btag_only/'
 scaling = True
 m_t = 172.5
 m_W = 80.4
 m_b = 4.95
-b_tagging = "None" # "None": Do not consider any b-tagged jets.
+b_tagging = "Only" # "None": Do not consider any b-tagged jets.
                    # "All": Consider all jets, both b-tagged and not b-tagged
                    # "Only": Consider only b-tagged jets
 
@@ -177,17 +177,15 @@ hists['leptonic_W_transverse_mass_observed'] = TH1F("W_lep_met_d","W Leptonic Tr
 hists['leptonic_W_transverse_mass_observed'].SetTitle("W Leptonic Transverse Mass, Observed;Leptonic (GeV);A.U.")
 hists['leptonic_W_transverse_energy_diff'] = TH1F("W_lep_Et_d","W Leptonic Transverse Energy Difference, Observed - Truth", 50, -120, 120)
 hists['leptonic_W_transverse_energy_diff'].SetTitle("W Leptonic Transverse Energy Difference, Observed - Truth;Leptonic (GeV);A.U.")
-hists['leptonic_W_transverse_energy_diff_high'] = TH1F("W_lep_Et_d","W Leptonic Transverse Energy Difference (High Energy), Observed - Truth", 50, -120, 120)
-hists['leptonic_W_transverse_energy_diff_high'].SetTitle("W Leptonic Transverse Energy Difference (High Energy), Observed - Truth;Leptonic (GeV);A.U.")
 # True vs. obs
 hists['leptonic_W_dist_true_v_obs'] = TH1F("h_W_lep_true","W Leptonic Distances, True vs Observed", 50, 0, 3)
 hists['leptonic_W_dist_true_v_obs'].SetTitle("W Leptonic #phi distances, True vs Observed; Leptonic (radians);A.U.")
 # Pred vs. true
-hists['lep_W_dist_pred_v_true'] = TH1F("W_lep_d","W Leptonic Distances, Predicted vs Truth", 50, 0, 3)
-hists['lep_W_dist_pred_v_true'].SetTitle("W Leptonic #phi distances, Predicted vs Truth;Leptonic (radians);A.U.")
+hists['leptonic_W_dist_pred_v_true'] = TH1F("W_lep_d","W Leptonic Distances, Predicted vs Truth", 50, 0, 3)
+hists['leptonic_W_dist_pred_v_true'].SetTitle("W Leptonic #phi distances, Predicted vs Truth;Leptonic (radians);A.U.")
 # Pred vs. obs
-hists['lep_W_dist_pred_v_obs'] = TH1F("h_W_lep_d","W Leptonic Distances, Predicted vs Observed", 50, 0, 3)
-hists['lep_W_dist_pred_v_obs'].SetTitle("W Leptonic #phi distances, Predicted vs Observed; Leptonic (radians);A.U.")
+hists['leptonic_W_dist_pred_v_obs'] = TH1F("h_W_lep_d","W Leptonic Distances, Predicted vs Observed", 50, 0, 3)
+hists['leptonic_W_dist_pred_v_obs'].SetTitle("W Leptonic #phi distances, Predicted vs Observed; Leptonic (radians);A.U.")
 
 # Hadronic W
 hists['hadronic_W_true_pT_diff'] = TH1F("h_pT_W_had_diff","W Hadronic {p}_{T} diffs, True - Observed", 80, -400, 400)
@@ -196,11 +194,11 @@ hists['hadronic_W_true_pT_diff'].SetTitle("W Hadronic {p}_{T} diffs, True - Obse
 hists['hadronic_W_dist_true_v_obs'] = TH1F("h_W_had_true","W Hadronic Distances, True vs Observed", 50, 0, 3)
 hists['hadronic_W_dist_true_v_obs'].SetTitle("W Hadronic #eta-#phi distances, True vs Observed;Hadronic (radians);A.U.")
 # Pred vs. true
-hists['had_W_dist_pred_v_true'] = TH1F("h_W_had_pred","W Hadronic Distances, Predicted vs Truth", 50, 0, 3)
-hists['had_W_dist_pred_v_true'].SetTitle("W Hadronic #eta-#phi distances, Predicted vs Truth; Hadronic (radians);A.U.")
+hists['hadronic_W_dist_pred_v_true'] = TH1F("h_W_had_pred","W Hadronic Distances, Predicted vs Truth", 50, 0, 3)
+hists['hadronic_W_dist_pred_v_true'].SetTitle("W Hadronic #eta-#phi distances, Predicted vs Truth; Hadronic (radians);A.U.")
 # Pred vs. obs
-hists['had_W_dist_pred_v_obs'] = TH1F("h_W_had_d","W Hadronic Distances, Predicted vs Observed", 50, 0, 3)
-hists['had_W_dist_pred_v_obs'].SetTitle("W Hadronic #eta-#phi distances, Predicted vs Observed; Hadronic (radians);A.U.")
+hists['hadronic_W_dist_pred_v_obs'] = TH1F("h_W_had_d","W Hadronic Distances, Predicted vs Observed", 50, 0, 3)
+hists['hadronic_W_dist_pred_v_obs'].SetTitle("W Hadronic #eta-#phi distances, Predicted vs Observed; Hadronic (radians);A.U.")
 # Jet matching invariant mass distributions
 hists['hadronic_W_obs_1_mass'] = TH1F("W_had_m","1 Jet W Hadronic Invariant Mass, Observed", 60, 0., 300. )
 hists['hadronic_W_obs_1_mass'].SetTitle("1 Jet W Hadronic Invariant Mass, Observed; Hadronic (GeV); A.U.")
@@ -280,61 +278,48 @@ hists['hadronic_W_corr_1_pT_diff_v_2_pT_diff'].SetTitle("Correlation plot of W H
 hists['leptonic_b_dist_true_v_obs'] = TH1F("h_b_lep_true","b Leptonic Distances, True vs Observed", 50, 0, 3)
 hists['leptonic_b_dist_true_v_obs'].SetTitle("b Leptonic #eta-#phi distances, True vs Observed;Leptonic (radians);A.U.")
 # Pred vs. true
-hists['lep_b_dist_pred_v_true'] = TH1F("b_lep_d","b Leptonic Distances, Predicted vs Truth", 50, 0, 3)
-hists['lep_b_dist_pred_v_true'].SetTitle("b Leptonic #eta-#phi distances, Predicted vs Truth;Leptonic (radians);A.U.")
+hists['leptonic_b_dist_pred_v_true'] = TH1F("b_lep_d","b Leptonic Distances, Predicted vs Truth", 50, 0, 3)
+hists['leptonic_b_dist_pred_v_true'].SetTitle("b Leptonic #eta-#phi distances, Predicted vs Truth;Leptonic (radians);A.U.")
 # Pred vs. obs
-hists['lep_b_dist_pred_v_obs'] = TH1F("h_b_lep_d","b Leptonic Distances, Predicted vs Observed", 50, 0, 3)
-hists['lep_b_dist_pred_v_obs'].SetTitle("b Leptonic #eta-#phi distances, Predicted vs Observed; Leptonic (radians);A.U.")
+hists['leptonic_b_dist_pred_v_obs'] = TH1F("h_b_lep_d","b Leptonic Distances, Predicted vs Observed", 50, 0, 3)
+hists['leptonic_b_dist_pred_v_obs'].SetTitle("b Leptonic #eta-#phi distances, Predicted vs Observed; Leptonic (radians);A.U.")
 
 # Hadronic b
 # True vs. obs
 hists['hadronic_b_dist_true_v_obs'] = TH1F("h_b_had_true","b Hadronic Distances, True vs Observed", 50, 0, 3)
 hists['hadronic_b_dist_true_v_obs'].SetTitle("b Hadronic #eta-#phi distances, True vs Observed;Hadronic (radians);A.U.")
 # Pred vs. true
-hists['had_b_dist_pred_v_true'] = TH1F("b_had_d","b Hadronic Distances, Predicted vs Truth", 50, 0, 3)
-hists['had_b_dist_pred_v_true'].SetTitle("b Hadronic #eta-#phi distances, Predicted vs Truth;Hadronic (radians);A.U.")
+hists['hadronic_b_dist_pred_v_true'] = TH1F("b_had_d","b Hadronic Distances, Predicted vs Truth", 50, 0, 3)
+hists['hadronic_b_dist_pred_v_true'].SetTitle("b Hadronic #eta-#phi distances, Predicted vs Truth;Hadronic (radians);A.U.")
 # Pred vs. obs
-hists['had_b_dist_pred_v_obs'] = TH1F("h_b_had_d","b Hadronic Distances, Predicted vs Observed", 50, 0, 3)
-hists['had_b_dist_pred_v_obs'].SetTitle("b Hadronic #eta-#phi distances, Predicted vs Observed; Hadronic (radians);A.U.")
+hists['hadronic_b_dist_pred_v_obs'] = TH1F("h_b_had_d","b Hadronic Distances, Predicted vs Observed", 50, 0, 3)
+hists['hadronic_b_dist_pred_v_obs'].SetTitle("b Hadronic #eta-#phi distances, Predicted vs Observed; Hadronic (radians);A.U.")
 
 # Leptonic t
 # True vs. obs
 hists['leptonic_t_dist_true_v_obs'] = TH1F("h_t_lep_true","t Leptonic Distances, True vs Observed", 50, 0, 3)
 hists['leptonic_t_dist_true_v_obs'].SetTitle("t Leptonic #phi distances, True vs Observed;Leptonic (radians);A.U.")
 # Pred vs. true
-hists['lep_t_dist_pred_v_true'] = TH1F("t_lep_d","b Leptonic Distances, Predicted vs Truth", 50, 0, 3)
-hists['lep_t_dist_pred_v_true'].SetTitle("t Leptonic #phi distances, Predicted vs Truth;Leptonic (radians);A.U.")
+hists['leptonic_t_dist_pred_v_true'] = TH1F("t_lep_d","b Leptonic Distances, Predicted vs Truth", 50, 0, 3)
+hists['leptonic_t_dist_pred_v_true'].SetTitle("t Leptonic #phi distances, Predicted vs Truth;Leptonic (radians);A.U.")
 # Pred vs. obs
-hists['lep_t_dist_pred_v_obs'] = TH1F("h_t_lep_d","t Leptonic Distances, Predicted vs Observed", 50, 0, 3)
-hists['lep_t_dist_pred_v_obs'].SetTitle("t Leptonic #phi distances, Predicted vs Observed; Leptonic (radians);A.U.")
+hists['leptonic_t_dist_pred_v_obs'] = TH1F("h_t_lep_d","t Leptonic Distances, Predicted vs Observed", 50, 0, 3)
+hists['leptonic_t_dist_pred_v_obs'].SetTitle("t Leptonic #phi distances, Predicted vs Observed; Leptonic (radians);A.U.")
 
 # Hadronic t
 # True vs. obs
 hists['hadronic_t_dist_true_v_obs'] = TH1F("h_t_had_true","t Hadronic Distances, True vs Observed", 50, 0, 3)
 hists['hadronic_t_dist_true_v_obs'].SetTitle("t Hadronic #eta-#phi distances, True vs Observed;Hadronic (radians);A.U.")
 # Pred vs. true
-hists['had_t_dist_pred_v_true'] = TH1F("t_had_d","t Hadronic Distances, Predicted vs Truth", 50, 0, 3)
-hists['had_t_dist_pred_v_true'].SetTitle("t Hadronic #eta-#phi distances, Predicted vs Truth;Hadronic (radians);A.U.")
+hists['hadronic_t_dist_pred_v_true'] = TH1F("t_had_d","t Hadronic Distances, Predicted vs Truth", 50, 0, 3)
+hists['hadronic_t_dist_pred_v_true'].SetTitle("t Hadronic #eta-#phi distances, Predicted vs Truth;Hadronic (radians);A.U.")
 # Pred vs. obs
-hists['had_t_dist_pred_v_obs'] = TH1F("h_t_had_d","t Hadronic Distances, Predicted vs Observed", 50, 0, 3)
-hists['had_t_dist_pred_v_obs'].SetTitle("t Hadronic #eta-#phi distances, Predicted vs Observed; Hadronic (radians);A.U.")
+hists['hadronic_t_dist_pred_v_obs'] = TH1F("h_t_had_d","t Hadronic Distances, Predicted vs Observed", 50, 0, 3)
+hists['hadronic_t_dist_pred_v_obs'].SetTitle("t Hadronic #eta-#phi distances, Predicted vs Observed; Hadronic (radians);A.U.")
 
 # Function to make histograms
 def make_histograms():
-    # define tolerance limits
-    b_lep_dist_t_lim = 0.39
-    b_had_dist_t_lim = 0.39
-    t_lep_dist_t_lim = 0.80
-    t_had_dist_t_lim = 0.80
-    W_lep_dist_t_lim = 1.28
-    W_had_dist_t_lim = 1.28
 
-    good_b_lep = good_b_had = 0.
-    good_W_lep = good_W_had = 0.
-    bad_b_lep = bad_b_had = 0.
-    bad_W_lep = bad_W_had = 0.
-
-    high_E = 0.
     w_had_jets = [0., 0., 0.] # List of number of events best matched by 1,2,3 jets respectively.
 
     for i in event_index: # loop through every event
@@ -378,6 +363,7 @@ def make_histograms():
         if not np.all(jet_5[i] == 0.):
             jets.append(jet_5_vect)
 
+        
         # Special calculations for the observed leptonic W
 
         # Observed transverse mass distribution is square root of 2* Etmiss 
@@ -427,7 +413,7 @@ def make_histograms():
         W_had_dist_true_1 = 10000000
         W_had_dist_true_2 = 10000000
 
-            # Perform jet matching for the bs and Ws
+        # Perform jet matching for the bs, all jets, b-tagged and not b-tagged should be considered.
         for k in range(len(jets)): # loop through each jet to find the minimum distance for each particle
             # For bs:
             b_had_d_true = find_dist(b_had_true, jets[k])
@@ -438,64 +424,73 @@ def make_histograms():
             if b_lep_d_true < b_lep_dist_true:
                 b_lep_dist_true = b_lep_d_true
                 closest_b_lep = jets[k]
-
-            # For hadronic Ws
-            # If all jets are to be considered or b-tagged jets are not to be considered and jet k is not b-tagged 
-            #  or only b-tagged jets are to be considered and jet k is b-tagged
-            if (b_tagging == "All") \
-                or (b_tagging == "None" and not jet_list[k,i,5]) \
-                    or (b_tagging == "Only" and jet_list[k,i,5]): # k ranges from 0 to 4 or 5 depending on event type
-                # Go through each 1,2,3 combination of jets that are not b-tagged and check their sum
-                sum_vect = jets[k]    
-                # Single jets
-                W_had_d_true = find_dist(W_had_true, sum_vect)
-                if W_had_d_true < W_had_dist_true:
-                    W_had_dist_true = W_had_d_true
-                    W_had_true_pT_diff = W_had_true.Pt() - sum_vect.Pt()
-                    closest_W_had = sum_vect
-                    w_jets = 0
-                # Comparison for best single jet
-                if W_had_d_true < W_had_dist_true_1:
-                    W_had_true_pT_diff_1 = W_had_true.Pt() - sum_vect.Pt()
-
-                # Dijets
-                for j in range(k + 1, len(jets)):
-                    # j ranges from k+1 to 4 or 5 depending on event type     
-                    if (b_tagging == "All") \
-                        or (b_tagging == "None" and not jet_list[j,i,5]) \
-                            or (b_tagging == "Only" and jet_list[j,i,5]):
-                        sum_vect = jets[k] + jets[j] 
-                        W_had_d_true = find_dist(W_had_true, sum_vect)
-                        if W_had_d_true < W_had_dist_true:
-                            W_had_dist_true = W_had_d_true
-                            W_had_true_pT_diff = W_had_true.Pt() - sum_vect.Pt()
-                            closest_W_had = sum_vect
-                            w_jets = 1
-                        # Comparison for best dijet
-                        if W_had_d_true < W_had_dist_true_2:
-                            W_had_true_pT_diff_2 = W_had_true.Pt() - sum_vect.Pt()
-
-                # Trijets
-                        for l in range(j+1, len(jets)):
-                            # l ranges from j+k+1 to 4 or 5 depending on event type
-                            if (b_tagging == "All") \
-                                or (b_tagging == "None" and not jet_list[l,i,5]) \
-                                    or (b_tagging == "Only" and jet_list[l,i,5]):
-                                sum_vect = jets[k] + jets[j] + jets[l]
-                                W_had_d_true = find_dist(W_had_true, sum_vect)
-                                if W_had_d_true < W_had_dist_true:
-                                    W_had_dist_true = W_had_d_true
-                                    W_had_true_pT_diff = W_had_true.Pt() - sum_vect.Pt()
-                                    closest_W_had = sum_vect
-                                    w_jets = 2
-
-        # If b-tagged jets are not to be considered and all jets are b-tagged 
-        #  or only b-tagged jets are to be considered and no jet is b-tagged, 
-        #  skip the event.
-        if W_had_dist_true == W_had_dist_true_start: # If there are no jets to be matched for this event,
+        
+        # Filter list of jets depending on whether or not each jet has the desired b-tagging state.
+        if b_tagging == "None":
+            good_jets = []
+            for m in range(len(jets)):
+                if not jet_list[m,i,5]:
+                    good_jets.append(jets[m]) # Construct lists of TLorentzVectors with desired b-tagging state.
+            jets = good_jets
+        elif b_tagging == "Only":
+            good_jets = []
+            for m in range(len(jets)):
+                if jet_list[m,i,5]:
+                    good_jets.append(jets[m]) # Construct lists of TLorentzVectors with desired b-tagging state.
+            jets = good_jets
+        # If there are no jets remaining in jets, then skip this event. Don't populate histograms.
+        if not jets:
             continue
+        
+        # Now, there is at least one jet with the correct b-tagging state in jets.
 
+        # Perform jet matching for the hadronic Ws, only jets that meet the b-tagging criteria will be considered.
+        for k in range(len(jets)): # loop through each jet to find the minimum distance for each particle
+            
+            # Go through each 1,2,3 combination of jets that are not b-tagged and check their sum
+            # Single jets
+            # Construct single jet
+            sum_vect = jets[k]    
+            W_had_d_true = find_dist(W_had_true, sum_vect)
+            if W_had_d_true < W_had_dist_true:
+                W_had_dist_true = W_had_d_true
+                W_had_true_pT_diff = W_had_true.Pt() - sum_vect.Pt()
+                closest_W_had = sum_vect
+                w_jets = 0
+            # Comparison for best single jet
+            if W_had_d_true < W_had_dist_true_1:
+                W_had_true_pT_diff_1 = W_had_true.Pt() - sum_vect.Pt()
 
+            # Dijets
+            # Check that there are at least two jets to consider 
+            if len(jets) >= 2:
+                for j in range(k + 1, len(jets)):
+                    # Construct dijet                   
+                    sum_vect = jets[k] + jets[j] 
+                    W_had_d_true = find_dist(W_had_true, sum_vect)
+                    if W_had_d_true < W_had_dist_true:
+                        W_had_dist_true = W_had_d_true
+                        W_had_true_pT_diff = W_had_true.Pt() - sum_vect.Pt()
+                        closest_W_had = sum_vect
+                        w_jets = 1
+                    # Comparison for best dijet
+                    if W_had_d_true < W_had_dist_true_2:
+                        W_had_true_pT_diff_2 = W_had_true.Pt() - sum_vect.Pt()
+
+            # Trijets
+                    # Check that there are at least three jets to consider
+                    if len(jets) >= 3:
+                        for l in range(j+1, len(jets)):                     
+                            # Construct trijets
+                            sum_vect = jets[k] + jets[j] + jets[l]
+                            W_had_d_true = find_dist(W_had_true, sum_vect)
+                            if W_had_d_true < W_had_dist_true:
+                                W_had_dist_true = W_had_d_true
+                                W_had_true_pT_diff = W_had_true.Pt() - sum_vect.Pt()
+                                closest_W_had = sum_vect
+                                w_jets = 2
+
+        # Update tally for which jet combination is the closest
         w_had_jets[w_jets] += 1    
         
         # Calculate W leptonic distances
@@ -516,23 +511,6 @@ def make_histograms():
         t_lep_y = lep_y + closest_b_lep.Py()
         obs_t_phi = np.arctan2(t_lep_y, t_lep_x)
         t_lep_dist_true = np.abs( min( np.abs(t_lep_true.Phi()-obs_t_phi), 2*np.pi-np.abs(t_lep_true.Phi() - obs_t_phi) ) )
-
-        if (b_lep_dist_true <= b_lep_dist_t_lim): # if minimum distance is less than the tolearance limits, everything is ok
-            good_b_lep += 1
-        else:
-            bad_b_lep += 1
-        if (b_had_dist_true <= b_had_dist_t_lim):
-            good_b_had += 1
-        else:
-            bad_b_had += 1
-        if (W_lep_dist_true <= W_lep_dist_t_lim): # mismatch between W_lep_dist_true and good_W_lep
-            good_W_lep += 1
-        else:
-            bad_W_lep += 1
-        if (W_had_dist_true <= W_had_dist_t_lim):
-            good_W_had += 1
-        else:
-            bad_W_had += 1
 
 
         ################################################# predicted vs observed #################################################
@@ -563,29 +541,29 @@ def make_histograms():
         ################################################# populate histograms and check percentages #################################################
 
         # Leptonic b
-        hists['lep_b_dist_true_v_obs'].Fill(np.float(b_lep_dist_true))
-        hists['lep_b_dist_pred_v_true'].Fill(np.float(b_lep_R))
-        hists['lep_b_dist_pred_v_obs'].Fill(np.float(b_lep_R_po))
+        hists['leptonic_b_dist_true_v_obs'].Fill(np.float(b_lep_dist_true))
+        hists['leptonic_b_dist_pred_v_true'].Fill(np.float(b_lep_R))
+        hists['leptonic_b_dist_pred_v_obs'].Fill(np.float(b_lep_R_po))
         # Hadronic b
-        hists['had_b_dist_true_v_obs'].Fill(np.float(b_had_dist_true))
-        hists['had_b_dist_pred_v_true'].Fill(np.float(b_had_R))
-        hists['had_b_dist_pred_v_obs'].Fill(np.float(b_had_R_po))
+        hists['hadronic_b_dist_true_v_obs'].Fill(np.float(b_had_dist_true))
+        hists['hadronic_b_dist_pred_v_true'].Fill(np.float(b_had_R))
+        hists['hadronic_b_dist_pred_v_obs'].Fill(np.float(b_had_R_po))
 
         # Leptonic t
-        hists['lep_t_dist_true_v_obs'].Fill(np.float(t_lep_dist_true))
-        hists['lep_t_dist_pred_v_true'].Fill(np.float(t_lep_R))
-        hists['lep_t_dist_pred_v_obs'].Fill(np.float(t_lep_R_po))
+        hists['leptonic_t_dist_true_v_obs'].Fill(np.float(t_lep_dist_true))
+        hists['leptonic_t_dist_pred_v_true'].Fill(np.float(t_lep_R))
+        hists['leptonic_t_dist_pred_v_obs'].Fill(np.float(t_lep_R_po))
         # Hadronic t
-        hists['had_t_dist_true_v_obs'].Fill(np.float(t_had_dist_true))
-        hists['had_t_dist_pred_v_true'].Fill(np.float(t_had_R))
-        hists['had_t_dist_pred_v_obs'].Fill(np.float(t_had_R_po))
+        hists['hadronic_t_dist_true_v_obs'].Fill(np.float(t_had_dist_true))
+        hists['hadronic_t_dist_pred_v_true'].Fill(np.float(t_had_R))
+        hists['hadronic_t_dist_pred_v_obs'].Fill(np.float(t_had_R_po))
 
         # Leptonic W
-        hists['lep_W_dist_true_v_obs'].Fill(np.float(W_lep_dist_true))
-        hists['lep_W_dist_pred_v_true'].Fill(np.float(W_lep_R))
-        hists['lep_W_dist_pred_v_obs'].Fill(np.float(W_lep_R_po))
-        hists['lep_W_transverse_mass_observed'].Fill(np.float(met_obs))
-        hists['lep_W_transverse_energy_diff'].Fill(np.float(W_lep_Et_diff))
+        hists['leptonic_W_dist_true_v_obs'].Fill(np.float(W_lep_dist_true))
+        hists['leptonic_W_dist_pred_v_true'].Fill(np.float(W_lep_R))
+        hists['leptonic_W_dist_pred_v_obs'].Fill(np.float(W_lep_R_po))
+        hists['leptonic_W_transverse_mass_observed'].Fill(np.float(met_obs))
+        hists['leptonic_W_transverse_energy_diff'].Fill(np.float(W_lep_Et_diff))
         # Hadronic W
         hists['hadronic_W_dist_true_v_obs'].Fill(np.float(W_had_dist_true))
         hists['hadronic_W_dist_pred_v_true'].Fill(np.float(W_had_R))
@@ -602,8 +580,9 @@ def make_histograms():
         hists['hadronic_W_corr_pT_diff_true_v_obs_mass'].Fill(closest_W_had.M(), W_had_true_pT_diff) 
         hists['hadronic_W_corr_pT_diff_dist_true_v_obs'].Fill(W_had_dist_true, W_had_true_pT_diff)  
         # Closest 1-jet Pt difference vs. closest 2-jet Pt difference
-        hists['hadronic_W_scat_1_pT_diff_v_2_pT_diff'].Fill(W_had_true_pT_diff_1, W_had_true_pT_diff_2)
-        hists['hadronic_W_corr_1_pT_diff_v_2_pT_diff'].Fill(W_had_true_pT_diff_1, W_had_true_pT_diff_2)
+        if len(jets) >= 2: # If there are at least two jets to be considered, then we will have both a best single jet and a best dijet.
+            hists['hadronic_W_scat_1_pT_diff_v_2_pT_diff'].Fill(W_had_true_pT_diff_1, W_had_true_pT_diff_2)
+            hists['hadronic_W_corr_1_pT_diff_v_2_pT_diff'].Fill(W_had_true_pT_diff_1, W_had_true_pT_diff_2)
         # Plots that depend on whether a 1,2, or 3-jet sum is the best match to truth:
         if w_jets == 0:
             hists['hadronic_W_obs_1_mass'].Fill(closest_W_had.M())
@@ -632,19 +611,10 @@ def make_histograms():
             hists['hadronic_W_3_corr_pT_diff_dist_true_v_obs'].Fill(W_had_dist_true, W_had_true_pT_diff)
 
 
-   # Print data regarding percentage of each class of event
+    # Print data regarding percentage of each class of event
     print('Total number of events: {} \n'.format(n_events))
     print('=================================================================')
-    print('Number of events within limit: ')
-    print('good_W_had', good_W_had, 'bad_W_had', bad_W_had)
-    print('good_W_lep', good_W_lep, 'bad_W_lep', bad_W_lep)
-    print('good_b_had', good_b_had, 'bad_b_had', bad_b_had)
-    print('good_b_lep', good_b_lep, 'bad_b_lep', bad_b_lep)
-    print('{}% good_W_had'.format(100*good_W_had/n_events))
-    print('{}% good_W_lep'.format(100*good_W_lep/n_events))
-    print('{}% good_b_had'.format(100*good_b_had/n_events))
-    print('{}% good_b_lep'.format(100*good_b_lep/n_events))
-    print('=================================================================')
+    
     print('Jet matching percentages for hadronic W')
     print('{}% 1 jet Hadronic W, {} events'.format(100*w_had_jets[0]/n_events, w_had_jets[0]))
     print('{}% 2 jet Hadronic W, {} events'.format(100*w_had_jets[1]/n_events, w_had_jets[1]))
