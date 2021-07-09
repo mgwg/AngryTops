@@ -93,30 +93,17 @@ if scaling:
         jets_jets = jets[:,6:] # remove muon column
         jets_jets = jets_jets.reshape((jets_jets.shape[0],5,6)) # reshape to 5 x 6 array
 
-        # Retain b-tagging states depending on value of b-tagging
-        if b_tagging != "All":
-            # Remove the b-tagging states and put them into a new array to be re-appended later.
-            b_tags = jets_jets[:,:,5]
-            jets_jets = np.delete(jets_jets, 5, 2) # delete the b-tagging states
+        # Remove the b-tagging states and put them into a new array to be re-appended later.
+        b_tags = jets_jets[:,:,5]
+        jets_jets = np.delete(jets_jets, 5, 2) # delete the b-tagging states
 
-            jets_jets = jets_jets.reshape((jets_jets.shape[0], 25)) # reshape into 25 element long array
-            jets_lep = lep_scalar.inverse_transform(jets_lep)
-            jets_jets = jets_scalar.inverse_transform(jets_jets) # scale values ... ?
-            #I think this is the final 6x6 array the arxiv paper was talking about - 5 x 5 array containing jets (1 per row) and corresponding px, py, pz, E, m
-            jets_jets = jets_jets.reshape((jets_jets.shape[0],5,5))
-            # Re-append the b-tagging states as a column at the end of jets_jets 
-            jets_jets = np.append(jets_jets, np.expand_dims(b_tags, 2), 2)
-        else:
-            # Don't care about b-tagging states
-            # Rescale the jets array
-            jets_lep = jets[:,:6]
-            jets_jets = jets[:,6:] # remove muon column
-            jets_jets = jets_jets.reshape((jets_jets.shape[0],5,6)) # reshape to 5 x 6 array
-            jets_jets = np.delete(jets_jets, 5, 2) # delete the b-tagging states
-            jets_jets = jets_jets.reshape((jets_jets.shape[0], 25)) # reshape into 25 element long array
-            jets_lep = lep_scalar.inverse_transform(jets_lep)
-            jets_jets = jets_scalar.inverse_transform(jets_jets) # scale values ... ?
-            jets_jets = jets_jets.reshape((jets_jets.shape[0],5,5))#I think this is the final 6x6 array the arxiv paper was talking about - 5 x 5 array containing jets (1 per row) and corresponding px, py, pz, E, m
+        jets_jets = jets_jets.reshape((jets_jets.shape[0], 25)) # reshape into 25 element long array
+        jets_lep = lep_scalar.inverse_transform(jets_lep)
+        jets_jets = jets_scalar.inverse_transform(jets_jets) # scale values ... ?
+        #I think this is the final 6x6 array the arxiv paper was talking about - 5 x 5 array containing jets (1 per row) and corresponding px, py, pz, E, m
+        jets_jets = jets_jets.reshape((jets_jets.shape[0],5,5))
+        # Re-append the b-tagging states as a column at the end of jets_jets 
+        jets_jets = np.append(jets_jets, np.expand_dims(b_tags, 2), 2)
 
 if not scaling:
     jets_lep = jets[:,:6]
@@ -416,18 +403,13 @@ def make_histograms():
         W_had_R = find_dist(W_had_true, W_had_fitted)
 
         ################################################# true vs observed ################################################# 
-        b_had_dist_true = 1000
-        b_lep_dist_true = 1000
-        t_had_dist_true = 1000
-        t_lep_dist_true = 1000
-        W_had_dist_true_start = 10000000
-        W_had_dist_true = W_had_dist_true_start
 
         # Variables to hold minimum distances for 1 and 2-jets separately.
         W_had_dist_true_1 = 10000000
         W_had_dist_true_2 = 10000000
 
-            # Perform jet matching for the bs and Ws
+        # Perform jet matching for the bs and Ws
+        b_had_dist_true = b_lep_dist_true = W_had_dist_true = 1000
         for k in range(len(jets)): # loop through each jet to find the minimum distance for each particle
             # For bs:
             b_had_d_true = find_dist(b_had_true, jets[k])
@@ -492,7 +474,7 @@ def make_histograms():
         # If b-tagged jets are not to be considered and all jets are b-tagged 
         #  or only b-tagged jets are to be considered and no jet is b-tagged, 
         #  skip the event.
-        if W_had_dist_true == W_had_dist_true_start: # If there are no jets to be matched for this event,
+        if W_had_dist_true == 1000: # If there are no jets to be matched for this event,
             continue
 
 

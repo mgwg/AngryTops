@@ -6,7 +6,7 @@ from scipy.spatial import distance
 from ROOT import *
 import pickle
 import pandas as pd
-from AngryTops.ModelTraining.FormatInputOutput import get_input_output
+from AngryTops.ModelTraining.FormatInputOutput import *
 
 
 scaling = True
@@ -17,11 +17,20 @@ b_tagging = "None" # "None": Do not consider any b-tagged jets.
                    # "All": Consider all jets, both b-tagged and not b-tagged
                    # "Only": Consider only b-tagged jets
 
-dist_true_v_obs_max = 0.5 # Maximum true vs. observed eta-phi distance for cuts
-pT_diff_true_v_obs_max = 50
-pT_diff_true_v_obs_min = -50
-mass_obs_max = 100
-mass_obs_min = 25
+W_had_m_cut = (25, 100)
+W_had_pT_cut = (-50, 50)
+W_had_dist_cut = (0, 0.5)
+
+W_lep_pT_cut = (-50, 50)
+W_lep_dist_cut = (0, 0.5)
+
+b_had_m_cut = (25, 100)
+b_had_pT_cut = (-50, 50)
+b_had_dist_cut = (0, 0.5)
+
+b_lep_m_cut = (25, 100)
+b_lep_pT_cut = (-50, 50)
+b_lep_dist_cut = (0, 0.5)
 
 event_type = 0
 if len(sys.argv) > 3:
@@ -71,43 +80,30 @@ def find_dist(a, b):
 
 
 def filter_events(csv_file, **kwargs):
-### Format input csv file.
+    ### Format input csv file.
     # Training observed, training truth, testing observed, testing truth
     #  Training to be split with validation.
     (training_input, training_output), (testing_input, testing_output), \
     (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) \
                         = get_input_output(input_filename=csv_file, **kwargs)
 
+    training_input_cuts = []
+    training_output_cuts = []
+
     # Format training arrays into right shape:
     # Rescale the jets array
     jets_lep = training_input[:,:6]
     jets_jets = training_input[:,6:] # remove muon columns
     jets_jets = jets_jets.reshape((jets_jets.shape[0],5,6)) # reshape to 5 x 6 array
-
-    # Retain b-tagging states depending on value of b-tagging
-    if b_tagging != "All":
-        # Remove the b-tagging states and put them into a new array to be re-appended later.
-        b_tags = jets_jets[:,:,5]
-        jets_jets = np.delete(jets_jets, 5, 2) # delete the b-tagging states
-
-        jets_jets = jets_jets.reshape((jets_jets.shape[0], 25)) # reshape into 25 element long array
-        #jets_lep = lep_scalar.inverse_transform(jets_lep) # No inverse transform needed at this stage since everything is unscaled.
-        #jets_jets = jets_scalar.inverse_transform(jets_jets) # scale values ... ?
-        #I think this is the final 6x6 array the arxiv paper was talking about - 5 x 5 array containing jets (1 per row) and corresponding px, py, pz, E, m
-        jets_jets = jets_jets.reshape((jets_jets.shape[0],5,5))
-        # Re-append the b-tagging states as a column at the end of jets_jets 
-        jets_jets = np.append(jets_jets, np.expand_dims(b_tags, 2), 2)
-    else:
-        # Don't care about b-tagging states
-        # Rescale the jets array
-        jets_lep = jets[:,:6]
-        jets_jets = jets[:,6:] # remove muon column
-        jets_jets = jets_jets.reshape((jets_jets.shape[0],5,6)) # reshape to 5 x 6 array
-        jets_jets = np.delete(jets_jets, 5, 2) # delete the b-tagging states
-        jets_jets = jets_jets.reshape((jets_jets.shape[0], 25)) # reshape into 25 element long array
-        #jets_lep = lep_scalar.inverse_transform(jets_lep)
-        #jets_jets = jets_scalar.inverse_transform(jets_jets) # scale values ... ?
-        jets_jets = jets_jets.reshape((jets_jets.shape[0],5,5))#I think this is the final 6x6 array the arxiv paper was talking about - 5 x 5 array containing jets (1 per row) and corresponding px, py, pz, E, m
+    # Remove the b-tagging states and put them into a new array to be re-appended later.
+    b_tags = jets_jets[:,:,5]
+    jets_jets = np.delete(jets_jets, 5, 2) # delete the b-tagging states
+    jets_jets = jets_jets.reshape((jets_jets.shape[0], 25)) # reshape into 25 element long array
+    jets_lep = lep_scalar.inverse_transform(jets_lep)
+    jets_jets = jets_scalar.inverse_transform(jets_jets)
+    jets_jets = jets_jets.reshape((jets_jets.shape[0],5,5))
+    # Re-append the b-tagging states as a column at the end of jets_jets 
+    jets_jets = np.append(jets_jets, np.expand_dims(b_tags, 2), 2)
 
     # jets
     jet_mu = jets_lep
@@ -119,8 +115,8 @@ def filter_events(csv_file, **kwargs):
     jet_4 = jets_jets[:,3]
     jet_5 = jets_jets[:,4]
     # Create an array with each jet's arrays for accessing b-tagging states later.
-    jet_list = np.stack([jet_1, jet_2, jet_3, jet_4, jet_5]) # I suppose you could use a dictionary here but the keys would just be indices.
-
+    jet_list = np.stack([jet_1, jet_2, jet_3, jet_4, jet_5]) 
+    
     # truth
     y_true_W_had = training_output[:,0,:]
     y_true_W_lep = training_output[:,1,:]
@@ -129,23 +125,11 @@ def filter_events(csv_file, **kwargs):
     y_true_t_had = training_output[:,4,:]
     y_true_t_lep = training_output[:,5,:]
 
-    # A meaningful name for the number of events
     n_events = training_output.shape[0]
-    # define indices
     event_index = range(n_events)
 
-    # define tolerance limits
-    b_lep_dist_t_lim = 0.39
-    b_had_dist_t_lim = 0.39
-    t_lep_dist_t_lim = 0.80
-    t_had_dist_t_lim = 0.80
-    W_lep_dist_t_lim = 1.28
-    W_had_dist_t_lim = 1.28
-
-    good_b_lep = good_b_had = 0.
-    good_W_lep = good_W_had = 0.
-    bad_b_lep = bad_b_had = 0.
-    bad_W_lep = bad_W_had = 0.
+    good_b_lep = good_b_had = False
+    good_W_lep = good_W_had = False
 
     w_had_jets = [0., 0., 0.] # List of number of events best matched by 1,2,3 jets respectively.
 
@@ -190,16 +174,8 @@ def filter_events(csv_file, **kwargs):
         if np.all(jet_5[i] == 0.):
             jets.append(jet_5_vect)
 
-        ################################################# true vs observed ################################################# 
-        b_had_dist_true = 1000
-        b_lep_dist_true = 1000
-        t_had_dist_true = 1000
-        t_lep_dist_true = 1000
-        W_had_true_pT_diff = 0
-        W_had_dist_true_start = 10000000
-        W_had_dist_true = W_had_dist_true_start
-    
         # Perform jet matching for the bs and Ws
+        b_had_dist_true = b_lep_dist_true = W_had_dist_true = 1000
         for k in range(len(jets)): # loop through each jet to find the minimum distance for each particle
             # For bs:
             b_had_d_true = find_dist(b_had_true, jets[k])
@@ -222,7 +198,6 @@ def filter_events(csv_file, **kwargs):
                 W_had_d_true = find_dist(W_had_true, sum_vect)
                 if W_had_d_true < W_had_dist_true:
                     W_had_dist_true = W_had_d_true
-                    W_had_true_pT_diff = W_had_true.Pt() - sum_vect.Pt()
                     closest_W_had = sum_vect
                     w_jets = 0
                 # Dijets
@@ -235,7 +210,6 @@ def filter_events(csv_file, **kwargs):
                         W_had_d_true = find_dist(W_had_true, sum_vect)
                         if W_had_d_true < W_had_dist_true:
                             W_had_dist_true = W_had_d_true
-                            W_had_true_pT_diff = W_had_true.Pt() - sum_vect.Pt()
                             closest_W_had = sum_vect
                             w_jets = 1
                 # Trijets
@@ -248,55 +222,60 @@ def filter_events(csv_file, **kwargs):
                                 W_had_d_true = find_dist(W_had_true, sum_vect)
                                 if W_had_d_true < W_had_dist_true:
                                     W_had_dist_true = W_had_d_true
-                                    W_had_true_pT_diff = W_had_true.Pt() - sum_vect.Pt()
                                     closest_W_had = sum_vect
                                     w_jets = 2
 
         # If b-tagged jets are not to be considered and all jets are b-tagged 
         #  or only b-tagged jets are to be considered and no jet is b-tagged, 
         #  skip the event.
-        if W_had_dist_true == W_had_dist_true_start: # If there are no jets to be matched for this event,
-            continue                                 #  then the W_had_dist_true will remain unchanged. 
+        if W_had_dist_true == 10000000: # If there are no jets to be matched for this event,
+            continue                    #  then the W_had_dist_true will remain unchanged. 
 
+        W_had_true_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
         w_had_jets[w_jets] += 1 
-            
-        # Calculate leptonic W distances
 
         # Observed transverse momentum of muon
         muon_pT_obs = [jet_mu[i][0], jet_mu[i][1]] 
         # Convert missing transverse energy to a momentum
-        nu_pT_obs = [ jet_mu[i][4]*np.cos(jet_mu[i][5]), jet_mu[i][4]*np.sin(jet_mu[i][5])] # Observed neutrino transverse momentum from missing energy as [x, y].
-        # Add muon transverse momentum components to missing momentum components
-        lep_x = muon_pT_obs[0] + nu_pT_obs[0]
-        lep_y = muon_pT_obs[1] + nu_pT_obs[1]
-        # Calculate phi using definition in Kuunal's report 
-        lep_phi = np.arctan2( lep_y, lep_x )
-        # Calculate the distance between true and observed phi.
+        nu_pT_obs = [ jet_mu[i][4]*np.cos(jet_mu[i][5]), jet_mu[i][4]*np.sin(jet_mu[i][5])]
+        # Add muon transverse momentum components to missing momentum components to get W_lep
+        W_lep = (muon_pT_obs[0] + nu_pT_obs[0], muon_pT_obs[1] + nu_pT_obs[1])
+        lep_phi = np.arctan2( W_lep[1], W_lep[0] )
         W_lep_dist_true = np.abs( min( np.abs(W_lep_true.Phi()-lep_phi), 2*np.pi-np.abs(W_lep_true.Phi()-lep_phi) ) )
 
-        # Compare hadronic t distances
-        t_had_jets = closest_b_had + closest_W_had
-        t_had_dist_true = find_dist(t_had_true, t_had_jets)
-    
-        # Compare leptonic t distances
-        t_lep_x = lep_x + closest_b_lep.Px()
-        t_lep_y = lep_y + closest_b_lep.Py()
-        obs_t_phi = np.arctan2(t_lep_y, t_lep_x)
-        t_lep_dist_true = np.abs( min( np.abs(t_lep_true.Phi()-obs_t_phi), 2*np.pi-np.abs(t_lep_true.Phi() - obs_t_phi) ) )
+        b_had_true_pT_diff = b_had_true.Pt() - closest_b_had.Pt()
+        b_lep_true_pT_diff = b_lep_true.Pt() - closest_b_lep.Pt()
 
-        if (b_lep_dist_true <= b_lep_dist_t_lim): # if minimum distance is less than the tolearance limits, everything is ok
-            good_b_lep += 1
-        else:
-            bad_b_lep += 1
-        if (b_had_dist_true <= b_had_dist_t_lim):
-            good_b_had += 1
-        else:
-            bad_b_had += 1
-        if (W_lep_dist_true <= W_lep_dist_t_lim): # mismatch between W_lep_dist_true and good_W_lep
-            good_W_lep += 1
-        else:
-            bad_W_lep += 1
-        if (W_had_dist_true <= W_had_dist_t_lim):
-            good_W_had += 1
-        else:
-            bad_W_had += 1
+        if (W_had_dist_true <= W_had_dist_cut[1]) and \
+            (W_had_true_pT_diff >= W_had_pT_cut[0] and W_had_true_pT_diff <= W_had_pT_cut[1]) and\
+            (closest_W_had.M() >= W_had_m_cut[0] and closest_W_had.M() <= W_had_m_cut[1]):
+                good_W_had = True
+
+        if (W_lep_dist_true <= W_lep_dist_cut[1])
+                good_W_lep = True
+
+        if (b_had_dist_true <= b_had_dist_cut[1]) and \
+            (b_had_true_pT_diff >= b_had_pT_cut[0] and b_had_true_pT_diff <= b_had_pT_cut[1]) and\
+            (closest_b_had.M() >= b_had_m_cut[0] and closest_b_had.M() <= b_had_m_cut[1]):
+                good_b_had = True
+
+        if (b_lep_dist_true <= b_lep_dist_cut[1]) and \
+            (b_lep_true_pT_diff >= b_lep_pT_cut[0] and b_lep_true_pT_diff <= b_lep_pT_cut[1]) and\
+            (closest_b_lep.M() >= b_lep_m_cut[0] and closest_b_lep.M() <= b_lep_m_cut[1]):
+                good_b_lep = True
+
+
+        if good_W_had and good_W_lep and good_b_had and good_b_lep:
+            training_input_cuts.append(i)
+            training_output_cuts.append(i)
+
+    training_input = np.delete(training_input, training_input_cuts, axis = 0)
+    training_output = np.delete(training_output, training_output_cuts, axis = 0)
+
+    scaling = kwargs['scaling']
+    training_input = normalize(training_input, scaling)
+    training_output = normalize(training_output, scaling)
+
+    return (training_input, training_output), (testing_input, testing_output), \
+           (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing)
+
