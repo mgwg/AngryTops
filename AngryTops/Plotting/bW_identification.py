@@ -24,6 +24,21 @@ b_tagging = "Only" # "None": Do not consider any b-tagged jets.
                    # "All": Consider all jets, both b-tagged and not b-tagged
                    # "Only": Consider only b-tagged jets
 
+W_had_m_cut = (25, 100)
+W_had_pT_cut = (-50, 50)
+W_had_dist_cut = (0, 0.5)
+
+W_lep_pT_cut = (-50, 50)
+W_lep_dist_cut = (0, 0.5)
+
+b_had_m_cut = (25, 100)
+b_had_pT_cut = (-50, 50)
+b_had_dist_cut = (0, 0.5)
+
+b_lep_m_cut = (25, 100)
+b_lep_pT_cut = (-50, 50)
+b_lep_dist_cut = (0, 0.5)
+
 # Helper function to create histograms of eta-phi distance distributions
 def MakeP4(y, m):
     """
