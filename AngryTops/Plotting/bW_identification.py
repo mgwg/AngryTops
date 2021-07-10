@@ -14,8 +14,7 @@ date = ''
 if len(sys.argv) > 4:
     date = sys.argv[4]
 
-
-subdir = '/closejets_img_btag_only/'
+subdir = '/closejets_img{}/'.format(date)
 scaling = True
 m_t = 172.5
 m_W = 80.4
