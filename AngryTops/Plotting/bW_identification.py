@@ -313,31 +313,31 @@ def make_histograms():
             perc = 100. * i / float(n_events)
             print("INFO: Event %-9i  (%3.0f %%)" % ( i, perc ))
             
-        W_had_true   = MakeP4( y_true_W_had[i], m_W )
-        W_had_fitted = MakeP4( y_fitted_W_had[i],  m_W)
+        W_had_true   = MakeP4( y_true_W_had[i], m_W, representation)
+        W_had_fitted = MakeP4( y_fitted_W_had[i],  m_W, representation)
 
-        W_lep_true   = MakeP4( y_true_W_lep[i], m_W )
-        W_lep_fitted = MakeP4( y_fitted_W_lep[i],  m_W)
+        W_lep_true   = MakeP4( y_true_W_lep[i], m_W , representation)
+        W_lep_fitted = MakeP4( y_fitted_W_lep[i],  m_W, representation)
 
-        b_had_true   = MakeP4( y_true_b_had[i], m_b )
-        b_had_fitted = MakeP4( y_fitted_b_had[i],  m_b )
+        b_had_true   = MakeP4( y_true_b_had[i], m_b , representation)
+        b_had_fitted = MakeP4( y_fitted_b_had[i],  m_b , representation)
 
-        b_lep_true   = MakeP4( y_true_b_lep[i], m_b )
-        b_lep_fitted = MakeP4( y_fitted_b_lep[i],  m_b)
+        b_lep_true   = MakeP4( y_true_b_lep[i], m_b , representation)
+        b_lep_fitted = MakeP4( y_fitted_b_lep[i],  m_b, representation)
 
-        t_had_true   = MakeP4( y_true_t_had[i], m_t )
-        t_had_fitted = MakeP4( y_fitted_t_had[i],  m_t )
+        t_had_true   = MakeP4( y_true_t_had[i], m_t , representation)
+        t_had_fitted = MakeP4( y_fitted_t_had[i],  m_t , representation)
 
-        t_lep_true   = MakeP4( y_true_t_lep[i], m_t )
-        t_lep_fitted = MakeP4( y_fitted_t_lep[i],  m_t)
+        t_lep_true   = MakeP4( y_true_t_lep[i], m_t , representation)
+        t_lep_fitted = MakeP4( y_fitted_t_lep[i],  m_t, representation)
 
-        jet_mu_vect = MakeP4(jet_mu[i],jet_mu[i][4])
+        jet_mu_vect = MakeP4(jet_mu[i],jet_mu[i][4], representation)
 
-        jet_1_vect = MakeP4(jet_1[i], jet_1[i][4])
-        jet_2_vect = MakeP4(jet_2[i], jet_2[i][4])
-        jet_3_vect = MakeP4(jet_3[i], jet_3[i][4])
-        jet_4_vect = MakeP4(jet_4[i], jet_4[i][4])
-        jet_5_vect = MakeP4(jet_5[i], jet_5[i][4])
+        jet_1_vect = MakeP4(jet_1[i], jet_1[i][4], representation)
+        jet_2_vect = MakeP4(jet_2[i], jet_2[i][4], representation)
+        jet_3_vect = MakeP4(jet_3[i], jet_3[i][4], representation)
+        jet_4_vect = MakeP4(jet_4[i], jet_4[i][4], representation)
+        jet_5_vect = MakeP4(jet_5[i], jet_5[i][4], representation)
         
         jets = []
         # add list containing jets of correspoonding event
@@ -648,7 +648,7 @@ if __name__ == "__main__":
             corr_key.append(key)
 
     for key in hists_key:
-        plot_hists(key)
+        plot_hists(key, hists[key])
 
     # The following few lines must be run only once for all correlation plots, 
     #  so the correlation plots must be separated out from the other histograms.   
@@ -657,4 +657,4 @@ if __name__ == "__main__":
     gStyle.SetPalette(kGreyScale)
     gROOT.GetColor(52).InvertPalette()
     for key in corr_key:
-        plot_corr(key)
+        plot_corr(key, hists[key])
