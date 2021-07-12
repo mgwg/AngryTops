@@ -419,6 +419,7 @@ def make_histograms():
             if W_had_d_true < W_had_dist_true:
                 W_had_dist_true = W_had_d_true
                 closest_W_had = sum_vect
+                W_had_true_obs_pT_diff = W_had_true.Pt() - sum_vect.Pt()
                 w_jets = 0
             # Comparison for best single jet
             if W_had_d_true < W_had_dist_true_1:
@@ -432,6 +433,7 @@ def make_histograms():
                     if W_had_d_true < W_had_dist_true:
                         W_had_dist_true = W_had_d_true
                         closest_W_had = sum_vect
+                        W_had_true_obs_pT_diff = W_had_true.Pt() - sum_vect.Pt()
                         w_jets = 1
                     if W_had_d_true < W_had_dist_true_2:
                         W_had_true_obs_pT_diff_2 = W_had_true.Pt() - sum_vect.Pt()
@@ -444,6 +446,7 @@ def make_histograms():
                             if W_had_d_true < W_had_dist_true:
                                 W_had_dist_true = W_had_d_true
                                 closest_W_had = sum_vect
+                                W_had_true_obs_pT_diff = W_had_true.Pt() - sum_vect.Pt()
                                 w_jets = 2
 
 
@@ -455,9 +458,6 @@ def make_histograms():
         lep_phi = np.arctan2(lep_y, lep_x)
         # Calculate the distance between true and observed phi.
         W_lep_dist_true = np.abs( min( np.abs(W_lep_true.Phi()-lep_phi), 2*np.pi-np.abs(W_lep_true.Phi()-lep_phi) ) )
-
-        # Hardronic W calculations
-        W_had_true_obs_pT_diff = W_had_true.Pt() - sum_vect.Pt()
 
         # Compare hadronic t distances
         t_had_jets = closest_b_had + closest_W_had
