@@ -419,7 +419,6 @@ def make_histograms():
             if W_had_d_true < W_had_dist_true:
                 W_had_dist_true = W_had_d_true
                 closest_W_had = sum_vect
-                W_had_true_obs_pT_diff = W_had_true.Pt() - sum_vect.Pt()
                 w_jets = 0
             # Comparison for best single jet
             if W_had_d_true < W_had_dist_true_1:
@@ -433,7 +432,6 @@ def make_histograms():
                     if W_had_d_true < W_had_dist_true:
                         W_had_dist_true = W_had_d_true
                         closest_W_had = sum_vect
-                        W_had_true_obs_pT_diff = W_had_true.Pt() - sum_vect.Pt()
                         w_jets = 1
                     if W_had_d_true < W_had_dist_true_2:
                         W_had_true_obs_pT_diff_2 = W_had_true.Pt() - sum_vect.Pt()
@@ -446,7 +444,6 @@ def make_histograms():
                             if W_had_d_true < W_had_dist_true:
                                 W_had_dist_true = W_had_d_true
                                 closest_W_had = sum_vect
-                                W_had_true_obs_pT_diff = W_had_true.Pt() - sum_vect.Pt()
                                 w_jets = 2
 
 
@@ -458,6 +455,9 @@ def make_histograms():
         lep_phi = np.arctan2(lep_y, lep_x)
         # Calculate the distance between true and observed phi.
         W_lep_dist_true = np.abs( min( np.abs(W_lep_true.Phi()-lep_phi), 2*np.pi-np.abs(W_lep_true.Phi()-lep_phi) ) )
+
+        # hadronic W calculations
+        W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
 
         # Compare hadronic t distances
         t_had_jets = closest_b_had + closest_W_had
@@ -606,6 +606,8 @@ def make_histograms():
         w_had_pT_cuts[w_jets] += pT_cut
         w_had_dist_cuts[w_jets] += dist_cut
 
+
+
     # Print data regarding percentage of each class of event
     print('Total number of events: {} \n'.format(n_events))
     print('\n=================================================================\n')
@@ -618,18 +620,14 @@ def make_histograms():
     print('{}% 1 jet Hadronic Ws within cut, {} events'.format(100.*w_had_total_cuts[0]/w_had_jets[0], w_had_total_cuts[0]))
     print('{}% 2 jet Hadronic Ws within cut, {} events'.format(100.*w_had_total_cuts[1]/w_had_jets[1], w_had_total_cuts[1]))
     print('{}% 3 jet Hadronic Ws within cut, {} events\n'.format(100.*w_had_total_cuts[2]/w_had_jets[2], w_had_total_cuts[2]))
-    print("Number of hadronic W's satisfying mass cut criteria")
-    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*w_had_mass_cuts[0]/w_had_jets[0], w_had_mass_cuts[0]))
-    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*w_had_mass_cuts[1]/w_had_jets[1], w_had_mass_cuts[1]))
-    print('{}% 3 jet Hadronic Ws, {} events\n'.format(100.*w_had_mass_cuts[2]/w_had_jets[2], w_had_mass_cuts[2]))
-    print("Number of hadronic W's satisfying pT cut criteria")
-    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*w_had_pT_cuts[0]/w_had_jets[0], w_had_pT_cuts[0]))
-    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*w_had_pT_cuts[1]/w_had_jets[1], w_had_pT_cuts[1]))
-    print('{}% 3 jet Hadronic Ws, {} events\n'.format(100.*w_had_pT_cuts[2]/w_had_jets[2], w_had_pT_cuts[2]))
-    print("Number of hadronic W's satisfying distance cut criteria")
-    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*w_had_dist_cuts[0]/w_had_jets[0], w_had_dist_cuts[0]))
-    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*w_had_dist_cuts[1]/w_had_jets[1], w_had_dist_cuts[1]))
-    print('{}% 3 jet Hadronic Ws, {} events'.format(100.*w_had_dist_cuts[2]/w_had_jets[2], w_had_dist_cuts[2]))
+    print('\n=================================================================\n')
+    print("Number of leptonic W's satisfying cut criteria")
+    print('\n=================================================================\n')
+    print("Number of hadronic b's satisfying cut criteria")
+    print('\n=================================================================\n')
+    print("Number of leptonic b's satisfying cut criteria")
+    print('\n=================================================================\n')
+    print("Events satisfying cut criteria after all cuts")
 
 # Run the two helper functions above   
 if __name__ == "__main__":
@@ -648,7 +646,7 @@ if __name__ == "__main__":
             corr_key.append(key)
 
     for key in hists_key:
-        plot_hists(key, hists[key])
+        plot_hists(key, hists[key], outputdir+subdir)
 
     # The following few lines must be run only once for all correlation plots, 
     #  so the correlation plots must be separated out from the other histograms.   
@@ -657,4 +655,4 @@ if __name__ == "__main__":
     gStyle.SetPalette(kGreyScale)
     gROOT.GetColor(52).InvertPalette()
     for key in corr_key:
-        plot_corr(key, hists[key])
+        plot_corr(key, hists[key], outputdir+subdir)

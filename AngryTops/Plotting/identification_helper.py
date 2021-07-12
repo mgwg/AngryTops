@@ -44,7 +44,7 @@ def find_dist(a, b):
     return d_true
 
 # Helper function to output and save the histograms and scatterplots 
-def plot_hists(key, hist):
+def plot_hists(key, hist, outputdir):
     c1 = TCanvas()
     hist.Draw()
 
@@ -61,11 +61,11 @@ def plot_hists(key, hist):
         binWidth = hist.GetBinWidth(0)
         legend.DrawLatex( 0.65, 0.70, "Bin Width: %.2f" % binWidth )
     
-    c1.SaveAs(outputdir + subdir + key +'.png')
+    c1.SaveAs(outputdir + key +'.png')
     c1.Close()
 
 # Helper function to output and save the correlation plots
-def plot_corr(key, hist):
+def plot_corr(key, hist, outputdir):
 
     SetTH1FStyle(hist,  color=kGray+2, fillstyle=6)
 
@@ -106,6 +106,6 @@ def plot_corr(key, hist):
     title.Draw()
 
     c.cd()
-    c.SaveAs(outputdir + subdir + key +'.png')
+    c.SaveAs(outputdir + key +'.png')
     pad0.Close()
     c.Close()
