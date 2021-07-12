@@ -4,15 +4,16 @@ from numpy.linalg import norm
 from scipy.spatial import distance
 from ROOT import *
 import pickle
+from AngryTops.Plotting.identification_helper import *
 
-representation = sys.argv[2]
 outputdir = sys.argv[1]
-event_type = 0
-if len(sys.argv) > 3:
-    event_type = sys.argv[3]
+representation = sys.argv[2]
 date = ''
+if len(sys.argv) > 3:
+    date = sys.argv[3]
+event_type = 0
 if len(sys.argv) > 4:
-    date = sys.argv[4]
+    event_type = sys.argv[4]
 
 subdir = '/closejets_img{}/'.format(date)
 scaling = True
@@ -40,48 +41,6 @@ b_had_dist_cut = (0, 0.5)
 b_lep_m_cut = (25, 100)
 b_lep_pT_cut = (-50, 50)
 b_lep_dist_cut = (0, 0.5)
-
-# Helper function to create histograms of eta-phi distance distributions
-def MakeP4(y, m):
-    """
-    Form the momentum vector.
-    """
-    p4 = TLorentzVector()
-    p0 = y[0]
-    p1 = y[1]
-    p2 = y[2]
-    # Construction of momentum vector depends on the representation of the input
-    if representation == "pxpypzE":
-        E  = y[3]
-        p4.SetPxPyPzE(p0, p1, p2, E)
-    elif representation == "pxpypzM":
-        M  = y[3]
-        E = np.sqrt(p0**2 + p1**2 + p2**2 + M**2)
-        p4.SetPxPyPzE(p0, p1, p2, E)
-    elif representation == "pxpypz" or representation == "pxpypzEM":
-        E = np.sqrt(p0**2 + p1**2 + p2**2 + m**2)
-        p4.SetPxPyPzE(p0, p1, p2, E)
-    elif representation == "ptetaphiE":
-        E  = y[3]
-        p4.SetPtEtaPhiE(p0, p1, p2, E)
-    elif representation == "ptetaphiM":
-        M  = y[3]
-        p4.SetPtEtaPhiM(p0, p1, p2, M)
-    elif representation == "ptetaphi" or representation == "ptetaphiEM":
-        p4.SetPtEtaPhiM(p0, p1, p2, m)
-    else:
-        raise Exception("Invalid Representation Given: {}".format(representation))
-    return p4
-
-def find_dist(a, b):
-    '''
-    a, b are both TLorentz Vectors
-    returns the eta-phi distances between true and sum_vect
-    '''
-    dphi_true = min(np.abs(a.Phi() - b.Phi()), 2*np.pi-np.abs(a.Phi() - b.Phi()))
-    deta_true = a.Eta() - b.Eta()
-    d_true = np.sqrt(dphi_true**2 + deta_true**2)
-    return d_true
 
 # load data
 predictions = np.load(outputdir + 'predictions.npz')
@@ -167,11 +126,9 @@ event_index = range(n_events)
 if event_type == "4":
     event_index = np.where(jet_5 == 0)
     event_index = np.unique(event_index[0])
-    subdir += "_four" 
 elif event_type == "5":
     event_index = np.nonzero(jet_5)
     event_index = np.unique(event_index[0])
-    subdir += "_five"
 
 # make histograms to be filled
 hists = {}
@@ -278,7 +235,6 @@ hists['had_W_corr_dist_Pt_true_v_obs'] = TH2F( "W_had_corr_d",   ";W Hadronic #e
 hists['had_W_corr_1_pT_diff_v_2_pT_diff'] = TH2F("W Hadronic Closest 1-jet p_{T} Diffs vs. W Hadronic Closest 2-jet p_{T} Diffs",\
                                              ";W Hadronic Closest 1-jet p_{T} Diffs; W Hadronic Closest 2-jet p_{T} Diffs", 50, -200, 200, 50, -200, 200)
 
-
 # Leptonic b
 # True vs. obs
 hists['lep_b_dist_true_v_obs'] = TH1F("h_b_lep_true","b Leptonic Distances, True vs Observed", 50, 0, 3)
@@ -314,8 +270,8 @@ hists['had_b_dist_pred_v_obs'].SetTitle("b Hadronic #eta-#phi distances, Predict
 hists['had_b_obs_mass'] = TH1F("b_had_m","b Hadronic Invariant Mass, Observed", 60, 0., 50. )
 hists['had_b_obs_mass'].SetTitle("b Hadronic Invariant Mass, Observed; Hadronic (GeV); A.U.")
 # Jet matching momentum distributions
-hists['had_b_true_obs_pT_diff'] = TH1F("h_pT_b_had_diff","b Hadtonic p_{T} diffs, True - Observed", 80, -400, 400)
-hists['had_b_true_obs_pT_diff'].SetTitle("b Hadtonic p_{T} diffs, True - Observed; Hadronic (GeV); A.U.")
+hists['had_b_true_obs_pT_diff'] = TH1F("h_pT_b_had_diff","b Hadronic p_{T} diffs, True - Observed", 80, -400, 400)
+hists['had_b_true_obs_pT_diff'].SetTitle("b Hadronic p_{T} diffs, True - Observed; Hadronic (GeV); A.U.")
 # Jet matching criteria correlation plots
 hists['had_b_corr_dist_true_v_obs_mass'] = TH2F("b Hadronic #eta-#phi Distances vs. Invariant Mass", ";b Hadronic Invariant Mass [GeV]; b Hadronic #eta-#phi Distances, True vs Observed", 50, 0, 50, 50, 0, 3.2)
 hists['had_b_corr_pT_diff_true_v_obs_mass'] = TH2F("b Hadronic p_{T} Diffs vs. Invariant Mass", ";b Hadronic Invariant Mass [GeV]; b Hadronic p_{T} Diff, True - Observed [GeV]", 50, 0, 50, 50, -100, 100)
@@ -439,13 +395,10 @@ def make_histograms():
             if b_had_d_true < b_had_dist_true:
                 b_had_dist_true = b_had_d_true
                 closest_b_had = jets[k]
-            b_had_true_obs_pT_diff = b_had_true.Pt() - closest_b_had.Pt()
-
             b_lep_d_true = find_dist(b_lep_true, jets[k])
             if b_lep_d_true < b_lep_dist_true:
                 b_lep_dist_true = b_lep_d_true
                 closest_b_lep = jets[k]
-            b_lep_true_obs_pT_diff = b_lep_true.Pt() - closest_b_lep.Pt()
 
         good_jets = jets[:]
         if (b_tagging > 0):
@@ -458,16 +411,13 @@ def make_histograms():
         if not good_jets:
             continue
 
-        # Perform jet matching for the hadronic Ws, only jets that meet the b-tagging criteria will be considered.
-        for k in range(len(good_jets)): # loop through each jet to find the minimum distance for each particle
-            
+        for k in range(len(good_jets)):
             # Go through each 1,2,3 combination of jets that are not b-tagged and check their sum
             # Single jets
             sum_vect = good_jets[k]    
             W_had_d_true = find_dist(W_had_true, sum_vect)
             if W_had_d_true < W_had_dist_true:
                 W_had_dist_true = W_had_d_true
-                W_had_true_obs_pT_diff = W_had_true.Pt() - sum_vect.Pt()
                 closest_W_had = sum_vect
                 w_jets = 0
             # Comparison for best single jet
@@ -481,7 +431,6 @@ def make_histograms():
                     W_had_d_true = find_dist(W_had_true, sum_vect)
                     if W_had_d_true < W_had_dist_true:
                         W_had_dist_true = W_had_d_true
-                        W_had_true_obs_pT_diff = W_had_true.Pt() - sum_vect.Pt()
                         closest_W_had = sum_vect
                         w_jets = 1
                     if W_had_d_true < W_had_dist_true_2:
@@ -494,7 +443,6 @@ def make_histograms():
                             W_had_d_true = find_dist(W_had_true, sum_vect)
                             if W_had_d_true < W_had_dist_true:
                                 W_had_dist_true = W_had_d_true
-                                W_had_true_obs_pT_diff = W_had_true.Pt() - sum_vect.Pt()
                                 closest_W_had = sum_vect
                                 w_jets = 2
 
@@ -508,6 +456,9 @@ def make_histograms():
         # Calculate the distance between true and observed phi.
         W_lep_dist_true = np.abs( min( np.abs(W_lep_true.Phi()-lep_phi), 2*np.pi-np.abs(W_lep_true.Phi()-lep_phi) ) )
 
+        # Hardronic W calculations
+        W_had_true_obs_pT_diff = W_had_true.Pt() - sum_vect.Pt()
+
         # Compare hadronic t distances
         t_had_jets = closest_b_had + closest_W_had
         t_had_dist_true = find_dist(t_had_true, t_had_jets)
@@ -518,6 +469,9 @@ def make_histograms():
         obs_t_phi = np.arctan2(t_lep_y, t_lep_x)
         t_lep_dist_true = np.abs( min( np.abs(t_lep_true.Phi()-obs_t_phi), 2*np.pi-np.abs(t_lep_true.Phi() - obs_t_phi) ) )
 
+        # b quark calculations
+        b_had_true_obs_pT_diff = b_had_true.Pt() - closest_b_had.Pt()
+        b_lep_true_obs_pT_diff = b_lep_true.Pt() - closest_b_lep.Pt()
 
         ################################################# predicted vs observed #################################################
 
@@ -676,74 +630,6 @@ def make_histograms():
     print('{}% 1 jet Hadronic Ws, {} events'.format(100.*w_had_dist_cuts[0]/w_had_jets[0], w_had_dist_cuts[0]))
     print('{}% 2 jet Hadronic Ws, {} events'.format(100.*w_had_dist_cuts[1]/w_had_jets[1], w_had_dist_cuts[1]))
     print('{}% 3 jet Hadronic Ws, {} events'.format(100.*w_had_dist_cuts[2]/w_had_jets[2], w_had_dist_cuts[2]))
-
-# Helper function to output and save the histograms and scatterplots 
-def plot_hists(key):
-    c1 = TCanvas()
-    hists[key].Draw()
-
-    # Make log-log plots:
-    if "log" in key:
-        c1.SetLogy()
-
-    legend = TLatex()
-    legend.SetNDC()
-    legend.SetTextFont(42)
-    legend.SetTextColor(kBlack) 
-    # Display bin width for all plots except scatterplots
-    if "scat" not in key:
-        binWidth = hists[key].GetBinWidth(0)
-        legend.DrawLatex( 0.65, 0.70, "Bin Width: %.2f" % binWidth )
-    
-    c1.SaveAs(outputdir + subdir + key +'.png')
-    c1.Close()
-
-
-# Helper function to output and save the correlation plots
-def plot_corr(key):
-    hist = hists[key]
-
-    SetTH1FStyle(hist,  color=kGray+2, fillstyle=6)
-
-    c = TCanvas()
-    c.cd()
-
-    pad0 = TPad( "pad0","pad0",0, 0,1,1,0,0,0 )
-    pad0.SetLeftMargin( 0.18 )
-    pad0.SetRightMargin( 0.05 )
-    pad0.SetBottomMargin( 0.18 )
-    pad0.SetTopMargin( 0.07 )
-    pad0.SetFillColor(0)
-    pad0.SetFillStyle(4000)
-    pad0.Draw()
-    pad0.cd()
-
-    hist.Draw("colz")
-
-    corr = hist.GetCorrelationFactor()
-    legend = TLatex()
-    legend.SetNDC()
-    legend.SetTextFont(42)
-    legend.SetTextColor(kBlack)
-    legend.DrawLatex( 0.2, 0.8, "Corr Coeff: %.2f" % corr )
-
-    gPad.RedrawAxis()
-
-    caption = hist.GetName()
-    newpad = TPad("newpad","a caption",0.1,0,1,1)
-    newpad.SetFillStyle(4000)
-    newpad.Draw()
-    newpad.cd()
-    title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
-    title.SetFillColor(16)
-    title.SetTextFont(52)
-    title.Draw()
-
-    c.cd()
-    c.SaveAs(outputdir + subdir + key +'.png')
-    pad0.Close()
-    c.Close()
-    
 
 # Run the two helper functions above   
 if __name__ == "__main__":
