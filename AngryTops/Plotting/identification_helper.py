@@ -1,8 +1,8 @@
 from ROOT import *
-from numpy.linalg import norm
+import numpy as np
 
 # Helper function to create histograms of eta-phi distance distributions
-def MakeP4(y, m):
+def MakeP4(y, m, representation):
     """
     Form the momentum vector.
     """
@@ -44,9 +44,9 @@ def find_dist(a, b):
     return d_true
 
 # Helper function to output and save the histograms and scatterplots 
-def plot_hists(key):
+def plot_hists(key, hist):
     c1 = TCanvas()
-    hists[key].Draw()
+    hist.Draw()
 
     # Make log-log plots:
     if "log" in key:
@@ -58,15 +58,14 @@ def plot_hists(key):
     legend.SetTextColor(kBlack) 
     # Display bin width for all plots except scatterplots
     if "scat" not in key:
-        binWidth = hists[key].GetBinWidth(0)
+        binWidth = hist.GetBinWidth(0)
         legend.DrawLatex( 0.65, 0.70, "Bin Width: %.2f" % binWidth )
     
     c1.SaveAs(outputdir + subdir + key +'.png')
     c1.Close()
 
 # Helper function to output and save the correlation plots
-def plot_corr(key):
-    hist = hists[key]
+def plot_corr(key, hist):
 
     SetTH1FStyle(hist,  color=kGray+2, fillstyle=6)
 
