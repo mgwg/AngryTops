@@ -31,16 +31,16 @@ W_had_m_cut = (25, 100)
 W_had_pT_cut = (-50, 50)
 W_had_dist_cut = (0, 0.5)
 
-W_lep_pT_cut = (-50, 50)
+W_lep_eT_cut = (-50, 50)
 W_lep_dist_cut = (0, 0.5)
 
-b_had_m_cut = (25, 100)
-b_had_pT_cut = (-50, 50)
-b_had_dist_cut = (0, 0.5)
+b_had_m_cut = (3, 12)
+b_had_pT_cut = (-10, 20)
+b_had_dist_cut = (0, 0.2)
 
-b_lep_m_cut = (25, 100)
-b_lep_pT_cut = (-50, 50)
-b_lep_dist_cut = (0, 0.5)
+b_lep_m_cut = (3, 12)
+b_lep_pT_cut = (-10, 20)
+b_lep_dist_cut = (0, 0.2)
 
 # load data
 predictions = np.load(outputdir + 'predictions.npz')
@@ -628,6 +628,53 @@ def make_histograms():
     print("Number of leptonic b's satisfying cut criteria")
     print('\n=================================================================\n')
     print("Events satisfying cut criteria after all cuts")
+
+
+# Helper function to output and save the correlation plots
+def plot_corr(key, hist, outputdir):
+
+    SetTH1FStyle(hist,  color=kGray+2, fillstyle=6)
+
+    c = TCanvas()
+    c.cd()
+
+    pad0 = TPad( "pad0","pad0",0, 0,1,1,0,0,0 )
+    pad0.SetLeftMargin( 0.18 )
+    pad0.SetRightMargin( 0.05 )
+    pad0.SetBottomMargin( 0.18 )
+    pad0.SetTopMargin( 0.07 )
+    pad0.SetFillColor(0)
+    pad0.SetFillStyle(4000)
+    pad0.Draw()
+    pad0.cd()
+
+    hist.Draw("colz")
+
+    corr = hist.GetCorrelationFactor()
+    legend = TLatex()
+    legend.SetNDC()
+    legend.SetTextFont(42)
+    legend.SetTextColor(kBlack)
+    legend.DrawLatex( 0.2, 0.8, "Corr Coeff: %.2f" % corr )
+
+    gPad.RedrawAxis()
+
+    caption = hist.GetName()
+    newpad = TPad("newpad","a caption",0.1,0,1,1)
+    newpad.SetFillStyle(4000)
+    newpad.Draw()
+    newpad.cd()
+    title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
+    title.SetFillColor(16)
+    title.SetTextFont(52)
+    if 'pT' or 'ET' in key:
+        title.SetTextSize(0.8)
+    title.Draw()
+
+    c.cd()
+    c.SaveAs(outputdir + key +'.png')
+    pad0.Close()
+    c.Close()
 
 # Run the two helper functions above   
 if __name__ == "__main__":
