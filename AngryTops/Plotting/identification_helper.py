@@ -1,5 +1,6 @@
 from ROOT import *
 import numpy as np
+from AngryTops.Plotting.PlottingHelper import SetTH1FStyle
 
 # Helper function to create histograms of eta-phi distance distributions
 def MakeP4(y, m, representation):

@@ -4,7 +4,7 @@ from numpy.linalg import norm
 from scipy.spatial import distance
 from ROOT import *
 import pickle
-from AngryTops.Plotting.identification_helper import *
+from AngryTops.Plotting.identification_helper import MakeP4, find_dist, plot_hists
 
 outputdir = sys.argv[1]
 representation = sys.argv[2]
@@ -654,5 +654,6 @@ if __name__ == "__main__":
     from AngryTops.Plotting.PlottingHelper import *
     gStyle.SetPalette(kGreyScale)
     gROOT.GetColor(52).InvertPalette()
+
     for key in corr_key:
         plot_corr(key, hists[key], outputdir+subdir)
