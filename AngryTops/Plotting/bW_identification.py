@@ -27,20 +27,20 @@ b_tagging = NONE   # 0/All: Consider all jets, both b-tagged and not b-tagged
                 # 1/None: Do not consider any b-tagged jets.
                 # 2/Only: Consider only b-tagged jets
 
-W_had_m_cut = (25, 100)
-W_had_pT_cut = (-50, 50)
-W_had_dist_cut = (0, 0.5)
+W_had_m_cutoff = (25, 100)
+W_had_pT_cutoff = (-50, 50)
+W_had_dist_cutoff = (0, 0.5)
 
-W_lep_eT_cut = (-50, 50)
-W_lep_dist_cut = (0, 0.5)
+W_lep_ET_cutoff = (-50, 50)
+W_lep_dist_cutoff = (0, 0.5)
 
-b_had_m_cut = (3, 12)
-b_had_pT_cut = (-10, 20)
-b_had_dist_cut = (0, 0.2)
+b_had_m_cutoff = (3, 12)
+b_had_pT_cutoff = (-10, 20)
+b_had_dist_cutoff = (0, 0.2)
 
-b_lep_m_cut = (3, 12)
-b_lep_pT_cut = (-10, 20)
-b_lep_dist_cut = (0, 0.2)
+b_lep_m_cutoff = (3, 12)
+b_lep_pT_cutoff = (-10, 20)
+b_lep_dist_cutoff = (0, 0.2)
 
 # load data
 predictions = np.load(outputdir + 'predictions.npz')
@@ -302,11 +302,27 @@ hists['had_t_dist_pred_v_obs'].SetTitle("t Hadronic #eta-#phi distances, Predict
 # Function to make histograms
 def make_histograms():
 
-    w_had_jets = [0., 0., 0.] # List of number of events best matched by 1,2,3 jets respectively.
-    w_had_mass_cuts = [0., 0., 0.]
-    w_had_pT_cuts = [0., 0., 0.]
-    w_had_dist_cuts = [0., 0., 0.]
-    w_had_total_cuts = [0., 0., 0.]
+    W_had_jets = [0., 0., 0.] # List of number of events best matched by 1,2,3 jets respectively.
+    W_had_m_cuts = [0., 0., 0.]
+    W_had_pT_cuts = [0., 0., 0.]
+    W_had_dist_cuts = [0., 0., 0.]
+    W_had_total_cuts = [0., 0., 0.]
+
+    W_lep_total_cuts = 0.
+    W_lep_ET_cuts = 0.
+    W_lep_dist_cuts = 0.
+
+    b_had_m_cuts = 0.
+    b_had_pT_cuts = 0.
+    b_had_dist_cuts = 0.
+    b_had_total_cuts = 0.
+
+    b_lep_m_cuts = 0.
+    b_lep_pT_cuts = 0.
+    b_lep_dist_cuts = 0.
+    b_lep_total_cuts = 0.
+
+    good_event = 0.
 
     for i in event_index: # loop through every event
         if ( n_events < 10 ) or ( (i+1) % int(float(n_events)/10.)  == 0 ):
@@ -349,23 +365,6 @@ def make_histograms():
         if not np.all(jet_5[i] == 0.):
             jets.append(jet_5_vect)
         
-        # Special calculations for the observed leptonic W  
-        # First, find the transverse angle between the daughter particles
-        muon_pT_obs = [jet_mu[i][0], jet_mu[i][1]] # Observed transverse momentum of muon
-        # Convert missing transverse energy to a momentum
-        nu_pT_obs = [jet_mu[i][4]*np.cos(jet_mu[i][5]), jet_mu[i][4]*np.sin(jet_mu[i][5])] # Observed neutrino transverse momentum from missing energy as [x, y].
-        # Now, calculate the angle
-        obs_daughter_angle = np.arccos( np.dot(muon_pT_obs, nu_pT_obs) / norm(muon_pT_obs) / norm(nu_pT_obs) )
-        met_obs = np.sqrt(2*jet_mu[i][4]*jet_mu_vect.Pt()*(1 - np.cos(obs_daughter_angle))) 
-
-        # Calculate the transverse energy of the observed leptonic W summing rest mass and total transverse momentum.
-        # assuming daughter particles are massless.
-        W_lep_Px_observed = muon_pT_obs[0] + nu_pT_obs[0]
-        W_lep_Py_observed = muon_pT_obs[1] + nu_pT_obs[1]
-        W_ET_observed = np.sqrt( W_lep_Px_observed**2 + W_lep_Py_observed**2)
-        # difference
-        W_lep_ET_diff = W_lep_true.Et() - W_ET_observed
-
         ################################################# true vs predicted #################################################
         b_lep_R = find_dist(b_lep_true, b_lep_fitted)
         b_had_R = find_dist(b_had_true, b_had_fitted)
@@ -447,14 +446,21 @@ def make_histograms():
                                 w_jets = 2
 
 
-        # Calculate W leptonic distances
-        # Add muon transverse momentum components to missing momentum components
-        lep_x = jet_mu[i][0] + nu_pT_obs[0]
-        lep_y = jet_mu[i][1] + nu_pT_obs[1]
-        # Calculate phi using definition in Kuunal's report 
-        lep_phi = np.arctan2(lep_y, lep_x)
+        # Special calculations for the observed leptonic W  
+        muon_pT_obs = [jet_mu[i][0], jet_mu[i][1]]
+        nu_pT_obs = [jet_mu[i][4]*np.cos(jet_mu[i][5]), jet_mu[i][4]*np.sin(jet_mu[i][5])] # Observed neutrino transverse momentum from missing energy as [x, y].
+        W_lep_Px_observed = muon_pT_obs[0] + nu_pT_obs[0]
+        W_lep_Py_observed = muon_pT_obs[1] + nu_pT_obs[1]
+        
         # Calculate the distance between true and observed phi.
+        lep_phi = np.arctan2(W_lep_Py_observed, W_lep_Px_observed)
         W_lep_dist_true = np.abs( min( np.abs(W_lep_true.Phi()-lep_phi), 2*np.pi-np.abs(W_lep_true.Phi()-lep_phi) ) )
+        # Calculate transverse energy assuming daughter particles are massless
+        W_ET_observed = np.sqrt( W_lep_Px_observed**2 + W_lep_Py_observed**2)
+        W_lep_ET_diff = W_lep_true.Et() - W_ET_observed
+        # Calculate the transverse mass
+        obs_daughter_angle = np.arccos( np.dot(muon_pT_obs, nu_pT_obs) / norm(muon_pT_obs) / norm(nu_pT_obs) )
+        met_obs = np.sqrt(2*jet_mu[i][4]*jet_mu_vect.Pt()*(1 - np.cos(obs_daughter_angle))) 
 
         # hadronic W calculations
         W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
@@ -464,8 +470,8 @@ def make_histograms():
         t_had_dist_true = find_dist(t_had_true, t_had_jets)
         
         # Compare leptonic t distances
-        t_lep_x = lep_x + closest_b_lep.Px()
-        t_lep_y = lep_y + closest_b_lep.Py()
+        t_lep_x = W_lep_Px_observed + closest_b_lep.Px()
+        t_lep_y = W_lep_Py_observed + closest_b_lep.Py()
         obs_t_phi = np.arctan2(t_lep_y, t_lep_x)
         t_lep_dist_true = np.abs( min( np.abs(t_lep_true.Phi()-obs_t_phi), 2*np.pi-np.abs(t_lep_true.Phi() - obs_t_phi) ) )
 
@@ -595,39 +601,104 @@ def make_histograms():
 
         # counter for hadronic W
         # Update tally for which jet combination is the closest
-        mass_cut = (closest_W_had.M() >= W_had_m_cut[0] and closest_W_had.M() <= W_had_m_cut[1])
-        pT_cut = (W_had_true_obs_pT_diff >= W_had_pT_cut[0] and W_had_true_obs_pT_diff <= W_had_pT_cut[1])
-        dist_cut = (W_had_dist_true <= W_had_dist_cut[1]) 
-        good_W_had = (mass_cut and pT_cut and dist_cut)
+        W_had_m_cut = (closest_W_had.M() >= W_had_m_cutoff[0] and closest_W_had.M() <= W_had_m_cutoff[1])
+        W_had_pT_cut = (W_had_true_obs_pT_diff >= W_had_pT_cutoff[0] and W_had_true_obs_pT_diff <= W_had_pT_cutoff[1])
+        W_had_dist_cut = (W_had_dist_true <= W_had_dist_cutoff[1]) 
+        good_W_had = (W_had_m_cut and W_had_pT_cut and W_had_dist_cut)
 
-        w_had_jets[w_jets] += 1.
-        w_had_total_cuts[w_jets] += good_W_had
-        w_had_mass_cuts[w_jets] += mass_cut
-        w_had_pT_cuts[w_jets] += pT_cut
-        w_had_dist_cuts[w_jets] += dist_cut
+        W_had_jets[w_jets] += 1.
+        W_had_total_cuts[w_jets] += good_W_had
+        W_had_m_cuts[w_jets] += W_had_m_cut
+        W_had_pT_cuts[w_jets] += W_had_pT_cut
+        W_had_dist_cuts[w_jets] += W_had_dist_cut
 
+        # counter for lep W
+        W_lep_ET_cut = (W_lep_ET_diff >= W_lep_ET_cutoff[0] and W_lep_ET_diff <= W_lep_ET_cutoff[1])
+        W_lep_dist_cut = (W_lep_dist_true <= W_lep_dist_cutoff[1]) 
+        good_W_lep = (W_lep_ET_cut and W_lep_dist_cut)
+
+        W_lep_total_cuts += good_W_lep
+        W_lep_ET_cuts += W_lep_ET_cut
+        W_lep_dist_cuts += W_lep_dist_cut
+
+        # counter for hadronic b
+        b_had_m_cut = (closest_b_had.M() >= b_had_m_cutoff[0] and closest_b_had.M() <= b_had_m_cutoff[1])
+        b_had_pT_cut = (b_had_true_obs_pT_diff >= b_had_pT_cutoff[0] and b_had_true_obs_pT_diff <= b_had_pT_cutoff[1])
+        b_had_dist_cut = (b_had_dist_true <= b_had_dist_cutoff[1]) 
+        good_b_had = (b_had_m_cut and b_had_pT_cut and b_had_dist_cut)
+
+        b_had_total_cuts += good_b_had
+        b_had_m_cuts += b_had_m_cut
+        b_had_pT_cuts += b_had_pT_cut
+        b_had_dist_cuts += b_had_dist_cut
+
+        # counter for leptonic b
+        b_lep_m_cut = (closest_b_lep.M() >= b_lep_m_cutoff[0] and closest_b_lep.M() <= b_lep_m_cutoff[1])
+        b_lep_pT_cut = (b_lep_true_obs_pT_diff >= b_lep_pT_cutoff[0] and b_lep_true_obs_pT_diff <= b_lep_pT_cutoff[1])
+        b_lep_dist_cut = (b_lep_dist_true <= b_lep_dist_cutoff[1]) 
+        good_b_lep = (b_lep_m_cut and b_lep_pT_cut and b_lep_dist_cut)
+
+        b_lep_total_cuts += good_b_lep
+        b_lep_m_cuts += b_lep_m_cut
+        b_lep_pT_cuts += b_lep_pT_cut
+        b_lep_dist_cuts += b_lep_dist_cut
+
+        # total
+        good_event += (good_b_lep and good_b_had and good_W_had and good_W_lep)
 
 
     # Print data regarding percentage of each class of event
     print('Total number of events: {} \n'.format(n_events))
     print('\n=================================================================\n')
     print('Jet matching percentages for hadronic W')
-    print('{}% 1 jet Hadronic W, {} events'.format(100.*w_had_jets[0]/n_events, w_had_jets[0]))
-    print('{}% 2 jet Hadronic W, {} events'.format(100.*w_had_jets[1]/n_events, w_had_jets[1]))
-    print('{}% 3 jet Hadronic W, {} events'.format(100.*w_had_jets[2]/n_events, w_had_jets[2]))
+    print('{}% 1 jet Hadronic W, {} events'.format(100.*W_had_jets[0]/n_events, W_had_jets[0]))
+    print('{}% 2 jet Hadronic W, {} events'.format(100.*W_had_jets[1]/n_events, W_had_jets[1]))
+    print('{}% 3 jet Hadronic W, {} events'.format(100.*W_had_jets[2]/n_events, W_had_jets[2]))
     print('\n=================================================================\n')
     print("Number of hadronic W's satisfying cut criteria")
-    print('{}% 1 jet Hadronic Ws within cut, {} events'.format(100.*w_had_total_cuts[0]/w_had_jets[0], w_had_total_cuts[0]))
-    print('{}% 2 jet Hadronic Ws within cut, {} events'.format(100.*w_had_total_cuts[1]/w_had_jets[1], w_had_total_cuts[1]))
-    print('{}% 3 jet Hadronic Ws within cut, {} events\n'.format(100.*w_had_total_cuts[2]/w_had_jets[2], w_had_total_cuts[2]))
+    print('{}% 1 jet Hadronic Ws within cut, {} events'.format(100.*W_had_total_cuts[0]/W_had_jets[0], W_had_total_cuts[0]))
+    print('{}% 2 jet Hadronic Ws within cut, {} events'.format(100.*W_had_total_cuts[1]/W_had_jets[1], W_had_total_cuts[1]))
+    print('{}% 3 jet Hadronic Ws within cut, {} events\n'.format(100.*W_had_total_cuts[2]/W_had_jets[2], W_had_total_cuts[2]))
+    print("Number of hadronic W's satisfying mass cut criteria")
+    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*W_had_m_cuts[0]/W_had_jets[0], W_had_m_cuts[0]))
+    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*W_had_m_cuts[1]/W_had_jets[1], W_had_m_cuts[1]))
+    print('{}% 3 jet Hadronic Ws, {} events\n'.format(100.*W_had_m_cuts[2]/W_had_jets[2], W_had_m_cuts[2]))
+    print("Number of hadronic W's satisfying pT cut criteria")
+    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*W_had_pT_cuts[0]/W_had_jets[0], W_had_pT_cuts[0]))
+    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*W_had_pT_cuts[1]/W_had_jets[1], W_had_pT_cuts[1]))
+    print('{}% 3 jet Hadronic Ws, {} events\n'.format(100.*W_had_pT_cuts[2]/W_had_jets[2], W_had_pT_cuts[2]))
+    print("Number of hadronic W's satisfying distance cut criteria")
+    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*W_had_dist_cuts[0]/W_had_jets[0], W_had_dist_cuts[0]))
+    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*W_had_dist_cuts[1]/W_had_jets[1], W_had_dist_cuts[1]))
+    print('{}% 3 jet Hadronic Ws, {} events'.format(100.*W_had_dist_cuts[2]/W_had_jets[2], W_had_dist_cuts[2]))
     print('\n=================================================================\n')
     print("Number of leptonic W's satisfying cut criteria")
+    print('{}% , {} events\n'.format(100.*W_lep_total_cuts/n_events, W_lep_total_cuts))
+    print("Number of leptonic W's satisfying ET cut criteria")
+    print('{}%, {} events'.format(100.*W_lep_ET_cuts/n_events, W_lep_ET_cuts))
+    print("Number of leptonic W's satisfying distance cut criteria")
+    print('{}%, {} events'.format(100.*W_lep_dist_cuts/n_events, W_lep_dist_cuts))
     print('\n=================================================================\n')
     print("Number of hadronic b's satisfying cut criteria")
+    print('{}% , {} events\n'.format(100.*b_had_total_cuts/n_events, b_had_total_cuts))
+    print("Number of hadronic b's satisfying mass cut criteria")
+    print('{}%, {} events'.format(100.*b_had_m_cuts/n_events, b_had_m_cuts))
+    print("Number of hadronic b's satisfying pT cut criteria")
+    print('{}%, {} events'.format(100.*b_had_pT_cuts/n_events, b_had_pT_cuts))
+    print("Number of hadronic b's satisfying distance cut criteria")
+    print('{}%, {} events'.format(100.*b_had_dist_cuts/n_events, b_had_dist_cuts))
     print('\n=================================================================\n')
     print("Number of leptonic b's satisfying cut criteria")
+    print('{}% , {} events\n'.format(100.*b_lep_total_cuts/n_events, b_lep_total_cuts))
+    print("Number of hadronic b's satisfying mass cut criteria")
+    print('{}%, {} events'.format(100.*b_lep_m_cuts/n_events, b_lep_m_cuts))
+    print("Number of hadronic b's satisfying pT cut criteria")
+    print('{}%, {} events'.format(100.*b_lep_pT_cuts/n_events, b_lep_pT_cuts))
+    print("Number of hadronic b's satisfying distance cut criteria")
+    print('{}%, {} events'.format(100.*b_lep_dist_cuts/n_events, b_lep_dist_cuts))
     print('\n=================================================================\n')
     print("Events satisfying cut criteria after all cuts")
+    print('{}%, {} events'.format(100.*good_event/n_events, good_event))
 
 
 # Helper function to output and save the correlation plots
