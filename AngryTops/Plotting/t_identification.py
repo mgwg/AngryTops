@@ -34,11 +34,11 @@ W_had_dist_cutoff = (0, 0.5)
 W_lep_ET_cutoff = (-50, 50)
 W_lep_dist_cutoff = (0, 0.5)
 
-b_had_pT_cutoff = (-1000, 2000)
-b_had_dist_cutoff = (0, 0.2)
+b_had_pT_cutoff = (-10000, 2000)
+b_had_dist_cutoff = (0, 0.5)
 
 b_lep_pT_cutoff = (-10000, 2000)
-b_lep_dist_cutoff = (0, 0.2)
+b_lep_dist_cutoff = (0, 0.5)
 
 # load data
 predictions = np.load(outputdir + 'predictions.npz')
@@ -570,8 +570,7 @@ def make_histograms():
         # total
         good_event += (good_b_lep and good_b_had and good_W_had and good_W_lep)
 
-        good_event += (good_W_had and good_W_lep)
-        if good_event:
+        if (good_b_lep and good_b_had and good_W_had and good_W_lep):
             # Leptonic b
             hists['lep_b_dist_true_v_obs'].Fill(np.float(b_lep_dist_true))
             hists['lep_b_dist_pred_v_true'].Fill(np.float(b_lep_R))
