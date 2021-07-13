@@ -235,9 +235,6 @@ hists['had_W_corr_1_dist_Pt_true_v_obs'] = TH2F( "W_had_corr_d",   ";1 Jet W Had
 hists['had_W_corr_2_dist_Pt_true_v_obs'] = TH2F( "W_had_corr_d",   ";2 Jet W Hadronic #eta-#phi Distances [rad];2 Jet W Hadronic p_{T} Diff [GeV]", 50, 0, 3.2 , 50, -200, 200  )
 hists['had_W_corr_3_dist_Pt_true_v_obs'] = TH2F( "W_had_corr_d",   ";3 Jet W Hadronic #eta-#phi Distances [rad];3 Jet W Hadronic p_{T} diff [GeV]", 50, 0, 3.2 , 50, -200, 200  )
 hists['had_W_corr_dist_Pt_true_v_obs'] = TH2F( "W_had_corr_d",   ";W Hadronic #eta-#phi Distances [rad];W Hadronic p_{T} diff [GeV]", 50, 0, 3.2 , 50, -200, 200  )
-# Closest 1-jet Pt difference vs. closest 2-jet Pt difference
-hists['had_W_corr_1_pT_diff_v_2_pT_diff'] = TH2F("W Hadronic Closest 1-jet p_{T} Diffs vs. W Hadronic Closest 2-jet p_{T} Diffs",\
-                                             ";W Hadronic Closest 1-jet p_{T} Diffs; W Hadronic Closest 2-jet p_{T} Diffs", 50, -200, 200, 50, -200, 200)
 
 # Leptonic b
 # True vs. obs
@@ -407,10 +404,8 @@ def make_histograms():
 
         ################################################# true vs observed ################################################# 
 
-        # Variables to hold minimum distances for 1 and 2-jets separately.
-        W_had_dist_true_1 = W_had_dist_true_2 = 10000000
-        # Perform jet matching for the bs and Ws
-        b_had_dist_true = b_lep_dist_true = W_had_dist_true = 1000
+        # Variables to set minimum distances intiially.    
+        b_had_dist_true = b_lep_dist_true = W_had_dist_true = W_had_dist_true_1 = W_had_dist_true_2 = 1000000
 
         # Perform jet matching for the bs, all jets, b-tagged and not b-tagged should be considered.
         for k in range(len(jets)): # loop through each jet to find the minimum distance for each particle
@@ -434,7 +429,7 @@ def make_histograms():
         # If there are no jets remaining in jets, then skip this event. Don't populate histograms.
         if not good_jets:
             continue
-
+        
         for k in range(len(good_jets)):
             # Go through each 1,2,3 combination of jets that are not b-tagged and check their sum
             # Single jets
@@ -444,12 +439,27 @@ def make_histograms():
                 W_had_dist_true = W_had_d_true
                 closest_W_had = sum_vect
                 jet_combo = 0
-            # Comparison for best single jet
-            if W_had_d_true < W_had_dist_true_1:
-                W_had_true_obs_pT_diff_1 = W_had_true.Pt() - sum_vect.Pt()
+            # Only calculate difference for best single jet.
+            W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
+        
+        # If the best single jet doesn't pass cuts, then consider two jets.
+        if closest_W_had.M() <= W_had_m_cutoff[0] or closest_W_had.M() >= W_had_m_cutoff[1] or W_had_true_obs_pT_diff <= W_had_pT_cutoff[0] or W_had_true_obs_pT_diff >= W_had_pT_cutoff[1]:
+            # Trijets
+            for k in range(len(good_jets)):
+                for j in range(k + 1, len(good_jets)):     
+                    for l in range(j+1, len(good_jets)):
+                        sum_vect = good_jets[k] + good_jets[j] + good_jets[l]
+                        W_had_d_true = find_dist(W_had_true, sum_vect)
+                        if W_had_d_true < W_had_dist_true:
+                            W_had_dist_true = W_had_d_true
+                            closest_W_had = sum_vect
+                            jet_combo = 2
+            W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
 
+        if closest_W_had.M() >= W_had_m_cutoff[0] or closest_W_had.M() >= W_had_m_cutoff[1] or W_had_true_obs_pT_diff <= W_had_pT_cutoff[0] or W_had_true_obs_pT_diff >= W_had_pT_cutoff[1]:
             # Dijets 
-            if len(good_jets) >= 2:
+            for k in range(len(good_jets)):
+                # if good_jets only contains one element, loop is skipped since range would be (1,1)
                 for j in range(k + 1, len(good_jets)):                  
                     sum_vect = good_jets[k] + good_jets[j] 
                     W_had_d_true = find_dist(W_had_true, sum_vect)
@@ -457,18 +467,7 @@ def make_histograms():
                         W_had_dist_true = W_had_d_true
                         closest_W_had = sum_vect
                         jet_combo = 1
-                    if W_had_d_true < W_had_dist_true_2:
-                        W_had_true_obs_pT_diff_2 = W_had_true.Pt() - sum_vect.Pt()
-
-            # Trijets
-                    if len(good_jets) >= 3:
-                        for l in range(j+1, len(good_jets)):
-                            sum_vect = good_jets[k] + good_jets[j] + good_jets[l]
-                            W_had_d_true = find_dist(W_had_true, sum_vect)
-                            if W_had_d_true < W_had_dist_true:
-                                W_had_dist_true = W_had_d_true
-                                closest_W_had = sum_vect
-                                jet_combo = 2
+            W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
 
         # Special calculations for the observed leptonic W  
         muon_pT_obs = [jet_mu[i][0], jet_mu[i][1]]
@@ -485,9 +484,6 @@ def make_histograms():
         # Calculate the transverse mass
         obs_daughter_angle = np.arccos( np.dot(muon_pT_obs, nu_pT_obs) / norm(muon_pT_obs) / norm(nu_pT_obs) )
         met_obs = np.sqrt(2*jet_mu[i][4]*jet_mu_vect.Pt()*(1 - np.cos(obs_daughter_angle))) 
-
-        # hadronic W calculations
-        W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
 
         # Compare hadronic t distances
         t_had_jets = closest_b_had + closest_W_had
@@ -606,10 +602,6 @@ def make_histograms():
         hists['had_W_corr_mass_dist_true_v_obs'].Fill(closest_W_had.M(), W_had_dist_true) 
         hists['had_W_corr_mass_Pt_true_v_obs'].Fill(closest_W_had.M(), W_had_true_obs_pT_diff) 
         hists['had_W_corr_dist_Pt_true_v_obs'].Fill(W_had_dist_true, W_had_true_obs_pT_diff)  
-        # Closest 1-jet Pt difference vs. closest 2-jet Pt difference
-        if len(jets) >= 2: # If there are at least two jets to be considered, then we will have both a best single jet and a best dijet.
-            # hists['had_W_scat_1_pT_diff_v_2_pT_diff'].Fill(W_had_true_obs_pT_diff_1, W_had_true_obs_pT_diff_2)
-            hists['had_W_corr_1_pT_diff_v_2_pT_diff'].Fill(W_had_true_obs_pT_diff_1, W_had_true_obs_pT_diff_2)
         # Closest pT difference vs. pT
         hists['had_W_true_obs_pT'].Fill(np.float(closest_W_had.Pt()))
         hists['had_W_true_obs_pT_diff'].Fill(np.float(W_had_true_obs_pT_diff))
@@ -644,18 +636,18 @@ def make_histograms():
             hists['had_W_corr_3_mass_Pt_true_v_obs'].Fill(closest_W_had.M(), W_had_true_obs_pT_diff)
             hists['had_W_corr_3_dist_Pt_true_v_obs'].Fill(W_had_dist_true, W_had_true_obs_pT_diff)
 
-        # counter for hadronic W
-        # Update tally for which jet combination is the closest
-        W_had_m_cut = (closest_W_had.M() >= W_had_m_cutoff[0] and closest_W_had.M() <= W_had_m_cutoff[1])
-        W_had_pT_cut = (W_had_true_obs_pT_diff >= W_had_pT_cutoff[0] and W_had_true_obs_pT_diff <= W_had_pT_cutoff[1])
-        W_had_dist_cut = (W_had_dist_true <= W_had_dist_cutoff[1]) 
-        good_W_had = (W_had_m_cut and W_had_pT_cut and W_had_dist_cut)
+        # # counter for hadronic W
+        # # Update tally for which jet combination is the closest
+        # W_had_m_cut = (closest_W_had.M() >= W_had_m_cutoff[0] and closest_W_had.M() <= W_had_m_cutoff[1])
+        # W_had_pT_cut = (W_had_true_obs_pT_diff >= W_had_pT_cutoff[0] and W_had_true_obs_pT_diff <= W_had_pT_cutoff[1])
+        # W_had_dist_cut = (W_had_dist_true <= W_had_dist_cutoff[1]) 
+        # good_W_had = (W_had_m_cut and W_had_pT_cut and W_had_dist_cut)
 
-        W_had_jets[jet_combo] += 1.
-        W_had_total_cuts[jet_combo] += good_W_had
-        W_had_m_cuts[jet_combo] += W_had_m_cut
-        W_had_pT_cuts[jet_combo] += W_had_pT_cut
-        W_had_dist_cuts[jet_combo] += W_had_dist_cut
+        # W_had_jets[jet_combo] += 1.
+        # W_had_total_cuts[jet_combo] += good_W_had
+        # W_had_m_cuts[jet_combo] += W_had_m_cut
+        # W_had_pT_cuts[jet_combo] += W_had_pT_cut
+        # W_had_dist_cuts[jet_combo] += W_had_dist_cut
 
         # counter for lep W
         W_lep_ET_cut = (W_lep_ET_diff >= W_lep_ET_cutoff[0] and W_lep_ET_diff <= W_lep_ET_cutoff[1])
@@ -678,7 +670,7 @@ def make_histograms():
         # counter for leptonic b
         b_lep_pT_cut = (b_lep_true_obs_pT_diff >= b_lep_pT_cutoff[0] and b_lep_true_obs_pT_diff <= b_lep_pT_cutoff[1])
         b_lep_dist_cut = (b_lep_dist_true <= b_lep_dist_cutoff[1]) 
-        good_b_lep = (and b_lep_pT_cut and b_lep_dist_cut)
+        good_b_lep = (b_lep_pT_cut and b_lep_dist_cut)
 
         b_lep_total_cuts += good_b_lep
         b_lep_pT_cuts += b_lep_pT_cut
