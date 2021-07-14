@@ -31,18 +31,12 @@ if plot_cuts:
     subdir += "_cut"
 
 # Cut ranges for the partons
-W_had_m_cutoff = (25, 130)
-W_had_pT_cutoff = (-50, 50)
-W_had_dist_cutoff = (0, 0.7)
+t_had_m_cutoff = (50, 225)
+t_had_pT_cutoff = (-50, 100)
+t_had_dist_cutoff = (0, 1.5)
 
-W_lep_ET_cutoff = (-100, 100)
-W_lep_dist_cutoff = (0, 1)
-
-b_had_pT_cutoff = (-60, 60)
-b_had_dist_cutoff = (0, 0.7)
-
-b_lep_pT_cutoff = (-60, 60)
-b_lep_dist_cutoff = (0, 0.7)
+t_lep_pT_cutoff = (-50, 160)
+t_lep_dist_cutoff = (0, 1.5)
 
 # load data
 predictions = np.load(outputdir + 'predictions.npz')
@@ -270,7 +264,7 @@ hists['lep_t_dist_pred_v_true'].SetTitle("t Leptonic #phi distances, Predicted v
 hists['lep_t_dist_pred_v_obs'] = TH1F("h_t_lep_d","t Leptonic Distances, Predicted vs Observed", 50, 0, 3)
 hists['lep_t_dist_pred_v_obs'].SetTitle("t Leptonic #phi distances, Predicted vs Observed; Leptonic (radians);A.U.")
 # transverse mass and energy
-hists['lep_t_transverse_energy_diff'] = TH1F("t_lep_ET_d","t Leptonic Transverse Energy Difference, Truth - Observed", 50, -200, 200)
+hists['lep_t_transverse_energy_diff'] = TH1F("t_lep_ET_d","t Leptonic Transverse Energy Difference, Truth - Observed", 50, -120, 120)
 hists['lep_t_transverse_energy_diff'].SetTitle("t Leptonic Transverse Energy Difference, Truth - Observed;Leptonic (GeV);A.U.")
 # Matching correlation plots
 hists['lep_t_corr_ET_diff_dist_true_v_obs'] = TH2F("t Leptonic E_{T} Diffs vs. #eta-#phi Distances", ";t Leptonic #eta-#phi Distances, True vs Observed; t Leptonic E_{T} Diff [GeV]", 50, 0, 3.2, 50, -400, 400)
@@ -299,23 +293,17 @@ hists['had_t_corr_pT_diff_dist_true_v_obs'] = TH2F("t Hadronic p_{T} Diffs vs. #
 # Function to make histograms
 def make_histograms():
 
-    W_had_jets = [0., 0., 0.] # List of number of events best matched by 1,2,3 jets respectively.
-    W_had_m_cuts = [0., 0., 0.]
-    W_had_pT_cuts = [0., 0., 0.]
-    W_had_dist_cuts = [0., 0., 0.]
-    W_had_total_cuts = [0., 0., 0.]
+    jet_breakdown = [0., 0., 0.] # List of number of events best matched by 1,2,3 jets respectively.
+    jet_breakdown_cuts = [0., 0., 0.]
 
-    W_lep_total_cuts = 0.
-    W_lep_ET_cuts = 0.
-    W_lep_dist_cuts = 0.
+    t_had_m_cuts = 0.
+    t_had_pT_cuts = 0.
+    t_had_dist_cuts = 0.
+    t_had_total_cuts = 0.
 
-    b_had_pT_cuts = 0.
-    b_had_dist_cuts = 0.
-    b_had_total_cuts = 0.
-
-    b_lep_pT_cuts = 0.
-    b_lep_dist_cuts = 0.
-    b_lep_total_cuts = 0.
+    t_lep_pT_cuts = 0.
+    t_lep_dist_cuts = 0.
+    t_lep_total_cuts = 0.
 
     good_event = 0.
 
@@ -485,78 +473,38 @@ def make_histograms():
         b_had_true_obs_pT_diff = b_had_true.Pt() - closest_b_had.Pt()
         b_lep_true_obs_pT_diff = b_lep_true.Pt() - closest_b_lep.Pt()
 
-        ################################################# predicted vs observed #################################################
+        # calculate percentages
 
-        # Once the optimal jets have been matched in the previous section, 
-        #  the eta-phi distances can be calculated between the predicted and observed variables
-        #  with no further work.
 
-        # Leptonic W
-        # Calculate the distance between predicted and observed phi. 
-        # No eta distance for comparison with truth vs. obs and pred vs. true
-        W_lep_dphi_po = np.abs( min( np.abs(W_lep_fitted.Phi()-lep_phi), 2*np.pi-np.abs(W_lep_fitted.Phi()-lep_phi) ) )
-        W_lep_R_po = np.sqrt(W_lep_dphi_po**2)
-        # Hadronic W
-        W_had_R_po = find_dist( W_had_fitted, closest_W_had )
+        # counter for hadronic t
+        t_had_m_cut = (t_had_jets.M() >= t_had_m_cutoff[0] and t_had_jets.M() <= t_had_m_cutoff[1])
+        t_had_pT_cut = (t_had_true_obs_pT_diff >= t_had_pT_cutoff[0] and t_had_true_obs_pT_diff <= t_had_pT_cutoff[1])
+        t_had_dist_cut = (t_had_dist_true <= t_had_dist_cutoff[1]) 
+        good_t_had = (t_had_pT_cut and t_had_dist_cut)
 
-        # Leptonic b
-        b_lep_R_po = find_dist( b_lep_fitted, closest_b_lep )
-        # Hadronic b
-        b_had_R_po = find_dist( b_had_fitted, closest_b_had )
+        t_had_total_cuts += good_t_had
+        t_had_m_cuts += t_had_m_cut
+        t_had_pT_cuts += t_had_pT_cut
+        t_had_dist_cuts += t_had_dist_cut
 
-        # Leptonic t
-        t_lep_dphi_po = min(np.abs(t_lep_fitted.Phi()-obs_t_phi), 2*np.pi-np.abs(t_lep_fitted.Phi()-obs_t_phi))
-        t_lep_R_po = np.sqrt(t_lep_dphi_po**2) # Again, no eta
-        # Hadronic t
-        t_had_R_po = find_dist( t_had_fitted, t_had_jets )
+        # counter for leptonic t
+        t_lep_pT_cut = (t_lep_true_obs_pT_diff >= t_lep_pT_cutoff[0] and t_lep_true_obs_pT_diff <= t_lep_pT_cutoff[1])
+        t_lep_dist_cut = (t_lep_dist_true <= t_lep_dist_cutoff[1]) 
+        good_t_lep = (t_lep_pT_cut and t_lep_dist_cut)
 
-        ################################################# check percentages #################################################
-        # counter for hadronic W
-        # Update tally for which jet combination is the closest
-        W_had_m_cut = (closest_W_had.M() >= W_had_m_cutoff[0] and closest_W_had.M() <= W_had_m_cutoff[1])
-        W_had_pT_cut = (W_had_true_obs_pT_diff >= W_had_pT_cutoff[0] and W_had_true_obs_pT_diff <= W_had_pT_cutoff[1])
-        W_had_dist_cut = (W_had_dist_true <= W_had_dist_cutoff[1]) 
-        good_W_had = (W_had_m_cut and W_had_pT_cut and W_had_dist_cut)
-
-        W_had_jets[jet_combo_index] += 1.
-        W_had_total_cuts[jet_combo_index] += good_W_had
-        W_had_m_cuts[jet_combo_index] += W_had_m_cut
-        W_had_pT_cuts[jet_combo_index] += W_had_pT_cut
-        W_had_dist_cuts[jet_combo_index] += W_had_dist_cut
-
-        # counter for lep W
-        W_lep_ET_cut = (W_lep_ET_diff >= W_lep_ET_cutoff[0] and W_lep_ET_diff <= W_lep_ET_cutoff[1])
-        W_lep_dist_cut = (W_lep_dist_true <= W_lep_dist_cutoff[1]) 
-        good_W_lep = (W_lep_ET_cut and W_lep_dist_cut)
-
-        W_lep_total_cuts += good_W_lep
-        W_lep_ET_cuts += W_lep_ET_cut
-        W_lep_dist_cuts += W_lep_dist_cut
-
-        # counter for hadronic b
-        b_had_pT_cut = (b_had_true_obs_pT_diff >= b_had_pT_cutoff[0] and b_had_true_obs_pT_diff <= b_had_pT_cutoff[1])
-        b_had_dist_cut = (b_had_dist_true <= b_had_dist_cutoff[1]) 
-        good_b_had = (b_had_pT_cut and b_had_dist_cut)
-
-        b_had_total_cuts += good_b_had
-        b_had_pT_cuts += b_had_pT_cut
-        b_had_dist_cuts += b_had_dist_cut
-
-        # counter for leptonic b
-        b_lep_pT_cut = (b_lep_true_obs_pT_diff >= b_lep_pT_cutoff[0] and b_lep_true_obs_pT_diff <= b_lep_pT_cutoff[1])
-        b_lep_dist_cut = (b_lep_dist_true <= b_lep_dist_cutoff[1]) 
-        good_b_lep = (b_lep_pT_cut and b_lep_dist_cut)
-
-        b_lep_total_cuts += good_b_lep
-        b_lep_pT_cuts += b_lep_pT_cut
-        b_lep_dist_cuts += b_lep_dist_cut
+        t_lep_total_cuts += good_t_lep
+        t_lep_pT_cuts += t_lep_pT_cut
+        t_lep_dist_cuts += t_lep_dist_cut
 
         # total
-        good_event += (good_b_lep and good_b_had and good_W_had and good_W_lep)
+        good_event += (good_t_lep and good_t_had)
+
+        jet_breakdown[jet_combo_index] += 1.
+        jet_breakdown_cuts[jet_combo_index] += good_event
 
         ################################################# populate histograms #################################################
 
-        if (not plot_cuts) or (plot_cuts and good_event):
+        if (not plot_cuts) or (plot_cuts and (good_t_lep and good_t_had)):
 
             # Leptonic b
             hists['lep_b_dist_true_v_obs'].Fill(np.float(b_lep_dist_true))
@@ -655,54 +603,33 @@ def make_histograms():
     print('Total number of events: {} \n'.format(n_events))
     print('\n=================================================================\n')
     print('Cut Criteria')
-    print('Hadronic W, mass: {}, pT: {}, distance: {}'.format(W_had_m_cutoff, W_had_pT_cutoff, W_had_dist_cutoff))
-    print('Leptonic W, E_T: {}, dist: {}'.format(W_lep_ET_cutoff, W_lep_dist_cutoff))
-    print('Hadronic b, pT: {}, distance: {}'.format(b_had_pT_cutoff, b_had_dist_cutoff))
-    print('Leptonic b, pT: {}, distance: {}'.format(b_lep_pT_cutoff, b_lep_dist_cutoff))
+    print('Hadronic t, mass: {}, pT: {}, distance: {}'.format(t_had_m_cutoff, t_had_pT_cutoff, t_had_dist_cutoff))
+    print('Leptonic t, pT: {}, distance: {}'.format(t_lep_pT_cutoff, t_lep_dist_cutoff))
     print('\n=================================================================\n')
     print('Jet matching percentages for hadronic W')
-    print('{}% 1 jet Hadronic W, {} events'.format(100.*W_had_jets[0]/n_events, W_had_jets[0]))
-    print('{}% 2 jet Hadronic W, {} events'.format(100.*W_had_jets[1]/n_events, W_had_jets[1]))
-    print('{}% 3 jet Hadronic W, {} events'.format(100.*W_had_jets[2]/n_events, W_had_jets[2]))
+    print('{}% 1 jet Hadronic W, {} events'.format(100.*jet_breakdown[0]/n_events, jet_breakdown[0]))
+    print('{}% 2 jet Hadronic W, {} events'.format(100.*jet_breakdown[1]/n_events, jet_breakdown[1]))
+    print('{}% 3 jet Hadronic W, {} events'.format(100.*jet_breakdown[2]/n_events, jet_breakdown[2]))
     print('\n=================================================================\n')
     print("Number of hadronic Ws satisfying all cut criteria")
-    print('{}% Total Hadronic Ws within cuts, {} events'.format(100.*sum(W_had_total_cuts)/n_events, sum(W_had_total_cuts)))
-    print('{}% 1 jet Hadronic Ws within cut, {} events'.format(100.*W_had_total_cuts[0]/W_had_jets[0], W_had_total_cuts[0]))
-    print('{}% 2 jet Hadronic Ws within cut, {} events'.format(100.*W_had_total_cuts[1]/W_had_jets[1], W_had_total_cuts[1]))
-    print('{}% 3 jet Hadronic Ws within cut, {} events\n'.format(100.*W_had_total_cuts[2]/W_had_jets[2], W_had_total_cuts[2]))
-    print("Number of hadronic W's satisfying mass cut criteria")
-    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*W_had_m_cuts[0]/W_had_jets[0], W_had_m_cuts[0]))
-    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*W_had_m_cuts[1]/W_had_jets[1], W_had_m_cuts[1]))
-    print('{}% 3 jet Hadronic Ws, {} events\n'.format(100.*W_had_m_cuts[2]/W_had_jets[2], W_had_m_cuts[2]))
-    print("Number of hadronic Ws satisfying pT cut criteria")
-    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*W_had_pT_cuts[0]/W_had_jets[0], W_had_pT_cuts[0]))
-    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*W_had_pT_cuts[1]/W_had_jets[1], W_had_pT_cuts[1]))
-    print('{}% 3 jet Hadronic Ws, {} events\n'.format(100.*W_had_pT_cuts[2]/W_had_jets[2], W_had_pT_cuts[2]))
-    print("Number of hadronic Ws satisfying distance cut criteria")
-    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*W_had_dist_cuts[0]/W_had_jets[0], W_had_dist_cuts[0]))
-    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*W_had_dist_cuts[1]/W_had_jets[1], W_had_dist_cuts[1]))
-    print('{}% 3 jet Hadronic Ws, {} events'.format(100.*W_had_dist_cuts[2]/W_had_jets[2], W_had_dist_cuts[2]))
+    print('{}% Total Hadronic Ws within cuts, {} events'.format(100.*sum(jet_breakdown_cuts)/n_events, sum(jet_breakdown_cuts)))
+    print('{}% 1 jet Hadronic Ws within cut, {} events'.format(100.*jet_breakdown_cuts[0]/jet_breakdown[0], jet_breakdown_cuts[0]))
+    print('{}% 2 jet Hadronic Ws within cut, {} events'.format(100.*jet_breakdown_cuts[1]/jet_breakdown[1], jet_breakdown_cuts[1]))
+    print('{}% 3 jet Hadronic Ws within cut, {} events\n'.format(100.*jet_breakdown_cuts[2]/jet_breakdown[2], jet_breakdown_cuts[2]))
     print('\n=================================================================\n')
-    print("Number of leptonic Ws satisfying all cut criteria")
-    print('{}% , {} events\n'.format(100.*W_lep_total_cuts/n_events, W_lep_total_cuts))
-    print("Number of leptonic Ws satisfying ET cut criteria")
-    print('{}%, {} events'.format(100.*W_lep_ET_cuts/n_events, W_lep_ET_cuts))
-    print("Number of leptonic Ws satisfying distance cut criteria")
-    print('{}%, {} events'.format(100.*W_lep_dist_cuts/n_events, W_lep_dist_cuts))
+    print("Number of hadronic ts satisfying all cut criteria")
+    print('{}% , {} events\n'.format(100.*t_had_total_cuts/n_events, t_had_total_cuts))
+    print("Number of hadronic t's satisfying pT cut criteria")
+    print('{}%, {} events'.format(100.*t_had_pT_cuts/n_events, t_had_pT_cuts))
+    print("Number of hadronic ts satisfying distance cut criteria")
+    print('{}%, {} events'.format(100.*t_had_dist_cuts/n_events, t_had_dist_cuts))
     print('\n=================================================================\n')
-    print("Number of hadronic bs satisfying all cut criteria")
-    print('{}% , {} events\n'.format(100.*b_had_total_cuts/n_events, b_had_total_cuts))
-    print("Number of hadronic b's satisfying pT cut criteria")
-    print('{}%, {} events'.format(100.*b_had_pT_cuts/n_events, b_had_pT_cuts))
-    print("Number of hadronic bs satisfying distance cut criteria")
-    print('{}%, {} events'.format(100.*b_had_dist_cuts/n_events, b_had_dist_cuts))
-    print('\n=================================================================\n')
-    print("Number of leptonic bs satisfying all cut criteria")
-    print('{}% , {} events\n'.format(100.*b_lep_total_cuts/n_events, b_lep_total_cuts))
-    print("Number of hadronic b's satisfying pT cut criteria")
-    print('{}%, {} events'.format(100.*b_lep_pT_cuts/n_events, b_lep_pT_cuts))
-    print("Number of hadronic bs satisfying distance cut criteria")
-    print('{}%, {} events'.format(100.*b_lep_dist_cuts/n_events, b_lep_dist_cuts))
+    print("Number of leptonic ts satisfying all cut criteria")
+    print('{}% , {} events\n'.format(100.*t_lep_total_cuts/n_events, b_lep_total_cuts))
+    print("Number of hadronic t's satisfying pT cut criteria")
+    print('{}%, {} events'.format(100.*t_lep_pT_cuts/n_events, t_lep_pT_cuts))
+    print("Number of hadronic ts satisfying distance cut criteria")
+    print('{}%, {} events'.format(100.*t_lep_dist_cuts/n_events, t_lep_dist_cuts))
     print('\n=================================================================\n')
     print("Events satisfying cut criteria after all cuts")
     print('{}%, {} events'.format(100.*good_event/n_events, good_event))
