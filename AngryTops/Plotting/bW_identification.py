@@ -410,7 +410,7 @@ def make_histograms():
                         W_had_dist_true = W_had_d_true
                         closest_W_had = sum_vect
             W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
-            jet_combo = 1
+            jet_combo_index = 1
         
         # If the best single jet doesn't pass cuts, then consider three jets.
         if (len(good_jets) >= 3) and (closest_W_had.M() <= W_had_m_cutoff[0] \
@@ -446,7 +446,7 @@ def make_histograms():
                     closest_W_had = sum_vect
                 # Only calculate difference for best single jet.
             W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
-            jet_combo = 0
+            jet_combo_index = 0
 
         # Special calculations for the observed leptonic W  
         muon_pT_obs = [jet_mu[i][0], jet_mu[i][1]]
