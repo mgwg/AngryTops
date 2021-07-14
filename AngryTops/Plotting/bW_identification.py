@@ -400,16 +400,16 @@ def make_histograms():
         if not good_jets:
             continue
         
-        # Single jets
         for k in range(len(good_jets)):
-            sum_vect = good_jets[k]    
-            W_had_d_true = find_dist(W_had_true, sum_vect)
-            if W_had_d_true < W_had_dist_true:
-                W_had_dist_true = W_had_d_true
-                closest_W_had = sum_vect
-            # Only calculate difference for best single jet.
+            # if good_jets only contains one element, loop is skipped since range would be (1,1)
+            for j in range(k + 1, len(good_jets)):                  
+                sum_vect = good_jets[k] + good_jets[j] 
+                W_had_d_true = find_dist(W_had_true, sum_vect)
+                if W_had_d_true < W_had_dist_true:
+                    W_had_dist_true = W_had_d_true
+                    closest_W_had = sum_vect
         W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
-        jet_combo = 0
+        jet_combo = 1
         
         # If the best single jet doesn't pass cuts, then consider three jets.
         if (len(good_jets) >= 3) and ((closest_W_had.M() <= W_had_m_cutoff[0] or closest_W_had.M() >= W_had_m_cutoff[1]) or (W_had_true_obs_pT_diff <= W_had_pT_cutoff[0] or W_had_true_obs_pT_diff >= W_had_pT_cutoff[1])):
@@ -426,19 +426,19 @@ def make_histograms():
             W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
             jet_combo = 2
 
-        if (len(good_jets) >= 2) and ((closest_W_had.M() <= W_had_m_cutoff[0] or closest_W_had.M() >= W_had_m_cutoff[1]) or (W_had_true_obs_pT_diff <= W_had_pT_cutoff[0] or W_had_true_obs_pT_diff >= W_had_pT_cutoff[1])):
+        if ((closest_W_had.M() <= W_had_m_cutoff[0] or closest_W_had.M() >= W_had_m_cutoff[1]) or (W_had_true_obs_pT_diff <= W_had_pT_cutoff[0] or W_had_true_obs_pT_diff >= W_had_pT_cutoff[1])):
             # Dijets 
             W_had_dist_true = 1000000
+            # Single jets
             for k in range(len(good_jets)):
-                # if good_jets only contains one element, loop is skipped since range would be (1,1)
-                for j in range(k + 1, len(good_jets)):                  
-                    sum_vect = good_jets[k] + good_jets[j] 
-                    W_had_d_true = find_dist(W_had_true, sum_vect)
-                    if W_had_d_true < W_had_dist_true:
-                        W_had_dist_true = W_had_d_true
-                        closest_W_had = sum_vect
+                sum_vect = good_jets[k]    
+                W_had_d_true = find_dist(W_had_true, sum_vect)
+                if W_had_d_true < W_had_dist_true:
+                    W_had_dist_true = W_had_d_true
+                    closest_W_had = sum_vect
+                # Only calculate difference for best single jet.
             W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
-            jet_combo = 1
+            jet_combo = 0
 
         # Special calculations for the observed leptonic W  
         muon_pT_obs = [jet_mu[i][0], jet_mu[i][1]]
