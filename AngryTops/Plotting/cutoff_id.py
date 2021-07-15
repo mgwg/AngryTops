@@ -5,7 +5,7 @@ from scipy.spatial import distance
 from ROOT import *
 import pickle
 from AngryTops.Plotting.identification_helper import MakeP4, find_dist, plot_hists
-import matplotlib as plt 
+import matplotlib.pyplot as plt 
 
 ALL = 0
 NONE = 1
