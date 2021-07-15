@@ -6,7 +6,6 @@ from ROOT import *
 import pickle
 from AngryTops.Plotting.identification_helper import MakeP4, find_dist, plot_hists
 import matplotlib as plt 
-import seaborn as sns
 
 ALL = 0
 NONE = 1
@@ -179,7 +178,7 @@ def match_jets(i):
                 good_jets.remove(jets[m])
     # If there are no jets remaining in good_jets, then skip this event. Don't populate histograms.
     if not good_jets:
-        return
+        return (False, False, False)
     
     # Consider best two jets first.
     if (len(good_jets) >= 2):
@@ -260,14 +259,6 @@ def match_jets(i):
     if W_had_m_cut:
         W_had_pT_cut = (W_had_true_obs_pT_diff >= W_had_pT_cutoff[0] and W_had_true_obs_pT_diff <= W_had_pT_cutoff[1])
         W_had_dist_cut = (W_had_dist_true <= W_had_dist_cutoff[1]) 
-    # All W_had cuts must be satisfied simultaneously.
-    good_W_had = (W_had_m_cut and W_had_pT_cut and W_had_dist_cut)
-
-    W_had_jets[jet_combo_index] += 1.
-    W_had_total_cuts[jet_combo_index] += good_W_had
-    W_had_m_cuts[jet_combo_index] += W_had_m_cut
-    W_had_pT_cuts[jet_combo_index] += W_had_pT_cut
-    W_had_dist_cuts[jet_combo_index] += W_had_dist_cut
 
         # # counter for lep W
         # W_lep_ET_cut = (W_lep_ET_diff >= W_lep_ET_cutoff[0] and W_lep_ET_diff <= W_lep_ET_cutoff[1])
@@ -298,7 +289,6 @@ def match_jets(i):
 
         # # Good events must pass cuts on all partons.
         # good_event += (good_b_had and good_b_lep and good_W_had and good_W_lep)
-
     return (W_had_m_cut, W_had_pT_cut, W_had_dist_cut)
 
 
@@ -328,7 +318,7 @@ def calc_percentages():
             # good_event = 0.
 
         # loop through every event
-        for j in n_events: 
+        for j in range(n_events): 
             if ( n_events < 10 ) or ( (j+1) % int(float(n_events)/10.)  == 0 ):
                 perc = 100. * j / float(n_events)
                 print("INFO: Event %-9i  (%3.0f %%)" % ( j, perc ))
