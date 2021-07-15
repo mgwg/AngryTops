@@ -303,7 +303,7 @@ hists['had_t_corr_pT_diff_dist_true_v_obs'] = TH2F("t Hadronic p_{T} Diffs vs. #
 def make_histograms():
 
     # Counters to make tally number of events that pass cuts
-    W_had_jets = [0., 0., 0.] # List of number of events best matched to 1,2,3 jets respectively.
+    W_had_jet_combo_list = [0., 0., 0.] # List of number of events best matched to 1,2,3 jets respectively.
     W_had_m_cuts = [0., 0., 0.]
     W_had_pT_cuts = [0., 0., 0.]
     W_had_dist_cuts = [0., 0., 0.]
@@ -523,7 +523,7 @@ def make_histograms():
         # All W_had cuts must be satisfied simultaneously.
         good_W_had = (W_had_m_cut and W_had_pT_cut and W_had_dist_cut)
 
-        W_had_jets[jet_combo_index] += 1.
+        W_had_jet_combo_list[jet_combo_index] += good_W_had
         W_had_m_cuts[jet_combo_index] += W_had_m_cut
         W_had_pT_cuts[jet_combo_index] += W_had_pT_cut
         W_had_dist_cuts[jet_combo_index] += W_had_dist_cut
@@ -666,22 +666,22 @@ def make_histograms():
     print('Leptonic b, pT: {}, distance: {}'.format(b_lep_pT_cutoff, b_lep_dist_cutoff))
     print('\n==================================================================\n')
     print("Number of events satisfying all hadronic W cut criteria")
-    print('{}% Total Hadronic Ws within cuts, {} events'.format(100.*sum(W_had_jets)/n_events, sum(W_had_jets)))
-    print('{}% 1 jet Hadronic W, {} events'.format(100.*W_had_jets[0]/n_events, W_had_jets[0]))
-    print('{}% 2 jet Hadronic W, {} events'.format(100.*W_had_jets[1]/n_events, W_had_jets[1]))
-    print('{}% 3 jet Hadronic W, {} events\n'.format(100.*W_had_jets[2]/n_events, W_had_jets[2]))
+    print('{}% Total Hadronic Ws within cuts, {} events'.format(100.*sum(W_had_jet_combo_list)/n_events, sum(W_had_jet_combo_list)))
+    print('{}% 1 jet Hadronic W, {} events'.format(100.*W_had_jet_combo_list[0]/n_events, W_had_jet_combo_list[0]))
+    print('{}% 2 jet Hadronic W, {} events'.format(100.*W_had_jet_combo_list[1]/n_events, W_had_jet_combo_list[1]))
+    print('{}% 3 jet Hadronic W, {} events\n'.format(100.*W_had_jet_combo_list[2]/n_events, W_had_jet_combo_list[2]))
     print("Number of events satisfying hadronic W mass cut criteria")
-    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*W_had_m_cuts[0]/W_had_jets[0], W_had_m_cuts[0]))
-    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*W_had_m_cuts[1]/W_had_jets[1], W_had_m_cuts[1]))
-    print('{}% 3 jet Hadronic Ws, {} events\n'.format(100.*W_had_m_cuts[2]/W_had_jets[2], W_had_m_cuts[2]))
+    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*W_had_m_cuts[0]/W_had_jet_combo_list[0], W_had_m_cuts[0]))
+    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*W_had_m_cuts[1]/W_had_jet_combo_list[1], W_had_m_cuts[1]))
+    print('{}% 3 jet Hadronic Ws, {} events\n'.format(100.*W_had_m_cuts[2]/W_had_jet_combo_list[2], W_had_m_cuts[2]))
     print("Number of events satisfying hadronic W pT cut criteria")
-    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*W_had_pT_cuts[0]/W_had_jets[0], W_had_pT_cuts[0]))
-    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*W_had_pT_cuts[1]/W_had_jets[1], W_had_pT_cuts[1]))
-    print('{}% 3 jet Hadronic Ws, {} events\n'.format(100.*W_had_pT_cuts[2]/W_had_jets[2], W_had_pT_cuts[2]))
+    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*W_had_pT_cuts[0]/W_had_jet_combo_list[0], W_had_pT_cuts[0]))
+    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*W_had_pT_cuts[1]/W_had_jet_combo_list[1], W_had_pT_cuts[1]))
+    print('{}% 3 jet Hadronic Ws, {} events\n'.format(100.*W_had_pT_cuts[2]/W_had_jet_combo_list[2], W_had_pT_cuts[2]))
     print("Number of events satisfying hadronic W distance cut criteria")
-    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*W_had_dist_cuts[0]/W_had_jets[0], W_had_dist_cuts[0]))
-    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*W_had_dist_cuts[1]/W_had_jets[1], W_had_dist_cuts[1]))
-    print('{}% 3 jet Hadronic Ws, {} events'.format(100.*W_had_dist_cuts[2]/W_had_jets[2], W_had_dist_cuts[2]))
+    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*W_had_dist_cuts[0]/W_had_jet_combo_list[0], W_had_dist_cuts[0]))
+    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*W_had_dist_cuts[1]/W_had_jet_combo_list[1], W_had_dist_cuts[1]))
+    print('{}% 3 jet Hadronic Ws, {} events'.format(100.*W_had_dist_cuts[2]/W_had_jet_combo_list[2], W_had_dist_cuts[2]))
     print('\n==================================================================\n')
     print("Number of events satisfying all leptonic W cut criteria")
     print('{}% , {} events\n'.format(100.*W_lep_total_cuts/n_events, W_lep_total_cuts))
