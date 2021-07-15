@@ -581,7 +581,7 @@ def make_histograms():
     print('{}%, {} events'.format(100.*t_had_dist_cuts/n_events, t_had_dist_cuts))
     print('\n=================================================================\n')
     print("Number of leptonic ts satisfying all cut criteria")
-    print('{}% , {} events\n'.format(100.*t_lep_total_cuts/n_events, b_lep_total_cuts))
+    print('{}% , {} events\n'.format(100.*t_lep_total_cuts/n_events, t_lep_total_cuts))
     print("Number of hadronic t's satisfying pT cut criteria")
     print('{}%, {} events'.format(100.*t_lep_pT_cuts/n_events, t_lep_pT_cuts))
     print("Number of hadronic ts satisfying distance cut criteria")
