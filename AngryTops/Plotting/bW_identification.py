@@ -515,7 +515,7 @@ def make_histograms():
         # Hadronic t
         t_had_R_po = find_dist( t_had_fitted, t_had_jets )
 
-        ############################################## check percentages that pass cuts #################################################
+        ############################################## check whether each event passes cuts #################################################
         # counter for hadronic W
         # Update tally for which jet combination is the closest
         W_had_m_cut = (closest_W_had.M() >= W_had_m_cutoff[0] and closest_W_had.M() <= W_had_m_cutoff[1])
