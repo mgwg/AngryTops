@@ -319,9 +319,8 @@ def calc_percentages():
 
         # loop through every event
         for j in range(n_events): 
-            if ( n_events < 10 ) or ( (j+1) % int(float(n_events)/10.)  == 0 ):
-                perc = 100. * j / float(n_events)
-                print("INFO: Event %-9i  (%3.0f %%)" % ( j, perc ))
+            if j == 0 :
+                print("Mass cutoff: {}".format(i))
             (W_had_m_cut, W_had_pT_cut, W_had_dist_cut) = match_jets(j)
             
             W_had_m_total += W_had_m_cut
