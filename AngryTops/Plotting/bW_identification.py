@@ -31,7 +31,7 @@ b_tagging = NONE   # 0/All: Consider all jets, both b-tagged and not b-tagged
 # False to include events for which no combo of 1,2,3 jets pass cuts.                
 plot_cuts = False
 if plot_cuts:
-    subdir += '_cuts/'
+    subdir = '/closejets_img_cuts{}/'.format(date)
 
 # Cut ranges for the partons
 W_had_m_cutoff = (25, 130)
