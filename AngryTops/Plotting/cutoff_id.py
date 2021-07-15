@@ -228,7 +228,7 @@ def match_jets(i):
                 closest_W_had = sum_vect
             # Only calculate difference for best single jet.
         W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
-        jet_combo_index = 0
+        
 
             # # Special calculations for the observed leptonic W  
             # muon_pT_obs = [jet_mu[i][0], jet_mu[i][1]]
