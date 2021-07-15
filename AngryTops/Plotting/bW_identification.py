@@ -29,9 +29,9 @@ b_tagging = NONE   # 0/All: Consider all jets, both b-tagged and not b-tagged
 # For plot_cuts:
 # True if you want to plot only the events that pass the cuts
 # False to include events for which no combo of 1,2,3 jets pass cuts.                
-plot_cuts = True 
+plot_cuts = False
 if plot_cuts:
-    subdir = '/closejets_img{}_cuts/'.format(date)
+    subdir += '_cuts/'
 
 # Cut ranges for the partons
 W_had_m_cutoff = (25, 130)
@@ -105,7 +105,7 @@ jet_3 = jets_jets[:,2]
 jet_4 = jets_jets[:,3]
 jet_5 = jets_jets[:,4]
 # Create an array with each jet's arrays for accessing b-tagging states later.
-jet_list = np.stack([jet_1, jet_2, jet_3, jet_4, jet_5]) # I suppose you could use a dictionary here but the keys would just be indices.
+jet_list = np.stack([jet_1, jet_2, jet_3, jet_4, jet_5]) 
 
 # truth
 y_true_W_had = true[:,0,:]
@@ -123,7 +123,7 @@ y_fitted_b_lep = fitted[:,3,:]
 y_fitted_t_had = fitted[:,4,:]
 y_fitted_t_lep = fitted[:,5,:]
 
-# A meaningful name for the number of events
+# store number of events as a separate variable for clarity
 n_events = true.shape[0]
 
 # define indices
@@ -304,6 +304,7 @@ def make_histograms():
 
     # Counters to make tally number of events that pass cuts
     W_had_jets = [0., 0., 0.] # List of number of events best matched to 1,2,3 jets respectively.
+    W_had_total_cuts = [0., 0., 0.]
     W_had_m_cuts = [0., 0., 0.]
     W_had_pT_cuts = [0., 0., 0.]
     W_had_dist_cuts = [0., 0., 0.]
@@ -380,7 +381,7 @@ def make_histograms():
 
         ################################################# true vs observed ################################################# 
 
-        # Variables to set minimum distances intiially.    
+        # Set initial distances to be large since we don't know what the minimum distance is yet 
         b_had_dist_true = b_lep_dist_true = W_had_dist_true = 1000000
 
         # Perform jet matching for the bs, all jets, b-tagged and not b-tagged should be considered.
@@ -524,6 +525,7 @@ def make_histograms():
         good_W_had = (W_had_m_cut and W_had_pT_cut and W_had_dist_cut)
 
         W_had_jets[jet_combo_index] += 1.
+        W_had_total_cuts[jet_combo_index] += good_W_had
         W_had_m_cuts[jet_combo_index] += W_had_m_cut
         W_had_pT_cuts[jet_combo_index] += W_had_pT_cut
         W_had_dist_cuts[jet_combo_index] += W_had_dist_cut
@@ -658,18 +660,32 @@ def make_histograms():
 
     # Print data regarding percentage of each class of event
     print('Total number of events: {} \n'.format(n_events))
+    print('NOTE: some percentages do not reach 100%, as events where no Hadronic W can be matched after removing the b-tagged jets are skipped (all jets are b-tagged)')
     print('\n==================================================================\n')
     print('Cut Criteria')
+    print("Number of hadronic W's satisfying mass cut criteria")
     print('Hadronic W, mass: {}, pT: {}, distance: {}'.format(W_had_m_cutoff, W_had_pT_cutoff, W_had_dist_cutoff))
     print('Leptonic W, E_T: {}, dist: {}'.format(W_lep_ET_cutoff, W_lep_dist_cutoff))
     print('Hadronic b, pT: {}, distance: {}'.format(b_had_pT_cutoff, b_had_dist_cutoff))
     print('Leptonic b, pT: {}, distance: {}'.format(b_lep_pT_cutoff, b_lep_dist_cutoff))
     print('\n==================================================================\n')
-    print("Number of events satisfying all hadronic W cut criteria")
-    print('{}% Total Hadronic Ws within cuts, {} events'.format(100.*sum(W_had_jets)/n_events, sum(W_had_jets)))
-    print('{}% 1 jet Hadronic W, {} events'.format(100.*W_had_jets[0]/n_events, W_had_jets[0]))
-    print('{}% 2 jet Hadronic W, {} events'.format(100.*W_had_jets[1]/n_events, W_had_jets[1]))
-    print('{}% 3 jet Hadronic W, {} events\n'.format(100.*W_had_jets[2]/n_events, W_had_jets[2]))
+
+    print("Breakdown of total Hadronic Ws matched to 1, 2, and 3 jets, before applying cuts on events matched to 1 jet:")
+    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*W_had_jets[0]/n_events, W_had_jets[0]))
+    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*W_had_jets[1]/n_events, W_had_jets[1]))
+    print('{}% 3 jet Hadronic Ws, {} events\n'.format(100.*W_had_jets[2]/n_events, W_had_jets[2]))
+
+    print("Number of events satisfying all hadronic W cut criteria, as a percentage of their respective categories before applying cuts:")
+    print('{}% Total Hadronic Ws within cuts, {} events'.format(100.*sum(W_had_total_cuts)/n_events, sum(W_had_total_cuts)))
+    print('{}% 1 jet Hadronic W, {} events, out of {}'.format(100.*W_had_total_cuts[0]/W_had_jets[0], W_had_total_cuts[0], W_had_jets[0]))
+    print('{}% 2 jet Hadronic W, {} events, out of {}'.format(100.*W_had_total_cuts[1]/W_had_jets[1], W_had_total_cuts[1], W_had_jets[1]))
+    print('{}% 3 jet Hadronic W, {} events, out of {}\n'.format(100.*W_had_total_cuts[2]/W_had_jets[2], W_had_total_cuts[2], W_had_jets[2]))
+
+    print("Breakdown of total Hadronic Ws matched to 1, 2, and 3 jets after cuts are applied: ")
+    print('{}% 1 jet Hadronic W, {} events, out of {}'.format(100.*W_had_total_cuts[0]/sum(W_had_total_cuts), W_had_total_cuts[0], sum(W_had_total_cuts)))
+    print('{}% 2 jet Hadronic W, {} events, out of {}'.format(100.*W_had_total_cuts[1]/sum(W_had_total_cuts), W_had_total_cuts[1], sum(W_had_total_cuts)))
+    print('{}% 3 jet Hadronic W, {} events, out of {}\n'.format(100.*W_had_total_cuts[2]/sum(W_had_total_cuts), W_had_total_cuts[2], sum(W_had_total_cuts)))
+
     print("Number of events satisfying hadronic W mass cut criteria")
     print('{}% 1 jet Hadronic Ws, {} events'.format(100.*W_had_m_cuts[0]/W_had_jets[0], W_had_m_cuts[0]))
     print('{}% 2 jet Hadronic Ws, {} events'.format(100.*W_had_m_cuts[1]/W_had_jets[1], W_had_m_cuts[1]))
