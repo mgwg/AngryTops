@@ -126,21 +126,21 @@ dist_percentages = []
 mass_range = range(W_had_m_cutoff[1], 155, 5)
 
 # Function to analye each event and output whether or not it passes the required cuts.
-def match_jets(i):
+def match_jets(event):
             
-    W_had_true   = MakeP4( y_true_W_had[i], m_W, representation)
-    W_lep_true   = MakeP4( y_true_W_lep[i], m_W , representation)
+    W_had_true   = MakeP4( y_true_W_had[event], m_W, representation)
+    W_lep_true   = MakeP4( y_true_W_lep[event], m_W , representation)
 
-    b_had_true   = MakeP4( y_true_b_had[i], m_b , representation)
-    b_lep_true   = MakeP4( y_true_b_lep[i], m_b , representation)
+    b_had_true   = MakeP4( y_true_b_had[event], m_b , representation)
+    b_lep_true   = MakeP4( y_true_b_lep[event], m_b , representation)
 
-    jet_mu_vect = MakeP4(jet_mu[i],jet_mu[i][4], representation)
+    jet_mu_vect = MakeP4(jet_mu[event],jet_mu[event][4], representation)
 
-    jet_1_vect = MakeP4(jet_1[i], jet_1[i][4], representation)
-    jet_2_vect = MakeP4(jet_2[i], jet_2[i][4], representation)
-    jet_3_vect = MakeP4(jet_3[i], jet_3[i][4], representation)
-    jet_4_vect = MakeP4(jet_4[i], jet_4[i][4], representation)
-    jet_5_vect = MakeP4(jet_5[i], jet_5[i][4], representation)
+    jet_1_vect = MakeP4(jet_1[event], jet_1[event][4], representation)
+    jet_2_vect = MakeP4(jet_2[event], jet_2[event][4], representation)
+    jet_3_vect = MakeP4(jet_3[event], jet_3[event][4], representation)
+    jet_4_vect = MakeP4(jet_4[event], jet_4[event][4], representation)
+    jet_5_vect = MakeP4(jet_5[event], jet_5[event][4], representation)
     
     jets = []
     # add list containing jets of correspoonding event
@@ -149,7 +149,7 @@ def match_jets(i):
     jets.append(jet_3_vect)
     jets.append(jet_4_vect)
     # If there is no fifth jet, do not append it to list of jets to avoid considering it in the pairs of jets.
-    if not np.all(jet_5[i] == 0.):
+    if not np.all(jet_5[event] == 0.):
         jets.append(jet_5_vect)
 
     ################################################# true vs observed ################################################# 
@@ -174,7 +174,7 @@ def match_jets(i):
         for m in range(len(jets)):
             # if don't include any b tagged jets and jet is b tagged OR
             # if only considering b tagged jets and jet is not b tagged
-            if (b_tagging == 1 and jet_list[m, i, 5]) or (b_tagging == 2 and not jet_list[m,i,5]):
+            if (b_tagging == 1 and jet_list[m, event, 5]) or (b_tagging == 2 and not jet_list[m,event,5]):
                 good_jets.remove(jets[m])
     # If there are no jets remaining in good_jets, then skip this event. Don't populate histograms.
     if not good_jets:
@@ -228,11 +228,11 @@ def match_jets(i):
                 closest_W_had = sum_vect
             # Only calculate difference for best single jet.
         W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
-        jet_combo_index = 0
+        
 
             # # Special calculations for the observed leptonic W  
-            # muon_pT_obs = [jet_mu[i][0], jet_mu[i][1]]
-            # nu_pT_obs = [jet_mu[i][4]*np.cos(jet_mu[i][5]), jet_mu[i][4]*np.sin(jet_mu[i][5])] # Observed neutrino transverse momentum from missing energy as [x, y].
+            # muon_pT_obs = [jet_mu[event][0], jet_mu[event][1]]
+            # nu_pT_obs = [jet_mu[event][4]*np.cos(jet_mu[event][5]), jet_mu[event][4]*np.sin(jet_mu[event][5])] # Observed neutrino transverse momentum from missing energy as [x, y].
             # W_lep_Px_observed = muon_pT_obs[0] + nu_pT_obs[0]
             # W_lep_Py_observed = muon_pT_obs[1] + nu_pT_obs[1]
             
@@ -244,7 +244,7 @@ def match_jets(i):
             # W_lep_ET_diff = W_lep_true.Et() - W_lep_ET_observed
             # # Calculate the transverse mass
             # obs_daughter_angle = np.arccos( np.dot(muon_pT_obs, nu_pT_obs) / norm(muon_pT_obs) / norm(nu_pT_obs) )
-            # met_obs = np.sqrt(2*jet_mu[i][4]*jet_mu_vect.Pt()*(1 - np.cos(obs_daughter_angle))) 
+            # met_obs = np.sqrt(2*jet_mu[event][4]*jet_mu_vect.Pt()*(1 - np.cos(obs_daughter_angle))) 
 
             # # b quark calculations
             # b_had_true_obs_pT_diff = b_had_true.Pt() - closest_b_had.Pt()
