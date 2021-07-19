@@ -35,8 +35,8 @@ if plot_cuts:
 
 # Cut ranges for the partons
 W_had_m_cutoff = (30, 130)
-W_had_pT_cutoff = (-200, 200)
-W_had_dist_cutoff = (0, 300)
+W_had_pT_cutoff = (-500, 500)
+W_had_dist_cutoff = (0, 0.5)
 
 W_lep_ET_cutoff = (-1000, 1000)
 W_lep_dist_cutoff = (0, 100)
@@ -168,11 +168,11 @@ hists['lep_W_corr_ET_diff_ET_obs'] = TH2F("W Leptonic E_{T} Diffs vs. Observed W
 hists['had_W_dist_true_v_obs'] = TH1F("h_W_had_true","W Hadronic Distances, True vs Observed", 50, 0, 3)
 hists['had_W_dist_true_v_obs'].SetTitle("W Hadronic #eta-#phi distances, True vs Observed;Hadronic (radians);A.U.")
 hists['had_W_1_dist'] = TH1F("h_1_W_had_true","1 Jet W Hadronic Distances, True - Observed", 50, 0, 3 )
-hists['had_W_1_dist'].SetTitle("1 Jet W Hadronic #eta-#phi distances, True - Observed; Hadronic (GeV); A.U.")
+hists['had_W_1_dist'].SetTitle("1 Jet W Hadronic #eta-#phi distances, True - Observed; Hadronic (radians); A.U.")
 hists['had_W_3_dist'] = TH1F("h_3_W_had_true","3 Jet W Hadronic Distances, True - Observed", 50, 0, 3 )
-hists['had_W_3_dist'].SetTitle("3 Jet W Hadronic #eta-#phi distances, True - Observed; Hadronic (GeV); A.U.")
+hists['had_W_3_dist'].SetTitle("3 Jet W Hadronic #eta-#phi distances, True - Observed; Hadronic (radians); A.U.")
 hists['had_W_2_dist'] = TH1F("h_2_W_had_true","2 Jet W Hadronic Distances, True - Observed", 50, 0, 3 )
-hists['had_W_2_dist'].SetTitle("2 Jet W Hadronic #eta-#phi distances, True - Observed; Hadronic (GeV); A.U.")
+hists['had_W_2_dist'].SetTitle("2 Jet W Hadronic #eta-#phi distances, True - Observed; Hadronic (radians); A.U.")
 # Pred vs. true
 hists['had_W_dist_pred_v_true'] = TH1F("h_W_had_pred","W Hadronic Distances, Predicted vs Truth", 50, 0, 3)
 hists['had_W_dist_pred_v_true'].SetTitle("W Hadronic #eta-#phi distances, Predicted vs Truth; Hadronic (radians);A.U.")
