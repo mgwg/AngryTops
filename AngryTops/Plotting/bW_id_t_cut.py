@@ -1,3 +1,5 @@
+# Make cuts only on t variables.
+
 import os, sys
 import numpy as np
 from numpy.linalg import norm
@@ -11,9 +13,6 @@ representation = sys.argv[2]
 date = ''
 if len(sys.argv) > 3:
     date = sys.argv[3]
-event_type = 0
-if len(sys.argv) > 4:
-    event_type = sys.argv[4]
 
 subdir = '/closejets_img_t{}/'.format(date)
 scaling = True
@@ -28,15 +27,26 @@ b_tagging = NONE   # 0/All: Consider all jets, both b-tagged and not b-tagged
                 # 2/Only: Consider only b-tagged jets
 plot_cuts = True
 if plot_cuts:
-    subdir += "_cut/"
+    subdir = '/closejets_img_t_cuts{}/'.format(date)
 
 # Cut ranges for the partons
-t_had_m_cutoff = (50, 225)
-t_had_pT_cutoff = (-50, 100)
-t_had_dist_cutoff = (0, 1.5)
+t_had_m_cutoff = (50, 200)
+t_had_pT_cutoff = (-75, 1000)
+t_lep_pT_cutoff = (-50, 120)
 
-t_lep_pT_cutoff = (-50, 160)
-t_lep_dist_cutoff = (0, 1.5)
+W_had_m_cutoff = (30, 500)
+W_had_dist_cutoff = (0, 0.8)
+W_lep_dist_cutoff = (0, 1.0)
+b_had_dist_cutoff = (0, 0.8)
+b_lep_dist_cutoff = (0, 0.8)
+
+
+t_had_dist_cutoff = (0, 100)
+t_lep_dist_cutoff = (0, 100)
+W_had_pT_cutoff = (-1200, 1200)
+W_lep_ET_cutoff = (-500, 500)
+b_had_pT_cutoff = (-500, 500)
+b_lep_pT_cutoff = (-500, 500)
 
 # load data
 predictions = np.load(outputdir + 'predictions.npz')
@@ -116,26 +126,125 @@ y_fitted_t_lep = fitted[:,5,:]
 
 # A meaningful name for the number of events
 n_events = true.shape[0]
-
-# define indices
 event_index = range(n_events)
-if event_type == "4":
-    event_index = np.where(jet_5 == 0)
-    event_index = np.unique(event_index[0])
-elif event_type == "5":
-    event_index = np.nonzero(jet_5)
-    event_index = np.unique(event_index[0])
+
 
 # make histograms to be filled
 hists = {}
+
+# Hadronic t
+# True vs. obs
+hists['had_t_dist_true_v_obs'] = TH1F("h_t_had_true","t Hadronic Distances, True vs Observed", 50, 0, 3)
+hists['had_t_dist_true_v_obs'].SetTitle("t Hadronic #eta-#phi distances, True vs Observed;Hadronic (radians);A.U.")
+# Jet matching invariant mass distributions
+hists['had_t_obs_mass'] = TH1F("t_had_m","t Hadronic Invariant Mass, Observed", 60, 0., 300. )
+hists['had_t_obs_mass'].SetTitle("t Hadronic Invariant Mass, Observed; Hadronic (GeV); A.U.")
+# Jet matching momentum distributions
+hists['had_t_true_obs_pT_diff'] = TH1F("h_pT_t_had_diff","t Hadronic p_{T} diffs, True - Observed", 80, -400, 400)
+hists['had_t_true_obs_pT_diff'].SetTitle("t Hadronic p_{T} diffs, True - Observed; Hadronic (GeV); A.U.")
+# Jet matching criteria correlation plots
+hists['had_t_corr_dist_true_v_obs_mass'] = TH2F("t Hadronic #eta-#phi Distances vs. Invariant Mass", ";t Hadronic Invariant Mass [GeV]; t Hadronic #eta-#phi Distances, True vs Observed", 50, 0, 300, 50, 0, 3.2)
+hists['had_t_corr_pT_diff_true_v_obs_mass'] = TH2F("t Hadronic p_{T} Diffs vs. Invariant Mass", ";t Hadronic Invariant Mass [GeV]; t Hadronic p_{T} Diff, True - Observed [GeV]", 50, 0, 300, 50, -400, 400)
+hists['had_t_corr_pT_diff_dist_true_v_obs'] = TH2F("t Hadronic p_{T} Diffs vs. #eta-#phi Distances", ";t Hadronic #eta-#phi Distances, True vs Observed; t Hadronic p_{T} Diff [GeV]", 50, 0, 3.2, 50, -400, 400)
+# Jet matching invariant mass distributions
+hists['had_t_obs_1_mass'] = TH1F("t_had_m","1 Jet t Hadronic Invariant Mass, Observed", 60, 0., 300. )
+hists['had_t_obs_1_mass'].SetTitle("1 Jet t Hadronic Invariant Mass, Observed; Hadronic (GeV); A.U.")
+hists['had_t_obs_2_mass'] = TH1F("t_had_m","2 Jet t Hadronic Invariant Mass, Observed", 60, 0., 300. )
+hists['had_t_obs_2_mass'].SetTitle("2 Jet t Hadronic Invariant Mass, Observed; Hadronic (GeV); A.U.")
+hists['had_t_obs_3_mass'] = TH1F("t_had_m","3 Jet t Hadronic Invariant Mass, Observed", 60, 0., 300. )
+hists['had_t_obs_3_mass'].SetTitle("3 Jet t Hadronic Invariant Mass, Observed; Hadronic (GeV); A.U.")
+hists['had_t_obs_mass'] = TH1F("t_had_m","t Hadronic Invariant Mass, Observed", 60, 0., 300. )
+hists['had_t_obs_mass'].SetTitle("t Hadronic Invariant Mass, Observed; Hadronic (GeV); A.U.")
+# Jet matching momentum distributions
+hists['had_t_true_obs_pT_diff'] = TH1F("h_pT_W_had_diff","t Hadronic p_{T} diffs, True - Observed", 80, -400, 400)
+hists['had_t_true_obs_pT_diff'].SetTitle("t Hadronic p_{T} diffs, True - Observed; Hadronic (GeV); A.U.")
+hists['had_t_true_3_pT_diff'] = TH1F("h_pT_W_had_true","3 Jet t Hadronic p_{T} Diff, True - Observed", 30, -300, 300. )
+hists['had_t_true_3_pT_diff'].SetTitle("3 Jet t Hadronic p_{T} Diff, True - Observed; Hadronic (GeV); A.U.")
+hists['had_t_true_2_pT_diff'] = TH1F("h_pT_W_had_true","2 Jet t Hadronic p_{T} Diff, True - Observed", 30, -300, 300. )
+hists['had_t_true_2_pT_diff'].SetTitle("2 Jet t Hadronic p_{T} Diff, True - Observed; Hadronic (GeV); A.U.")
+hists['had_t_true_1_pT_diff'] = TH1F("h_pT_W_had_true","1 Jet t Hadronic p_{T} Diff, True - Observed", 30, -300, 300. )
+hists['had_t_true_1_pT_diff'].SetTitle("1 Jet t Hadronic p_{T} Diff, True - Observed; Hadronic (GeV); A.U.")
+# Jet matching criteria correlation plots
+# invariant mass vs eta-phi dist
+hists['had_t_corr_1_mass_dist_true_v_obs'] = TH2F( "t_had_corr_m",   ";1 Jet t Hadronic Invariant Mass [GeV];1 Jet t Hadronic #eta-#phi Distances [rad]", 50, 0, 120 , 50, 0, 3.2  )
+hists['had_t_corr_2_mass_dist_true_v_obs'] = TH2F( "t_had_corr_m",   ";2 Jet t Hadronic Invariant Mass [GeV];2 Jet t Hadronic #eta-#phi Distances [rad]", 50, 10, 300 , 50, 0, 3.2  )
+hists['had_t_corr_3_mass_dist_true_v_obs'] = TH2F( "t_had_corr_m",   ";3 Jet t Hadronic Invariant Mass [GeV];3 Jet t Hadronic #eta-#phi Distances [rad]", 50, 40, 350 , 50, 0, 3.2  )
+# invariant mass vs Pt difference
+hists['had_t_corr_1_mass_Pt_true_v_obs'] = TH2F( "t_had_corr_m",   ";1 Jet t Hadronic Invariant Mass [GeV];1 Jet t Hadronic p_{T} Diff [GeV]", 50, 0, 80 , 50, -200, 200  )
+hists['had_t_corr_2_mass_Pt_true_v_obs'] = TH2F( "t_had_corr_m",   ";2 Jet t Hadronic Invariant Mass [GeV];2 Jet t Hadronic p_{T} Diff [GeV]", 50, 10, 300 , 50, -200, 200  )
+hists['had_t_corr_3_mass_Pt_true_v_obs'] = TH2F( "t_had_corr_m",   ";3 Jet t Hadronic Invariant Mass [GeV];3 Jet t Hadronic p_{T} diff [GeV]", 50, 40, 350 , 50, -200, 200  )
+# eta-phi dist vs. Pt difference
+hists['had_t_corr_1_dist_Pt_true_v_obs'] = TH2F( "t_had_corr_d",   ";1 Jet t Hadronic #eta-#phi Distances [rad];1 Jet t Hadronic p_{T} Diff [GeV]", 50, 0, 3.2 , 50, -200, 200  )
+hists['had_t_corr_2_dist_Pt_true_v_obs'] = TH2F( "t_had_corr_d",   ";2 Jet t Hadronic #eta-#phi Distances [rad];2 Jet t Hadronic p_{T} Diff [GeV]", 50, 0, 3.2 , 50, -200, 200  )
+hists['had_t_corr_3_dist_Pt_true_v_obs'] = TH2F( "t_had_corr_d",   ";3 Jet t Hadronic #eta-#phi Distances [rad];3 Jet t Hadronic p_{T} diff [GeV]", 50, 0, 3.2 , 50, -200, 200  )
+######### uncut ##############
+# True vs. obs
+hists['uncut_had_t_dist_true_v_obs'] = TH1F("h_t_had_true","t Hadronic Distances, True vs Observed", 50, 0, 3)
+hists['uncut_had_t_dist_true_v_obs'].SetTitle("t Hadronic #eta-#phi distances, True vs Observed;Hadronic (radians);A.U.")
+# Jet matching invariant mass distributions
+hists['uncut_had_t_obs_mass'] = TH1F("t_had_m","t Hadronic Invariant Mass, Observed", 60, 0., 300. )
+hists['uncut_had_t_obs_mass'].SetTitle("t Hadronic Invariant Mass, Observed; Hadronic (GeV); A.U.")
+# Jet matching momentum distributions
+hists['uncut_had_t_true_obs_pT_diff'] = TH1F("h_pT_t_had_diff","t Hadronic p_{T} diffs, True - Observed", 80, -400, 400)
+hists['uncut_had_t_true_obs_pT_diff'].SetTitle("t Hadronic p_{T} diffs, True - Observed; Hadronic (GeV); A.U.")
+# Jet matching criteria correlation plots
+hists['uncut_had_t_corr_dist_true_v_obs_mass'] = TH2F("t Hadronic #eta-#phi Distances vs. Invariant Mass", ";t Hadronic Invariant Mass [GeV]; t Hadronic #eta-#phi Distances, True vs Observed", 50, 0, 300, 50, 0, 3.2)
+hists['uncut_had_t_corr_pT_diff_true_v_obs_mass'] = TH2F("t Hadronic p_{T} Diffs vs. Invariant Mass", ";t Hadronic Invariant Mass [GeV]; t Hadronic p_{T} Diff, True - Observed [GeV]", 50, 0, 300, 50, -400, 400)
+hists['uncut_had_t_corr_pT_diff_dist_true_v_obs'] = TH2F("t Hadronic p_{T} Diffs vs. #eta-#phi Distances", ";t Hadronic #eta-#phi Distances, True vs Observed; t Hadronic p_{T} Diff [GeV]", 50, 0, 3.2, 50, -400, 400)
+# Jet matching invariant mass distributions
+hists['uncut_had_t_obs_1_mass'] = TH1F("t_had_m","1 Jet t Hadronic Invariant Mass, Observed", 60, 0., 300. )
+hists['uncut_had_t_obs_1_mass'].SetTitle("1 Jet t Hadronic Invariant Mass, Observed; Hadronic (GeV); A.U.")
+hists['uncut_had_t_obs_2_mass'] = TH1F("t_had_m","2 Jet t Hadronic Invariant Mass, Observed", 60, 0., 300. )
+hists['uncut_had_t_obs_2_mass'].SetTitle("2 Jet t Hadronic Invariant Mass, Observed; Hadronic (GeV); A.U.")
+hists['uncut_had_t_obs_3_mass'] = TH1F("t_had_m","3 Jet t Hadronic Invariant Mass, Observed", 60, 0., 300. )
+hists['uncut_had_t_obs_3_mass'].SetTitle("3 Jet t Hadronic Invariant Mass, Observed; Hadronic (GeV); A.U.")
+hists['uncut_had_t_obs_mass'] = TH1F("t_had_m","t Hadronic Invariant Mass, Observed", 60, 0., 300. )
+hists['uncut_had_t_obs_mass'].SetTitle("t Hadronic Invariant Mass, Observed; Hadronic (GeV); A.U.")
+# Jet matching momentum distributions
+hists['uncut_had_t_true_obs_pT_diff'] = TH1F("h_pT_W_had_diff","t Hadronic p_{T} diffs, True - Observed", 80, -400, 400)
+hists['uncut_had_t_true_obs_pT_diff'].SetTitle("t Hadronic p_{T} diffs, True - Observed; Hadronic (GeV); A.U.")
+hists['uncut_had_t_true_3_pT_diff'] = TH1F("h_pT_W_had_true","3 Jet t Hadronic p_{T} Diff, True - Observed", 30, -300, 300. )
+hists['uncut_had_t_true_3_pT_diff'].SetTitle("3 Jet t Hadronic p_{T} Diff, True - Observed; Hadronic (GeV); A.U.")
+hists['uncut_had_t_true_2_pT_diff'] = TH1F("h_pT_W_had_true","2 Jet t Hadronic p_{T} Diff, True - Observed", 30, -300, 300. )
+hists['uncut_had_t_true_2_pT_diff'].SetTitle("2 Jet t Hadronic p_{T} Diff, True - Observed; Hadronic (GeV); A.U.")
+hists['uncut_had_t_true_1_pT_diff'] = TH1F("h_pT_W_had_true","1 Jet t Hadronic p_{T} Diff, True - Observed", 30, -300, 300. )
+hists['uncut_had_t_true_1_pT_diff'].SetTitle("1 Jet t Hadronic p_{T} Diff, True - Observed; Hadronic (GeV); A.U.")
+# Jet matching criteria correlation plots
+# invariant mass vs eta-phi dist
+hists['uncut_had_t_corr_1_mass_dist_true_v_obs'] = TH2F( "t_had_corr_m",   ";1 Jet t Hadronic Invariant Mass [GeV];1 Jet t Hadronic #eta-#phi Distances [rad]", 50, 0, 120 , 50, 0, 3.2  )
+hists['uncut_had_t_corr_2_mass_dist_true_v_obs'] = TH2F( "t_had_corr_m",   ";2 Jet t Hadronic Invariant Mass [GeV];2 Jet t Hadronic #eta-#phi Distances [rad]", 50, 10, 300 , 50, 0, 3.2  )
+hists['uncut_had_t_corr_3_mass_dist_true_v_obs'] = TH2F( "t_had_corr_m",   ";3 Jet t Hadronic Invariant Mass [GeV];3 Jet t Hadronic #eta-#phi Distances [rad]", 50, 40, 350 , 50, 0, 3.2  )
+# invariant mass vs Pt difference
+hists['uncut_had_t_corr_1_mass_Pt_true_v_obs'] = TH2F( "t_had_corr_m",   ";1 Jet t Hadronic Invariant Mass [GeV];1 Jet t Hadronic p_{T} Diff [GeV]", 50, 0, 80 , 50, -200, 200  )
+hists['uncut_had_t_corr_2_mass_Pt_true_v_obs'] = TH2F( "t_had_corr_m",   ";2 Jet t Hadronic Invariant Mass [GeV];2 Jet t Hadronic p_{T} Diff [GeV]", 50, 10, 300 , 50, -200, 200  )
+hists['uncut_had_t_corr_3_mass_Pt_true_v_obs'] = TH2F( "t_had_corr_m",   ";3 Jet t Hadronic Invariant Mass [GeV];3 Jet t Hadronic p_{T} diff [GeV]", 50, 40, 350 , 50, -200, 200  )
+# eta-phi dist vs. Pt difference
+hists['uncut_had_t_corr_1_dist_Pt_true_v_obs'] = TH2F( "t_had_corr_d",   ";1 Jet t Hadronic #eta-#phi Distances [rad];1 Jet t Hadronic p_{T} Diff [GeV]", 50, 0, 3.2 , 50, -200, 200  )
+hists['uncut_had_t_corr_2_dist_Pt_true_v_obs'] = TH2F( "t_had_corr_d",   ";2 Jet t Hadronic #eta-#phi Distances [rad];2 Jet t Hadronic p_{T} Diff [GeV]", 50, 0, 3.2 , 50, -200, 200  )
+hists['uncut_had_t_corr_3_dist_Pt_true_v_obs'] = TH2F( "t_had_corr_d",   ";3 Jet t Hadronic #eta-#phi Distances [rad];3 Jet t Hadronic p_{T} diff [GeV]", 50, 0, 3.2 , 50, -200, 200  )
+
+# Leptonic t
+# True vs. obs
+hists['lep_t_dist_true_v_obs'] = TH1F("h_t_lep_true","t Leptonic Distances, True vs Observed", 50, 0, 3)
+hists['lep_t_dist_true_v_obs'].SetTitle("t Leptonic #phi distances, True vs Observed;Leptonic (radians);A.U.")
+# transverse mass and energy
+hists['lep_t_transverse_energy_diff'] = TH1F("t_lep_ET_d","t Leptonic Transverse Energy Difference, Truth - Observed", 50, -120, 300)
+hists['lep_t_transverse_energy_diff'].SetTitle("t Leptonic Transverse Energy Difference, Truth - Observed;Leptonic (GeV);A.U.")
+# Matching correlation plots
+hists['lep_t_corr_ET_diff_dist_true_v_obs'] = TH2F("t Leptonic E_{T} Diffs vs. #eta-#phi Distances", ";t Leptonic #eta-#phi Distances, True vs Observed; t Leptonic E_{T} Diff [GeV]", 50, 0, 3.2, 50, -400, 400)
+# True vs. obs
+hists['uncut_lep_t_dist_true_v_obs'] = TH1F("h_t_lep_true","t Leptonic Distances, True vs Observed", 50, 0, 3)
+hists['uncut_lep_t_dist_true_v_obs'].SetTitle("t Leptonic #phi distances, True vs Observed;Leptonic (radians);A.U.")
+# transverse mass and energy
+hists['uncut_lep_t_transverse_energy_diff'] = TH1F("t_lep_ET_d","t Leptonic Transverse Energy Difference, Truth - Observed", 50, -120, 300)
+hists['uncut_lep_t_transverse_energy_diff'].SetTitle("t Leptonic Transverse Energy Difference, Truth - Observed;Leptonic (GeV);A.U.")
+# Matching correlation plots
+hists['uncut_lep_t_corr_ET_diff_dist_true_v_obs'] = TH2F("t Leptonic E_{T} Diffs vs. #eta-#phi Distances", ";t Leptonic #eta-#phi Distances, True vs Observed; t Leptonic E_{T} Diff [GeV]", 50, 0, 3.2, 50, -400, 400)
 
 # Leptonic W
 # True vs. obs
 hists['lep_W_dist_true_v_obs'] = TH1F("h_W_lep_true","W Leptonic Distances, True vs Observed", 50, 0, 3)
 hists['lep_W_dist_true_v_obs'].SetTitle("W Leptonic #phi distances, True vs Observed; Leptonic (radians);A.U.")
-# Pred vs. true
-hists['lep_W_dist_pred_v_true'] = TH1F("W_lep_d","W Leptonic Distances, Predicted vs Truth", 50, 0, 3)
-hists['lep_W_dist_pred_v_true'].SetTitle("W Leptonic #phi distances, Predicted vs Truth;Leptonic (radians);A.U.")
 # transverse mass and energy
 hists['lep_W_transverse_mass_obs'] = TH1F("W_lep_met_d","W Leptonic Transverse Mass, Observed", 50, 0, 250)#120)
 hists['lep_W_transverse_mass_obs'].SetTitle("W Leptonic Transverse Mass, Observed;Leptonic (GeV);A.U.")
@@ -155,9 +264,6 @@ hists['lep_W_corr_ET_diff_ET_obs'] = TH2F("W Leptonic E_{T} Diffs vs. Observed W
 # True vs. obs
 hists['had_W_dist_true_v_obs'] = TH1F("h_W_had_true","W Hadronic Distances, True vs Observed", 50, 0, 3)
 hists['had_W_dist_true_v_obs'].SetTitle("W Hadronic #eta-#phi distances, True vs Observed;Hadronic (radians);A.U.")
-# Pred vs. true
-hists['had_W_dist_pred_v_true'] = TH1F("h_W_had_pred","W Hadronic Distances, Predicted vs Truth", 50, 0, 3)
-hists['had_W_dist_pred_v_true'].SetTitle("W Hadronic #eta-#phi distances, Predicted vs Truth; Hadronic (radians);A.U.")
 # Jet matching invariant mass distributions
 hists['had_W_obs_1_mass'] = TH1F("W_had_m","1 Jet W Hadronic Invariant Mass, Observed", 60, 0., 300. )
 hists['had_W_obs_1_mass'].SetTitle("1 Jet W Hadronic Invariant Mass, Observed; Hadronic (GeV); A.U.")
@@ -201,9 +307,6 @@ hists['had_W_corr_dist_Pt_true_v_obs'] = TH2F( "W_had_corr_d",   ";W Hadronic #e
 # True vs. obs
 hists['lep_b_dist_true_v_obs'] = TH1F("h_b_lep_true","b Leptonic Distances, True vs Observed", 50, 0, 3)
 hists['lep_b_dist_true_v_obs'].SetTitle("b Leptonic #eta-#phi distances, True vs Observed;Leptonic (radians);A.U.")
-# Pred vs. true
-hists['lep_b_dist_pred_v_true'] = TH1F("b_lep_d","b Leptonic Distances, Predicted vs Truth", 50, 0, 3)
-hists['lep_b_dist_pred_v_true'].SetTitle("b Leptonic #eta-#phi distances, Predicted vs Truth;Leptonic (radians);A.U.")
 # Jet matching invariant mass distributions
 hists['lep_b_obs_mass'] = TH1F("b_lep_m","b Leptonic Invariant Mass, Observed", 60, 0., 50. )
 hists['lep_b_obs_mass'].SetTitle("b Leptonic Invariant Mass, Observed; Leptonic (GeV); A.U.")
@@ -223,9 +326,6 @@ hists['lep_b_corr_pT_diff_dist_true_v_obs'] = TH2F("b Leptonic p_{T} Diffs vs. #
 # True vs. obs
 hists['had_b_dist_true_v_obs'] = TH1F("h_b_had_true","b Hadronic Distances, True vs Observed", 50, 0, 3)
 hists['had_b_dist_true_v_obs'].SetTitle("b Hadronic #eta-#phi distances, True vs Observed;Hadronic (radians);A.U.")
-# Pred vs. true
-hists['had_b_dist_pred_v_true'] = TH1F("b_had_d","b Hadronic Distances, Predicted vs Truth", 50, 0, 3)
-hists['had_b_dist_pred_v_true'].SetTitle("b Hadronic #eta-#phi distances, Predicted vs Truth;Hadronic (radians);A.U.")
 # Jet matching invariant mass distributions
 hists['had_b_obs_mass'] = TH1F("b_had_m","b Hadronic Invariant Mass, Observed", 60, 0., 50. )
 hists['had_b_obs_mass'].SetTitle("b Hadronic Invariant Mass, Observed; Hadronic (GeV); A.U.")
@@ -241,42 +341,29 @@ hists['had_b_corr_dist_true_v_obs_mass'] = TH2F("b Hadronic #eta-#phi Distances 
 hists['had_b_corr_pT_diff_true_v_obs_mass'] = TH2F("b Hadronic p_{T} Diffs vs. Invariant Mass", ";b Hadronic Invariant Mass [GeV]; b Hadronic p_{T} Diff, True - Observed [GeV]", 50, 0, 50, 50, -100, 100)
 hists['had_b_corr_pT_diff_dist_true_v_obs'] = TH2F("b Hadronic p_{T} Diffs vs. #eta-#phi Distances", ";b Hadronic #eta-#phi Distances, True vs Observed; b Hadronic p_{T} Diff [GeV]", 50, 0, 3.2, 50, -100, 100)
 
-# Leptonic t
-# True vs. obs
-hists['lep_t_dist_true_v_obs'] = TH1F("h_t_lep_true","t Leptonic Distances, True vs Observed", 50, 0, 3)
-hists['lep_t_dist_true_v_obs'].SetTitle("t Leptonic #phi distances, True vs Observed;Leptonic (radians);A.U.")
-# Pred vs. true
-hists['lep_t_dist_pred_v_true'] = TH1F("t_lep_d","t Leptonic Distances, Predicted vs Truth", 50, 0, 3)
-hists['lep_t_dist_pred_v_true'].SetTitle("t Leptonic #phi distances, Predicted vs Truth;Leptonic (radians);A.U.")
-# transverse mass and energy
-hists['lep_t_transverse_energy_diff'] = TH1F("t_lep_ET_d","t Leptonic Transverse Energy Difference, Truth - Observed", 50, -120, 120)
-hists['lep_t_transverse_energy_diff'].SetTitle("t Leptonic Transverse Energy Difference, Truth - Observed;Leptonic (GeV);A.U.")
-# Matching correlation plots
-hists['lep_t_corr_ET_diff_dist_true_v_obs'] = TH2F("t Leptonic E_{T} Diffs vs. #eta-#phi Distances", ";t Leptonic #eta-#phi Distances, True vs Observed; t Leptonic E_{T} Diff [GeV]", 50, 0, 3.2, 50, -400, 400)
-
-# Hadronic t
-# True vs. obs
-hists['had_t_dist_true_v_obs'] = TH1F("h_t_had_true","t Hadronic Distances, True vs Observed", 50, 0, 3)
-hists['had_t_dist_true_v_obs'].SetTitle("t Hadronic #eta-#phi distances, True vs Observed;Hadronic (radians);A.U.")
-# Pred vs. true
-hists['had_t_dist_pred_v_true'] = TH1F("t_had_d","t Hadronic Distances, Predicted vs Truth", 50, 0, 3)
-hists['had_t_dist_pred_v_true'].SetTitle("t Hadronic #eta-#phi distances, Predicted vs Truth;Hadronic (radians);A.U.")
-# Jet matching invariant mass distributions
-hists['had_t_obs_mass'] = TH1F("t_had_m","t Hadronic Invariant Mass, Observed", 60, 0., 300. )
-hists['had_t_obs_mass'].SetTitle("t Hadronic Invariant Mass, Observed; Hadronic (GeV); A.U.")
-# Jet matching momentum distributions
-hists['had_t_true_obs_pT_diff'] = TH1F("h_pT_t_had_diff","t Hadronic p_{T} diffs, True - Observed", 80, -400, 400)
-hists['had_t_true_obs_pT_diff'].SetTitle("t Hadronic p_{T} diffs, True - Observed; Hadronic (GeV); A.U.")
-# Jet matching criteria correlation plots
-hists['had_t_corr_dist_true_v_obs_mass'] = TH2F("t Hadronic #eta-#phi Distances vs. Invariant Mass", ";t Hadronic Invariant Mass [GeV]; t Hadronic #eta-#phi Distances, True vs Observed", 50, 0, 300, 50, 0, 3.2)
-hists['had_t_corr_pT_diff_true_v_obs_mass'] = TH2F("t Hadronic p_{T} Diffs vs. Invariant Mass", ";t Hadronic Invariant Mass [GeV]; t Hadronic p_{T} Diff, True - Observed [GeV]", 50, 0, 300, 50, -400, 400)
-hists['had_t_corr_pT_diff_dist_true_v_obs'] = TH2F("t Hadronic p_{T} Diffs vs. #eta-#phi Distances", ";t Hadronic #eta-#phi Distances, True vs Observed; t Hadronic p_{T} Diff [GeV]", 50, 0, 3.2, 50, -400, 400)
 
 # Function to make histograms
 def make_histograms():
 
     jet_breakdown = [0., 0., 0.] # List of number of events best matched by 1,2,3 jets respectively.
-    jet_breakdown_cuts = [0., 0., 0.]
+    W_had_total_cuts = [0., 0., 0.]
+    W_had_m_cuts = [0., 0., 0.]
+    W_had_pT_cuts = [0., 0., 0.]
+    W_had_dist_cuts = [0., 0., 0.]
+
+    W_lep_total_cuts = 0.
+    W_lep_ET_cuts = 0.
+    W_lep_dist_cuts = 0.
+
+    b_had_pT_cuts = 0.
+    b_had_dist_cuts = 0.
+    b_had_total_cuts = 0.
+
+    b_lep_pT_cuts = 0.
+    b_lep_dist_cuts = 0.
+    b_lep_total_cuts = 0.
+
+    good_event = 0.
 
     t_had_m_cuts = 0.
     t_had_pT_cuts = 0.
@@ -330,20 +417,6 @@ def make_histograms():
         if not np.all(jet_5[i] == 0.):
             jets.append(jet_5_vect)
         
-        ################################################# true vs predicted #################################################
-        b_lep_R = find_dist(b_lep_true, b_lep_fitted)
-        b_had_R = find_dist(b_had_true, b_had_fitted)
-
-        t_lep_dphi = min(np.abs(t_lep_true.Phi()-t_lep_fitted.Phi()), 2*np.pi-np.abs(t_lep_true.Phi()-t_lep_fitted.Phi()))
-        t_lep_R = np.sqrt(t_lep_dphi**2) # No eta distances for apples-to-apples comparison with true vs. observed leptonic t
-
-        t_had_R = find_dist(t_had_true, t_had_fitted)
-        
-        W_lep_dphi = min(np.abs(W_lep_true.Phi()-W_lep_fitted.Phi()), 2*np.pi-np.abs(W_lep_true.Phi()-W_lep_fitted.Phi()))
-        W_lep_R = np.sqrt(W_lep_dphi**2)
-
-        W_had_R = find_dist(W_had_true, W_had_fitted)
-
 
         ################################################# true vs observed ################################################# 
 
@@ -373,36 +446,71 @@ def make_histograms():
         if not good_jets:
             continue
         
-        for k in range(len(good_jets)):
-            # Go through each 1,2,3 combination of jets that are not b-tagged and check their sum
-            # Single jets
-            sum_vect = good_jets[k]    
-            W_had_d_true = find_dist(W_had_true, sum_vect)
-            if W_had_d_true < W_had_dist_true:
-                W_had_dist_true = W_had_d_true
-                closest_W_had = sum_vect
-                jet_combo_index = 0
 
-            # Dijets 
-            if len(good_jets) >= 2:
+        # Consider best two jets first.
+        if (len(good_jets) >= 2):
+            for k in range(len(good_jets)):
+                # if good_jets only contains one element, loop is skipped since range would be (1,1)
                 for j in range(k + 1, len(good_jets)):                  
                     sum_vect = good_jets[k] + good_jets[j] 
                     W_had_d_true = find_dist(W_had_true, sum_vect)
                     if W_had_d_true < W_had_dist_true:
                         W_had_dist_true = W_had_d_true
                         closest_W_had = sum_vect
-                        jet_combo_index = 1
+            W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
+            jet_combo_index = 1
+            t_had_jets = closest_b_had + closest_W_had
+            t_had_dist_true = find_dist(t_had_true, t_had_jets)
+            t_had_true_obs_pT_diff = t_had_true.Pt() - t_had_jets.Pt()
+        
+        # If the best double jet doesn't pass cuts, then consider three jets.
+        if (len(good_jets) >= 3) and (closest_W_had.M() <= W_had_m_cutoff[0] \
+            or closest_W_had.M() >= W_had_m_cutoff[1] or W_had_true_obs_pT_diff <= W_had_pT_cutoff[0] \
+            or W_had_true_obs_pT_diff >= W_had_pT_cutoff[1] \
+            or W_had_dist_true >= W_had_dist_cutoff[1]) or (( t_had_jets.M() <= t_had_m_cutoff[0] or t_had_jets.M() >= t_had_m_cutoff[1]) \
+            or (t_had_true_obs_pT_diff <= t_had_pT_cutoff[0] or t_had_true_obs_pT_diff >= t_had_pT_cutoff[1]) \
+            or (t_had_dist_true >= t_had_dist_cutoff[1]) ):
+            # Reset maximum eta-phi distance.
+            W_had_dist_true = 1000000
+            for k in range(len(good_jets)):
+                for j in range(k + 1, len(good_jets)):     
+                    for l in range(j+1, len(good_jets)):
+                        sum_vect = good_jets[k] + good_jets[j] + good_jets[l]
+                        # Calculate eta-phi distance for current jet combo.
+                        W_had_d_true = find_dist(W_had_true, sum_vect)
+                        # Compare current distance to current minimum distance and update if lower.
+                        if W_had_d_true < W_had_dist_true:
+                            W_had_dist_true = W_had_d_true
+                            closest_W_had = sum_vect
+            # Calculate true - observed pT difference for the best triple jet
+            W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
+            jet_combo_index = 2
+            t_had_jets = closest_b_had + closest_W_had
+            t_had_dist_true = find_dist(t_had_true, t_had_jets)
+            t_had_true_obs_pT_diff = t_had_true.Pt() - t_had_jets.Pt()
 
-            # Trijets
-                    if len(good_jets) >= 3:
-                        for l in range(j+1, len(good_jets)):
-                            sum_vect = good_jets[k] + good_jets[j] + good_jets[l]
-                            W_had_d_true = find_dist(W_had_true, sum_vect)
-                            if W_had_d_true < W_had_dist_true:
-                                W_had_dist_true = W_had_d_true
-                                closest_W_had = sum_vect
-                                jet_combo_index = 2
-        W_had_true_obs_pT_diff =  W_had_true.Pt() - closest_W_had.Pt()
+        # if there is only one jet in the list or previous matches don't pass cutoff conditions, find a single jet match
+        if (len(good_jets) == 1) or ((closest_W_had.M() <= W_had_m_cutoff[0] or closest_W_had.M() >= W_had_m_cutoff[1]) \
+            or (W_had_true_obs_pT_diff <= W_had_pT_cutoff[0] or W_had_true_obs_pT_diff >= W_had_pT_cutoff[1])\
+            or W_had_dist_true >= W_had_dist_cutoff[1]) or (( t_had_jets.M() <= t_had_m_cutoff[0] or t_had_jets.M() >= t_had_m_cutoff[1]) \
+            or (t_had_true_obs_pT_diff <= t_had_pT_cutoff[0] or t_had_true_obs_pT_diff >= t_had_pT_cutoff[1]) \
+            or (t_had_dist_true >= t_had_dist_cutoff[1]) ):
+            W_had_dist_true = 1000000
+            # Single jets
+            for k in range(len(good_jets)):
+                sum_vect = good_jets[k]    
+                W_had_d_true = find_dist(W_had_true, sum_vect)
+                if W_had_d_true < W_had_dist_true:
+                    W_had_dist_true = W_had_d_true
+                    closest_W_had = sum_vect
+                # Only calculate difference for best single jet.
+            W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
+            jet_combo_index = 0
+            t_had_jets = closest_b_had + closest_W_had
+            t_had_dist_true = find_dist(t_had_true, t_had_jets)
+            t_had_true_obs_pT_diff = t_had_true.Pt() - t_had_jets.Pt()
+
+
 
         # Special calculations for the observed leptonic W  
         muon_pT_obs = [jet_mu[i][0], jet_mu[i][1]]
@@ -437,12 +545,53 @@ def make_histograms():
         b_had_true_obs_pT_diff = b_had_true.Pt() - closest_b_had.Pt()
         b_lep_true_obs_pT_diff = b_lep_true.Pt() - closest_b_lep.Pt()
 
+        ############ calculate stats ############
+
+        W_had_m_cut = (closest_W_had.M() >= W_had_m_cutoff[0] and closest_W_had.M() <= W_had_m_cutoff[1])
+        W_had_pT_cut = (W_had_true_obs_pT_diff >= W_had_pT_cutoff[0] and W_had_true_obs_pT_diff <= W_had_pT_cutoff[1])
+        W_had_dist_cut = (W_had_dist_true <= W_had_dist_cutoff[1]) 
+        # All W_had cuts must be satisfied simultaneously.
+        good_W_had = (W_had_m_cut and W_had_pT_cut and W_had_dist_cut)
+
+        W_had_total_cuts[jet_combo_index] += good_W_had
+        W_had_m_cuts[jet_combo_index] += W_had_m_cut
+        W_had_pT_cuts[jet_combo_index] += W_had_pT_cut
+        W_had_dist_cuts[jet_combo_index] += W_had_dist_cut
+
+        jet_breakdown[jet_combo_index] += 1.
+
+        # counter for lep W
+        W_lep_ET_cut = (W_lep_ET_diff >= W_lep_ET_cutoff[0] and W_lep_ET_diff <= W_lep_ET_cutoff[1])
+        W_lep_dist_cut = (W_lep_dist_true <= W_lep_dist_cutoff[1]) 
+        good_W_lep = (W_lep_ET_cut and W_lep_dist_cut)
+
+        W_lep_total_cuts += good_W_lep
+        W_lep_ET_cuts += W_lep_ET_cut
+        W_lep_dist_cuts += W_lep_dist_cut
+
+        # counter for hadronic b
+        b_had_pT_cut = (b_had_true_obs_pT_diff >= b_had_pT_cutoff[0] and b_had_true_obs_pT_diff <= b_had_pT_cutoff[1])
+        b_had_dist_cut = (b_had_dist_true <= b_had_dist_cutoff[1]) 
+        good_b_had = (b_had_pT_cut and b_had_dist_cut)
+
+        b_had_total_cuts += good_b_had
+        b_had_pT_cuts += b_had_pT_cut
+        b_had_dist_cuts += b_had_dist_cut
+
+        # counter for leptonic b
+        b_lep_pT_cut = (b_lep_true_obs_pT_diff >= b_lep_pT_cutoff[0] and b_lep_true_obs_pT_diff <= b_lep_pT_cutoff[1])
+        b_lep_dist_cut = (b_lep_dist_true <= b_lep_dist_cutoff[1]) 
+        good_b_lep = (b_lep_pT_cut and b_lep_dist_cut)
+
+        b_lep_total_cuts += good_b_lep
+        b_lep_pT_cuts += b_lep_pT_cut
+        b_lep_dist_cuts += b_lep_dist_cut
 
         # counter for hadronic t
         t_had_m_cut = (t_had_jets.M() >= t_had_m_cutoff[0] and t_had_jets.M() <= t_had_m_cutoff[1])
         t_had_pT_cut = (t_had_true_obs_pT_diff >= t_had_pT_cutoff[0] and t_had_true_obs_pT_diff <= t_had_pT_cutoff[1])
         t_had_dist_cut = (t_had_dist_true <= t_had_dist_cutoff[1]) 
-        good_t_had = (t_had_pT_cut and t_had_dist_cut)
+        good_t_had = (t_had_m_cut and t_had_pT_cut and t_had_dist_cut)
 
         t_had_total_cuts += good_t_had
         t_had_m_cuts += t_had_m_cut
@@ -459,18 +608,47 @@ def make_histograms():
         t_lep_dist_cuts += t_lep_dist_cut
 
         # total
-        good_event += (good_t_lep and good_t_had)
+        good_event += (good_t_lep and good_t_had and good_b_had and good_b_lep and good_W_had and good_W_lep)
 
-        jet_breakdown[jet_combo_index] += 1.
-        jet_breakdown_cuts[jet_combo_index] += good_event
+        
 
         ################################################# populate histograms #################################################
+        
+        # Leptonic t
+        hists['uncut_lep_t_dist_true_v_obs'].Fill(np.float(t_lep_dist_true))
+        hists['uncut_lep_t_transverse_energy_diff'].Fill(np.float(t_lep_true_obs_pT_diff))
+        hists['uncut_lep_t_corr_ET_diff_dist_true_v_obs'].Fill(t_lep_dist_true, t_lep_true_obs_pT_diff)
+        # Hadronic t
+        hists['uncut_had_t_dist_true_v_obs'].Fill(np.float(t_had_dist_true))
+        hists['uncut_had_t_obs_mass'].Fill(t_had_jets.M())
+        hists['uncut_had_t_true_obs_pT_diff'].Fill(t_had_true_obs_pT_diff)
+        hists['uncut_had_t_corr_dist_true_v_obs_mass'].Fill(t_had_jets.M(), t_had_dist_true)
+        hists['uncut_had_t_corr_pT_diff_true_v_obs_mass'].Fill(t_had_jets.M(), t_had_true_obs_pT_diff)
+        hists['uncut_had_t_corr_pT_diff_dist_true_v_obs'].Fill(t_had_dist_true, t_had_true_obs_pT_diff)
+        # Plots that depend on whether a 1,2, or 3-jet sum is the best match to truth:
+        if jet_combo_index == 0:
+            hists['uncut_had_t_true_1_pT_diff'].Fill(t_had_true_obs_pT_diff)
+            hists['uncut_had_t_obs_1_mass'].Fill(t_had_jets.M())
+            hists['uncut_had_t_corr_1_mass_dist_true_v_obs'].Fill(t_had_jets.M(), t_had_dist_true)
+            hists['uncut_had_t_corr_1_mass_Pt_true_v_obs'].Fill(t_had_jets.M(), t_had_true_obs_pT_diff)
+            hists['uncut_had_t_corr_1_dist_Pt_true_v_obs'].Fill(t_had_dist_true, t_had_true_obs_pT_diff)
+        elif jet_combo_index == 1:
+            hists['uncut_had_t_true_2_pT_diff'].Fill(t_had_true_obs_pT_diff)
+            hists['uncut_had_t_obs_2_mass'].Fill(t_had_jets.M())
+            hists['uncut_had_t_corr_2_mass_dist_true_v_obs'].Fill(t_had_jets.M(), t_had_dist_true)
+            hists['uncut_had_t_corr_2_mass_Pt_true_v_obs'].Fill(t_had_jets.M(), t_had_true_obs_pT_diff)
+            hists['uncut_had_t_corr_2_dist_Pt_true_v_obs'].Fill(t_had_dist_true, t_had_true_obs_pT_diff)
+        elif jet_combo_index == 2:
+            hists['uncut_had_t_true_3_pT_diff'].Fill(t_had_true_obs_pT_diff)
+            hists['uncut_had_t_obs_3_mass'].Fill(t_had_jets.M())
+            hists['uncut_had_t_corr_3_mass_dist_true_v_obs'].Fill(t_had_jets.M(), t_had_dist_true)
+            hists['uncut_had_t_corr_3_mass_Pt_true_v_obs'].Fill(t_had_jets.M(), t_had_true_obs_pT_diff)
+            hists['uncut_had_t_corr_3_dist_Pt_true_v_obs'].Fill(t_had_dist_true, t_had_true_obs_pT_diff)
 
-        if (not plot_cuts) or (plot_cuts and (good_t_lep and good_t_had)):
+        if (not plot_cuts) or (plot_cuts and (good_t_lep and good_t_had and good_b_had and good_b_lep and good_W_had and good_W_lep)):
 
             # Leptonic b
             hists['lep_b_dist_true_v_obs'].Fill(np.float(b_lep_dist_true))
-            hists['lep_b_dist_pred_v_true'].Fill(np.float(b_lep_R))
             # Invariant mass:
             hists['lep_b_obs_mass'].Fill(closest_b_lep.M())
             # Jet matching criteria correlation plots
@@ -484,7 +662,6 @@ def make_histograms():
 
             # Hadronic b
             hists['had_b_dist_true_v_obs'].Fill(np.float(b_had_dist_true))
-            hists['had_b_dist_pred_v_true'].Fill(np.float(b_had_R))
             # Invariant mass:
             hists['had_b_obs_mass'].Fill(closest_b_had.M())
             # Jet matching criteria correlation plots
@@ -498,24 +675,39 @@ def make_histograms():
 
             # Leptonic t
             hists['lep_t_dist_true_v_obs'].Fill(np.float(t_lep_dist_true))
-            hists['lep_t_dist_pred_v_true'].Fill(np.float(t_lep_R))
             hists['lep_t_transverse_energy_diff'].Fill(np.float(t_lep_true_obs_pT_diff))
             hists['lep_t_corr_ET_diff_dist_true_v_obs'].Fill(t_lep_dist_true, t_lep_true_obs_pT_diff)
             # Hadronic t
             hists['had_t_dist_true_v_obs'].Fill(np.float(t_had_dist_true))
-            hists['had_t_dist_pred_v_true'].Fill(np.float(t_had_R))
             hists['had_t_obs_mass'].Fill(t_had_jets.M())
             hists['had_t_true_obs_pT_diff'].Fill(t_had_true_obs_pT_diff)
             hists['had_t_corr_dist_true_v_obs_mass'].Fill(t_had_jets.M(), t_had_dist_true)
             hists['had_t_corr_pT_diff_true_v_obs_mass'].Fill(t_had_jets.M(), t_had_true_obs_pT_diff)
             hists['had_t_corr_pT_diff_dist_true_v_obs'].Fill(t_had_dist_true, t_had_true_obs_pT_diff)
+            # Plots that depend on whether a 1,2, or 3-jet sum is the best match to truth:
+            if jet_combo_index == 0:
+                hists['had_t_true_1_pT_diff'].Fill(t_had_true_obs_pT_diff)
+                hists['had_t_obs_1_mass'].Fill(t_had_jets.M())
+                hists['had_t_corr_1_mass_dist_true_v_obs'].Fill(t_had_jets.M(), t_had_dist_true)
+                hists['had_t_corr_1_mass_Pt_true_v_obs'].Fill(t_had_jets.M(), t_had_true_obs_pT_diff)
+                hists['had_t_corr_1_dist_Pt_true_v_obs'].Fill(t_had_dist_true, t_had_true_obs_pT_diff)
+            elif jet_combo_index == 1:
+                hists['had_t_true_2_pT_diff'].Fill(t_had_true_obs_pT_diff)
+                hists['had_t_obs_2_mass'].Fill(t_had_jets.M())
+                hists['had_t_corr_2_mass_dist_true_v_obs'].Fill(t_had_jets.M(), t_had_dist_true)
+                hists['had_t_corr_2_mass_Pt_true_v_obs'].Fill(t_had_jets.M(), t_had_true_obs_pT_diff)
+                hists['had_t_corr_2_dist_Pt_true_v_obs'].Fill(t_had_dist_true, t_had_true_obs_pT_diff)
+            elif jet_combo_index == 2:
+                hists['had_t_true_3_pT_diff'].Fill(t_had_true_obs_pT_diff)
+                hists['had_t_obs_3_mass'].Fill(t_had_jets.M())
+                hists['had_t_corr_3_mass_dist_true_v_obs'].Fill(t_had_jets.M(), t_had_dist_true)
+                hists['had_t_corr_3_mass_Pt_true_v_obs'].Fill(t_had_jets.M(), t_had_true_obs_pT_diff)
+                hists['had_t_corr_3_dist_Pt_true_v_obs'].Fill(t_had_dist_true, t_had_true_obs_pT_diff)
 
             # Leptonic W
             hists['lep_W_dist_true_v_obs'].Fill(np.float(W_lep_dist_true))
-            hists['lep_W_dist_pred_v_true'].Fill(np.float(W_lep_R))
             hists['lep_W_transverse_mass_obs'].Fill(np.float(met_obs))
             # Matching scatterplots
-                # hists['lep_W_scat_ET_diff_dist_true_v_obs'].Fill(W_lep_dist_true, W_lep_ET_diff) 
             hists['lep_W_corr_ET_diff_dist_true_v_obs'].Fill(W_lep_dist_true, W_lep_ET_diff) 
             # Closest ET difference vs. ET
             hists['lep_W_transverse_energy_obs'].Fill(np.float(W_lep_ET_observed))
@@ -524,7 +716,6 @@ def make_histograms():
 
             # Hadronic W
             hists['had_W_dist_true_v_obs'].Fill(np.float(W_had_dist_true))
-            hists['had_W_dist_pred_v_true'].Fill(np.float(W_had_R))
             # Invariant mass:
             hists['had_W_obs_mass'].Fill(closest_W_had.M())
             # Jet matching criteria correlation plots
@@ -561,20 +752,15 @@ def make_histograms():
     print('Cut Criteria')
     print('Hadronic t, mass: {}, pT: {}, distance: {}'.format(t_had_m_cutoff, t_had_pT_cutoff, t_had_dist_cutoff))
     print('Leptonic t, pT: {}, distance: {}'.format(t_lep_pT_cutoff, t_lep_dist_cutoff))
-    print('\n=================================================================\n')
-    print('Jet matching percentages for hadronic W')
-    print('{}% 1 jet Hadronic W, {} events'.format(100.*jet_breakdown[0]/n_events, jet_breakdown[0]))
-    print('{}% 2 jet Hadronic W, {} events'.format(100.*jet_breakdown[1]/n_events, jet_breakdown[1]))
-    print('{}% 3 jet Hadronic W, {} events'.format(100.*jet_breakdown[2]/n_events, jet_breakdown[2]))
-    print('\n=================================================================\n')
-    print("Number of hadronic Ws satisfying all cut criteria")
-    print('{}% Total Hadronic Ws within cuts, {} events'.format(100.*sum(jet_breakdown_cuts)/n_events, sum(jet_breakdown_cuts)))
-    print('{}% 1 jet Hadronic Ws within cut, {} events'.format(100.*jet_breakdown_cuts[0]/jet_breakdown[0], jet_breakdown_cuts[0]))
-    print('{}% 2 jet Hadronic Ws within cut, {} events'.format(100.*jet_breakdown_cuts[1]/jet_breakdown[1], jet_breakdown_cuts[1]))
-    print('{}% 3 jet Hadronic Ws within cut, {} events\n'.format(100.*jet_breakdown_cuts[2]/jet_breakdown[2], jet_breakdown_cuts[2]))
+    print('Hadronic W, mass: {}, pT: {}, distance: {}'.format(W_had_m_cutoff, W_had_pT_cutoff, W_had_dist_cutoff))
+    print('Leptonic W, E_T: {}, dist: {}'.format(W_lep_ET_cutoff, W_lep_dist_cutoff))
+    print('Hadronic b, pT: {}, distance: {}'.format(b_had_pT_cutoff, b_had_dist_cutoff))
+    print('Leptonic b, pT: {}, distance: {}'.format(b_lep_pT_cutoff, b_lep_dist_cutoff))
     print('\n=================================================================\n')
     print("Number of hadronic ts satisfying all cut criteria")
     print('{}% , {} events\n'.format(100.*t_had_total_cuts/n_events, t_had_total_cuts))
+    print("Number of hadronic t's satisfying mass cut criteria")
+    print('{}%, {} events'.format(100.*t_had_m_cuts/n_events, t_had_m_cuts))
     print("Number of hadronic t's satisfying pT cut criteria")
     print('{}%, {} events'.format(100.*t_had_pT_cuts/n_events, t_had_pT_cuts))
     print("Number of hadronic ts satisfying distance cut criteria")
@@ -587,6 +773,59 @@ def make_histograms():
     print("Number of hadronic ts satisfying distance cut criteria")
     print('{}%, {} events'.format(100.*t_lep_dist_cuts/n_events, t_lep_dist_cuts))
     print('\n=================================================================\n')
+
+    print('Cut Criteria')
+    print('\n=================================================================\n')
+    print("Breakdown of total Hadronic Ws matched to 1, 2, and 3 jets, before applying cuts on events matched to 1 jet:")
+    print('{}% 1 jet Hadronic W, {} events'.format(100.*jet_breakdown[0]/n_events, jet_breakdown[0]))
+    print('{}% 2 jet Hadronic W, {} events'.format(100.*jet_breakdown[1]/n_events, jet_breakdown[1]))
+    print('{}% 3 jet Hadronic W, {} events'.format(100.*jet_breakdown[2]/n_events, jet_breakdown[2]))
+    print('\n=================================================================\n')
+    print("Number of events satisfying all hadronic W cut criteria, as a percentage of their respective categories before applying cuts:")
+    print('{}% Total Hadronic Ws within cuts, {} events'.format(100.*sum(W_had_total_cuts)/n_events, sum(W_had_total_cuts)))
+    print('{}% 1 jet Hadronic Ws within cut, {} events'.format(100.*W_had_total_cuts[0]/jet_breakdown[0], W_had_total_cuts[0]))
+    print('{}% 2 jet Hadronic Ws within cut, {} events'.format(100.*W_had_total_cuts[1]/jet_breakdown[1], W_had_total_cuts[1]))
+    print('{}% 3 jet Hadronic Ws within cut, {} events\n'.format(100.*W_had_total_cuts[2]/jet_breakdown[2], W_had_total_cuts[2]))
+
+    print("Breakdown of total Hadronic Ws matched to 1, 2, and 3 jets after cuts are applied: ")
+    print('{}% 1 jet Hadronic W, {} events, out of {}'.format(100.*W_had_total_cuts[0]/sum(W_had_total_cuts), W_had_total_cuts[0], sum(W_had_total_cuts)))
+    print('{}% 2 jet Hadronic W, {} events, out of {}'.format(100.*W_had_total_cuts[1]/sum(W_had_total_cuts), W_had_total_cuts[1], sum(W_had_total_cuts)))
+    print('{}% 3 jet Hadronic W, {} events, out of {}\n'.format(100.*W_had_total_cuts[2]/sum(W_had_total_cuts), W_had_total_cuts[2], sum(W_had_total_cuts)))
+
+    print("Number of events satisfying hadronic W mass cut criteria")
+    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*W_had_m_cuts[0]/jet_breakdown[0], W_had_m_cuts[0]))
+    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*W_had_m_cuts[1]/jet_breakdown[1], W_had_m_cuts[1]))
+    print('{}% 3 jet Hadronic Ws, {} events\n'.format(100.*W_had_m_cuts[2]/jet_breakdown[2], W_had_m_cuts[2]))
+    print("Number of events satisfying hadronic W pT cut criteria")
+    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*W_had_pT_cuts[0]/jet_breakdown[0], W_had_pT_cuts[0]))
+    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*W_had_pT_cuts[1]/jet_breakdown[1], W_had_pT_cuts[1]))
+    print('{}% 3 jet Hadronic Ws, {} events\n'.format(100.*W_had_pT_cuts[2]/jet_breakdown[2], W_had_pT_cuts[2]))
+    print("Number of events satisfying hadronic W distance cut criteria")
+    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*W_had_dist_cuts[0]/jet_breakdown[0], W_had_dist_cuts[0]))
+    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*W_had_dist_cuts[1]/jet_breakdown[1], W_had_dist_cuts[1]))
+    print('{}% 3 jet Hadronic Ws, {} events'.format(100.*W_had_dist_cuts[2]/jet_breakdown[2], W_had_dist_cuts[2]))
+    print('\n==================================================================\n')
+    print("Number of events satisfying all leptonic W cut criteria")
+    print('{}% , {} events\n'.format(100.*W_lep_total_cuts/n_events, W_lep_total_cuts))
+    print("Number of events satisfying leptonic W ET cut criteria")
+    print('{}%, {} events'.format(100.*W_lep_ET_cuts/n_events, W_lep_ET_cuts))
+    print("Number of events satisfying leptonic W distance cut criteria")
+    print('{}%, {} events'.format(100.*W_lep_dist_cuts/n_events, W_lep_dist_cuts))
+    print('\n==================================================================\n')
+    print("Number of events satisfying all hadronic b cut criteria")
+    print('{}% , {} events\n'.format(100.*b_had_total_cuts/n_events, b_had_total_cuts))
+    print("Number of events satisfying hadronic b pT cut criteria")
+    print('{}%, {} events'.format(100.*b_had_pT_cuts/n_events, b_had_pT_cuts))
+    print("Number of events satisfying hadronic b distance cut criteria")
+    print('{}%, {} events'.format(100.*b_had_dist_cuts/n_events, b_had_dist_cuts))
+    print('\n==================================================================\n')
+    print("Number of events satisfying all leptonic b cut criteria")
+    print('{}% , {} events\n'.format(100.*b_lep_total_cuts/n_events, b_lep_total_cuts))
+    print("Number of events satisfying leptonic b pT cut criteria")
+    print('{}%, {} events'.format(100.*b_lep_pT_cuts/n_events, b_lep_pT_cuts))
+    print("Number of events satisfying leptonic b distance cut criteria")
+    print('{}%, {} events'.format(100.*b_lep_dist_cuts/n_events, b_lep_dist_cuts))
+    print('\n==================================================================\n')
     print("Events satisfying cut criteria after all cuts")
     print('{}%, {} events'.format(100.*good_event/n_events, good_event))
 
@@ -643,6 +882,7 @@ if __name__ == "__main__":
         os.mkdir('{}/{}'.format(outputdir, subdir))
     except Exception as e:
         print("Overwriting existing files")
+
     make_histograms()
 
     hists_key = []

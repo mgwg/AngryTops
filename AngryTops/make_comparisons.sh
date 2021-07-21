@@ -1,2 +1,2 @@
 #!/bin/bash
-python2 Plotting/bW_identification.py $1 $2 $3 $4
+python2 Plotting/cutoff_id.py $1 $2 $3 $4
