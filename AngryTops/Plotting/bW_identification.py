@@ -465,7 +465,8 @@ def make_histograms():
 
         # Special calculations for the observed leptonic W  
         muon_pT_obs = [jet_mu[i][0], jet_mu[i][1]]
-        nu_pT_obs = [jet_mu[i][4]*np.cos(jet_mu[i][5]), jet_mu[i][4]*np.sin(jet_mu[i][5])] # Observed neutrino transverse momentum from missing energy as [x, y].
+        # Observed neutrino transverse momentum from missing energy as [x, y].
+        nu_pT_obs = [jet_mu[i][4]*np.cos(jet_mu[i][5]), jet_mu[i][4]*np.sin(jet_mu[i][5])] 
         W_lep_Px_observed = muon_pT_obs[0] + nu_pT_obs[0]
         W_lep_Py_observed = muon_pT_obs[1] + nu_pT_obs[1]
         
