@@ -7,6 +7,9 @@ from ROOT import *
 import pickle
 import pandas as pd
 from AngryTops.ModelTraining.FormatInputOutput import *
+from AngryTops.features import *
+from sklearn.utils import shuffle
+import sklearn.preprocessing
 
 
 scaling = True
@@ -76,6 +79,8 @@ def filter_events(csv_file, **kwargs):
     ### Format input csv file.
     # Training observed, training truth, testing observed, testing truth
     #  Training to be split with validation.
+
+    print("filtering training events...")
     (training_input, training_output), (testing_input, testing_output), \
     (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) \
                         = get_input_output(input_filename=csv_file, **kwargs)
