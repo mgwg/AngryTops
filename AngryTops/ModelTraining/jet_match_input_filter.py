@@ -174,74 +174,95 @@ def filter_events(csv_file, **kwargs):
         if np.all(jet_5[i] == 0.):
             jets.append(jet_5_vect)
 
-        # Perform jet matching for the bs and Ws
-        b_had_dist_true = b_lep_dist_true = W_had_dist_true = 1000
+        # Set initial distances to be large since we don't know what the minimum distance is yet 
+        b_had_dist_true = b_lep_dist_true = W_had_dist_true = 1000000
+
+        # Perform jet matching for the bs, all jets, b-tagged and not b-tagged should be considered.
         for k in range(len(jets)): # loop through each jet to find the minimum distance for each particle
             # For bs:
             b_had_d_true = find_dist(b_had_true, jets[k])
-            b_lep_d_true = find_dist(b_lep_true, jets[k])
             if b_had_d_true < b_had_dist_true:
                 b_had_dist_true = b_had_d_true
                 closest_b_had = jets[k]
+            b_lep_d_true = find_dist(b_lep_true, jets[k])
             if b_lep_d_true < b_lep_dist_true:
                 b_lep_dist_true = b_lep_d_true
                 closest_b_lep = jets[k]
 
-            # For hadronic Ws
-            # Same code for matching whether or not we are to include b-tagged jets
-            if (b_tagging == "All") \
-                or (b_tagging == "None" and not jet_list[k,i,5]) \
-                    or (b_tagging == "Only" and jet_list[k,i,5]): # k ranges from 0 to 4 or 5 depending on event type
-                # Go through each 1,2,3 combination of jets that are not b-tagged and check their sum
-                sum_vect = jets[k]    
-                # Single jets
+        good_jets = jets[:]
+        if (b_tagging > 0):
+            for m in range(len(jets)):
+                # if don't include any b tagged jets and jet is b tagged OR
+                # if only considering b tagged jets and jet is not b tagged
+                if (b_tagging == 1 and jet_list[m, i, 5]) or (b_tagging == 2 and not jet_list[m,i,5]):
+                    good_jets.remove(jets[m])
+        # If there are no jets remaining in good_jets, then skip this event. Don't populate histograms.
+        if not good_jets:
+            continue
+        
+        # Consider best two jets first.
+        if (len(good_jets) >= 2):
+            for k in range(len(good_jets)):
+                # if good_jets only contains one element, loop is skipped since range would be (1,1)
+                for j in range(k + 1, len(good_jets)):                  
+                    sum_vect = good_jets[k] + good_jets[j] 
+                    W_had_d_true = find_dist(W_had_true, sum_vect)
+                    if W_had_d_true < W_had_dist_true:
+                        W_had_dist_true = W_had_d_true
+                        closest_W_had = sum_vect
+            W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
+            jet_combo_index = 1
+        
+        # If the best double jet doesn't pass cuts, then consider three jets.
+        if (len(good_jets) >= 3) and (closest_W_had.M() <= W_had_m_cutoff[0] \
+            or closest_W_had.M() >= W_had_m_cutoff[1] or W_had_true_obs_pT_diff <= W_had_pT_cutoff[0] \
+            or W_had_true_obs_pT_diff >= W_had_pT_cutoff[1] \
+            or W_had_dist_true >= W_had_dist_cutoff[1]):
+            # Reset maximum eta-phi distance.
+            W_had_dist_true = 1000000
+            for k in range(len(good_jets)):
+                for j in range(k + 1, len(good_jets)):     
+                    for l in range(j+1, len(good_jets)):
+                        sum_vect = good_jets[k] + good_jets[j] + good_jets[l]
+                        # Calculate eta-phi distance for current jet combo.
+                        W_had_d_true = find_dist(W_had_true, sum_vect)
+                        # Compare current distance to current minimum distance and update if lower.
+                        if W_had_d_true < W_had_dist_true:
+                            W_had_dist_true = W_had_d_true
+                            closest_W_had = sum_vect
+            # Calculate true - observed pT difference for the best triple jet
+            W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
+            jet_combo_index = 2
+
+        # if there is only one jet in the list or previous matches don't pass cutoff conditions, find a single jet match
+        if (len(good_jets) == 1) or ((closest_W_had.M() <= W_had_m_cutoff[0] or closest_W_had.M() >= W_had_m_cutoff[1]) \
+            or (W_had_true_obs_pT_diff <= W_had_pT_cutoff[0] or W_had_true_obs_pT_diff >= W_had_pT_cutoff[1])\
+            or W_had_dist_true >= W_had_dist_cutoff[1]):
+            W_had_dist_true = 1000000
+            # Single jets
+            for k in range(len(good_jets)):
+                sum_vect = good_jets[k]    
                 W_had_d_true = find_dist(W_had_true, sum_vect)
                 if W_had_d_true < W_had_dist_true:
                     W_had_dist_true = W_had_d_true
                     closest_W_had = sum_vect
-                    w_jets = 0
-                # Dijets
-                for j in range(k + 1, len(jets)):
-                    # j ranges from k+1 to 4 or 5 depending on event type     
-                    if (b_tagging == "All") \
-                        or (b_tagging == "None" and not jet_list[j,i,5]) \
-                            or (b_tagging == "Only" and jet_list[j,i,5]):
-                        sum_vect = jets[k] + jets[j] 
-                        W_had_d_true = find_dist(W_had_true, sum_vect)
-                        if W_had_d_true < W_had_dist_true:
-                            W_had_dist_true = W_had_d_true
-                            closest_W_had = sum_vect
-                            w_jets = 1
-                # Trijets
-                        for l in range(j+1, len(jets)):
-                            # l ranges from j+k+1 to 4 or 5 depending on event type
-                            if (b_tagging == "All") \
-                                or (b_tagging == "None" and not jet_list[l,i,5]) \
-                                    or (b_tagging == "Only" and jet_list[l,i,5]):
-                                sum_vect = jets[k] + jets[j] + jets[l]
-                                W_had_d_true = find_dist(W_had_true, sum_vect)
-                                if W_had_d_true < W_had_dist_true:
-                                    W_had_dist_true = W_had_d_true
-                                    closest_W_had = sum_vect
-                                    w_jets = 2
+            # Only calculate difference for best single jet.
+            W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
+            jet_combo_index = 0
 
-        # If b-tagged jets are not to be considered and all jets are b-tagged 
-        #  or only b-tagged jets are to be considered and no jet is b-tagged, 
-        #  skip the event.
-        if W_had_dist_true == 10000000: # If there are no jets to be matched for this event,
-            continue                    #  then the W_had_dist_true will remain unchanged. 
-
-        W_had_true_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
-        w_had_jets[w_jets] += 1 
-
-        # Observed transverse momentum of muon
-        muon_pT_obs = [jet_mu[i][0], jet_mu[i][1]] 
-        # Convert missing transverse energy to a momentum
-        nu_pT_obs = [ jet_mu[i][4]*np.cos(jet_mu[i][5]), jet_mu[i][4]*np.sin(jet_mu[i][5])]
-        # Add muon transverse momentum components to missing momentum components to get W_lep
-        W_lep = (muon_pT_obs[0] + nu_pT_obs[0], muon_pT_obs[1] + nu_pT_obs[1])
-        lep_phi = np.arctan2( W_lep[1], W_lep[0] )
+        # Special calculations for the observed leptonic W assuming massless daughters.  
+        muon_pT_obs = [jet_mu[i][0], jet_mu[i][1]]
+        # Observed neutrino transverse momentum from missing energy as [x, y].
+        nu_pT_obs = [jet_mu[i][4]*np.cos(jet_mu[i][5]), jet_mu[i][4]*np.sin(jet_mu[i][5])] 
+        W_lep_Px_observed = muon_pT_obs[0] + nu_pT_obs[0]
+        W_lep_Py_observed = muon_pT_obs[1] + nu_pT_obs[1]
+        
+        # Calculate the distance between true and observed phi.
+        lep_phi = np.arctan2(W_lep_Py_observed, W_lep_Px_observed)
         W_lep_dist_true = np.abs( min( np.abs(W_lep_true.Phi()-lep_phi), 2*np.pi-np.abs(W_lep_true.Phi()-lep_phi) ) )
+        # Calculate transverse energy assuming daughter particles are massless
+        W_lep_ET_observed = np.sqrt( W_lep_Px_observed**2 + W_lep_Py_observed**2)
+        W_lep_ET_diff = W_lep_true.Et() - W_lep_ET_observed
 
         b_had_true_pT_diff = b_had_true.Pt() - closest_b_had.Pt()
         b_lep_true_pT_diff = b_lep_true.Pt() - closest_b_lep.Pt()
