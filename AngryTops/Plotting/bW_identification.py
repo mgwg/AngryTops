@@ -459,7 +459,7 @@ def make_histograms():
                 if W_had_d_true < W_had_dist_true:
                     W_had_dist_true = W_had_d_true
                     closest_W_had = sum_vect
-                # Only calculate difference for best single jet.
+            # Only calculate difference for best single jet.
             W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
             jet_combo_index = 0
 
