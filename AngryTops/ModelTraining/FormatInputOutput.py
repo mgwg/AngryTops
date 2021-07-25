@@ -21,7 +21,7 @@ def get_input_output(input_filename, training_split=0.9, single_output=None, par
     scaling = kwargs['scaling']
     rep = kwargs['rep']
     sort_jets = kwargs['sort_jets']
-
+    
     # Load jets, leptons and output columns of the correct representation
     input_filename = "../csv/{}".format(input_filename)
     df = pd.read_csv(input_filename, names=column_names)
@@ -103,7 +103,7 @@ def normalize(arr, scaling):
 if __name__=='__main__':
     (training_input, training_output), (testing_input, testing_output), \
            (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) = \
-    get_input_output(input_filename="topreco_5dec2.csv", scaling='minmax',
+    get_input_output(input_filename="Feb9.csv", scaling='minmax',
     rep="experimental", sort_jets=False)
     print(training_input.shape)
     print(training_output.shape)

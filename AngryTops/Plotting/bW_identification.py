@@ -34,18 +34,19 @@ if plot_cuts:
     subdir = '/closejets_img_cuts{}/'.format(date)
 
 # Cut ranges for the partons
+# Cut ranges for the partons
 W_had_m_cutoff = (30, 130)
-W_had_pT_cutoff = (-500, 500)
-W_had_dist_cutoff = (0, 0.5)
+W_had_pT_cutoff = (-100, 100)
+W_had_dist_cutoff = (0, 0.8)
 
-W_lep_ET_cutoff = (-1000, 1000)
-W_lep_dist_cutoff = (0, 100)
+W_lep_ET_cutoff = (-100, 120)
+W_lep_dist_cutoff = (0, 1.0)
 
-b_had_pT_cutoff = (-600, 600)
-b_had_dist_cutoff = (0, 100)
+b_had_pT_cutoff = (-80, 100)
+b_had_dist_cutoff = (0, 0.8)
 
-b_lep_pT_cutoff = (-600, 600)
-b_lep_dist_cutoff = (0, 100)
+b_lep_pT_cutoff = (-80, 100)
+b_lep_dist_cutoff = (0, 0.8)
 
 # load data
 predictions = np.load(outputdir + 'predictions.npz')

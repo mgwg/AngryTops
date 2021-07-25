@@ -33,8 +33,10 @@ b_had_dist_cutoff = (0, 0.8)
 b_lep_pT_cutoff = (-80, 100)
 b_lep_dist_cutoff = (0, 0.8)
 
+train_dir = sys.argv[1]
+
 # Helper function to create histograms of eta-phi distance distributions
-def MakeP4(y, m):
+def MakeP4(y, m, representation):
     """
     Form the momentum vector.
     """
@@ -85,8 +87,17 @@ def filter_events(csv_file, **kwargs):
     (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) \
                         = get_input_output(input_filename=csv_file, **kwargs)
 
+    # Inputs
+    scaling = kwargs['scaling']
+    rep = kwargs['rep']
+
     training_input_cuts = []
     training_output_cuts = []
+    good_event = 0.
+
+    training_output = training_output.reshape(training_output.shape[0], training_output.shape[1]*training_output.shape[2])
+    training_output = output_scalar.inverse_transform(training_output)
+    training_output = training_output.reshape(training_output.shape[0], -1, 3)
 
     jets_lep = training_input[:,:6]
      # remove muon columns
@@ -127,45 +138,23 @@ def filter_events(csv_file, **kwargs):
     n_events = training_output.shape[0]
     event_index = range(n_events)
 
-    w_had_jets = [0., 0., 0.] # List of number of events best matched by 1,2,3 jets respectively.
-    W_had_total_cuts = [0., 0., 0.]
-
-    W_lep_total_cuts = 0.
-    b_had_total_cuts = 0.
-    b_lep_total_cuts = 0.
-
-    good_event = 0.
-
     for i in event_index: # loop through every event
         if ( n_events < 10 ) or ( (i+1) % int(float(n_events)/10.)  == 0 ):
             perc = 100. * i / float(n_events)
             print("INFO: Event %-9i  (%3.0f %%)" % ( i, perc ))
         
-        W_had_true   = MakeP4( y_true_W_had[i], m_W )
-        W_had_fitted = MakeP4( y_fitted_W_had[i],  m_W)
+        W_had_true   = MakeP4( y_true_W_had[i], m_W , rep)
+        W_lep_true   = MakeP4( y_true_W_lep[i], m_W , rep)
+        b_had_true   = MakeP4( y_true_b_had[i], m_b , rep)
+        b_lep_true   = MakeP4( y_true_b_lep[i], m_b , rep)
 
-        W_lep_true   = MakeP4( y_true_W_lep[i], m_W )
-        W_lep_fitted = MakeP4( y_fitted_W_lep[i],  m_W)
+        jet_mu_vect = MakeP4(jet_mu[i],jet_mu[i][4], rep)
 
-        b_had_true   = MakeP4( y_true_b_had[i], m_b )
-        b_had_fitted = MakeP4( y_fitted_b_had[i],  m_b )
-
-        b_lep_true   = MakeP4( y_true_b_lep[i], m_b )
-        b_lep_fitted = MakeP4( y_fitted_b_lep[i],  m_b)
-
-        t_had_true   = MakeP4( y_true_t_had[i], m_t )
-        t_had_fitted = MakeP4( y_fitted_t_had[i],  m_t )
-
-        t_lep_true   = MakeP4( y_true_t_lep[i], m_t )
-        t_lep_fitted = MakeP4( y_fitted_t_lep[i],  m_t)
-
-        jet_mu_vect = MakeP4(jet_mu[i],jet_mu[i][4])
-
-        jet_1_vect = MakeP4(jet_1[i], jet_1[i][4])
-        jet_2_vect = MakeP4(jet_2[i], jet_2[i][4])
-        jet_3_vect = MakeP4(jet_3[i], jet_3[i][4])
-        jet_4_vect = MakeP4(jet_4[i], jet_4[i][4])
-        jet_5_vect = MakeP4(jet_5[i], jet_5[i][4])
+        jet_1_vect = MakeP4(jet_1[i], jet_1[i][4], rep)
+        jet_2_vect = MakeP4(jet_2[i], jet_2[i][4], rep)
+        jet_3_vect = MakeP4(jet_3[i], jet_3[i][4], rep)
+        jet_4_vect = MakeP4(jet_4[i], jet_4[i][4], rep)
+        jet_5_vect = MakeP4(jet_5[i], jet_5[i][4], rep)
     
         jets = []
         # add list containing jets of corresponding event
@@ -213,13 +202,13 @@ def filter_events(csv_file, **kwargs):
                     if W_had_d_true < W_had_dist_true:
                         W_had_dist_true = W_had_d_true
                         closest_W_had = sum_vect
-            W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
+            W_had_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
             jet_combo_index = 1
         
         # If the best double jet doesn't pass cuts, then consider three jets.
         if (len(good_jets) >= 3) and (closest_W_had.M() <= W_had_m_cutoff[0] \
-            or closest_W_had.M() >= W_had_m_cutoff[1] or W_had_true_obs_pT_diff <= W_had_pT_cutoff[0] \
-            or W_had_true_obs_pT_diff >= W_had_pT_cutoff[1] \
+            or closest_W_had.M() >= W_had_m_cutoff[1] or W_had_pT_diff <= W_had_pT_cutoff[0] \
+            or W_had_pT_diff >= W_had_pT_cutoff[1] \
             or W_had_dist_true >= W_had_dist_cutoff[1]):
             # Reset maximum eta-phi distance.
             W_had_dist_true = 1000000
@@ -234,12 +223,12 @@ def filter_events(csv_file, **kwargs):
                             W_had_dist_true = W_had_d_true
                             closest_W_had = sum_vect
             # Calculate true - observed pT difference for the best triple jet
-            W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
+            W_had_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
             jet_combo_index = 2
 
         # if there is only one jet in the list or previous matches don't pass cutoff conditions, find a single jet match
         if (len(good_jets) == 1) or ((closest_W_had.M() <= W_had_m_cutoff[0] or closest_W_had.M() >= W_had_m_cutoff[1]) \
-            or (W_had_true_obs_pT_diff <= W_had_pT_cutoff[0] or W_had_true_obs_pT_diff >= W_had_pT_cutoff[1])\
+            or (W_had_pT_diff <= W_had_pT_cutoff[0] or W_had_pT_diff >= W_had_pT_cutoff[1])\
             or W_had_dist_true >= W_had_dist_cutoff[1]):
             W_had_dist_true = 1000000
             # Single jets
@@ -250,7 +239,7 @@ def filter_events(csv_file, **kwargs):
                     W_had_dist_true = W_had_d_true
                     closest_W_had = sum_vect
             # Only calculate difference for best single jet.
-            W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
+            W_had_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
             jet_combo_index = 0
 
         # Special calculations for the observed leptonic W assuming massless daughters.  
@@ -268,75 +257,74 @@ def filter_events(csv_file, **kwargs):
         W_lep_ET_diff = W_lep_true.Et() - W_lep_ET_observed
 
         # b quark calculations
-        b_had_true_pT_diff = b_had_true.Pt() - closest_b_had.Pt()
-        b_lep_true_pT_diff = b_lep_true.Pt() - closest_b_lep.Pt()
+        b_had_pT_diff = b_had_true.Pt() - closest_b_had.Pt()
+        b_lep_pT_diff = b_lep_true.Pt() - closest_b_lep.Pt()
 
         good_W_had = (W_had_dist_true <= W_had_dist_cutoff[1]) and \
-                    (W_had_true_pT_diff >= W_had_pT_cutoff[0] and W_had_true_pT_diff <= W_had_pT_cutoff[1]) and\
+                    (W_had_pT_diff >= W_had_pT_cutoff[0] and W_had_pT_diff <= W_had_pT_cutoff[1]) and\
                     (closest_W_had.M() >= W_had_m_cutoff[0] and closest_W_had.M() <= W_had_m_cutoff[1])
 
         good_W_lep = (W_lep_dist_true <= W_lep_dist_cutoff[1]) and \
-                    (W_lep_ET_diff >= W_lep_ET_cutoff[0] and W_lep_true_ET_diff <= W_lep_ET_cutoff[1])
+                    (W_lep_ET_diff >= W_lep_ET_cutoff[0] and W_lep_ET_diff <= W_lep_ET_cutoff[1])
 
         good_b_had =  (b_had_dist_true <= b_had_dist_cutoff[1]) and \
-                    (b_had_true_pT_diff >= b_had_pT_cutoff[0] and b_had_true_pT_diff <= b_had_pT_cutoff[1]) and\
-                    (closest_b_had.M() >= b_had_m_cutoff[0] and closest_b_had.M() <= b_had_m_cutoff[1])
+                    (b_had_pT_diff >= b_had_pT_cutoff[0] and b_had_pT_diff <= b_had_pT_cutoff[1]) 
 
         good_b_lep = (b_lep_dist_true <= b_lep_dist_cutoff[1]) and \
-                    (b_lep_true_pT_diff >= b_lep_pT_cutoff[0] and b_lep_true_pT_diff <= b_lep_pT_cutoff[1]) and\
-                    (closest_b_lep.M() >= b_lep_m_cutoff[0] and closest_b_lep.M() <= b_lep_m_cutoff[1])
+                    (b_lep_pT_diff >= b_lep_pT_cutoff[0] and b_lep_pT_diff <= b_lep_pT_cutoff[1])
 
-        if good_W_had and good_W_lep and good_b_had and good_b_lep:
+        good_event += (good_b_had and good_b_lep and good_W_had and good_W_lep)
+
+        if not (good_W_had and good_W_lep and good_b_had and good_b_lep):
             training_input_cuts.append(i)
             training_output_cuts.append(i)
-            good_event += 1
-
-        # calculate stats
-        W_had_jets[jet_combo_index] += 1.
-        W_had_total_cuts[jet_combo_index] += good_W_had
-
-        W_lep_total_cuts += good_W_lep
-        b_had_total_cuts += good_b_had
-        b_lep_total_cuts += good_b_lep
 
     training_input = np.delete(training_input, training_input_cuts, axis = 0)
     training_output = np.delete(training_output, training_output_cuts, axis = 0)
 
-    scaling = kwargs['scaling']
-    training_input = normalize(training_input, scaling)
-    training_output = normalize(training_output, scaling)
+    # reshape 3 x 6 array to 1D to normalize
+    training_output = training_output.reshape((training_output.shape[0], 18)) 
+    
+    training_input, _ = normalize(training_input, scaling)
+    training_output, _ = normalize(training_output, scaling)
 
-    # Print data regarding percentage of each class of event
+    training_output = training_output.reshape((training_output.shape[0], -1, 3))
+
+    
+    np.savez("{}/cut_events".format(train_dir), training_input=testing_input, training_output=training_output,\
+            testing_input=testing_input, testing_output=testing_output,\
+            event_training=event_training, event_testing=event_testing)
+
+    scaler_filename = "{}/scalers.pkl".format(train_dir)
+    with open( scaler_filename, "wb" ) as file_scaler:
+      pickle.dump(jets_scalar, file_scaler, protocol=2)
+      pickle.dump(lep_scalar, file_scaler, protocol=2)
+      pickle.dump(output_scalar, file_scaler, protocol=2)
+    print("INFO: scalers saved to file:", scaler_filename)
+
     print('Total number of events: {} \n'.format(n_events))
-    print('\n==================================================================\n')
     print('Cut Criteria')
     print('Hadronic W, mass: {}, pT: {}, distance: {}'.format(W_had_m_cutoff, W_had_pT_cutoff, W_had_dist_cutoff))
     print('Leptonic W, E_T: {}, dist: {}'.format(W_lep_ET_cutoff, W_lep_dist_cutoff))
     print('Hadronic b, pT: {}, distance: {}'.format(b_had_pT_cutoff, b_had_dist_cutoff))
     print('Leptonic b, pT: {}, distance: {}'.format(b_lep_pT_cutoff, b_lep_dist_cutoff))
     print('\n==================================================================\n')
-    print("Breakdown of total Hadronic Ws matched to 1, 2, and 3 jets, before applying cuts on events matched to 1 jet:")
-    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*W_had_jets[0]/n_events, int(W_had_jets[0])))
-    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*W_had_jets[1]/n_events, int(W_had_jets[1])))
-    print('{}% 3 jet Hadronic Ws, {} events\n'.format(100.*W_had_jets[2]/n_events, int(W_had_jets[2])))
-    print("Number of events satisfying all hadronic W cut criteria, as a percentage of their respective categories before applying cuts:")
-    print('{}% Total Hadronic Ws within cuts, {} events'.format(100.*sum(W_had_total_cuts)/n_events, int(sum(W_had_total_cuts))))
-    print('{}% 1 jet Hadronic W, {} events, out of {}'.format(100.*W_had_total_cuts[0]/W_had_jets[0], int(W_had_total_cuts[0]), int(W_had_jets[0])))
-    print('{}% 2 jet Hadronic W, {} events, out of {}'.format(100.*W_had_total_cuts[1]/W_had_jets[1], int(W_had_total_cuts[1]), int(W_had_jets[1])))
-    print('{}% 3 jet Hadronic W, {} events, out of {}\n'.format(100.*W_had_total_cuts[2]/W_had_jets[2], int(W_had_total_cuts[2]), int(W_had_jets[2])))
-    print('\n==================================================================\n')
-    print("Number of events satisfying all leptonic W cut criteria")
-    print('{}% , {} events\n'.format(100.*W_lep_total_cuts/n_events, int(W_lep_total_cuts)))
-    print("Number of events satisfying all hadronic b cut criteria")
-    print('{}% , {} events\n'.format(100.*b_had_total_cuts/n_events, int(b_had_total_cuts)))
-    print("Number of events satisfying all leptonic b cut criteria")
-    print('{}% , {} events\n'.format(100.*b_lep_total_cuts/n_events, int(b_lep_total_cuts)))
-    print('\n==================================================================\n')
     print("Events satisfying cut all cut criteria for all partons")
     print('{}%, {} events'.format(100.*good_event/n_events, int(good_event)))
+    # return (training_input, training_output), (testing_input, testing_output), \
+    #        (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing)
+    return True
 
+if __name__=='__main__':
+    # (training_input, training_output), (testing_input, testing_output), \
+    #        (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) = \
+    # filter_events("Feb9.csv", scaling='minmax', rep="pxpypzEM", sort_jets=False)
+    # print(training_input.shape)
+    # print(training_output.shape)
+    try:
+        os.mkdir(train_dir)
+    except Exception as e:
+        print("Directory already created")
 
-
-    return (training_input, training_output), (testing_input, testing_output), \
-           (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing)
+    filter_events("Feb9.csv", scaling='minmax', rep="pxpypzEM", sort_jets=False)
 

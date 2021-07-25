@@ -64,17 +64,6 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     print("Checkpoint Path: ", checkpoint_path)
 
     ###########################################################################
-    # LOGGING
-
-    #try:
-    #    log = open("{}/log.txt".format(train_dir), 'w')
-    #except Exception as e:
-    #    os.mkdir(train_dir)
-    #    log = open("{}/log.txt".format(train_dir), 'w')
-    #if log_training:
-    #    sys.stdout = log
-
-    ###########################################################################
     # LOADING / PRE-PROCESSING DATA
     print(csv_file)
     (training_input, training_output), (testing_input, testing_output), \
@@ -117,7 +106,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
 
     # Checkpoint saving / Model training
     filepath = checkpoint_dir + "/weights-improvement-{epoch:02d}.ckpt"
-    print("Checkpoints saved in: ", filepath)
+    print("Checkpoints saved in: {}".format(filepath))
     cp_callback = ModelCheckpoint(filepath, monitor='val_loss', save_weights_only=False, verbose=2)
     early_stopping = EarlyStopping(monitor='val_loss', patience=100)
     try:
@@ -189,3 +178,4 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
 
 if __name__ == "__main__":
     print("Compiled")
+
