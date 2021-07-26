@@ -16,7 +16,6 @@ from AngryTops.ModelTraining.FormatInputOutput import get_input_output
 from AngryTops.ModelTraining.custom_loss import *
 from tensorflow.keras.utils import plot_model
 from tensorflow.keras.backend import manual_variable_initialization
-from AngryTops.ModelTraining.jet_match_input_filter import filter_events
 manual_variable_initialization(True)
 
 print(tf.__version__)
@@ -68,7 +67,7 @@ def train_model(model_name, train_dir, csv_file, log_training=True, load_model=F
     print(csv_file)
     (training_input, training_output), (testing_input, testing_output), \
     (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) \
-                        = filter_events(csv_file, **kwargs)
+                        = get_input_output(csv_file, **kwargs)
     print("Shape of training events: ", training_input.shape)
     print("Shape of testing events: ", testing_output.shape)
 

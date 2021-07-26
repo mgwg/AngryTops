@@ -337,15 +337,11 @@ def filter_events(csv_file, **kwargs):
     training_input = np.delete(training_input, training_input_cuts, axis = 0)
     training_output = np.delete(training_output, training_output_cuts, axis = 0)
 
-    # reshape 3 x 6 array to 1D to normalize
+    # re-normalize training_output because it was un-normalized earlier
     training_output = training_output.reshape((training_output.shape[0], 18)) 
-    
-    training_input, _ = normalize(training_input, scaling)
     training_output, _ = normalize(training_output, scaling)
-
     training_output = training_output.reshape((training_output.shape[0], -1, 3))
 
-    
     np.savez("{}/cut_events".format(train_dir), training_input=testing_input, training_output=training_output,\
             testing_input=testing_input, testing_output=testing_output,\
             event_training=event_training, event_testing=event_testing)

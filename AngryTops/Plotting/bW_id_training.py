@@ -52,76 +52,37 @@ b_had_dist_cutoff = (0, 0.8)
 b_lep_pT_cutoff = (-80, 100)
 b_lep_dist_cutoff = (0, 0.8)
 
-
-# Helper function to create histograms of eta-phi distance distributions
-def MakeP4(y, m, representation):
-    """
-    Form the momentum vector.
-    """
-    p4 = TLorentzVector()
-    p0 = y[0]
-    p1 = y[1]
-    p2 = y[2]
-    # Construction of momentum vector depends on the representation of the input
-    if representation == "pxpypzE":
-        E  = y[3]
-        p4.SetPxPyPzE(p0, p1, p2, E)
-    elif representation == "pxpypzM":
-        M  = y[3]
-        E = np.sqrt(p0**2 + p1**2 + p2**2 + M**2)
-        p4.SetPxPyPzE(p0, p1, p2, E)
-    elif representation == "pxpypz" or representation == "pxpypzEM":
-        E = np.sqrt(p0**2 + p1**2 + p2**2 + m**2)
-        p4.SetPxPyPzE(p0, p1, p2, E)
-    elif representation == "ptetaphiE":
-        E  = y[3]
-        p4.SetPtEtaPhiE(p0, p1, p2, E)
-    elif representation == "ptetaphiM":
-        M  = y[3]
-        p4.SetPtEtaPhiM(p0, p1, p2, M)
-    elif representation == "ptetaphi" or representation == "ptetaphiEM":
-        p4.SetPtEtaPhiM(p0, p1, p2, m)
-    else:
-        raise Exception("Invalid Representation Given: {}".format(representation))
-    return p4
-
-def find_dist(a, b):
-    '''
-    a, b are both TLorentz Vectors
-    returns the eta-phi distances between true and sum_vect
-    '''
-    dphi_true = min(np.abs(a.Phi() - b.Phi()), 2*np.pi-np.abs(a.Phi() - b.Phi()))
-    deta_true = a.Eta() - b.Eta()
-    d_true = np.sqrt(dphi_true**2 + deta_true**2)
-    return d_true
-
-
-
 (training_input, training_output), (testing_input, testing_output), \
 (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) \
                     = get_input_output('Feb9.csv', \
                     scaling='minmax', rep="pxpypzEM", sort_jets=False)
 
+jets = testing_input 
+true = testing_output
+
 # Inputs
 scaling = 'minmax'
 rep = 'pxpypzEM'
 
-training_output = training_output.reshape(training_output.shape[0], training_output.shape[1]*training_output.shape[2])
-training_output = output_scalar.inverse_transform(training_output)
-training_output = training_output.reshape(training_output.shape[0], -1, 3)
+particles_shape = (true.shape[1], true.shape[2])
+# Rescale the truth array
+true = true.reshape(true.shape[0], true.shape[1]*true.shape[2])
+true = output_scalar.inverse_transform(true)
+true = true.reshape(true.shape[0], particles_shape[0], particles_shape[1])
+        
+# Rescale the jets array
+jets_lep = jets[:,:6]
+jets_jets = jets[:,6:] # remove muon column
+jets_jets = jets_jets.reshape((jets_jets.shape[0],5,6)) # reshape to 5 x 6 array
 
-jets_lep = training_input[:,:6]
-    # remove muon columns
-jets_jets = training_input[:,6:]
-jets_jets = jets_jets.reshape((jets_jets.shape[0],5,6)) 
 # Remove the b-tagging states and put them into a new array to be re-appended later.
 b_tags = jets_jets[:,:,5]
-# delete the b-tagging states
-jets_jets = np.delete(jets_jets, 5, 2) 
-jets_jets = jets_jets.reshape((jets_jets.shape[0], 25)) 
-# need to invert the normalization due to get_input_output
+jets_jets = np.delete(jets_jets, 5, 2) # delete the b-tagging states
+
+jets_jets = jets_jets.reshape((jets_jets.shape[0], 25)) # reshape into 25 element long array
 jets_lep = lep_scalar.inverse_transform(jets_lep)
-jets_jets = jets_scalar.inverse_transform(jets_jets)
+jets_jets = jets_scalar.inverse_transform(jets_jets) # scale values ... ?
+#I think this is the final 6x6 array the arxiv paper was talking about - 5 x 5 array containing jets (1 per row) and corresponding px, py, pz, E, m
 jets_jets = jets_jets.reshape((jets_jets.shape[0],5,5))
 # Re-append the b-tagging states as a column at the end of jets_jets 
 jets_jets = np.append(jets_jets, np.expand_dims(b_tags, 2), 2)
@@ -139,14 +100,15 @@ jet_5 = jets_jets[:,4]
 jet_list = np.stack([jet_1, jet_2, jet_3, jet_4, jet_5]) 
 
 # truth
-y_true_W_had = training_output[:,0,:]
-y_true_W_lep = training_output[:,1,:]
-y_true_b_had = training_output[:,2,:]
-y_true_b_lep = training_output[:,3,:]
-y_true_t_had = training_output[:,4,:]
-y_true_t_lep = training_output[:,5,:]
+y_true_W_had = true[:,0,:]
+y_true_W_lep = true[:,1,:]
+y_true_b_had = true[:,2,:]
+y_true_b_lep = true[:,3,:]
+y_true_t_had = true[:,4,:]
+y_true_t_lep = true[:,5,:]
 
-n_events = training_output.shape[0]
+# store number of events as a separate variable for clarity
+n_events = true.shape[0]
 event_index = range(n_events)
 
 # make histograms to be filled
@@ -155,7 +117,6 @@ hists = {}
 # Leptonic W
 # True vs. obs
 hists['lep_W_dist_true_v_obs'] = TH1F("h_W_lep_true","W Leptonic Distances, True vs Observed", 50, 0, 3)
-hists['lep_W_dist_true_v_obs'].SetTitle("W Leptonic #phi distances, True vs Observed; Leptonic (radians);A.U.")
 # transverse mass and energy
 hists['lep_W_transverse_mass_obs'] = TH1F("W_lep_met_d","W Leptonic Transverse Mass, Observed", 50, 0, 250)#120)
 hists['lep_W_transverse_mass_obs'].SetTitle("W Leptonic Transverse Mass, Observed;Leptonic (GeV);A.U.")
@@ -258,6 +219,7 @@ hists['had_b_corr_dist_true_v_obs_mass'] = TH2F("b Hadronic #eta-#phi Distances 
 hists['had_b_corr_pT_diff_true_v_obs_mass'] = TH2F("b Hadronic p_{T} Diffs vs. Invariant Mass", ";b Hadronic Invariant Mass [GeV]; b Hadronic p_{T} Diff, True - Observed [GeV]", 50, 0, 50, 50, -100, 100)
 hists['had_b_corr_pT_diff_dist_true_v_obs'] = TH2F("b Hadronic p_{T} Diffs vs. #eta-#phi Distances", ";b Hadronic #eta-#phi Distances, True vs Observed; b Hadronic p_{T} Diff [GeV]", 50, 0, 3.2, 50, -100, 100)
 
+# Function to make histograms
 def make_histograms():
 
     # Counters to make tally number of events that pass cuts
@@ -285,36 +247,37 @@ def make_histograms():
         if ( n_events < 10 ) or ( (i+1) % int(float(n_events)/10.)  == 0 ):
             perc = 100. * i / float(n_events)
             print("INFO: Event %-9i  (%3.0f %%)" % ( i, perc ))
+            
+        W_had_true   = MakeP4( y_true_W_had[i], m_W, representation)
+        W_lep_true   = MakeP4( y_true_W_lep[i], m_W , representation)
+        b_had_true   = MakeP4( y_true_b_had[i], m_b , representation)
+        b_lep_true   = MakeP4( y_true_b_lep[i], m_b , representation)
+        t_had_true   = MakeP4( y_true_t_had[i], m_t , representation)
+        t_lep_true   = MakeP4( y_true_t_lep[i], m_t , representation)
+
+        jet_mu_vect = MakeP4(jet_mu[i],jet_mu[i][4], representation)
+        jet_1_vect = MakeP4(jet_1[i], jet_1[i][4], representation)
+        jet_2_vect = MakeP4(jet_2[i], jet_2[i][4], representation)
+        jet_3_vect = MakeP4(jet_3[i], jet_3[i][4], representation)
+        jet_4_vect = MakeP4(jet_4[i], jet_4[i][4], representation)
+        jet_5_vect = MakeP4(jet_5[i], jet_5[i][4], representation)
         
-        W_had_true   = MakeP4( y_true_W_had[i], m_W , rep)
-        W_lep_true   = MakeP4( y_true_W_lep[i], m_W , rep)
-        b_had_true   = MakeP4( y_true_b_had[i], m_b , rep)
-        b_lep_true   = MakeP4( y_true_b_lep[i], m_b , rep)
-
-        jet_mu_vect = MakeP4(jet_mu[i],jet_mu[i][4], rep)
-
-        jet_1_vect = MakeP4(jet_1[i], jet_1[i][4], rep)
-        jet_2_vect = MakeP4(jet_2[i], jet_2[i][4], rep)
-        jet_3_vect = MakeP4(jet_3[i], jet_3[i][4], rep)
-        jet_4_vect = MakeP4(jet_4[i], jet_4[i][4], rep)
-        jet_5_vect = MakeP4(jet_5[i], jet_5[i][4], rep)
-    
         jets = []
-        # add list containing jets of corresponding event
         jets.append(jet_1_vect)
         jets.append(jet_2_vect)
         jets.append(jet_3_vect)
         jets.append(jet_4_vect)
         # If there is no fifth jet, do not append it to list of jets to avoid considering it in the pairs of jets.
-        if np.all(jet_5[i] == 0.):
+        if not np.all(jet_5[i] == 0.):
             jets.append(jet_5_vect)
+
+        ################################################# true vs observed ################################################# 
 
         # Set initial distances to be large since we don't know what the minimum distance is yet 
         b_had_dist_true = b_lep_dist_true = W_had_dist_true = 1000000
 
         # Perform jet matching for the bs, all jets, b-tagged and not b-tagged should be considered.
-        for k in range(len(jets)): # loop through each jet to find the minimum distance for each particle
-            # For bs:
+        for k in range(len(jets)):
             b_had_d_true = find_dist(b_had_true, jets[k])
             if b_had_d_true < b_had_dist_true:
                 b_had_dist_true = b_had_d_true
@@ -331,11 +294,9 @@ def make_histograms():
                 # if only considering b tagged jets and jet is not b tagged
                 if (b_tagging == 1 and jet_list[m, i, 5]) or (b_tagging == 2 and not jet_list[m,i,5]):
                     good_jets.remove(jets[m])
-        # If there are no jets remaining in good_jets, then skip this event. Don't populate histograms.
         if not good_jets:
             continue
         
-        # Consider best two jets first.
         if (len(good_jets) >= 2):
             for k in range(len(good_jets)):
                 # if good_jets only contains one element, loop is skipped since range would be (1,1)
@@ -345,13 +306,12 @@ def make_histograms():
                     if W_had_d_true < W_had_dist_true:
                         W_had_dist_true = W_had_d_true
                         closest_W_had = sum_vect
-            W_had_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
+            W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
             jet_combo_index = 1
         
         # If the best double jet doesn't pass cuts, then consider three jets.
-        if (len(good_jets) >= 3) and (closest_W_had.M() <= W_had_m_cutoff[0] \
-            or closest_W_had.M() >= W_had_m_cutoff[1] or W_had_pT_diff <= W_had_pT_cutoff[0] \
-            or W_had_pT_diff >= W_had_pT_cutoff[1] \
+        if (len(good_jets) >= 3) and (closest_W_had.M() <= W_had_m_cutoff[0] or closest_W_had.M() >= W_had_m_cutoff[1] \
+            or W_had_true_obs_pT_diff <= W_had_pT_cutoff[0] or W_had_true_obs_pT_diff >= W_had_pT_cutoff[1] \
             or W_had_dist_true >= W_had_dist_cutoff[1]):
             # Reset maximum eta-phi distance.
             W_had_dist_true = 1000000
@@ -359,30 +319,25 @@ def make_histograms():
                 for j in range(k + 1, len(good_jets)):     
                     for l in range(j+1, len(good_jets)):
                         sum_vect = good_jets[k] + good_jets[j] + good_jets[l]
-                        # Calculate eta-phi distance for current jet combo.
                         W_had_d_true = find_dist(W_had_true, sum_vect)
-                        # Compare current distance to current minimum distance and update if lower.
                         if W_had_d_true < W_had_dist_true:
                             W_had_dist_true = W_had_d_true
                             closest_W_had = sum_vect
-            # Calculate true - observed pT difference for the best triple jet
-            W_had_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
+            W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
             jet_combo_index = 2
 
         # if there is only one jet in the list or previous matches don't pass cutoff conditions, find a single jet match
         if (len(good_jets) == 1) or ((closest_W_had.M() <= W_had_m_cutoff[0] or closest_W_had.M() >= W_had_m_cutoff[1]) \
-            or (W_had_pT_diff <= W_had_pT_cutoff[0] or W_had_pT_diff >= W_had_pT_cutoff[1])\
+            or (W_had_true_obs_pT_diff <= W_had_pT_cutoff[0] or W_had_true_obs_pT_diff >= W_had_pT_cutoff[1])\
             or W_had_dist_true >= W_had_dist_cutoff[1]):
             W_had_dist_true = 1000000
-            # Single jets
             for k in range(len(good_jets)):
                 sum_vect = good_jets[k]    
                 W_had_d_true = find_dist(W_had_true, sum_vect)
                 if W_had_d_true < W_had_dist_true:
                     W_had_dist_true = W_had_d_true
                     closest_W_had = sum_vect
-            # Only calculate difference for best single jet.
-            W_had_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
+            W_had_true_obs_pT_diff = W_had_true.Pt() - closest_W_had.Pt()
             jet_combo_index = 0
 
         # Special calculations for the observed leptonic W assuming massless daughters.  
@@ -403,15 +358,14 @@ def make_histograms():
         met_obs = np.sqrt(2*jet_mu[i][4]*jet_mu_vect.Pt()*(1 - np.cos(obs_daughter_angle))) 
 
         # b quark calculations
-        b_had_pT_diff = b_had_true.Pt() - closest_b_had.Pt()
-        b_lep_pT_diff = b_lep_true.Pt() - closest_b_lep.Pt()
+        b_had_true_obs_pT_diff = b_had_true.Pt() - closest_b_had.Pt()
+        b_lep_true_obs_pT_diff = b_lep_true.Pt() - closest_b_lep.Pt()
 
         ############################################## check whether each event passes cuts #################################################
-        
         # counter for hadronic W
         # Update tally for which jet combination is the closest
         W_had_m_cut = (closest_W_had.M() >= W_had_m_cutoff[0] and closest_W_had.M() <= W_had_m_cutoff[1])
-        W_had_pT_cut = (W_had_pT_diff >= W_had_pT_cutoff[0] and W_had_pT_diff <= W_had_pT_cutoff[1])
+        W_had_pT_cut = (W_had_true_obs_pT_diff >= W_had_pT_cutoff[0] and W_had_true_obs_pT_diff <= W_had_pT_cutoff[1])
         W_had_dist_cut = (W_had_dist_true <= W_had_dist_cutoff[1]) 
         # All W_had cuts must be satisfied simultaneously.
         good_W_had = (W_had_m_cut and W_had_pT_cut and W_had_dist_cut)
@@ -432,7 +386,7 @@ def make_histograms():
         W_lep_dist_cuts += W_lep_dist_cut
 
         # counter for hadronic b
-        b_had_pT_cut = (b_had_pT_diff >= b_had_pT_cutoff[0] and b_had_pT_diff <= b_had_pT_cutoff[1])
+        b_had_pT_cut = (b_had_true_obs_pT_diff >= b_had_pT_cutoff[0] and b_had_true_obs_pT_diff <= b_had_pT_cutoff[1])
         b_had_dist_cut = (b_had_dist_true <= b_had_dist_cutoff[1]) 
         good_b_had = (b_had_pT_cut and b_had_dist_cut)
 
@@ -441,7 +395,7 @@ def make_histograms():
         b_had_dist_cuts += b_had_dist_cut
 
         # counter for leptonic b
-        b_lep_pT_cut = (b_lep_pT_diff >= b_lep_pT_cutoff[0] and b_lep_pT_diff <= b_lep_pT_cutoff[1])
+        b_lep_pT_cut = (b_lep_true_obs_pT_diff >= b_lep_pT_cutoff[0] and b_lep_true_obs_pT_diff <= b_lep_pT_cutoff[1])
         b_lep_dist_cut = (b_lep_dist_true <= b_lep_dist_cutoff[1]) 
         good_b_lep = (b_lep_pT_cut and b_lep_dist_cut)
 
@@ -451,6 +405,7 @@ def make_histograms():
 
         # Good events must pass cuts on all partons.
         good_event += (good_b_had and good_b_lep and good_W_had and good_W_lep)
+
         ################################################# populate histograms #################################################
 
         # Populate histograms if all events are to be plotted or we are only dealing with a good event 
@@ -462,12 +417,12 @@ def make_histograms():
             hists['lep_b_obs_mass'].Fill(closest_b_lep.M())
             # Jet matching criteria correlation plots
             hists['lep_b_corr_dist_true_v_obs_mass'].Fill(closest_b_lep.M(), b_lep_dist_true) 
-            hists['lep_b_corr_pT_diff_true_v_obs_mass'].Fill(closest_b_lep.M(), b_lep_pT_diff) 
-            hists['lep_b_corr_pT_diff_dist_true_v_obs'].Fill(b_lep_dist_true, b_lep_pT_diff)
+            hists['lep_b_corr_pT_diff_true_v_obs_mass'].Fill(closest_b_lep.M(), b_lep_true_obs_pT_diff) 
+            hists['lep_b_corr_pT_diff_dist_true_v_obs'].Fill(b_lep_dist_true, b_lep_true_obs_pT_diff)
             # Closest PT difference vs. PT
             hists['lep_b_true_obs_pT'].Fill(closest_b_lep.Pt())
-            hists['lep_b_true_obs_pT_diff'].Fill(b_lep_pT_diff)
-            hists['lep_b_corr_pT_diff_pT_obs'].Fill(closest_b_lep.Pt(), b_lep_pT_diff) 
+            hists['lep_b_true_obs_pT_diff'].Fill(b_lep_true_obs_pT_diff)
+            hists['lep_b_corr_pT_diff_pT_obs'].Fill(closest_b_lep.Pt(), b_lep_true_obs_pT_diff) 
 
             # Hadronic b
             hists['had_b_dist_true_v_obs'].Fill(np.float(b_had_dist_true))
@@ -475,12 +430,12 @@ def make_histograms():
             hists['had_b_obs_mass'].Fill(closest_b_had.M())
             # Jet matching criteria correlation plots
             hists['had_b_corr_dist_true_v_obs_mass'].Fill(closest_b_had.M(), b_had_dist_true) 
-            hists['had_b_corr_pT_diff_true_v_obs_mass'].Fill(closest_b_had.M(), b_had_pT_diff) 
-            hists['had_b_corr_pT_diff_dist_true_v_obs'].Fill(b_had_dist_true, b_had_pT_diff)
+            hists['had_b_corr_pT_diff_true_v_obs_mass'].Fill(closest_b_had.M(), b_had_true_obs_pT_diff) 
+            hists['had_b_corr_pT_diff_dist_true_v_obs'].Fill(b_had_dist_true, b_had_true_obs_pT_diff)
             # Closest PT difference vs. PT
             hists['had_b_true_obs_pT'].Fill(closest_b_had.Pt())
-            hists['had_b_true_obs_pT_diff'].Fill(b_had_pT_diff)
-            hists['had_b_corr_pT_diff_pT_obs'].Fill(closest_b_had.Pt(), b_had_pT_diff) 
+            hists['had_b_true_obs_pT_diff'].Fill(b_had_true_obs_pT_diff)
+            hists['had_b_corr_pT_diff_pT_obs'].Fill(closest_b_had.Pt(), b_had_true_obs_pT_diff) 
 
             # Leptonic W
             hists['lep_W_dist_true_v_obs'].Fill(np.float(W_lep_dist_true))
@@ -499,38 +454,36 @@ def make_histograms():
             hists['had_W_obs_mass'].Fill(closest_W_had.M())
             # Jet matching criteria correlation plots
             hists['had_W_corr_mass_dist_true_v_obs'].Fill(closest_W_had.M(), W_had_dist_true) 
-            hists['had_W_corr_mass_Pt_true_v_obs'].Fill(closest_W_had.M(), W_had_pT_diff) 
-            hists['had_W_corr_dist_Pt_true_v_obs'].Fill(W_had_dist_true, W_had_pT_diff)  
+            hists['had_W_corr_mass_Pt_true_v_obs'].Fill(closest_W_had.M(), W_had_true_obs_pT_diff) 
+            hists['had_W_corr_dist_Pt_true_v_obs'].Fill(W_had_dist_true, W_had_true_obs_pT_diff)  
             # Closest pT difference vs. pT
             hists['had_W_true_obs_pT'].Fill(np.float(closest_W_had.Pt()))
-            hists['had_W_true_obs_pT_diff'].Fill(np.float(W_had_pT_diff))
+            hists['had_W_true_obs_pT_diff'].Fill(np.float(W_had_true_obs_pT_diff))
             # Plots that depend on whether a 1,2, or 3-jet sum is the best match to truth:
             if jet_combo_index == 0:
-                hists['had_W_true_1_pT_diff'].Fill(np.float(W_had_pT_diff))
+                hists['had_W_true_1_pT_diff'].Fill(np.float(W_had_true_obs_pT_diff))
                 hists['had_W_obs_1_mass'].Fill(closest_W_had.M())
                 hists['had_W_obs_1_mass_log'].Fill(closest_W_had.M())
                 hists['had_W_corr_1_mass_dist_true_v_obs'].Fill(closest_W_had.M(), W_had_dist_true)
-                hists['had_W_corr_1_mass_Pt_true_v_obs'].Fill(closest_W_had.M(), W_had_pT_diff)
-                hists['had_W_corr_1_dist_Pt_true_v_obs'].Fill(W_had_dist_true, W_had_pT_diff)
+                hists['had_W_corr_1_mass_Pt_true_v_obs'].Fill(closest_W_had.M(), W_had_true_obs_pT_diff)
+                hists['had_W_corr_1_dist_Pt_true_v_obs'].Fill(W_had_dist_true, W_had_true_obs_pT_diff)
                 hists['had_W_1_dist'].Fill(np.float(W_had_dist_true))
             elif jet_combo_index == 1:
-                hists['had_W_true_2_pT_diff'].Fill(np.float(W_had_pT_diff))
+                hists['had_W_true_2_pT_diff'].Fill(np.float(W_had_true_obs_pT_diff))
                 hists['had_W_obs_2_mass'].Fill(closest_W_had.M())
                 hists['had_W_corr_2_mass_dist_true_v_obs'].Fill(closest_W_had.M(), W_had_dist_true)
-                hists['had_W_corr_2_mass_Pt_true_v_obs'].Fill(closest_W_had.M(), W_had_pT_diff)
-                hists['had_W_corr_2_dist_Pt_true_v_obs'].Fill(W_had_dist_true, W_had_pT_diff)
+                hists['had_W_corr_2_mass_Pt_true_v_obs'].Fill(closest_W_had.M(), W_had_true_obs_pT_diff)
+                hists['had_W_corr_2_dist_Pt_true_v_obs'].Fill(W_had_dist_true, W_had_true_obs_pT_diff)
                 hists['had_W_2_dist'].Fill(np.float(W_had_dist_true))
             elif jet_combo_index == 2:
-                hists['had_W_true_3_pT_diff'].Fill(np.float(W_had_pT_diff))
+                hists['had_W_true_3_pT_diff'].Fill(np.float(W_had_true_obs_pT_diff))
                 hists['had_W_obs_3_mass'].Fill(closest_W_had.M())
                 hists['had_W_corr_3_mass_dist_true_v_obs'].Fill(closest_W_had.M(), W_had_dist_true)
-                hists['had_W_corr_3_mass_Pt_true_v_obs'].Fill(closest_W_had.M(), W_had_pT_diff)
-                hists['had_W_corr_3_dist_Pt_true_v_obs'].Fill(W_had_dist_true, W_had_pT_diff)
+                hists['had_W_corr_3_mass_Pt_true_v_obs'].Fill(closest_W_had.M(), W_had_true_obs_pT_diff)
+                hists['had_W_corr_3_dist_Pt_true_v_obs'].Fill(W_had_dist_true, W_had_true_obs_pT_diff)
                 hists['had_W_3_dist'].Fill(np.float(W_had_dist_true))
 
     # Print data regarding percentage of each class of event
-    print("jets shape", training_input.shape)
-    print("b tagging option", b_tagging)
     print('Total number of events: {} \n'.format(n_events))
     print('NOTE: some percentages do not reach 100%, as events where no Hadronic W can be matched after removing the b-tagged jets are skipped (all jets are b-tagged)')
     print('\n==================================================================\n')

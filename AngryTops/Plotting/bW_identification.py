@@ -16,7 +16,7 @@ if len(sys.argv) > 4:
     event_type = sys.argv[4]
 
 subdir = '/closejets_img{}/'.format(date)
-scaling = True
+scaling = True # whether the dataset has been passed through a scaling function or not
 m_t = 172.5
 m_W = 80.4
 m_b = 4.95
@@ -93,8 +93,6 @@ if not scaling:
     jets_jets = jets[:,6:]
     jets_jets = jets_jets.reshape((jets_jets.shape[0],5,6))
     jets_jets = np.delete(jets_jets, 5, 2)
-    jets_jets = jets_jets.reshape((jets_jets.shape[0], 25))
-    jets_jets = jets_jets.reshape((jets_jets.shape[0],5,5))
 
 # jets
 jet_mu = jets_lep
