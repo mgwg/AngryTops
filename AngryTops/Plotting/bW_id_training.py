@@ -16,12 +16,19 @@ outputdir = sys.argv[1]
 representation = sys.argv[2]
 date = ''
 if len(sys.argv) > 3:
-    date = sys.argv[3]
-event_type = 0
+    date = sys.argv[3]   
+# For plot_cuts:
+# True if you want to plot only the events that pass the cuts
+# False to plot all events         
+plot_cuts = False
 if len(sys.argv) > 4:
-    event_type = sys.argv[4]
+    if sys.argv[4] == "True":
+        plot_cuts = True
+        subdir = '/train_closejets_img_cuts{}/'.format(date)
 
-subdir = '/closejets_img{}/'.format(date)
+input_csv = 'Feb9.csv'
+output_csv = 'Jul26.csv'
+subdir = '/train_closejets_img{}/'.format(date)
 m_t = 172.5
 m_W = 80.4
 m_b = 4.95
@@ -31,12 +38,7 @@ ONLY = 2
 b_tagging = NONE   # 0/All: Consider all jets, both b-tagged and not b-tagged
                 # 1/None: Do not consider any b-tagged jets.
                 # 2/Only: Consider only b-tagged jets
-# For plot_cuts:
-# True if you want to plot only the events that pass the cuts
-# False to include events for which no combo of 1,2,3 jets pass cuts.                
-plot_cuts = False
-if plot_cuts:
-    subdir = '/closejets_img_cuts{}/'.format(date)
+
 
 # Cut ranges for the partons
 W_had_m_cutoff = (30, 130)
@@ -54,9 +56,8 @@ b_lep_dist_cutoff = (0, 0.8)
 
 (training_input, training_output), (testing_input, testing_output), \
 (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) \
-                    = get_input_output('Feb9.csv', \
+                    = get_input_output(input_csv, \
                     scaling='minmax', rep="pxpypzEM", sort_jets=False)
-
 jets = testing_input 
 true = testing_output
 
@@ -242,6 +243,9 @@ def make_histograms():
     b_lep_total_cuts = 0.
 
     good_event = 0.
+    
+    # List of indices corresponding to bad events to remove from the original csv.
+    indices_to_cut = []
 
     for i in event_index: # loop through every event
         if ( n_events < 10 ) or ( (i+1) % int(float(n_events)/10.)  == 0 ):
@@ -367,9 +371,7 @@ def make_histograms():
         W_had_m_cut = (closest_W_had.M() >= W_had_m_cutoff[0] and closest_W_had.M() <= W_had_m_cutoff[1])
         W_had_pT_cut = (W_had_true_obs_pT_diff >= W_had_pT_cutoff[0] and W_had_true_obs_pT_diff <= W_had_pT_cutoff[1])
         W_had_dist_cut = (W_had_dist_true <= W_had_dist_cutoff[1]) 
-        # All W_had cuts must be satisfied simultaneously.
         good_W_had = (W_had_m_cut and W_had_pT_cut and W_had_dist_cut)
-
         W_had_jets[jet_combo_index] += 1.
         W_had_total_cuts[jet_combo_index] += good_W_had
         W_had_m_cuts[jet_combo_index] += W_had_m_cut
@@ -380,31 +382,30 @@ def make_histograms():
         W_lep_ET_cut = (W_lep_ET_diff >= W_lep_ET_cutoff[0] and W_lep_ET_diff <= W_lep_ET_cutoff[1])
         W_lep_dist_cut = (W_lep_dist_true <= W_lep_dist_cutoff[1]) 
         good_W_lep = (W_lep_ET_cut and W_lep_dist_cut)
-
         W_lep_total_cuts += good_W_lep
         W_lep_ET_cuts += W_lep_ET_cut
         W_lep_dist_cuts += W_lep_dist_cut
-
         # counter for hadronic b
         b_had_pT_cut = (b_had_true_obs_pT_diff >= b_had_pT_cutoff[0] and b_had_true_obs_pT_diff <= b_had_pT_cutoff[1])
         b_had_dist_cut = (b_had_dist_true <= b_had_dist_cutoff[1]) 
         good_b_had = (b_had_pT_cut and b_had_dist_cut)
-
         b_had_total_cuts += good_b_had
         b_had_pT_cuts += b_had_pT_cut
         b_had_dist_cuts += b_had_dist_cut
 
         # counter for leptonic b
-        b_lep_pT_cut = (b_lep_true_obs_pT_diff >= b_lep_pT_cutoff[0] and b_lep_true_obs_pT_diff <= b_lep_pT_cutoff[1])
+        b_lep_pT_cut = (b_lep_pT_diff >= b_lep_pT_cutoff[0] and b_lep_pT_diff <= b_lep_pT_cutoff[1])
         b_lep_dist_cut = (b_lep_dist_true <= b_lep_dist_cutoff[1]) 
         good_b_lep = (b_lep_pT_cut and b_lep_dist_cut)
-
         b_lep_total_cuts += good_b_lep
         b_lep_pT_cuts += b_lep_pT_cut
         b_lep_dist_cuts += b_lep_dist_cut
 
         # Good events must pass cuts on all partons.
         good_event += (good_b_had and good_b_lep and good_W_had and good_W_lep)
+
+        if not (good_W_had and good_W_lep and good_b_had and good_b_lep):
+            indices_to_cut.append(i)
 
         ################################################# populate histograms #################################################
 
@@ -547,6 +548,8 @@ def make_histograms():
     print("Events satisfying cut all cut criteria for all partons")
     print('{}%, {} events'.format(100.*good_event/n_events, int(good_event)))
 
+    return indices_to_cut
+
 
 # Helper function to output and save the correlation plots
 def plot_corr(key, hist, outputdir):
@@ -600,8 +603,10 @@ if __name__ == "__main__":
         os.mkdir('{}/{}'.format(outputdir, subdir))
     except Exception as e:
         print("Overwriting existing files")
-    make_histograms()
+        
+    indices_to_cut = make_histograms()
 
+    # plot histograms and correlation plots
     hists_key = []
     corr_key = []
     for key in hists:
@@ -622,3 +627,13 @@ if __name__ == "__main__":
 
     for key in corr_key:
         plot_corr(key, hists[key], outputdir+subdir)
+
+
+    # Read in again and slice original pandas dataframe to remove the bad event indices.
+    
+    # Load jets, leptons and output columns of the correct representation
+    input_csv = "../csv/{}".format(input_csv)
+    df = pd.read_csv(input_csv, names=column_names)
+    df.drop(labels = indices_to_cut, axis =0)
+    print(df.shape)
+    df.to_csv("../csv/{}".format(output_csv))

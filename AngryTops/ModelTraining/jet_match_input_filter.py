@@ -418,16 +418,11 @@ def filter_events(csv_file, **kwargs):
     print('\n==================================================================\n')
     print("Events satisfying cut all cut criteria for all partons")
     print('{}%, {} events'.format(100.*good_event/n_events, int(good_event)))
-    # return (training_input, training_output), (testing_input, testing_output), \
-    #        (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing)
+    
     return True
 
 if __name__=='__main__':
-    # (training_input, training_output), (testing_input, testing_output), \
-    #        (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) = \
-    # filter_events("Feb9.csv", scaling='minmax', rep="pxpypzEM", sort_jets=False)
-    # print(training_input.shape)
-    # print(training_output.shape)
+
     try:
         os.mkdir(train_dir)
     except Exception as e:
