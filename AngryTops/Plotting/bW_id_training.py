@@ -22,7 +22,6 @@ if len(sys.argv) > 4:
     event_type = sys.argv[4]
 
 subdir = '/closejets_img{}/'.format(date)
-scaling = True
 m_t = 172.5
 m_W = 80.4
 m_b = 4.95
@@ -101,15 +100,11 @@ def find_dist(a, b):
 (training_input, training_output), (testing_input, testing_output), \
 (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) \
                     = get_input_output('Feb9.csv', \
-                    scaling='minmax', rep='pxpypzEM', EPOCHES=1, sort_jets=False, \
-                    load_model=False, log_training=True)
+                    scaling='minmax', rep="pxpypzEM", sort_jets=False)
 
 # Inputs
 scaling = 'minmax'
 rep = 'pxpypzEM'
-
-training_input_cuts = []
-training_output_cuts = []
 
 training_output = training_output.reshape(training_output.shape[0], training_output.shape[1]*training_output.shape[2])
 training_output = output_scalar.inverse_transform(training_output)
@@ -534,6 +529,8 @@ def make_histograms():
                 hists['had_W_3_dist'].Fill(np.float(W_had_dist_true))
 
     # Print data regarding percentage of each class of event
+    print("jets shape", training_input.shape)
+    print("b tagging option", b_tagging)
     print('Total number of events: {} \n'.format(n_events))
     print('NOTE: some percentages do not reach 100%, as events where no Hadronic W can be matched after removing the b-tagged jets are skipped (all jets are b-tagged)')
     print('\n==================================================================\n')

@@ -16,9 +16,12 @@ scaling = True
 m_t = 172.5
 m_W = 80.4
 m_b = 4.95
-b_tagging = "None" # "None": Do not consider any b-tagged jets.
-                   # "All": Consider all jets, both b-tagged and not b-tagged
-                   # "Only": Consider only b-tagged jets
+ALL = 0
+NONE = 1
+ONLY = 2
+b_tagging = NONE   # 0/All: Consider all jets, both b-tagged and not b-tagged
+                # 1/None: Do not consider any b-tagged jets.
+                # 2/Only: Consider only b-tagged jets
 
 W_had_m_cutoff = (30, 130)
 W_had_pT_cutoff = (-100, 100)
@@ -82,6 +85,27 @@ def filter_events(csv_file, **kwargs):
     # Training observed, training truth, testing observed, testing truth
     #  Training to be split with validation.
 
+    # Counters to make tally number of events that pass cuts
+    W_had_jets = [0., 0., 0.] # List of number of events best matched to 1,2,3 jets respectively.
+    W_had_total_cuts = [0., 0., 0.]
+    W_had_m_cuts = [0., 0., 0.]
+    W_had_pT_cuts = [0., 0., 0.]
+    W_had_dist_cuts = [0., 0., 0.]
+
+    W_lep_total_cuts = 0.
+    W_lep_ET_cuts = 0.
+    W_lep_dist_cuts = 0.
+
+    b_had_pT_cuts = 0.
+    b_had_dist_cuts = 0.
+    b_had_total_cuts = 0.
+
+    b_lep_pT_cuts = 0.
+    b_lep_dist_cuts = 0.
+    b_lep_total_cuts = 0.
+
+    good_event = 0.
+
     print("filtering training events...")
     (training_input, training_output), (testing_input, testing_output), \
     (jets_scalar, lep_scalar, output_scalar), (event_training, event_testing) \
@@ -93,7 +117,6 @@ def filter_events(csv_file, **kwargs):
 
     training_input_cuts = []
     training_output_cuts = []
-    good_event = 0.
 
     training_output = training_output.reshape(training_output.shape[0], training_output.shape[1]*training_output.shape[2])
     training_output = output_scalar.inverse_transform(training_output)
@@ -260,20 +283,52 @@ def filter_events(csv_file, **kwargs):
         b_had_pT_diff = b_had_true.Pt() - closest_b_had.Pt()
         b_lep_pT_diff = b_lep_true.Pt() - closest_b_lep.Pt()
 
-        good_W_had = (W_had_dist_true <= W_had_dist_cutoff[1]) and \
-                    (W_had_pT_diff >= W_had_pT_cutoff[0] and W_had_pT_diff <= W_had_pT_cutoff[1]) and\
-                    (closest_W_had.M() >= W_had_m_cutoff[0] and closest_W_had.M() <= W_had_m_cutoff[1])
+        ############################################## check whether each event passes cuts #################################################
+        
+        # counter for hadronic W
+        # Update tally for which jet combination is the closest
+        W_had_m_cut = (closest_W_had.M() >= W_had_m_cutoff[0] and closest_W_had.M() <= W_had_m_cutoff[1])
+        W_had_pT_cut = (W_had_pT_diff >= W_had_pT_cutoff[0] and W_had_pT_diff <= W_had_pT_cutoff[1])
+        W_had_dist_cut = (W_had_dist_true <= W_had_dist_cutoff[1]) 
+        # All W_had cuts must be satisfied simultaneously.
+        good_W_had = (W_had_m_cut and W_had_pT_cut and W_had_dist_cut)
 
-        good_W_lep = (W_lep_dist_true <= W_lep_dist_cutoff[1]) and \
-                    (W_lep_ET_diff >= W_lep_ET_cutoff[0] and W_lep_ET_diff <= W_lep_ET_cutoff[1])
+        W_had_jets[jet_combo_index] += 1.
+        W_had_total_cuts[jet_combo_index] += good_W_had
+        W_had_m_cuts[jet_combo_index] += W_had_m_cut
+        W_had_pT_cuts[jet_combo_index] += W_had_pT_cut
+        W_had_dist_cuts[jet_combo_index] += W_had_dist_cut
 
-        good_b_had =  (b_had_dist_true <= b_had_dist_cutoff[1]) and \
-                    (b_had_pT_diff >= b_had_pT_cutoff[0] and b_had_pT_diff <= b_had_pT_cutoff[1]) 
+        # counter for lep W
+        W_lep_ET_cut = (W_lep_ET_diff >= W_lep_ET_cutoff[0] and W_lep_ET_diff <= W_lep_ET_cutoff[1])
+        W_lep_dist_cut = (W_lep_dist_true <= W_lep_dist_cutoff[1]) 
+        good_W_lep = (W_lep_ET_cut and W_lep_dist_cut)
 
-        good_b_lep = (b_lep_dist_true <= b_lep_dist_cutoff[1]) and \
-                    (b_lep_pT_diff >= b_lep_pT_cutoff[0] and b_lep_pT_diff <= b_lep_pT_cutoff[1])
+        W_lep_total_cuts += good_W_lep
+        W_lep_ET_cuts += W_lep_ET_cut
+        W_lep_dist_cuts += W_lep_dist_cut
 
+        # counter for hadronic b
+        b_had_pT_cut = (b_had_pT_diff >= b_had_pT_cutoff[0] and b_had_pT_diff <= b_had_pT_cutoff[1])
+        b_had_dist_cut = (b_had_dist_true <= b_had_dist_cutoff[1]) 
+        good_b_had = (b_had_pT_cut and b_had_dist_cut)
+
+        b_had_total_cuts += good_b_had
+        b_had_pT_cuts += b_had_pT_cut
+        b_had_dist_cuts += b_had_dist_cut
+
+        # counter for leptonic b
+        b_lep_pT_cut = (b_lep_pT_diff >= b_lep_pT_cutoff[0] and b_lep_pT_diff <= b_lep_pT_cutoff[1])
+        b_lep_dist_cut = (b_lep_dist_true <= b_lep_dist_cutoff[1]) 
+        good_b_lep = (b_lep_pT_cut and b_lep_dist_cut)
+
+        b_lep_total_cuts += good_b_lep
+        b_lep_pT_cuts += b_lep_pT_cut
+        b_lep_dist_cuts += b_lep_dist_cut
+
+        # Good events must pass cuts on all partons.
         good_event += (good_b_had and good_b_lep and good_W_had and good_W_lep)
+        ################################################# populate histograms #################################################
 
         if not (good_W_had and good_W_lep and good_b_had and good_b_lep):
             training_input_cuts.append(i)
@@ -302,12 +357,68 @@ def filter_events(csv_file, **kwargs):
       pickle.dump(output_scalar, file_scaler, protocol=2)
     print("INFO: scalers saved to file:", scaler_filename)
 
+    # Print data regarding percentage of each class of event
+    print("jets shape", training_input.shape)
+    print("b tagging option", b_tagging)
     print('Total number of events: {} \n'.format(n_events))
+    print('NOTE: some percentages do not reach 100%, as events where no Hadronic W can be matched after removing the b-tagged jets are skipped (all jets are b-tagged)')
+    print('\n==================================================================\n')
     print('Cut Criteria')
     print('Hadronic W, mass: {}, pT: {}, distance: {}'.format(W_had_m_cutoff, W_had_pT_cutoff, W_had_dist_cutoff))
     print('Leptonic W, E_T: {}, dist: {}'.format(W_lep_ET_cutoff, W_lep_dist_cutoff))
     print('Hadronic b, pT: {}, distance: {}'.format(b_had_pT_cutoff, b_had_dist_cutoff))
     print('Leptonic b, pT: {}, distance: {}'.format(b_lep_pT_cutoff, b_lep_dist_cutoff))
+    print('\n==================================================================\n')
+
+    print("Breakdown of total Hadronic Ws matched to 1, 2, and 3 jets, before applying cuts on events matched to 1 jet:")
+    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*W_had_jets[0]/n_events, int(W_had_jets[0])))
+    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*W_had_jets[1]/n_events, int(W_had_jets[1])))
+    print('{}% 3 jet Hadronic Ws, {} events\n'.format(100.*W_had_jets[2]/n_events, int(W_had_jets[2])))
+
+    print("Number of events satisfying all hadronic W cut criteria, as a percentage of their respective categories before applying cuts:")
+    print('{}% Total Hadronic Ws within cuts, {} events'.format(100.*sum(W_had_total_cuts)/n_events, int(sum(W_had_total_cuts))))
+    print('{}% 1 jet Hadronic W, {} events, out of {}'.format(100.*W_had_total_cuts[0]/W_had_jets[0], int(W_had_total_cuts[0]), int(W_had_jets[0])))
+    print('{}% 2 jet Hadronic W, {} events, out of {}'.format(100.*W_had_total_cuts[1]/W_had_jets[1], int(W_had_total_cuts[1]), int(W_had_jets[1])))
+    print('{}% 3 jet Hadronic W, {} events, out of {}\n'.format(100.*W_had_total_cuts[2]/W_had_jets[2], int(W_had_total_cuts[2]), int(W_had_jets[2])))
+
+    print("Breakdown of total Hadronic Ws matched to 1, 2, and 3 jets after cuts are applied: ")
+    print('{}% 1 jet Hadronic W, {} events, out of {}'.format(100.*W_had_total_cuts[0]/sum(W_had_total_cuts), int(W_had_total_cuts[0]), int(sum(W_had_total_cuts))))
+    print('{}% 2 jet Hadronic W, {} events, out of {}'.format(100.*W_had_total_cuts[1]/sum(W_had_total_cuts), int(W_had_total_cuts[1]), int(sum(W_had_total_cuts))))
+    print('{}% 3 jet Hadronic W, {} events, out of {}\n'.format(100.*W_had_total_cuts[2]/sum(W_had_total_cuts), int(W_had_total_cuts[2]), int(sum(W_had_total_cuts))))
+
+    print("Number of events satisfying hadronic W mass cut criteria")
+    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*W_had_m_cuts[0]/W_had_jets[0], int(W_had_m_cuts[0])))
+    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*W_had_m_cuts[1]/W_had_jets[1], int(W_had_m_cuts[1])))
+    print('{}% 3 jet Hadronic Ws, {} events\n'.format(100.*W_had_m_cuts[2]/W_had_jets[2], int(W_had_m_cuts[2])))
+    print("Number of events satisfying hadronic W pT cut criteria")
+    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*W_had_pT_cuts[0]/W_had_jets[0], int(W_had_pT_cuts[0])))
+    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*W_had_pT_cuts[1]/W_had_jets[1], int(W_had_pT_cuts[1])))
+    print('{}% 3 jet Hadronic Ws, {} events\n'.format(100.*W_had_pT_cuts[2]/W_had_jets[2], int(W_had_pT_cuts[2])))
+    print("Number of events satisfying hadronic W distance cut criteria")
+    print('{}% 1 jet Hadronic Ws, {} events'.format(100.*W_had_dist_cuts[0]/W_had_jets[0], int(W_had_dist_cuts[0])))
+    print('{}% 2 jet Hadronic Ws, {} events'.format(100.*W_had_dist_cuts[1]/W_had_jets[1], int(W_had_dist_cuts[1])))
+    print('{}% 3 jet Hadronic Ws, {} events'.format(100.*W_had_dist_cuts[2]/W_had_jets[2], int(W_had_dist_cuts[2])))
+    print('\n==================================================================\n')
+    print("Number of events satisfying all leptonic W cut criteria")
+    print('{}% , {} events\n'.format(100.*W_lep_total_cuts/n_events, int(W_lep_total_cuts)))
+    print("Number of events satisfying leptonic W ET cut criteria")
+    print('{}%, {} events'.format(100.*W_lep_ET_cuts/n_events, int(W_lep_ET_cuts)))
+    print("Number of events satisfying leptonic W distance cut criteria")
+    print('{}%, {} events'.format(100.*W_lep_dist_cuts/n_events, int(W_lep_dist_cuts)))
+    print('\n==================================================================\n')
+    print("Number of events satisfying all hadronic b cut criteria")
+    print('{}% , {} events\n'.format(100.*b_had_total_cuts/n_events, int(b_had_total_cuts)))
+    print("Number of events satisfying hadronic b pT cut criteria")
+    print('{}%, {} events'.format(100.*b_had_pT_cuts/n_events, int(b_had_pT_cuts)))
+    print("Number of events satisfying hadronic b distance cut criteria")
+    print('{}%, {} events'.format(100.*b_had_dist_cuts/n_events, int(b_had_dist_cuts)))
+    print('\n==================================================================\n')
+    print("Number of events satisfying all leptonic b cut criteria")
+    print('{}% , {} events\n'.format(100.*b_lep_total_cuts/n_events, int(b_lep_total_cuts)))
+    print("Number of events satisfying leptonic b pT cut criteria")
+    print('{}%, {} events'.format(100.*b_lep_pT_cuts/n_events, int(b_lep_pT_cuts)))
+    print("Number of events satisfying leptonic b distance cut criteria")
+    print('{}%, {} events'.format(100.*b_lep_dist_cuts/n_events, int(b_lep_dist_cuts)))
     print('\n==================================================================\n')
     print("Events satisfying cut all cut criteria for all partons")
     print('{}%, {} events'.format(100.*good_event/n_events, int(good_event)))
