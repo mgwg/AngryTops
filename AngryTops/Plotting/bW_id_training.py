@@ -15,20 +15,19 @@ from AngryTops.Plotting.identification_helper import MakeP4, find_dist, plot_his
 outputdir = sys.argv[1]
 representation = sys.argv[2]
 date = ''
-if len(sys.argv) > 3:
-    date = sys.argv[3]   
+if len(sys.argv) > 4:
+    date = sys.argv[4]   
 # For plot_cuts:
 # True if you want to plot only the events that pass the cuts
 # False to plot all events         
-plot_cuts = False
-if len(sys.argv) > 4:
-    if sys.argv[4] == "True":
+plot_cuts = False # Default is False, Boolean can be specified after the respresentation in the bash command.
+if len(sys.argv) > 3:
+    if sys.argv[3] == "True":
         plot_cuts = True
-        subdir = '/train_closejets_img_cuts{}/'.format(date)
-
+        
 input_csv = 'Feb9.csv'
-output_csv = 'Jul26_2.csv'
-subdir = '/train_closejets_img{}/'.format(date)
+output_csv = 'Jul26.csv'
+subdir = "../../csv/training_closejets_cuts{}/".format(date)
 m_t = 172.5
 m_W = 80.4
 m_b = 4.95
