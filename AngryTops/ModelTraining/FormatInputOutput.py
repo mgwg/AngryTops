@@ -99,6 +99,54 @@ def normalize(arr, scaling):
     new_arr = scalar.fit_transform(arr)
     return new_arr, scalar
 
+def get_input_output_all(input_filename, single_output=None, particle=None, **kwargs):
+    """
+    Return the training and testing data
+    Training Data: Array of 36 elements. I am debating reshaping to matrix of (6 x 6)
+    Testing Data: Matrix of Shape (6 x 4)
+    single_output: If given, testing data is from specific kinematic variable
+    particle: If given, testing data is from specific particle
+    """
+    # Inputs
+    rep = kwargs['rep']
+    
+    # Load jets, leptons and output columns of the correct representation
+    input_filename = "../csv/{}".format(input_filename)
+    df = pd.read_csv(input_filename, names=column_names)
+
+    lep = df[representations[rep][0]].values
+    # Set the lepton arrival time of flight to zero
+    print(lep.shape)
+    print("Setting lepton arrival time of flight to zero")
+    lep[:,3] *= 0
+    jets = df[representations[rep][1]].values
+    if single_output is None and particle is None:
+        truth = df[representations[rep][2]].values
+    elif single_output is None:
+        truth = df[particles[particle]]
+    else:
+        truth = df[single_output].values
+        truth = truth.reshape(truth.shape[0], -1)
+    btag = df[btags].values
+    btag = btag.reshape(btag.shape[0], btag.shape[1], 1)
+
+    jets = jets.reshape(jets.shape[0], 5, -1)
+    jets = np.concatenate((jets, btag), axis=2)
+    jets = jets.reshape(jets.shape[0], jets.shape[1] * jets.shape[2])
+
+    # MET Info
+    met_info = df[input_event_info]
+    input = np.concatenate((lep, jets), axis=1)
+
+    # EVENT INFO
+    event_info = df[features_event_info].values
+
+    # OUTPUT
+    if not single_output:
+        truth = truth.reshape(truth.shape[0], -1, 3)
+
+    return input, truth
+
 # Testing to see if this works
 if __name__=='__main__':
     (training_input, training_output), (testing_input, testing_output), \
