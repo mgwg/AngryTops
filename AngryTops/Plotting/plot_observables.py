@@ -114,7 +114,7 @@ def plot_residuals(obs):
     if hist.Class() == TH2F.Class():
         hist = hist.ProfileX("hist_pfx")
 
-    fwhm = getFwhm( hist )
+    fwhm, sigma = getFwhm( hist )
 
     SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=2, markersize=1 )
 
@@ -138,6 +138,7 @@ def plot_residuals(obs):
     l.SetTextFont(42)
     l.SetTextColor(kBlack)
     l.DrawLatex( 0.7, 0.80, "fwhm: %.2f" % fwhm )
+    l.DrawLatex( 0.7, 0.75, "#sigma = %.2f" % sigma )
 
     gPad.RedrawAxis()
 

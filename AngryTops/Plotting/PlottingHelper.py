@@ -263,4 +263,4 @@ def getFwhm(hist):
     sigma = gausFit.GetParameter(2) # mean is 1
     fwhm = sigma*2.35403
 
-    return fwhm
+    return fwhm, sigma
