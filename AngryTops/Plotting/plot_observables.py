@@ -114,6 +114,8 @@ def plot_residuals(obs):
     if hist.Class() == TH2F.Class():
         hist = hist.ProfileX("hist_pfx")
 
+    fwhm = getFwhm( hist )
+
     SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=2, markersize=1 )
 
     c, pad0 = MakeCanvas2()
@@ -125,10 +127,17 @@ def plot_residuals(obs):
     #hist.GetYaxis().SetLabelSize( 0.015 )
     hist.Draw()
 
-    hmax = 1.5 * max( [ hist.GetMaximum(), hist.GetMaximum() ] )
-    hmin = 1.5 * min([ hist.GetMaximum(), hist.GetMaximum() ])
+    hmax = 1.25 * max( [ hist.GetMaximum(), hist.GetMaximum() ] )
+    hmin = 1.25 * min([ hist.GetMaximum(), hist.GetMaximum() ])
     hist.SetMaximum(hmax)
     hist.SetMinimum(hmin)
+
+
+    l = TLatex()
+    l.SetNDC()
+    l.SetTextFont(42)
+    l.SetTextColor(kBlack)
+    l.DrawLatex( 0.7, 0.80, "fwhm: %.2f" % fwhm )
 
     gPad.RedrawAxis()
 

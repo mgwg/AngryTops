@@ -271,45 +271,6 @@ def make_histograms():
         histograms['bW_had_phi_observed'].Fill(np.float( bW_had_phi_obs))
         histograms['bW_lep_phi_observed'].Fill(np.float( bW_lep_phi_obs))
 
-        # histograms['corr_bW_to_had_phi'].Fill(np.float(bW_had_phi_true), np.float(bW_had_phi_obs ))
-        # histograms['corr_bW_to_lep_phi'].Fill(np.float(bW_lep_phi_true), np.float(bW_lep_phi_obs ))
-        # histograms['corr_bW_op_had_phi'].Fill(np.float(bW_had_phi_obs), np.float(bW_had_phi_fitted ))
-        # histograms['corr_bW_op_lep_phi'].Fill(np.float(bW_lep_phi_obs), np.float(bW_lep_phi_fitted ))
-
-        # histograms['corr_pp_had_phi'].Fill(np.float(t_had_fitted.Phi()), np.float(bW_had_phi_fitted ))
-        # histograms['corr_pp_lep_phi'].Fill(np.float(t_lep_fitted.Phi()), np.float(bW_lep_phi_fitted ))
-        # histograms['corr_tt_had_phi'].Fill(np.float(t_had_true.Phi()), np.float(bW_had_phi_true ))
-        # histograms['corr_tt_lep_phi'].Fill(np.float(t_lep_true.Phi()), np.float(bW_lep_phi_true ))
-
-        # abs val
-        # histograms['corr_bW_to_had_phi'].Fill(np.float( abs(bW_had_phi_true)), np.float( abs(bW_had_phi_obs )))
-        # histograms['corr_bW_to_lep_phi'].Fill(np.float( abs(bW_lep_phi_true)), np.float( abs(bW_lep_phi_obs )))
-        # histograms['corr_bW_op_had_phi'].Fill(np.float( abs(bW_had_phi_obs)), np.float( abs(bW_had_phi_fitted )))
-        # histograms['corr_bW_op_lep_phi'].Fill(np.float( abs(bW_lep_phi_obs)), np.float( abs(bW_lep_phi_fitted )))
-
-        # histograms['corr_pp_had_phi'].Fill(np.float( abs(t_had_fitted.Phi())), np.float( abs(bW_had_phi_fitted )))
-        # histograms['corr_pp_lep_phi'].Fill(np.float( abs(t_lep_fitted.Phi())), np.float( abs(bW_lep_phi_fitted )))
-        # histograms['corr_tt_had_phi'].Fill(np.float( abs(t_had_true.Phi())), np.float( abs(bW_had_phi_true )))
-        # histograms['corr_tt_lep_phi'].Fill(np.float( abs(t_lep_true.Phi())), np.float( abs(bW_lep_phi_true )))
-
-        # if abs(np.float(bW_had_phi_true)) < 2.8:
-        #     histograms['corr_bW_to_had_phi'].Fill(np.float(bW_had_phi_true), np.float(bW_had_phi_obs ))
-        # if abs(np.float(bW_lep_phi_true)) < 2.8:
-        #     histograms['corr_bW_to_lep_phi'].Fill(np.float(bW_lep_phi_true), np.float(bW_lep_phi_obs ))
-        # if abs(np.float(bW_had_phi_obs)) < 2.8:
-        #     histograms['corr_bW_op_had_phi'].Fill(np.float(bW_had_phi_obs), np.float(bW_had_phi_fitted ))
-        # if abs(np.float(bW_lep_phi_obs)) < 2.8:
-        #     histograms['corr_bW_op_lep_phi'].Fill(np.float(bW_lep_phi_obs), np.float(bW_lep_phi_fitted ))
-
-        # if abs(np.float(t_had_fitted.Phi())) < 2.8:
-        #     histograms['corr_pp_had_phi'].Fill(np.float(t_had_fitted.Phi()), np.float(bW_had_phi_fitted ))
-        # if abs(np.float(t_lep_fitted.Phi())) < 2.8:
-        #     histograms['corr_pp_lep_phi'].Fill(np.float(t_lep_fitted.Phi()), np.float(bW_lep_phi_fitted ))
-        # if abs(np.float(t_had_true.Phi())) < 2.8:
-        #     histograms['corr_tt_had_phi'].Fill(np.float(t_had_true.Phi()), np.float(bW_had_phi_true ))
-        # if abs(np.float(t_lep_true.Phi())) < 2.8:
-        #     histograms['corr_tt_lep_phi'].Fill(np.float(t_lep_true.Phi()), np.float(bW_lep_phi_true ))
-
         # flip sign
         if (abs(bW_had_phi_true) > 2) and (abs(bW_had_phi_true + bW_had_phi_obs) < 0.5) and (i%2 == 0 or i%3 == 0 or i%5 == 0):
             histograms['corr_bW_to_had_phi'].Fill(np.float( bW_had_phi_true), -1.0*np.float( bW_had_phi_obs ))

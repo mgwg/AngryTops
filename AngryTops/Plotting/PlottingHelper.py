@@ -236,3 +236,31 @@ def ChiSquared(h_mc, h_pred):
         if chi == chi:
             chi2 += chi
     return chi2 / (nbins - 1)
+
+def getFwhm(hist):
+    """
+    Calculates the fwhm of hist.
+    @Parameters:
+    hist: TH1 Class
+    """
+
+    #fwhm
+    # half_max = hist.GetMaximum()/2.0
+    # nbins = hist.GetNbinsX()
+    # bin1 = 0
+    # bin2 = nbins
+    # for i in range(1, nbins + 1):
+    #     y = hist.GetBinContent(i)
+    #     if (i < nbins/2 and y <= half_max) and (i > bin1):
+    #         bin1 = GetBinCenter(i)
+    #     if (i > nbins/2 and y <= half_max) and (i < bin2):
+    #         bin2 = GetBinCenter(i)
+    # fwhm = bin2 - bin1
+
+    #gaus fit
+    hist.Fit('gaus', 'q')
+    gausFit = hist.GetListOfFunctions().FindObject('gaus')
+    sigma = gausFit.GetParameter(2) # mean is 1
+    fwhm = sigma*2.35403
+
+    return fwhm
