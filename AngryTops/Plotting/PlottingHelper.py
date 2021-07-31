@@ -252,15 +252,15 @@ def getFwhm(hist):
     # for i in range(1, nbins + 1):
     #     y = hist.GetBinContent(i)
     #     if (i < nbins/2 and y <= half_max) and (i > bin1):
-    #         bin1 = GetBinCenter(i)
+    #         bin1 = hist.GetBinCenter(i)
     #     if (i > nbins/2 and y <= half_max) and (i < bin2):
-    #         bin2 = GetBinCenter(i)
+    #         bin2 = hist.GetBinCenter(i)
     # fwhm = bin2 - bin1
 
     #gaus fit
     hist.Fit('gaus', 'q')
     gausFit = hist.GetListOfFunctions().FindObject('gaus')
     sigma = gausFit.GetParameter(2) # mean is 1
-    fwhm = sigma*2.35403
+    fwhm = sigma #*2.35403
 
-    return fwhm, sigma
+    return fwhm
