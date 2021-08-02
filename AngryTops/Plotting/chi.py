@@ -6,8 +6,10 @@ from ROOT import *
 from array import array
 import cPickle as pickle
 import numpy as np
-from AngryTops.Plotting.PlottingHelper import getFwhm
-from AngryTops.Plotting.plot_observables import *
+from AngryTops.Plotting.PlottingHelper import *
+
+gStyle.SetPalette(kGreyScale)
+gROOT.GetColor(52).InvertPalette()
 
 ################################################################################
 # CONSTANTS
@@ -17,6 +19,11 @@ m_b = 4.95
 if len(sys.argv) > 1: training_dir = sys.argv[1]
 infilename = "{}/fitted.root".format(training_dir)
 print(infilename)
+caption = sys.argv[2]
+if caption == "None": caption = None
+if len(sys.argv) > 3:
+    attributes = attributes_tquark
+    corr_2d = corr_2d_tquark
 
 histsFilename = "{}/histograms.root".format(training_dir)
 histsFile = TFile.Open(histsFilename)
@@ -37,7 +44,7 @@ tree   = infile.Get( "nominal")
 
 ################################################################################
 # Draw Differences and resonances
-fwhm = {}
+sigma = {}
 for obs in attributes:
 
     hist_name = "diff_{0}".format(obs)
@@ -50,8 +57,8 @@ for obs in attributes:
     if hist.Class() == TH2F.Class():
         hist = hist.ProfileX("hist_pfx")
 
-    fwhm_single = getFwhm( hist )
-    fwhm[obs] = fwhm_single
+    fwhm_single, sigma_single = getFwhm( hist )
+    sigma[obs] = fwhm_single
 
 ################################################################################
 histograms = {}
@@ -226,7 +233,8 @@ histograms['corr_W_lep_m']     = TH2F( "corr_W_lep_m",       ";True Leptonic W m
 n_events = tree.GetEntries()
 
 print("INFO: starting event loop. Found %i events" % n_events)
-n_good = 0
+n_good = 0.
+
 # Print out example
 for i in range(n_events):
     if ( n_events < 10 ) or ( (i+1) % int(float(n_events)/10.)  == 0 ):
@@ -254,23 +262,24 @@ for i in range(n_events):
     # chi squared... 
     chi22 = 0.
 
-    chi22 += ( W_had_true.Phi() - W_had_fitted.Phi() )**2 / ( fwhm['W_had_phi']**2 )
-    chi22 += ( W_had_true.Rapidity() - W_had_fitted.Rapidity() )**2 / ( fwhm['W_had_y']**2 )
-    chi22 += ( W_had_true.Pt() - W_had_fitted.Pt() )**2 / ( fwhm['W_had_pt']**2 )
+    chi22 += ( W_had_true.Phi() - W_had_fitted.Phi() )**2 / ( sigma['W_had_phi']**2 )
+    chi22 += ( W_had_true.Rapidity() - W_had_fitted.Rapidity() )**2 / ( sigma['W_had_y']**2 )
+    chi22 += ( W_had_true.Pt() - W_had_fitted.Pt() )**2 / ( sigma['W_had_pt']**2 )
 
-    chi22 += ( W_lep_true.Phi() - W_lep_fitted.Phi() )**2 / ( fwhm['W_lep_phi']**2 )
-    chi22 += ( W_lep_true.Rapidity() - W_lep_fitted.Rapidity() )**2 / ( fwhm['W_lep_y']**2 )
-    chi22 += ( W_lep_true.Pt() - W_lep_fitted.Pt() )**2 / ( fwhm['W_lep_pt']**2 )
+    chi22 += ( W_lep_true.Phi() - W_lep_fitted.Phi() )**2 / ( sigma['W_lep_phi']**2 )
+    chi22 += ( W_lep_true.Rapidity() - W_lep_fitted.Rapidity() )**2 / ( sigma['W_lep_y']**2 )
+    chi22 += ( W_lep_true.Pt() - W_lep_fitted.Pt() )**2 / ( sigma['W_lep_pt']**2 )
 
-    chi22 += ( b_had_true.Phi() - b_had_fitted.Phi() )**2 / ( fwhm['b_had_phi']**2 )
-    chi22 += ( b_had_true.Rapidity() - b_had_fitted.Rapidity() )**2 / ( fwhm['b_had_y']**2 )
-    chi22 += ( b_had_true.Pt() - b_had_fitted.Pt() )**2 / ( fwhm['b_had_pt']**2 )
+    chi22 += ( b_had_true.Phi() - b_had_fitted.Phi() )**2 / ( sigma['b_had_phi']**2 )
+    chi22 += ( b_had_true.Rapidity() - b_had_fitted.Rapidity() )**2 / ( sigma['b_had_y']**2 )
+    chi22 += ( b_had_true.Pt() - b_had_fitted.Pt() )**2 / ( sigma['b_had_pt']**2 )
 
-    chi22 += ( b_lep_true.Phi() - b_lep_fitted.Phi() )**2 / ( fwhm['b_lep_phi']**2 )
-    chi22 += ( b_lep_true.Rapidity() - b_lep_fitted.Rapidity() )**2 / ( fwhm['b_lep_y']**2 )
-    chi22 += ( b_lep_true.Pt() - b_lep_fitted.Pt() )**2 / ( fwhm['b_lep_pt']**2 )
+    chi22 += ( b_lep_true.Phi() - b_lep_fitted.Phi() )**2 / ( sigma['b_lep_phi']**2 )
+    chi22 += ( b_lep_true.Rapidity() - b_lep_fitted.Rapidity() )**2 / ( sigma['b_lep_y']**2 )
+    chi22 += ( b_lep_true.Pt() - b_lep_fitted.Pt() )**2 / ( sigma['b_lep_pt']**2 )
 
     if chi22/12.0 < 1.5 and chi22/12.0 > 0.5:
+      n_good += 1.
       histograms['W_had_px_true'].Fill(  W_had_true.Px(),  w)
       histograms['W_had_py_true'].Fill(  W_had_true.Py(),  w )
       histograms['W_had_pz_true'].Fill(  W_had_true.Pz(),  w )
@@ -436,9 +445,13 @@ for i in range(n_events):
       histograms['corr_b_had_m'].Fill(   b_had_true.M(),        b_had_fitted.M(),   w )
 
 try:
-    os.mkdir('{}/img_teeest'.format(training_dir))
+    os.mkdir('{}/img_chi_test'.format(training_dir))
 except Exception as e:
     print("Overwriting existing files")
+
+print("good events: {}, {}%".format(n_good, n_good/n_events*100))
+
+from AngryTops.Plotting.PlottingHelper import MakeCanvas
 
 for obs in attributes:
     # Load the histograms
@@ -510,7 +523,7 @@ for obs in attributes:
 
     c.cd()
 
-    c.SaveAs("{0}/img_teeest/{1}.png".format(training_dir, obs))
+    c.SaveAs("{0}/img_chi_test/{1}.png".format(training_dir, obs))
     pad0.Close()
     pad1.Close()
     c.Close()
@@ -563,7 +576,7 @@ for hist_name in corr_2d:
 
     c.cd()
 
-    c.SaveAs("{0}/img_teeest/{1}.png".format(training_dir, hist_name))
+    c.SaveAs("{0}/img_chi_test/{1}.png".format(training_dir, hist_name))
     pad0.Close()
     c.Close()
 
