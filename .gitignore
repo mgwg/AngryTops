@@ -11,4 +11,3 @@ AngryTops/PostTraining_Analysis/models/*
 *.icloud
 AngryTops/make_comparisons_W.sh
 AngryTops/test*
-AngryTops/Plotting/cuts_predictions.py
