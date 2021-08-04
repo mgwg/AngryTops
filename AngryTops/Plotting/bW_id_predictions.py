@@ -47,6 +47,21 @@ predictions = np.load(outputdir + 'predictions.npz')
 true = predictions['true']
 fitted = predictions['pred']
 
+particles_shape = (true.shape[1], true.shape[2])
+scaler_filename = outputdir + "scalers.pkl"
+with open( scaler_filename, "rb" ) as file_scaler:
+    jets_scalar = pickle.load(file_scaler)
+    lep_scalar = pickle.load(file_scaler)
+    output_scalar = pickle.load(file_scaler)
+# Rescale the truth array
+true = true.reshape(true.shape[0], true.shape[1]*true.shape[2])
+true = output_scalar.inverse_transform(true)
+true = true.reshape(true.shape[0], particles_shape[0], particles_shape[1])
+# Rescale the fitted array
+fitted = fitted.reshape(fitted.shape[0], fitted.shape[1]*fitted.shape[2])
+fitted = output_scalar.inverse_transform(fitted)
+fitted = fitted.reshape(fitted.shape[0], particles_shape[0], particles_shape[1])
+
 # truth
 y_true_W_had = true[:,0,:]
 y_true_W_lep = true[:,1,:]

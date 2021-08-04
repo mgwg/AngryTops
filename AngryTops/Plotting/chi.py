@@ -21,9 +21,9 @@ infilename = "{}/fitted.root".format(training_dir)
 print(infilename)
 caption = sys.argv[2]
 if caption == "None": caption = None
+outputdir = "img_chi_fwhm"
 if len(sys.argv) > 3:
-    attributes = attributes_tquark
-    corr_2d = corr_2d_tquark
+    outputdir += sys.argv[3]
 
 histsFilename = "{}/histograms.root".format(training_dir)
 histsFile = TFile.Open(histsFilename)
@@ -44,7 +44,7 @@ tree   = infile.Get( "nominal")
 
 ################################################################################
 # Draw Differences and resonances
-sigma = {}
+fwhm = {}
 for obs in attributes:
 
     hist_name = "diff_{0}".format(obs)
@@ -58,7 +58,7 @@ for obs in attributes:
         hist = hist.ProfileX("hist_pfx")
 
     fwhm_single, sigma_single = getFwhm( hist )
-    sigma[obs] = fwhm_single
+    fwhm[obs] = fwhm_single
 
 ################################################################################
 histograms = {}
@@ -262,23 +262,30 @@ for i in range(n_events):
     # chi squared... 
     chi22 = 0.
 
-    chi22 += ( W_had_true.Phi() - W_had_fitted.Phi() )**2 / ( sigma['W_had_phi']**2 )
-    chi22 += ( W_had_true.Rapidity() - W_had_fitted.Rapidity() )**2 / ( sigma['W_had_y']**2 )
-    chi22 += ( W_had_true.Pt() - W_had_fitted.Pt() )**2 / ( sigma['W_had_pt']**2 )
+    chi22 += ( W_had_true.Phi() - W_had_fitted.Phi() )**2 / ( fwhm['W_had_phi']**2 )
+    chi22 += ( W_had_true.Rapidity() - W_had_fitted.Rapidity() )**2 / ( fwhm['W_had_y']**2 )
+    chi22 += ( W_had_true.Pt() - W_had_fitted.Pt() )**2 / ( fwhm['W_had_pt']**2 )
 
-    chi22 += ( W_lep_true.Phi() - W_lep_fitted.Phi() )**2 / ( sigma['W_lep_phi']**2 )
-    chi22 += ( W_lep_true.Rapidity() - W_lep_fitted.Rapidity() )**2 / ( sigma['W_lep_y']**2 )
-    chi22 += ( W_lep_true.Pt() - W_lep_fitted.Pt() )**2 / ( sigma['W_lep_pt']**2 )
+    chi22 += ( W_lep_true.Phi() - W_lep_fitted.Phi() )**2 / ( fwhm['W_lep_phi']**2 )
+    chi22 += ( W_lep_true.Rapidity() - W_lep_fitted.Rapidity() )**2 / ( fwhm['W_lep_y']**2 )
+    chi22 += ( W_lep_true.Pt() - W_lep_fitted.Pt() )**2 / ( fwhm['W_lep_pt']**2 )
 
-    chi22 += ( b_had_true.Phi() - b_had_fitted.Phi() )**2 / ( sigma['b_had_phi']**2 )
-    chi22 += ( b_had_true.Rapidity() - b_had_fitted.Rapidity() )**2 / ( sigma['b_had_y']**2 )
-    chi22 += ( b_had_true.Pt() - b_had_fitted.Pt() )**2 / ( sigma['b_had_pt']**2 )
+    chi22 += ( b_had_true.Phi() - b_had_fitted.Phi() )**2 / ( fwhm['b_had_phi']**2 )
+    chi22 += ( b_had_true.Rapidity() - b_had_fitted.Rapidity() )**2 / ( fwhm['b_had_y']**2 )
+    chi22 += ( b_had_true.Pt() - b_had_fitted.Pt() )**2 / ( fwhm['b_had_pt']**2 )
 
-    chi22 += ( b_lep_true.Phi() - b_lep_fitted.Phi() )**2 / ( sigma['b_lep_phi']**2 )
-    chi22 += ( b_lep_true.Rapidity() - b_lep_fitted.Rapidity() )**2 / ( sigma['b_lep_y']**2 )
-    chi22 += ( b_lep_true.Pt() - b_lep_fitted.Pt() )**2 / ( sigma['b_lep_pt']**2 )
+    chi22 += ( b_lep_true.Phi() - b_lep_fitted.Phi() )**2 / ( fwhm['b_lep_phi']**2 )
+    chi22 += ( b_lep_true.Rapidity() - b_lep_fitted.Rapidity() )**2 / ( fwhm['b_lep_y']**2 )
+    chi22 += ( b_lep_true.Pt() - b_lep_fitted.Pt() )**2 / ( fwhm['b_lep_pt']**2 )
 
-    if chi22/12.0 < 1.5 and chi22/12.0 > 0.5:
+    # chi22 += ( W_had_true.E() - W_had_fitted.E() )**2 / ( fwhm['W_had_E']**2 )
+    # chi22 += ( W_lep_true.E() - W_lep_fitted.E() )**2 / ( fwhm['W_lep_E']**2 )
+    # chi22 += ( b_had_true.E() - b_had_fitted.E() )**2 / ( fwhm['b_had_E']**2 )
+    # chi22 += ( b_lep_true.E() - b_lep_fitted.E() )**2 / ( fwhm['b_lep_E']**2 )
+
+    # print("chi^2: {}, reduced chi^2: {}".format(chi22, chi22/12.0))
+    
+    if chi22 < 1.5 and chi22 > 0.5:
       n_good += 1.
       histograms['W_had_px_true'].Fill(  W_had_true.Px(),  w)
       histograms['W_had_py_true'].Fill(  W_had_true.Py(),  w )
@@ -445,7 +452,7 @@ for i in range(n_events):
       histograms['corr_b_had_m'].Fill(   b_had_true.M(),        b_had_fitted.M(),   w )
 
 try:
-    os.mkdir('{}/img_chi_test'.format(training_dir))
+    os.mkdir('{}/{}'.format(training_dir, outputdir))
 except Exception as e:
     print("Overwriting existing files")
 
@@ -523,7 +530,7 @@ for obs in attributes:
 
     c.cd()
 
-    c.SaveAs("{0}/img_chi_test/{1}.png".format(training_dir, obs))
+    c.SaveAs("{0}/{1}/{2}.png".format(training_dir, outputdir, obs))
     pad0.Close()
     pad1.Close()
     c.Close()
@@ -576,7 +583,7 @@ for hist_name in corr_2d:
 
     c.cd()
 
-    c.SaveAs("{0}/img_chi_test/{1}.png".format(training_dir, hist_name))
+    c.SaveAs("{0}/{1}/{2}.png".format(training_dir, outputdir, hist_name))
     pad0.Close()
     c.Close()
 
