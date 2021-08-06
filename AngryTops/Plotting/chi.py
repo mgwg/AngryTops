@@ -183,21 +183,21 @@ for i in range(n_events):
 
 
 # Normalize sums of squares by standard deviations and number of events
-W_had_phi_chi2NDF = W_had_phi_sum / n_events / ( sigma['W_had_phi']**2 )
-W_had_rapidity_chi2NDF = W_had_rapidity_sum / n_events / ( sigma['W_had_y']**2 )
-W_had_pt_chi2NDF = W_had_pt_sum / n_events / ( sigma['W_had_pt']**2 )
+W_had_phi_chi2NDF = W_had_phi_sum / n_events / ( fwhm['W_had_phi']**2 )
+W_had_rapidity_chi2NDF = W_had_rapidity_sum / n_events / ( fwhm['W_had_y']**2 )
+W_had_pt_chi2NDF = W_had_pt_sum / n_events / ( fwhm['W_had_pt']**2 )
 
-W_lep_phi_chi2NDF = W_lep_phi_sum / n_events / ( sigma['W_lep_phi']**2 )
-W_lep_rapidity_chi2NDF = W_lep_rapidity_sum / n_events / ( sigma['W_lep_y']**2 )
-W_lep_pt_chi2NDF = W_lep_pt_sum / n_events / ( sigma['W_lep_pt']**2 )
+W_lep_phi_chi2NDF = W_lep_phi_sum / n_events / ( fwhm['W_lep_phi']**2 )
+W_lep_rapidity_chi2NDF = W_lep_rapidity_sum / n_events / ( fwhm['W_lep_y']**2 )
+W_lep_pt_chi2NDF = W_lep_pt_sum / n_events / ( fwhm['W_lep_pt']**2 )
 
-b_had_phi_chi2NDF = b_had_phi_sum / n_events / ( sigma['b_had_phi']**2 )
-b_had_rapidity_chi2NDF = b_had_rapidity_sum / n_events / ( sigma['b_had_y']**2 )
-b_had_pt_chi2NDF = b_had_pt_sum / n_events / ( sigma['b_had_pt']**2 )
+b_had_phi_chi2NDF = b_had_phi_sum / n_events / ( fwhm['b_had_phi']**2 )
+b_had_rapidity_chi2NDF = b_had_rapidity_sum / n_events / ( fwhm['b_had_y']**2 )
+b_had_pt_chi2NDF = b_had_pt_sum / n_events / ( fwhm['b_had_pt']**2 )
 
-b_lep_phi_chi2NDF = b_lep_phi_sum / n_events / ( sigma['b_lep_phi']**2 )
-b_lep_rapidity_chi2NDF = b_lep_rapidity_sum / n_events / ( sigma['b_lep_y']**2 )
-b_lep_pt_chi2NDF = b_lep_pt_sum / n_events / ( sigma['b_lep_pt']**2 )
+b_lep_phi_chi2NDF = b_lep_phi_sum / n_events / ( fwhm['b_lep_phi']**2 )
+b_lep_rapidity_chi2NDF = b_lep_rapidity_sum / n_events / ( fwhm['b_lep_y']**2 )
+b_lep_pt_chi2NDF = b_lep_pt_sum / n_events / ( fwhm['b_lep_pt']**2 )
 
 # Print Chi-Squareds/NDF.
 print('')
