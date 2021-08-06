@@ -256,6 +256,5 @@ def getFwhm(hist):
         if (i > nbins/2 and y <= half_max) and (i < bin2):
             bin2 = hist.GetBinCenter(i)
     fwhm = bin2 - bin1
-    sigma = fwhm/2.35403
 
-    return fwhm, sigma
+    return fwhm

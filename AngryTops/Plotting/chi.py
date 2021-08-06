@@ -6,8 +6,7 @@ from ROOT import *
 from array import array
 import cPickle as pickle
 import numpy as np
-from AngryTops.Plotting.PlottingHelper import *
-from AngryTops.Plotting.identification_helper import *
+from AngryTops.Plotting.identification_helper import * 
 
 ################################################################################
 # CONSTANTS
@@ -43,7 +42,6 @@ tree   = infile.Get( "nominal")
 ################################################################################
 # Draw Differences and resonances
 fwhm = {}
-sigma = {}
 for obs in attributes:
 
     hist_name = "diff_{0}".format(obs)
@@ -57,43 +55,42 @@ for obs in attributes:
         hist = hist.ProfileX("hist_pfx")
 
     # Extract FWHM and std. deviation from helper function.
-    fwhm_single, sigma_single = getFwhm( hist )
+    fwhm_single = getFwhm( hist )
     fwhm[obs] = fwhm_single
-    sigma[obs] = sigma_single
 
 ################################################################################
 histograms = {}
 
-# True
-histograms['chi']       = TH1F( "chi",  ";#chi^2", 50, 0., 800. )
-histograms['chi_NDF']       = TH1F( "chi_NDF",  ";#chi^2/NDF", 50, 0., 60. )
-histograms['chi_crop']       = TH1F( "chi",  ";#chi^2", 50, 0., 100. )
-histograms['chi_NDF_crop']       = TH1F( "chi_NDF",  ";#chi^2/NDF", 50, 0., 10. )
+# Distribution of Chi-Squareds
+histograms['chi_squared_all_events'] = TH1F("#chi^2",  ";Unitless", 100, 0., 20.)
+histograms['chi_squared_all_events'].SetTitle("#chi^2 of all events;Unitless;A.U.")
+histograms['chi_squared_all_events_NDF'] = TH1F("#chi^2/NDF",  ";Unitless", 100, 0., 20.)
+histograms['chi_squared_all_events_NDF'].SetTitle("#chi^2/NDF of all events;Unitless;A.U.")
+
 ################################################################################
 
 # POPULATE HISTOGRAMS
 n_events = tree.GetEntries()
 
 print("INFO: starting event loop. Found %i events" % n_events)
-n_good = 0.
 
 # Define sums of squares to be used for calculating sample chi-squared/NDF
 # One sum for each variable to be augmented in each event
-W_had_phi_sum = 0
-W_had_rapidity_sum = 0
-W_had_pt_sum = 0
+W_had_phi_sum = 0.
+W_had_rapidity_sum = 0.
+W_had_pt_sum = 0.
 
-W_lep_phi_sum = 0
-W_lep_rapidity_sum = 0
-W_lep_pt_sum = 0
+W_lep_phi_sum = 0.
+W_lep_rapidity_sum = 0.
+W_lep_pt_sum = 0.
 
-b_had_phi_sum = 0
-b_had_rapidity_sum = 0
-b_had_pt_sum = 0
+b_had_phi_sum = 0.
+b_had_rapidity_sum = 0.
+b_had_pt_sum = 0.
 
-b_lep_phi_sum = 0
-b_lep_rapidity_sum = 0
-b_lep_pt_sum = 0
+b_lep_phi_sum = 0.
+b_lep_rapidity_sum = 0.
+b_lep_pt_sum = 0.
 
 
 # Iterate through all events
@@ -173,54 +170,54 @@ for i in range(n_events):
     chi22 += b_lep_rapidity_diff / ( fwhm['b_lep_y']**2 )
     chi22 += b_lep_pt_diff / ( fwhm['b_lep_pt']**2 )
 
-    histograms['chi'].Fill(chi22)
-    histograms['chi_NDF'].Fill(chi22/12.0)
-    histograms['chi_crop'].Fill(chi22)
-    histograms['chi_NDF_crop'].Fill(chi22/12.0)
+    # Calculate chi-squared/NDF
+    chi22NDF = chi22 / 12.0
+
+    # Populate the histograms:
+    histograms['chi_squared_all_events'].Fill(chi22)
+    histograms['chi_squared_all_events_NDF'].Fill(chi22NDF)
+
 
 # Normalize sums of squares by standard deviations and number of events
-W_had_phi_chi2NDF = W_had_phi_sum / n_events / ( sigma['W_had_phi']**2 )
-W_had_rapidity_chi2NDF = W_had_rapidity_sum / n_events / ( sigma['W_had_y']**2 )
-W_had_pt_chi2NDF = W_had_pt_sum / n_events / ( sigma['W_had_pt']**2 )
+W_had_phi_chi2NDF = W_had_phi_sum / n_events / ( fwhm['W_had_phi']**2 )
+W_had_rapidity_chi2NDF = W_had_rapidity_sum / n_events / ( fwhm['W_had_y']**2 )
+W_had_pt_chi2NDF = W_had_pt_sum / n_events / ( fwhm['W_had_pt']**2 )
 
-W_lep_phi_chi2NDF = W_lep_phi_sum / n_events / ( sigma['W_lep_phi']**2 )
-W_lep_rapidity_chi2NDF = W_lep_rapidity_sum / n_events / ( sigma['W_lep_y']**2 )
-W_lep_pt_chi2NDF = W_lep_pt_sum / n_events / ( sigma['W_lep_pt']**2 )
+W_lep_phi_chi2NDF = W_lep_phi_sum / n_events / ( fwhm['W_lep_phi']**2 )
+W_lep_rapidity_chi2NDF = W_lep_rapidity_sum / n_events / ( fwhm['W_lep_y']**2 )
+W_lep_pt_chi2NDF = W_lep_pt_sum / n_events / ( fwhm['W_lep_pt']**2 )
 
-b_had_phi_chi2NDF = b_had_phi_sum / n_events / ( sigma['b_had_phi']**2 )
-b_had_rapidity_chi2NDF = b_had_rapidity_sum / n_events / ( sigma['b_had_y']**2 )
-b_had_pt_chi2NDF = b_had_pt_sum / n_events / ( sigma['b_had_pt']**2 )
+b_had_phi_chi2NDF = b_had_phi_sum / n_events / ( fwhm['b_had_phi']**2 )
+b_had_rapidity_chi2NDF = b_had_rapidity_sum / n_events / ( fwhm['b_had_y']**2 )
+b_had_pt_chi2NDF = b_had_pt_sum / n_events / ( fwhm['b_had_pt']**2 )
 
-b_lep_phi_chi2NDF = b_lep_phi_sum / n_events / ( sigma['b_lep_phi']**2 )
-b_lep_rapidity_chi2NDF = b_lep_rapidity_sum / n_events / ( sigma['b_lep_y']**2 )
-b_lep_pt_chi2NDF = b_lep_pt_sum / n_events / ( sigma['b_lep_pt']**2 )
+b_lep_phi_chi2NDF = b_lep_phi_sum / n_events / ( fwhm['b_lep_phi']**2 )
+b_lep_rapidity_chi2NDF = b_lep_rapidity_sum / n_events / ( fwhm['b_lep_y']**2 )
+b_lep_pt_chi2NDF = b_lep_pt_sum / n_events / ( fwhm['b_lep_pt']**2 )
 
 # Print Chi-Squareds/NDF.
-print('')
-print("W_had_phi_chi2NDF: {0}".format(W_had_phi_chi2NDF))
+print("\nW_had_phi_chi2NDF: {0}".format(W_had_phi_chi2NDF))
 print("W_had_rapidity_chi2NDF: {0}".format(W_had_rapidity_chi2NDF))
-print("W_had_pt_chi2NDF: {0}".format(W_had_pt_chi2NDF))
-print('')
+print("W_had_pt_chi2NDF: {0}\n".format(W_had_pt_chi2NDF))
+
 print("W_lep_phi_chi2NDF: {0}".format(W_lep_phi_chi2NDF))
 print("W_lep_rapidity_chi2NDF: {0}".format(W_lep_rapidity_chi2NDF))
-print("W_lep_pt_chi2NDF: {0}".format(W_lep_pt_chi2NDF))
-print('')
+print("W_lep_pt_chi2NDF: {0}\n".format(W_lep_pt_chi2NDF))
+
 print("b_had_phi_chi2NDF: {0}".format(b_had_phi_chi2NDF))
 print("b_had_rapidity_chi2NDF: {0}".format(b_had_rapidity_chi2NDF))
-print("b_had_pt_chi2NDF: {0}".format(b_had_pt_chi2NDF))
-print('')
+print("b_had_pt_chi2NDF: {0}\n".format(b_had_pt_chi2NDF))
+
 print("b_lep_phi_chi2NDF: {0}".format(b_lep_phi_chi2NDF))
 print("b_lep_rapidity_chi2NDF: {0}".format(b_lep_rapidity_chi2NDF))
 print("b_lep_pt_chi2NDF: {0}".format(b_lep_pt_chi2NDF))
-print('')
+
 
 try:
     os.mkdir('{}/{}'.format(training_dir, outputdir))
 except Exception as e:
     print("Overwriting existing files")
 
-for obs in list(histograms.keys()):
-    # Load the histograms
-    h_true = histograms[obs]
-    plot_hists(obs, h_true, training_dir+outputdir)
-
+# Plot histograms inside outputdir, a subdir of training_dir
+for key in histograms:
+    plot_hists(key, histograms[key], training_dir+outputdir)

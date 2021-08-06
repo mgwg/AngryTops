@@ -63,3 +63,25 @@ def plot_hists(key, hist, outputdir):
     
     c1.SaveAs(outputdir + key +'.png')
     c1.Close()
+
+def getFwhm(hist):
+    """
+    Calculates the fwhm of hist.
+    @Parameters:
+    hist: TH1 Class
+    """
+
+    #fwhm
+    half_max = hist.GetMaximum()/2.0
+    nbins = hist.GetNbinsX()
+    bin1 = 0
+    bin2 = nbins
+    for i in range(1, nbins + 1):
+        y = hist.GetBinContent(i)
+        if (i < nbins/2 and y <= half_max) and (i > bin1):
+            bin1 = hist.GetBinCenter(i)
+        if (i > nbins/2 and y <= half_max) and (i < bin2):
+            bin2 = hist.GetBinCenter(i)
+    fwhm = bin2 - bin1
+
+    return fwhm
