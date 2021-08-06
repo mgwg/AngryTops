@@ -1,3 +1,5 @@
+# Calculates chi-squared for key variables in truth vs. fitted comparison. 
+#  Plots distribution of chi-squareds where one chi-squared is calculated for each event.
 #!/usr/bin/env python
 import os, sys, time
 import argparse
@@ -62,9 +64,9 @@ for obs in attributes:
 histograms = {}
 
 # Distribution of Chi-Squareds
-histograms['chi_squared_all_events'] = TH1F("#chi^2",  ";Unitless", 100, 0., 20.)
+histograms['chi_squared_all_events'] = TH1F("#chi^2",  ";Unitless", 80, 0., 20.)
 histograms['chi_squared_all_events'].SetTitle("#chi^2 of all events;Unitless;A.U.")
-histograms['chi_squared_all_events_NDF'] = TH1F("#chi^2/NDF",  ";Unitless", 100, 0., 20.)
+histograms['chi_squared_all_events_NDF'] = TH1F("#chi^2/NDF",  ";Unitless", 80, 0., 20.)
 histograms['chi_squared_all_events_NDF'].SetTitle("#chi^2/NDF of all events;Unitless;A.U.")
 
 ################################################################################
