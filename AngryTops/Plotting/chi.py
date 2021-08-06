@@ -7,6 +7,7 @@ from array import array
 import cPickle as pickle
 import numpy as np
 from AngryTops.Plotting.PlottingHelper import *
+from AngryTops.Plotting.identification_helper import MakeP4, find_dist, plot_hists
 
 gStyle.SetPalette(kGreyScale)
 gROOT.GetColor(52).InvertPalette()
@@ -21,7 +22,7 @@ infilename = "{}/fitted.root".format(training_dir)
 print(infilename)
 caption = sys.argv[2]
 if caption == "None": caption = None
-outputdir = "img_chi_fwhm"
+outputdir = "/img_chi_fwhm/"
 if len(sys.argv) > 3:
     outputdir += sys.argv[3]
 
@@ -67,8 +68,8 @@ for obs in attributes:
 histograms = {}
 
 # Distribution of Chi-Squareds
-histograms['chi_squared_all_events'] = TH1F("Distribution of Chi Squared values of all events in the sample",  "Unitless", 50, -1000., 1000.)
-histograms['chi_squared_all_events_NDF'] = TH1F("Distribution of Chi Squared values / NDF of all events in the sample",  "Unitless", 50, -1000., 1000.)
+histograms['chi_squared_all_events'] = TH1F("Distribution of Chi Squared values of all events in the sample",  "Unitless", 500, 0., 20.)
+histograms['chi_squared_all_events_NDF'] = TH1F("Distribution of Chi Squared values / NDF of all events in the sample",  "Unitless", 500, 0., 20.)
 
 ################################################################################
 
@@ -76,7 +77,6 @@ histograms['chi_squared_all_events_NDF'] = TH1F("Distribution of Chi Squared val
 n_events = tree.GetEntries()
 
 print("INFO: starting event loop. Found %i events" % n_events)
-n_good = 0.
 
 # Define sums of squares to be used for calculating sample chi-squared/NDF
 # One sum for each variable to be augmented in each event
@@ -223,135 +223,142 @@ try:
 except Exception as e:
     print("Overwriting existing files")
 
-print("good events: {}, {}%".format(n_good, n_good/n_events*100))
 
 from AngryTops.Plotting.PlottingHelper import MakeCanvas
 
-for obs in attributes:
-    # Load the histograms
-    hname_true = "%s_true" % (obs)
-    hname_fitted = "%s_fitted" % (obs)
+# Plot histograms inside outputdir, a subdir of training_dir
+for key in histograms:
+    plot_hists(key, histograms[key], training_dir+outputdir)
 
-    # True and fitted leaf
-    h_true = histograms[hname_true]
-    h_fitted = histograms[hname_fitted]
-    if h_true == None:
-        print ("ERROR: invalid histogram for", obs)
 
-    # Axis titles
-    xtitle = h_true.GetXaxis().GetTitle()
-    ytitle = h_true.GetYaxis().SetTitle("A.U.")
-    if h_true.Class() == TH2F.Class():
-        h_true = h_true.ProfileX("pfx")
-        h_true.GetYaxis().SetTitle( ytitle )
-    else:
-        Normalize(h_true)
-        Normalize(h_fitted)
 
-    # Set Style
-    SetTH1FStyle( h_true,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
-    SetTH1FStyle( h_fitted, color=kBlack, markersize=0, markerstyle=20, linewidth=3 )
 
-    c, pad0, pad1 = MakeCanvas()
-    pad0.cd()
-    gStyle.SetOptTitle(0)
 
-    h_true.Draw("h")
-    h_fitted.Draw("h same")
-    hmax = 1.5 * max( [ h_true.GetMaximum(), h_fitted.GetMaximum() ] )
-    h_fitted.SetMaximum( hmax )
-    h_true.SetMaximum( hmax )
-    h_fitted.SetMinimum( 0. )
-    h_true.SetMinimum( 0. )
+# for obs in attributes:
+#     # Load the histograms
+#     hname_true = "%s_true" % (obs)
+#     hname_fitted = "%s_fitted" % (obs)
 
-    leg = TLegend( 0.20, 0.80, 0.50, 0.90 )
-    leg.SetFillColor(0)
-    leg.SetFillStyle(0)
-    leg.SetBorderSize(0)
-    leg.SetTextFont(42)
-    leg.SetTextSize(0.05)
-    leg.AddEntry( h_true, "MG5+Py8", "f" )
-    leg.AddEntry( h_fitted, "Predicted", "f" )
-    leg.SetY1( leg.GetY1() - 0.05 * leg.GetNRows() )
-    leg.Draw()
+#     # True and fitted leaf
+#     h_true = histograms[hname_true]
+#     h_fitted = histograms[hname_fitted]
+#     if h_true == None:
+#         print ("ERROR: invalid histogram for", obs)
 
-    gPad.RedrawAxis()
-    if caption is not None:
-        newpad = TPad("newpad","a caption",0.1,0,1,1)
-        newpad.SetFillStyle(4000)
-        newpad.Draw()
-        newpad.cd()
-        title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
-        title.SetFillColor(16)
-        title.SetTextFont(52)
-        title.Draw()
+#     # Axis titles
+#     xtitle = h_true.GetXaxis().GetTitle()
+#     ytitle = h_true.GetYaxis().SetTitle("A.U.")
+#     if h_true.Class() == TH2F.Class():
+#         h_true = h_true.ProfileX("pfx")
+#         h_true.GetYaxis().SetTitle( ytitle )
+#     else:
+#         Normalize(h_true)
+#         Normalize(h_fitted)
 
-        gPad.RedrawAxis()
+#     # Set Style
+#     SetTH1FStyle( h_true,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
+#     SetTH1FStyle( h_fitted, color=kBlack, markersize=0, markerstyle=20, linewidth=3 )
 
-    pad1.cd()
+#     c, pad0, pad1 = MakeCanvas()
+#     pad0.cd()
+#     gStyle.SetOptTitle(0)
 
-    yrange = [0.4, 1.6]
-    frame, tot_unc, ratio = DrawRatio(h_true, h_fitted, xtitle, yrange)
+#     h_true.Draw("h")
+#     h_fitted.Draw("h same")
+#     hmax = 1.5 * max( [ h_true.GetMaximum(), h_fitted.GetMaximum() ] )
+#     h_fitted.SetMaximum( hmax )
+#     h_true.SetMaximum( hmax )
+#     h_fitted.SetMinimum( 0. )
+#     h_true.SetMinimum( 0. )
 
-    gPad.RedrawAxis()
+#     leg = TLegend( 0.20, 0.80, 0.50, 0.90 )
+#     leg.SetFillColor(0)
+#     leg.SetFillStyle(0)
+#     leg.SetBorderSize(0)
+#     leg.SetTextFont(42)
+#     leg.SetTextSize(0.05)
+#     leg.AddEntry( h_true, "MG5+Py8", "f" )
+#     leg.AddEntry( h_fitted, "Predicted", "f" )
+#     leg.SetY1( leg.GetY1() - 0.05 * leg.GetNRows() )
+#     leg.Draw()
 
-    c.cd()
+#     gPad.RedrawAxis()
+#     if caption is not None:
+#         newpad = TPad("newpad","a caption",0.1,0,1,1)
+#         newpad.SetFillStyle(4000)
+#         newpad.Draw()
+#         newpad.cd()
+#         title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
+#         title.SetFillColor(16)
+#         title.SetTextFont(52)
+#         title.Draw()
 
-    c.SaveAs("{0}/{1}/{2}.png".format(training_dir, outputdir, obs))
-    pad0.Close()
-    pad1.Close()
-    c.Close()
+#         gPad.RedrawAxis()
 
-for hist_name in corr_2d:
+#     pad1.cd()
 
-    # True and fitted leaf
-    hist = histograms[hist_name]
-    if hist == None:
-        print ("ERROR: invalid histogram for", hist_name)
+#     yrange = [0.4, 1.6]
+#     frame, tot_unc, ratio = DrawRatio(h_true, h_fitted, xtitle, yrange)
 
-    #Normalize(hist)
+#     gPad.RedrawAxis()
 
-    SetTH1FStyle(hist,  color=kGray+2, fillstyle=6)
+#     c.cd()
 
-    c = TCanvas()
-    c.cd()
+#     c.SaveAs("{0}/{1}/{2}.png".format(training_dir, outputdir, obs))
+#     pad0.Close()
+#     pad1.Close()
+#     c.Close()
 
-    pad0 = TPad( "pad0","pad0",0, 0,1,1,0,0,0 )
-    pad0.SetLeftMargin( 0.18 ) #0.16
-    pad0.SetRightMargin( 0.05 )
-    pad0.SetBottomMargin( 0.18 )
-    #pad0.SetTopMargin( 0.14 )
-    pad0.SetTopMargin( 0.07 ) #0.05
-    pad0.SetFillColor(0)
-    pad0.SetFillStyle(4000)
-    pad0.Draw()
-    pad0.cd()
+# for hist_name in corr_2d:
 
-    hist.Draw("colz")
+#     # True and fitted leaf
+#     hist = histograms[hist_name]
+#     if hist == None:
+#         print ("ERROR: invalid histogram for", hist_name)
 
-    corr = hist.GetCorrelationFactor()
-    l = TLatex()
-    l.SetNDC()
-    l.SetTextFont(42)
-    l.SetTextColor(kBlack)
-    l.DrawLatex( 0.2, 0.8, "Corr Coeff: %.2f" % corr )
+#     #Normalize(hist)
 
-    gPad.RedrawAxis()
+#     SetTH1FStyle(hist,  color=kGray+2, fillstyle=6)
 
-    if caption is not None:
-        newpad = TPad("newpad","a caption",0.1,0,1,1)
-        newpad.SetFillStyle(4000)
-        newpad.Draw()
-        newpad.cd()
-        title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
-        title.SetFillColor(16)
-        title.SetTextFont(52)
-        title.Draw()
+#     c = TCanvas()
+#     c.cd()
 
-    c.cd()
+#     pad0 = TPad( "pad0","pad0",0, 0,1,1,0,0,0 )
+#     pad0.SetLeftMargin( 0.18 ) #0.16
+#     pad0.SetRightMargin( 0.05 )
+#     pad0.SetBottomMargin( 0.18 )
+#     #pad0.SetTopMargin( 0.14 )
+#     pad0.SetTopMargin( 0.07 ) #0.05
+#     pad0.SetFillColor(0)
+#     pad0.SetFillStyle(4000)
+#     pad0.Draw()
+#     pad0.cd()
 
-    c.SaveAs("{0}/{1}/{2}.png".format(training_dir, outputdir, hist_name))
-    pad0.Close()
-    c.Close()
+#     hist.Draw("colz")
+
+#     corr = hist.GetCorrelationFactor()
+#     l = TLatex()
+#     l.SetNDC()
+#     l.SetTextFont(42)
+#     l.SetTextColor(kBlack)
+#     l.DrawLatex( 0.2, 0.8, "Corr Coeff: %.2f" % corr )
+
+#     gPad.RedrawAxis()
+
+#     if caption is not None:
+#         newpad = TPad("newpad","a caption",0.1,0,1,1)
+#         newpad.SetFillStyle(4000)
+#         newpad.Draw()
+#         newpad.cd()
+#         title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
+#         title.SetFillColor(16)
+#         title.SetTextFont(52)
+#         title.Draw()
+
+#     c.cd()
+
+#     c.SaveAs("{0}/{1}/{2}.png".format(training_dir, outputdir, hist_name))
+#     pad0.Close()
+#     c.Close()
 
 
