@@ -1,3 +1,5 @@
+# Calculates chi-squared for key variables in truth vs. fitted comparison. 
+#  Plots distribution of chi-squareds where one chi-squared is calculated for each event.
 #!/usr/bin/env python
 import os, sys, time
 import argparse
@@ -13,17 +15,24 @@ from AngryTops.Plotting.identification_helper import *
 m_t = 172.5
 m_W = 80.4
 m_b = 4.95
+
+# First directory is the training directory where the truth and fitted data for the sample of interest is saved.
 if len(sys.argv) > 1: training_dir = sys.argv[1]
 infilename = "{}/fitted.root".format(training_dir)
-print(infilename)
-caption = sys.argv[2]
-if caption == "None": caption = None
+print("Training directory filename: {0}".format(infilename))
+# Second directory is the directory containing the difference plots whose FWHM 
+#  will be used to calculate the Chi-Squareds.
+FWHM_dir = sys.argv[2]
+# Output directory
 outputdir = "/img_chi_fwhm/"
 if len(sys.argv) > 3:
     outputdir += sys.argv[3]
 
-histsFilename = "{}/histograms.root".format(training_dir)
+# Read in histograms from the FWHM directory.
+histsFilename = "{}/histograms.root".format(FWHM_dir)
 histsFile = TFile.Open(histsFilename)
+print("FWHM directory filename: {0}\n".format(histsFilename))
+
 
 ################################################################################
 # HELPER FUNCTIONS
@@ -35,7 +44,7 @@ def PrintOut( p4_true, p4_fitted, label ):
         ))
 
 ################################################################################
-# Read in input file
+# Read in input file from training directory, contains truth and fitted data
 infile = TFile.Open( infilename )
 tree   = infile.Get( "nominal")
 
@@ -43,7 +52,7 @@ tree   = infile.Get( "nominal")
 # Draw Differences and resonances
 fwhm = {}
 for obs in attributes:
-
+    # Use only the difference plots from the FWHM folder.
     hist_name = "diff_{0}".format(obs)
     # True and fitted leaf
     hist = histsFile.Get(hist_name)
@@ -54,7 +63,7 @@ for obs in attributes:
     if hist.Class() == TH2F.Class():
         hist = hist.ProfileX("hist_pfx")
 
-    # Extract FWHM from helper function.
+    # Extract FWHM using helper function.
     fwhm_single = getFwhm( hist )
     fwhm[obs] = fwhm_single
 
@@ -73,6 +82,42 @@ histograms['chi_squared_all_NDF'].SetTitle("#chi^{2}/NDF of all events;Unitless;
 n_events = tree.GetEntries()
 
 print("INFO: starting event loop. Found %i events" % n_events)
+
+# Extract and print relevant FWHMs
+W_had_phi_FWHM = fwhm['W_had_phi']
+W_had_rapidity_FWHM = fwhm['W_had_y']
+W_had_pt_FWHM = fwhm['W_had_pt']
+
+W_lep_phi_FWHM = fwhm['W_lep_phi']
+W_lep_rapidity_FWHM = fwhm['W_lep_y']
+W_lep_pt_FWHM = fwhm['W_lep_pt']
+
+b_had_phi_FWHM = fwhm['b_had_phi']
+b_had_rapidity_FWHM = fwhm['b_had_y']
+b_had_pt_FWHM = fwhm['b_had_pt']
+
+b_lep_phi_FWHM = fwhm['b_lep_phi']
+b_lep_rapidity_FWHM = fwhm['b_lep_y']
+b_lep_pt_FWHM = fwhm['b_lep_pt']
+
+print("\nFWHMs:")
+
+print("\nW_had_phi_FWHM: {0}".format(W_had_phi_FWHM))
+print("W_had_rapidity_FWHM: {0}".format(W_had_rapidity_FWHM))
+print("W_had_pt_FWHM: {0}\n".format(W_had_pt_FWHM))
+
+print("W_lep_phi_FWHM: {0}".format(W_lep_phi_FWHM))
+print("W_lep_rapidity_FWHM: {0}".format(W_lep_rapidity_FWHM))
+print("W_lep_pt_FWHM: {0}\n".format(W_lep_pt_FWHM))
+
+print("b_had_phi_FWHM: {0}".format(b_had_phi_FWHM))
+print("b_had_rapidity_FWHM: {0}".format(b_had_rapidity_FWHM))
+print("b_had_pt_FWHM: {0}\n".format(b_had_pt_FWHM))
+
+print("b_lep_phi_FWHM: {0}".format(b_lep_phi_FWHM))
+print("b_lep_rapidity_FWHM: {0}".format(b_lep_rapidity_FWHM))
+print("b_lep_pt_FWHM: {0}\n".format(b_lep_pt_FWHM))
+
 
 # Define sums of squares to be used for calculating sample chi-squared/NDF
 # One sum for each variable to be augmented in each event
@@ -154,21 +199,21 @@ for i in range(n_events):
     # chi squared for each event using all variables... 
     chi22 = 0.
 
-    chi22 += W_had_phi_diff / ( fwhm['W_had_phi']**2 )
-    chi22 += W_had_rapidity_diff / ( fwhm['W_had_y']**2 )
-    chi22 += W_had_pt_diff / ( fwhm['W_had_pt']**2 )
+    chi22 += W_had_phi_diff / ( W_had_phi_FWHM**2 )
+    chi22 += W_had_rapidity_diff / ( W_had_rapidity_FWHM**2 )
+    chi22 += W_had_pt_diff / ( W_had_pt_FWHM**2 )
 
-    chi22 += W_lep_phi_diff / ( fwhm['W_lep_phi']**2 )
-    chi22 += W_lep_rapidity_diff / ( fwhm['W_lep_y']**2 )
-    chi22 += W_lep_pt_diff / ( fwhm['W_lep_pt']**2 )
+    chi22 += W_lep_phi_diff / ( W_lep_phi_FWHM**2 )
+    chi22 += W_lep_rapidity_diff / ( W_lep_rapidity_FWHM**2 )
+    chi22 += W_lep_pt_diff / ( W_lep_pt_FWHM**2 )
 
-    chi22 += b_had_phi_diff / ( fwhm['b_had_phi']**2 )
-    chi22 += b_had_rapidity_diff / ( fwhm['b_had_y']**2 )
-    chi22 += b_had_pt_diff / ( fwhm['b_had_pt']**2 )
+    chi22 += b_had_phi_diff / ( b_had_phi_FWHM**2 )
+    chi22 += b_had_rapidity_diff / ( b_had_rapidity_FWHM**2 )
+    chi22 += b_had_pt_diff / ( b_had_pt_FWHM**2 )
 
-    chi22 += b_lep_phi_diff / ( fwhm['b_lep_phi']**2 )
-    chi22 += b_lep_rapidity_diff / ( fwhm['b_lep_y']**2 )
-    chi22 += b_lep_pt_diff / ( fwhm['b_lep_pt']**2 )
+    chi22 += b_lep_phi_diff / ( b_lep_phi_FWHM**2 )
+    chi22 += b_lep_rapidity_diff / ( b_lep_rapidity_FWHM**2 )
+    chi22 += b_lep_pt_diff / ( b_lep_pt_FWHM**2 )
 
     # Calculate chi-squared/NDF
     chi22NDF = chi22 / 12.0
@@ -179,21 +224,21 @@ for i in range(n_events):
 
 
 # Normalize sums of squares by standard deviations and number of events
-W_had_phi_chi2NDF = W_had_phi_sum / n_events / ( fwhm['W_had_phi']**2 )
-W_had_rapidity_chi2NDF = W_had_rapidity_sum / n_events / ( fwhm['W_had_y']**2 )
-W_had_pt_chi2NDF = W_had_pt_sum / n_events / ( fwhm['W_had_pt']**2 )
+W_had_phi_chi2NDF = W_had_phi_sum / n_events / ( W_had_phi_FWHM**2 )
+W_had_rapidity_chi2NDF = W_had_rapidity_sum / n_events / ( W_had_rapidity_FWHM**2 )
+W_had_pt_chi2NDF = W_had_pt_sum / n_events / ( W_had_pt_FWHM**2 )
 
-W_lep_phi_chi2NDF = W_lep_phi_sum / n_events / ( fwhm['W_lep_phi']**2 )
-W_lep_rapidity_chi2NDF = W_lep_rapidity_sum / n_events / ( fwhm['W_lep_y']**2 )
-W_lep_pt_chi2NDF = W_lep_pt_sum / n_events / ( fwhm['W_lep_pt']**2 )
+W_lep_phi_chi2NDF = W_lep_phi_sum / n_events / ( W_lep_phi_FWHM**2 )
+W_lep_rapidity_chi2NDF = W_lep_rapidity_sum / n_events / ( W_lep_rapidity_FWHM**2 )
+W_lep_pt_chi2NDF = W_lep_pt_sum / n_events / ( W_lep_pt_FWHM**2 )
 
-b_had_phi_chi2NDF = b_had_phi_sum / n_events / ( fwhm['b_had_phi']**2 )
-b_had_rapidity_chi2NDF = b_had_rapidity_sum / n_events / ( fwhm['b_had_y']**2 )
-b_had_pt_chi2NDF = b_had_pt_sum / n_events / ( fwhm['b_had_pt']**2 )
+b_had_phi_chi2NDF = b_had_phi_sum / n_events / ( b_had_phi_FWHM**2 )
+b_had_rapidity_chi2NDF = b_had_rapidity_sum / n_events / ( b_had_rapidity_FWHM**2 )
+b_had_pt_chi2NDF = b_had_pt_sum / n_events / ( b_had_pt_FWHM**2 )
 
-b_lep_phi_chi2NDF = b_lep_phi_sum / n_events / ( fwhm['b_lep_phi']**2 )
-b_lep_rapidity_chi2NDF = b_lep_rapidity_sum / n_events / ( fwhm['b_lep_y']**2 )
-b_lep_pt_chi2NDF = b_lep_pt_sum / n_events / ( fwhm['b_lep_pt']**2 )
+b_lep_phi_chi2NDF = b_lep_phi_sum / n_events / ( b_lep_phi_FWHM**2 )
+b_lep_rapidity_chi2NDF = b_lep_rapidity_sum / n_events / ( b_lep_rapidity_FWHM**2 )
+b_lep_pt_chi2NDF = b_lep_pt_sum / n_events / ( b_lep_pt_FWHM**2 )
 
 # Print Chi-Squareds/NDF.
 print("\nW_had_phi_chi2NDF: {0}".format(W_had_phi_chi2NDF))
@@ -210,8 +255,7 @@ print("b_had_pt_chi2NDF: {0}\n".format(b_had_pt_chi2NDF))
 
 print("b_lep_phi_chi2NDF: {0}".format(b_lep_phi_chi2NDF))
 print("b_lep_rapidity_chi2NDF: {0}".format(b_lep_rapidity_chi2NDF))
-print("b_lep_pt_chi2NDF: {0}".format(b_lep_pt_chi2NDF))
-
+print("b_lep_pt_chi2NDF: {0}\n".format(b_lep_pt_chi2NDF))
 
 try:
     os.mkdir('{}/{}'.format(training_dir, outputdir))
