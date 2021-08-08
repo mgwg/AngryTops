@@ -54,7 +54,7 @@ for obs in attributes:
     if hist.Class() == TH2F.Class():
         hist = hist.ProfileX("hist_pfx")
 
-    # Extract FWHM and std. deviation from helper function.
+    # Extract FWHM from helper function.
     fwhm_single = getFwhm( hist )
     fwhm[obs] = fwhm_single
 
@@ -62,10 +62,10 @@ for obs in attributes:
 histograms = {}
 
 # Distribution of Chi-Squareds
-histograms['chi_squared_all_events'] = TH1F("#chi^2",  ";Unitless", 100, 0., 20.)
-histograms['chi_squared_all_events'].SetTitle("#chi^2 of all events;Unitless;A.U.")
-histograms['chi_squared_all_events_NDF'] = TH1F("#chi^2/NDF",  ";Unitless", 100, 0., 20.)
-histograms['chi_squared_all_events_NDF'].SetTitle("#chi^2/NDF of all events;Unitless;A.U.")
+histograms['chi_squared_all'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
+histograms['chi_squared_all'].SetTitle("#chi^{2} of all events;Unitless;A.U.")
+histograms['chi_squared_all_NDF'] = TH1F("#chi^{2}/NDF",  ";Unitless", 100, 0., 20.)
+histograms['chi_squared_all_NDF'].SetTitle("#chi^{2}/NDF of all events;Unitless;A.U.")
 
 ################################################################################
 
@@ -174,8 +174,8 @@ for i in range(n_events):
     chi22NDF = chi22 / 12.0
 
     # Populate the histograms:
-    histograms['chi_squared_all_events'].Fill(chi22)
-    histograms['chi_squared_all_events_NDF'].Fill(chi22NDF)
+    histograms['chi_squared_all'].Fill(chi22)
+    histograms['chi_squared_all_NDF'].Fill(chi22NDF)
 
 
 # Normalize sums of squares by standard deviations and number of events

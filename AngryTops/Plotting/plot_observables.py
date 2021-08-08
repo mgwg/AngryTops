@@ -4,6 +4,7 @@ from ROOT import *
 import numpy as np
 from AngryTops.features import *
 from AngryTops.Plotting.PlottingHelper import *
+from AngryTops.Plotting.identification_helper import getFwhm
 
 # INPUT
 training_dir = sys.argv[1]

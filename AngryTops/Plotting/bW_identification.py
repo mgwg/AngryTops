@@ -306,25 +306,15 @@ hists['had_t_corr_pT_diff_dist_true_v_obs'] = TH2F("t Hadronic p_{T} Diffs vs. #
 
 # Function to make histograms
 def make_histograms():
+    
+    # list of number of events best matched to 1,2,3 jets respectively.
+    W_had_jets, W_had_total_cuts = [0., 0., 0.] , [0., 0., 0.] 
 
     # Counters to make tally number of events that pass cuts
-    W_had_jets = [0., 0., 0.] # List of number of events best matched to 1,2,3 jets respectively.
-    W_had_total_cuts = [0., 0., 0.]
-    W_had_m_cuts = [0., 0., 0.]
-    W_had_pT_cuts = [0., 0., 0.]
-    W_had_dist_cuts = [0., 0., 0.]
-
-    W_lep_total_cuts = 0.
-    W_lep_ET_cuts = 0.
-    W_lep_dist_cuts = 0.
-
-    b_had_pT_cuts = 0.
-    b_had_dist_cuts = 0.
-    b_had_total_cuts = 0.
-
-    b_lep_pT_cuts = 0.
-    b_lep_dist_cuts = 0.
-    b_lep_total_cuts = 0.
+    W_had_m_cuts, W_had_pT_cuts, W_had_dist_cuts = [0., 0., 0.] , [0., 0., 0.]  , [0., 0., 0.] 
+    W_lep_total_cuts, W_lep_ET_cuts, W_lep_dist_cuts = 0., 0., 0.
+    b_had_pT_cuts, b_had_dist_cuts, b_had_total_cuts = 0., 0., 0.
+    b_lep_pT_cuts, b_lep_dist_cuts, b_lep_total_cuts = 0., 0., 0.
 
     good_event = 0.
 
@@ -786,23 +776,23 @@ if __name__ == "__main__":
         print("Overwriting existing files")
     make_histograms()
 
-    hists_key = []
-    corr_key = []
-    for key in hists:
-        if 'corr' not in key:
-            hists_key.append(key)
-        else:
-            corr_key.append(key)
+    # hists_key = []
+    # corr_key = []
+    # for key in hists:
+    #     if 'corr' not in key:
+    #         hists_key.append(key)
+    #     else:
+    #         corr_key.append(key)
 
-    for key in hists_key:
-        plot_hists(key, hists[key], outputdir+subdir)
+    # for key in hists_key:
+    #     plot_hists(key, hists[key], outputdir+subdir)
 
-    # The following few lines must be run only once for all correlation plots, 
-    #  so the correlation plots must be separated out from the other histograms.   
-    from AngryTops.features import *
-    from AngryTops.Plotting.PlottingHelper import *
-    gStyle.SetPalette(kGreyScale)
-    gROOT.GetColor(52).InvertPalette()
+    # # The following few lines must be run only once for all correlation plots, 
+    # #  so the correlation plots must be separated out from the other histograms.   
+    # from AngryTops.features import *
+    # from AngryTops.Plotting.PlottingHelper import *
+    # gStyle.SetPalette(kGreyScale)
+    # gROOT.GetColor(52).InvertPalette()
 
-    for key in corr_key:
-        plot_corr(key, hists[key], outputdir+subdir)
+    # for key in corr_key:
+    #     plot_corr(key, hists[key], outputdir+subdir)

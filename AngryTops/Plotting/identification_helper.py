@@ -60,6 +60,10 @@ def plot_hists(key, hist, outputdir):
     if "scat" not in key:
         binWidth = hist.GetBinWidth(0)
         legend.DrawLatex( 0.65, 0.70, "Bin Width: %.2f" % binWidth )
+    if 'chi' in key:
+        fwhm = getFwhm(hist)
+        legend.DrawLatex( 0.65, 0.65, "FWHM: %.2f" % fwhm )
+
     
     c1.SaveAs(outputdir + key +'.png')
     c1.Close()
@@ -72,15 +76,19 @@ def getFwhm(hist):
     """
 
     #fwhm
-    half_max = hist.GetMaximum()/2.0
+    halfMax = hist.GetMaximum()/2.0
+    nMax = hist.GetMaximumBin()
+    
     nbins = hist.GetNbinsX()
     bin1 = 0
     bin2 = nbins
     for i in range(1, nbins + 1):
         y = hist.GetBinContent(i)
-        if (i < nbins/2 and y <= half_max) and (i > bin1):
+        # find the greatest bin index left of max with bin content <= to half-max, and get its centre
+        if (i < nMax and y <= halfMax) and (i > bin1):
             bin1 = hist.GetBinCenter(i)
-        if (i > nbins/2 and y <= half_max) and (i < bin2):
+        # find the smallest bin index right of max with bin content <= to half-max, and get its centre
+        if (i > nMax and y <= halfMax) and (i < bin2):
             bin2 = hist.GetBinCenter(i)
     fwhm = bin2 - bin1
 
