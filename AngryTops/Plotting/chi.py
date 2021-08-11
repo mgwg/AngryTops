@@ -29,13 +29,13 @@ FWHM_dir = sys.argv[2]
 # Output directory
 outputdir = "/img_chi_fwhm/"
 if len(sys.argv) > 3:
-    outputdir += sys.argv[3]
+    outputdir = "/img_chi_fwhm{}/".format(sys.argv[3])
 
 # Read in histograms from the FWHM directory.
 histsFilename = "{}/histograms.root".format(FWHM_dir)
 histsFile = TFile.Open(histsFilename)
 print("FWHM directory filename: {0}\n".format(histsFilename))
-
+print(histsFilename)
 
 ################################################################################
 # HELPER FUNCTIONS
@@ -84,6 +84,44 @@ histograms['p-values'] = TH1F("p-values",  ";Unitless", 100, 0., 1.)
 histograms['p-values'].SetTitle("p-value distribution of #chi^{2} statistics; p-values, Unitless; A.U.")
 histograms['p-values_log'] = TH1F("p-values",  ";Unitless", 100, 0., 1.)
 histograms['p-values_log'].SetTitle("p-value distribution of #chi^{2} statistics; p-values, Unitless; A.U.")
+
+################################################################################
+
+histograms['chi_squared_had_W_phi'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
+histograms['chi_squared_had_W_phi'].SetTitle("#chi^{2} of had W #phi; #chi^{2}, Unitless; A.U.")
+
+histograms['chi_squared_had_W_eta'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
+histograms['chi_squared_had_W_eta'].SetTitle("#chi^{2} of had W #eta; #chi^{2}, Unitless; A.U.")
+
+histograms['chi_squared_had_W_pT'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
+histograms['chi_squared_had_W_pT'].SetTitle("#chi^{2} of had W p_{T}; #chi^{2}, Unitless; A.U.")
+
+histograms['chi_squared_lep_W_phi'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
+histograms['chi_squared_lep_W_phi'].SetTitle("#chi^{2} of lep W #phi; #chi^{2}, Unitless; A.U.")
+
+histograms['chi_squared_lep_W_eta'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
+histograms['chi_squared_lep_W_eta'].SetTitle("#chi^{2} of lep W #eta; #chi^{2}, Unitless; A.U.")
+
+histograms['chi_squared_lep_W_pT'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
+histograms['chi_squared_lep_W_pT'].SetTitle("#chi^{2} of lep W p_{T}; #chi^{2}, Unitless; A.U.")
+
+histograms['chi_squared_had_b_phi'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
+histograms['chi_squared_had_b_phi'].SetTitle("#chi^{2} of had b #phi; #chi^{2}, Unitless; A.U.")
+
+histograms['chi_squared_had_b_eta'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
+histograms['chi_squared_had_b_eta'].SetTitle("#chi^{2} of had b #eta; #chi^{2}, Unitless; A.U.")
+
+histograms['chi_squared_had_b_pT'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
+histograms['chi_squared_had_b_pT'].SetTitle("#chi^{2} of had b p_{T}; #chi^{2}, Unitless; A.U.")
+
+histograms['chi_squared_lep_b_phi'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
+histograms['chi_squared_lep_b_phi'].SetTitle("#chi^{2} of of lep b #phi; #chi^{2}, Unitless; A.U.")
+
+histograms['chi_squared_lep_b_eta'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
+histograms['chi_squared_lep_b_eta'].SetTitle("#chi^{2} of lep b #eta; #chi^{2}, Unitless; A.U.")
+
+histograms['chi_squared_lep_b_pT'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
+histograms['chi_squared_lep_b_pT'].SetTitle("#chi^{2} of lep b p_{T}; #chi^{2}, Unitless; A.U.")
 ################################################################################
 
 # POPULATE HISTOGRAMS
@@ -236,6 +274,18 @@ for i in range(n_events):
     histograms['p-values'].Fill(p_value)
     histograms['p-values_log'].Fill(p_value)
 
+    histograms['chi_squared_had_W_phi'].Fill(W_had_phi_diff / ( W_had_phi_FWHM**2 ))
+    histograms['chi_squared_had_W_eta'].Fill(W_had_rapidity_diff / ( W_had_rapidity_FWHM**2 ))
+    histograms['chi_squared_had_W_pT'].Fill(W_had_pt_diff / ( W_had_pt_FWHM**2 ))
+    histograms['chi_squared_lep_W_phi'].Fill(W_lep_phi_diff / ( W_lep_phi_FWHM**2 ))
+    histograms['chi_squared_lep_W_eta'].Fill( W_lep_rapidity_diff / ( W_lep_rapidity_FWHM**2 ))
+    histograms['chi_squared_lep_W_pT'].Fill(W_lep_pt_diff / ( W_lep_pt_FWHM**2 )) 
+    histograms['chi_squared_had_b_phi'].Fill(b_had_phi_diff / ( b_had_phi_FWHM**2 )) 
+    histograms['chi_squared_had_b_eta'].Fill(b_had_rapidity_diff / ( b_had_rapidity_FWHM**2 )) 
+    histograms['chi_squared_had_b_pT'].Fill(b_had_pt_diff / ( b_had_pt_FWHM**2 )) 
+    histograms['chi_squared_lep_b_phi'].Fill(b_lep_phi_diff / ( b_lep_phi_FWHM**2 )) 
+    histograms['chi_squared_lep_b_eta'].Fill(b_lep_rapidity_diff / ( b_lep_rapidity_FWHM**2 ))
+    histograms['chi_squared_lep_b_pT'].Fill(b_lep_pt_diff / ( b_lep_pt_FWHM**2 ))
 
 # Normalize sums of squares by standard deviations and number of events
 W_had_phi_chi2NDF = W_had_phi_sum / n_events / ( W_had_phi_FWHM**2 )
