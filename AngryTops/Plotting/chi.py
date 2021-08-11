@@ -1,5 +1,7 @@
 # Calculates chi-squared for key variables in truth vs. fitted comparison. 
 #  Plots distribution of chi-squareds where one chi-squared is calculated for each event.
+#  Plots distribution of p-values using the chi-squared variables, 
+#   assuming that they follow a chi-squared distribution. 
 #!/usr/bin/env python
 import os, sys, time
 import argparse
@@ -9,6 +11,7 @@ from array import array
 import cPickle as pickle
 import numpy as np
 from AngryTops.Plotting.identification_helper import * 
+from scipy.stats import chi2
 
 ################################################################################
 # CONSTANTS
@@ -72,10 +75,15 @@ histograms = {}
 
 # Distribution of Chi-Squareds
 histograms['chi_squared_all'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
-histograms['chi_squared_all'].SetTitle("#chi^{2} of all events;Unitless;A.U.")
+histograms['chi_squared_all'].SetTitle("#chi^{2} of all events; #chi^{2}, Unitless; A.U.")
 histograms['chi_squared_all_NDF'] = TH1F("#chi^{2}/NDF",  ";Unitless", 100, 0., 20.)
-histograms['chi_squared_all_NDF'].SetTitle("#chi^{2}/NDF of all events;Unitless;A.U.")
+histograms['chi_squared_all_NDF'].SetTitle("#chi^{2}/NDF of all events; #chi^{2}, Unitless; A.U.")
 
+# Distribution of p-values
+histograms['p-values'] = TH1F("p-values",  ";Unitless", 100, 0., 1.)
+histograms['p-values'].SetTitle("p-value distribution of #chi^{2} statistics; p-values, Unitless; A.U.")
+histograms['p-values_log'] = TH1F("p-values",  ";Unitless", 100, 0., 1.)
+histograms['p-values_log'].SetTitle("p-value distribution of #chi^{2} statistics; p-values, Unitless; A.U.")
 ################################################################################
 
 # POPULATE HISTOGRAMS
@@ -218,9 +226,15 @@ for i in range(n_events):
     # Calculate chi-squared/NDF
     chi22NDF = chi22 / 12.0
 
+    # Calculate a p-value assuming a chi-squared distribution with 12 degrees of freedom.
+    #  Use the survival function defined as 1-CDF.
+    p_value = chi2.sf(chi22, 12)
+
     # Populate the histograms:
     histograms['chi_squared_all'].Fill(chi22)
     histograms['chi_squared_all_NDF'].Fill(chi22NDF)
+    histograms['p-values'].Fill(p_value)
+    histograms['p-values_log'].Fill(p_value)
 
 
 # Normalize sums of squares by standard deviations and number of events
