@@ -19,6 +19,9 @@ m_t = 172.5
 m_W = 80.4
 m_b = 4.95
 
+# Number of variables to add to chi-squared that is calculated for each event:
+number_of_variables = 12
+
 # First directory is the training directory where the truth and fitted data for the sample of interest is saved.
 if len(sys.argv) > 1: training_dir = sys.argv[1]
 infilename = "{}/fitted.root".format(training_dir)
@@ -110,7 +113,7 @@ histograms['chi_squared_lep_b_eta'].SetTitle("#chi^{2} of lep b #eta; #chi^{2}, 
 histograms['chi_squared_lep_b_pT'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
 histograms['chi_squared_lep_b_pT'].SetTitle("#chi^{2} of lep b p_{T}; #chi^{2}, Unitless; A.U.")
 
-# Distribution of chi-squareds summing 12 variables
+# Distribution of chi-squareds summing number_of_variables variables
 histograms['chi_squared_all'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
 histograms['chi_squared_all'].SetTitle("#chi^{2} of all events; #chi^{2}, Unitless; A.U.")
 histograms['chi_squared_all_NDF'] = TH1F("#chi^{2}/NDF",  ";Unitless", 100, 0., 20.)
@@ -262,19 +265,14 @@ for i in range(n_events):
     chi22 += b_lep_pt_diff / ( b_lep_pt_FWHM**2 )
 
     # Calculate chi-squared/NDF
-    chi22NDF = chi22 / 12.0
+    chi22NDF = chi22 / number_of_variables
 
     # Calculate a p-value assuming the distribution of sample chi-squared statistics follows
-    #  a chi-squared distribution with 12 degrees of freedom.
+    #  a chi-squared distribution with number_of_variables degrees of freedom.
     #  Use the survival function defined as 1-CDF.
-    p_value = chi2.sf(chi22, 12)
+    p_value = chi2.sf(chi22, number_of_variables - 1)
 
     # Populate the histograms:
-    histograms['chi_squared_all'].Fill(chi22)
-    histograms['chi_squared_all_NDF'].Fill(chi22NDF)
-    histograms['p-values'].Fill(p_value)
-    histograms['p-values_log'].Fill(p_value)
-
     histograms['chi_squared_had_W_phi'].Fill(W_had_phi_diff / ( W_had_phi_FWHM**2 ))
     histograms['chi_squared_had_W_eta'].Fill(W_had_rapidity_diff / ( W_had_rapidity_FWHM**2 ))
     histograms['chi_squared_had_W_pT'].Fill(W_had_pt_diff / ( W_had_pt_FWHM**2 ))
@@ -287,6 +285,11 @@ for i in range(n_events):
     histograms['chi_squared_lep_b_phi'].Fill(b_lep_phi_diff / ( b_lep_phi_FWHM**2 )) 
     histograms['chi_squared_lep_b_eta'].Fill(b_lep_rapidity_diff / ( b_lep_rapidity_FWHM**2 ))
     histograms['chi_squared_lep_b_pT'].Fill(b_lep_pt_diff / ( b_lep_pt_FWHM**2 ))
+
+    histograms['chi_squared_all'].Fill(chi22)
+    histograms['chi_squared_all_NDF'].Fill(chi22NDF)
+    histograms['p-values'].Fill(p_value)
+    histograms['p-values_log'].Fill(p_value)
 
 # Normalize sums of squares by standard deviations and number of events
 W_had_phi_chi2NDF = W_had_phi_sum / n_events / ( W_had_phi_FWHM**2 )
