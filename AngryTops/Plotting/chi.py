@@ -73,20 +73,7 @@ for obs in attributes:
 ################################################################################
 histograms = {}
 
-# Distribution of Chi-Squareds
-histograms['chi_squared_all'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
-histograms['chi_squared_all'].SetTitle("#chi^{2} of all events; #chi^{2}, Unitless; A.U.")
-histograms['chi_squared_all_NDF'] = TH1F("#chi^{2}/NDF",  ";Unitless", 100, 0., 20.)
-histograms['chi_squared_all_NDF'].SetTitle("#chi^{2}/NDF of all events; #chi^{2}, Unitless; A.U.")
-
-# Distribution of p-values
-histograms['p-values'] = TH1F("p-values",  ";Unitless", 100, 0., 1.)
-histograms['p-values'].SetTitle("p-value distribution of #chi^{2} statistics; p-values, Unitless; A.U.")
-histograms['p-values_log'] = TH1F("p-values",  ";Unitless", 100, 0., 1.)
-histograms['p-values_log'].SetTitle("p-value distribution of #chi^{2} statistics; p-values, Unitless; A.U.")
-
-################################################################################
-
+# Distribution of chi-squareds for each variable individually.
 histograms['chi_squared_had_W_phi'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
 histograms['chi_squared_had_W_phi'].SetTitle("#chi^{2} of had W #phi; #chi^{2}, Unitless; A.U.")
 
@@ -122,6 +109,19 @@ histograms['chi_squared_lep_b_eta'].SetTitle("#chi^{2} of lep b #eta; #chi^{2}, 
 
 histograms['chi_squared_lep_b_pT'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
 histograms['chi_squared_lep_b_pT'].SetTitle("#chi^{2} of lep b p_{T}; #chi^{2}, Unitless; A.U.")
+
+# Distribution of chi-squareds summing 12 variables
+histograms['chi_squared_all'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
+histograms['chi_squared_all'].SetTitle("#chi^{2} of all events; #chi^{2}, Unitless; A.U.")
+histograms['chi_squared_all_NDF'] = TH1F("#chi^{2}/NDF",  ";Unitless", 100, 0., 20.)
+histograms['chi_squared_all_NDF'].SetTitle("#chi^{2}/NDF of all events; #chi^{2}, Unitless; A.U.")
+
+# Distribution of p-values
+histograms['p-values'] = TH1F("p-values",  ";Unitless", 100, 0., 1.)
+histograms['p-values'].SetTitle("p-value distribution of #chi^{2} statistics; p-values, Unitless; A.U.")
+histograms['p-values_log'] = TH1F("p-values",  ";Unitless", 100, 0., 1.)
+histograms['p-values_log'].SetTitle("p-value distribution of #chi^{2} statistics; p-values, Unitless; A.U.")
+
 ################################################################################
 
 # POPULATE HISTOGRAMS
@@ -264,7 +264,8 @@ for i in range(n_events):
     # Calculate chi-squared/NDF
     chi22NDF = chi22 / 12.0
 
-    # Calculate a p-value assuming a chi-squared distribution with 12 degrees of freedom.
+    # Calculate a p-value assuming the distribution of sample chi-squared statistics follows
+    #  a chi-squared distribution with 12 degrees of freedom.
     #  Use the survival function defined as 1-CDF.
     p_value = chi2.sf(chi22, 12)
 
