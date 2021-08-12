@@ -122,8 +122,10 @@ histograms['chi_squared_all_NDF'].SetTitle("#chi^{2}/NDF of all events; #chi^{2}
 # Distribution of p-values
 histograms['p-values'] = TH1F("p-values",  ";Unitless", 100, 0., 1.)
 histograms['p-values'].SetTitle("p-value distribution of #chi^{2} statistics; p-values, Unitless; A.U.")
-histograms['p-values_log'] = TH1F("p-values",  ";Unitless", 100, 0., 1.)
-histograms['p-values_log'].SetTitle("p-value distribution of #chi^{2} statistics; p-values, Unitless; A.U.")
+histograms['p-values_semilog'] = TH1F("p-values",  ";Unitless", 100, 0., 1.)
+histograms['p-values_semilog'].SetTitle("p-value distribution of #chi^{2} statistics; p-values, Unitless; A.U.")
+histograms['p-values_loglog'] = TH1F("p-values",  ";Unitless", 100, 0., 1.)
+histograms['p-values_loglog'].SetTitle("p-value distribution of #chi^{2} statistics; p-values, Unitless; A.U.")
 
 ################################################################################
 
@@ -289,7 +291,8 @@ for i in range(n_events):
     histograms['chi_squared_all'].Fill(chi22)
     histograms['chi_squared_all_NDF'].Fill(chi22NDF)
     histograms['p-values'].Fill(p_value)
-    histograms['p-values_log'].Fill(p_value)
+    histograms['p-values_semilog'].Fill(p_value)
+    histograms['p-values_loglog'].Fill(p_value)
 
 # Normalize sums of squares by standard deviations and number of events
 W_had_phi_chi2NDF = W_had_phi_sum / n_events / ( W_had_phi_FWHM**2 )
