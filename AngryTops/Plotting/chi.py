@@ -26,18 +26,18 @@ number_of_variables = 12
 if len(sys.argv) > 1: training_dir = sys.argv[1]
 infilename = "{}/fitted.root".format(training_dir)
 print("Training directory filename: {0}".format(infilename))
-# Second directory is the directory containing the difference plots whose FWHM 
+# Second directory is the directory containing the difference plots whose sigma 
 #  will be used to calculate the Chi-Squareds.
-FWHM_dir = sys.argv[2]
+sigma_dir = sys.argv[2]
 # Output directory
 outputdir = "/img_chi/"
 if len(sys.argv) > 3:
     outputdir = "/img_chi{}/".format(sys.argv[3])
 
-# Read in histograms from the FWHM directory.
-histsFilename = "{}/histograms.root".format(FWHM_dir)
+# Read in histograms from the sigma directory.
+histsFilename = "{}/histograms.root".format(sigma_dir)
 histsFile = TFile.Open(histsFilename)
-print("FWHM directory filename: {0}\n".format(histsFilename))
+print("sigma directory filename: {0}\n".format(histsFilename))
 print(histsFilename)
 
 ################################################################################
@@ -59,7 +59,7 @@ tree   = infile.Get( "nominal")
 fwhm = {}
 sigma = {}
 for obs in attributes:
-    # Use only the difference plots from the FWHM folder.
+    # Use only the difference plots from the sigma folder.
     hist_name = "diff_{0}".format(obs)
     # True and fitted leaf
     hist = histsFile.Get(hist_name)
@@ -70,7 +70,7 @@ for obs in attributes:
     if hist.Class() == TH2F.Class():
         hist = hist.ProfileX("hist_pfx")
 
-    # Extract FWHM using helper function.
+    # Extract FWHM and sigma using helper function.
     fwhm_single, sigma_single = getFwhm( hist )
     fwhm[obs] = fwhm_single
     sigma[obs] = sigma_single
@@ -78,39 +78,32 @@ for obs in attributes:
 ################################################################################
 histograms = {}
 
+# Distribution of chi-squareds for individual variables
 histograms['chi_squared_had_W_phi'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
 histograms['chi_squared_had_W_phi'].SetTitle("#chi^{2} of had W #phi; #chi^{2}, Unitless; A.U.")
-
 histograms['chi_squared_had_W_eta'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
 histograms['chi_squared_had_W_eta'].SetTitle("#chi^{2} of had W #eta; #chi^{2}, Unitless; A.U.")
-
 histograms['chi_squared_had_W_pT'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
 histograms['chi_squared_had_W_pT'].SetTitle("#chi^{2} of had W p_{T}; #chi^{2}, Unitless; A.U.")
 
 histograms['chi_squared_lep_W_phi'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
 histograms['chi_squared_lep_W_phi'].SetTitle("#chi^{2} of lep W #phi; #chi^{2}, Unitless; A.U.")
-
 histograms['chi_squared_lep_W_eta'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
 histograms['chi_squared_lep_W_eta'].SetTitle("#chi^{2} of lep W #eta; #chi^{2}, Unitless; A.U.")
-
 histograms['chi_squared_lep_W_pT'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
 histograms['chi_squared_lep_W_pT'].SetTitle("#chi^{2} of lep W p_{T}; #chi^{2}, Unitless; A.U.")
 
 histograms['chi_squared_had_b_phi'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
 histograms['chi_squared_had_b_phi'].SetTitle("#chi^{2} of had b #phi; #chi^{2}, Unitless; A.U.")
-
 histograms['chi_squared_had_b_eta'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
 histograms['chi_squared_had_b_eta'].SetTitle("#chi^{2} of had b #eta; #chi^{2}, Unitless; A.U.")
-
 histograms['chi_squared_had_b_pT'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
 histograms['chi_squared_had_b_pT'].SetTitle("#chi^{2} of had b p_{T}; #chi^{2}, Unitless; A.U.")
 
 histograms['chi_squared_lep_b_phi'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
 histograms['chi_squared_lep_b_phi'].SetTitle("#chi^{2} of of lep b #phi; #chi^{2}, Unitless; A.U.")
-
 histograms['chi_squared_lep_b_eta'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
 histograms['chi_squared_lep_b_eta'].SetTitle("#chi^{2} of lep b #eta; #chi^{2}, Unitless; A.U.")
-
 histograms['chi_squared_lep_b_pT'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
 histograms['chi_squared_lep_b_pT'].SetTitle("#chi^{2} of lep b p_{T}; #chi^{2}, Unitless; A.U.")
 
@@ -130,7 +123,7 @@ histograms['p-values_loglog'].SetTitle("p-value distribution of #chi^{2} statist
 
 ################################################################################
 
-# POPULATE HISTOGRAMS
+# Number of events
 n_events = tree.GetEntries()
 
 print("INFO: starting event loop. Found %i events" % n_events)
@@ -170,7 +163,7 @@ print("b_lep_phi_FWHM: {0}".format(b_lep_phi_FWHM))
 print("b_lep_rapidity_FWHM: {0}".format(b_lep_rapidity_FWHM))
 print("b_lep_pt_FWHM: {0}\n".format(b_lep_pt_FWHM))
 
-# find sigmas
+# Extract and print relevant standard deviations
 W_had_phi_sigma = sigma['W_had_phi']
 W_had_rapidity_sigma = sigma['W_had_y']
 W_had_pt_sigma = sigma['W_had_pt']
@@ -186,6 +179,24 @@ b_had_pt_sigma = sigma['b_had_pt']
 b_lep_phi_sigma = sigma['b_lep_phi']
 b_lep_rapidity_sigma = sigma['b_lep_y']
 b_lep_pt_sigma = sigma['b_lep_pt']
+
+print("\nsigmas:")
+
+print("\nW_had_phi_sigma: {0}".format(W_had_phi_sigma))
+print("W_had_rapidity_sigma: {0}".format(W_had_rapidity_sigma))
+print("W_had_pt_sigma: {0}\n".format(W_had_pt_sigma))
+
+print("W_lep_phi_sigma: {0}".format(W_lep_phi_sigma))
+print("W_lep_rapidity_sigma: {0}".format(W_lep_rapidity_sigma))
+print("W_lep_pt_sigma: {0}\n".format(W_lep_pt_sigma))
+
+print("b_had_phi_sigma: {0}".format(b_had_phi_sigma))
+print("b_had_rapidity_sigma: {0}".format(b_had_rapidity_sigma))
+print("b_had_pt_sigma: {0}\n".format(b_had_pt_sigma))
+
+print("b_lep_phi_sigma: {0}".format(b_lep_phi_sigma))
+print("b_lep_rapidity_sigma: {0}".format(b_lep_rapidity_sigma))
+print("b_lep_pt_sigma: {0}\n".format(b_lep_pt_sigma))
 
 # Define sums of squares to be used for calculating sample chi-squared/NDF
 # One sum for each variable to be augmented in each event
