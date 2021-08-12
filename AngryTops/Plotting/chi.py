@@ -27,9 +27,9 @@ print("Training directory filename: {0}".format(infilename))
 #  will be used to calculate the Chi-Squareds.
 FWHM_dir = sys.argv[2]
 # Output directory
-outputdir = "/img_chi_fwhm/"
+outputdir = "/img_chi/"
 if len(sys.argv) > 3:
-    outputdir = "/img_chi_fwhm{}/".format(sys.argv[3])
+    outputdir = "/img_chi{}/".format(sys.argv[3])
 
 # Read in histograms from the FWHM directory.
 histsFilename = "{}/histograms.root".format(FWHM_dir)
@@ -54,6 +54,7 @@ tree   = infile.Get( "nominal")
 ################################################################################
 # Draw Differences and resonances
 fwhm = {}
+sigma = {}
 for obs in attributes:
     # Use only the difference plots from the FWHM folder.
     hist_name = "diff_{0}".format(obs)
@@ -67,14 +68,15 @@ for obs in attributes:
         hist = hist.ProfileX("hist_pfx")
 
     # Extract FWHM using helper function.
-    fwhm_single = getFwhm( hist )
+    fwhm_single, sigma_single = getFwhm( hist )
     fwhm[obs] = fwhm_single
+    sigma[obs] = sigma_single
 
 ################################################################################
 histograms = {}
 
 # Distribution of Chi-Squareds
-histograms['chi_squared_all'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
+histograms['chi_squared_all'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 50.)
 histograms['chi_squared_all'].SetTitle("#chi^{2} of all events; #chi^{2}, Unitless; A.U.")
 histograms['chi_squared_all_NDF'] = TH1F("#chi^{2}/NDF",  ";Unitless", 100, 0., 20.)
 histograms['chi_squared_all_NDF'].SetTitle("#chi^{2}/NDF of all events; #chi^{2}, Unitless; A.U.")
@@ -84,8 +86,6 @@ histograms['p-values'] = TH1F("p-values",  ";Unitless", 100, 0., 1.)
 histograms['p-values'].SetTitle("p-value distribution of #chi^{2} statistics; p-values, Unitless; A.U.")
 histograms['p-values_log'] = TH1F("p-values",  ";Unitless", 100, 0., 1.)
 histograms['p-values_log'].SetTitle("p-value distribution of #chi^{2} statistics; p-values, Unitless; A.U.")
-
-################################################################################
 
 histograms['chi_squared_had_W_phi'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
 histograms['chi_squared_had_W_phi'].SetTitle("#chi^{2} of had W #phi; #chi^{2}, Unitless; A.U.")
@@ -122,6 +122,7 @@ histograms['chi_squared_lep_b_eta'].SetTitle("#chi^{2} of lep b #eta; #chi^{2}, 
 
 histograms['chi_squared_lep_b_pT'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
 histograms['chi_squared_lep_b_pT'].SetTitle("#chi^{2} of lep b p_{T}; #chi^{2}, Unitless; A.U.")
+
 ################################################################################
 
 # POPULATE HISTOGRAMS
@@ -164,6 +165,22 @@ print("b_lep_phi_FWHM: {0}".format(b_lep_phi_FWHM))
 print("b_lep_rapidity_FWHM: {0}".format(b_lep_rapidity_FWHM))
 print("b_lep_pt_FWHM: {0}\n".format(b_lep_pt_FWHM))
 
+# find sigmas
+W_had_phi_sigma = sigma['W_had_phi']
+W_had_rapidity_sigma = sigma['W_had_y']
+W_had_pt_sigma = sigma['W_had_pt']
+
+W_lep_phi_sigma = sigma['W_lep_phi']
+W_lep_rapidity_sigma = sigma['W_lep_y']
+W_lep_pt_sigma = sigma['W_lep_pt']
+
+b_had_phi_sigma = sigma['b_had_phi']
+b_had_rapidity_sigma = sigma['b_had_y']
+b_had_pt_sigma = sigma['b_had_pt']
+
+b_lep_phi_sigma = sigma['b_lep_phi']
+b_lep_rapidity_sigma = sigma['b_lep_y']
+b_lep_pt_sigma = sigma['b_lep_pt']
 
 # Define sums of squares to be used for calculating sample chi-squared/NDF
 # One sum for each variable to be augmented in each event
@@ -245,21 +262,21 @@ for i in range(n_events):
     # chi squared for each event using all variables... 
     chi22 = 0.
 
-    chi22 += W_had_phi_diff / ( W_had_phi_FWHM**2 )
-    chi22 += W_had_rapidity_diff / ( W_had_rapidity_FWHM**2 )
-    chi22 += W_had_pt_diff / ( W_had_pt_FWHM**2 )
+    chi22 += W_had_phi_diff / ( W_had_phi_sigma**2 )
+    chi22 += W_had_rapidity_diff / ( W_had_rapidity_sigma**2 )
+    chi22 += W_had_pt_diff / ( W_had_pt_sigma**2 )
 
-    chi22 += W_lep_phi_diff / ( W_lep_phi_FWHM**2 )
-    chi22 += W_lep_rapidity_diff / ( W_lep_rapidity_FWHM**2 )
-    chi22 += W_lep_pt_diff / ( W_lep_pt_FWHM**2 )
+    chi22 += W_lep_phi_diff / ( W_lep_phi_sigma**2 )
+    chi22 += W_lep_rapidity_diff / ( W_lep_rapidity_sigma**2 )
+    chi22 += W_lep_pt_diff / ( W_lep_pt_sigma**2 )
 
-    chi22 += b_had_phi_diff / ( b_had_phi_FWHM**2 )
-    chi22 += b_had_rapidity_diff / ( b_had_rapidity_FWHM**2 )
-    chi22 += b_had_pt_diff / ( b_had_pt_FWHM**2 )
+    chi22 += b_had_phi_diff / ( b_had_phi_sigma**2 )
+    chi22 += b_had_rapidity_diff / ( b_had_rapidity_sigma**2 )
+    chi22 += b_had_pt_diff / ( b_had_pt_sigma**2 )
 
-    chi22 += b_lep_phi_diff / ( b_lep_phi_FWHM**2 )
-    chi22 += b_lep_rapidity_diff / ( b_lep_rapidity_FWHM**2 )
-    chi22 += b_lep_pt_diff / ( b_lep_pt_FWHM**2 )
+    chi22 += b_lep_phi_diff / ( b_lep_phi_sigma**2 )
+    chi22 += b_lep_rapidity_diff / ( b_lep_rapidity_sigma**2 )
+    chi22 += b_lep_pt_diff / ( b_lep_pt_sigma**2 )
 
     # Calculate chi-squared/NDF
     chi22NDF = chi22 / 12.0
@@ -274,35 +291,35 @@ for i in range(n_events):
     histograms['p-values'].Fill(p_value)
     histograms['p-values_log'].Fill(p_value)
 
-    histograms['chi_squared_had_W_phi'].Fill(W_had_phi_diff / ( W_had_phi_FWHM**2 ))
-    histograms['chi_squared_had_W_eta'].Fill(W_had_rapidity_diff / ( W_had_rapidity_FWHM**2 ))
-    histograms['chi_squared_had_W_pT'].Fill(W_had_pt_diff / ( W_had_pt_FWHM**2 ))
-    histograms['chi_squared_lep_W_phi'].Fill(W_lep_phi_diff / ( W_lep_phi_FWHM**2 ))
-    histograms['chi_squared_lep_W_eta'].Fill( W_lep_rapidity_diff / ( W_lep_rapidity_FWHM**2 ))
-    histograms['chi_squared_lep_W_pT'].Fill(W_lep_pt_diff / ( W_lep_pt_FWHM**2 )) 
-    histograms['chi_squared_had_b_phi'].Fill(b_had_phi_diff / ( b_had_phi_FWHM**2 )) 
-    histograms['chi_squared_had_b_eta'].Fill(b_had_rapidity_diff / ( b_had_rapidity_FWHM**2 )) 
-    histograms['chi_squared_had_b_pT'].Fill(b_had_pt_diff / ( b_had_pt_FWHM**2 )) 
-    histograms['chi_squared_lep_b_phi'].Fill(b_lep_phi_diff / ( b_lep_phi_FWHM**2 )) 
-    histograms['chi_squared_lep_b_eta'].Fill(b_lep_rapidity_diff / ( b_lep_rapidity_FWHM**2 ))
-    histograms['chi_squared_lep_b_pT'].Fill(b_lep_pt_diff / ( b_lep_pt_FWHM**2 ))
+    histograms['chi_squared_had_W_phi'].Fill(W_had_phi_diff / ( W_had_phi_sigma**2 ))
+    histograms['chi_squared_had_W_eta'].Fill(W_had_rapidity_diff / ( W_had_rapidity_sigma**2 ))
+    histograms['chi_squared_had_W_pT'].Fill(W_had_pt_diff / ( W_had_pt_sigma**2 ))
+    histograms['chi_squared_lep_W_phi'].Fill(W_lep_phi_diff / ( W_lep_phi_sigma**2 ))
+    histograms['chi_squared_lep_W_eta'].Fill( W_lep_rapidity_diff / ( W_lep_rapidity_sigma**2 ))
+    histograms['chi_squared_lep_W_pT'].Fill(W_lep_pt_diff / ( W_lep_pt_sigma**2 )) 
+    histograms['chi_squared_had_b_phi'].Fill(b_had_phi_diff / ( b_had_phi_sigma**2 )) 
+    histograms['chi_squared_had_b_eta'].Fill(b_had_rapidity_diff / ( b_had_rapidity_sigma**2 )) 
+    histograms['chi_squared_had_b_pT'].Fill(b_had_pt_diff / ( b_had_pt_sigma**2 )) 
+    histograms['chi_squared_lep_b_phi'].Fill(b_lep_phi_diff / ( b_lep_phi_sigma**2 )) 
+    histograms['chi_squared_lep_b_eta'].Fill(b_lep_rapidity_diff / ( b_lep_rapidity_sigma**2 ))
+    histograms['chi_squared_lep_b_pT'].Fill(b_lep_pt_diff / ( b_lep_pt_sigma**2 ))
 
 # Normalize sums of squares by standard deviations and number of events
-W_had_phi_chi2NDF = W_had_phi_sum / n_events / ( W_had_phi_FWHM**2 )
-W_had_rapidity_chi2NDF = W_had_rapidity_sum / n_events / ( W_had_rapidity_FWHM**2 )
-W_had_pt_chi2NDF = W_had_pt_sum / n_events / ( W_had_pt_FWHM**2 )
+W_had_phi_chi2NDF = W_had_phi_sum / n_events / ( W_had_phi_sigma**2 )
+W_had_rapidity_chi2NDF = W_had_rapidity_sum / n_events / ( W_had_rapidity_sigma**2 )
+W_had_pt_chi2NDF = W_had_pt_sum / n_events / ( W_had_pt_sigma**2 )
 
-W_lep_phi_chi2NDF = W_lep_phi_sum / n_events / ( W_lep_phi_FWHM**2 )
-W_lep_rapidity_chi2NDF = W_lep_rapidity_sum / n_events / ( W_lep_rapidity_FWHM**2 )
-W_lep_pt_chi2NDF = W_lep_pt_sum / n_events / ( W_lep_pt_FWHM**2 )
+W_lep_phi_chi2NDF = W_lep_phi_sum / n_events / ( W_lep_phi_sigma**2 )
+W_lep_rapidity_chi2NDF = W_lep_rapidity_sum / n_events / ( W_lep_rapidity_sigma**2 )
+W_lep_pt_chi2NDF = W_lep_pt_sum / n_events / ( W_lep_pt_sigma**2 )
 
-b_had_phi_chi2NDF = b_had_phi_sum / n_events / ( b_had_phi_FWHM**2 )
-b_had_rapidity_chi2NDF = b_had_rapidity_sum / n_events / ( b_had_rapidity_FWHM**2 )
-b_had_pt_chi2NDF = b_had_pt_sum / n_events / ( b_had_pt_FWHM**2 )
+b_had_phi_chi2NDF = b_had_phi_sum / n_events / ( b_had_phi_sigma**2 )
+b_had_rapidity_chi2NDF = b_had_rapidity_sum / n_events / ( b_had_rapidity_sigma**2 )
+b_had_pt_chi2NDF = b_had_pt_sum / n_events / ( b_had_pt_sigma**2 )
 
-b_lep_phi_chi2NDF = b_lep_phi_sum / n_events / ( b_lep_phi_FWHM**2 )
-b_lep_rapidity_chi2NDF = b_lep_rapidity_sum / n_events / ( b_lep_rapidity_FWHM**2 )
-b_lep_pt_chi2NDF = b_lep_pt_sum / n_events / ( b_lep_pt_FWHM**2 )
+b_lep_phi_chi2NDF = b_lep_phi_sum / n_events / ( b_lep_phi_sigma**2 )
+b_lep_rapidity_chi2NDF = b_lep_rapidity_sum / n_events / ( b_lep_rapidity_sigma**2 )
+b_lep_pt_chi2NDF = b_lep_pt_sum / n_events / ( b_lep_pt_sigma**2 )
 
 # Print Chi-Squareds/NDF.
 print("\nW_had_phi_chi2NDF: {0}".format(W_had_phi_chi2NDF))

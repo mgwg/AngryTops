@@ -61,7 +61,7 @@ def plot_hists(key, hist, outputdir):
         binWidth = hist.GetBinWidth(0)
         legend.DrawLatex( 0.65, 0.70, "Bin Width: %.2f" % binWidth )
     if 'chi' in key:
-        fwhm = getFwhm(hist)
+        fwhm, sigma = getFwhm(hist)
         legend.DrawLatex( 0.65, 0.65, "FWHM: %.2f" % fwhm )
 
     
@@ -91,5 +91,6 @@ def getFwhm(hist):
         if (i > nMax and y <= halfMax) and (i < bin2):
             bin2 = hist.GetBinCenter(i)
     fwhm = bin2 - bin1
+    sigma = fwhm/2.3548
 
-    return fwhm
+    return fwhm, sigma
