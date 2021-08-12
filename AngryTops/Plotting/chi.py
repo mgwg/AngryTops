@@ -289,14 +289,9 @@ for i in range(n_events):
     # Calculate a p-value assuming the distribution of sample chi-squared statistics follows
     #  a chi-squared distribution with number_of_variables degrees of freedom.
     #  Use the survival function defined as 1-CDF.
-    p_value = chi2.sf(chi22, number_of_variables - 1)
+    p_value = chi2.sf(chi22, number_of_variables)
 
     # Populate the histograms:
-    histograms['chi_squared_all'].Fill(chi22)
-    histograms['chi_squared_all_NDF'].Fill(chi22NDF)
-    histograms['p-values'].Fill(p_value)
-    histograms['p-values_log'].Fill(p_value)
-
     histograms['chi_squared_had_W_phi'].Fill(W_had_phi_diff / ( W_had_phi_sigma**2 ))
     histograms['chi_squared_had_W_eta'].Fill(W_had_rapidity_diff / ( W_had_rapidity_sigma**2 ))
     histograms['chi_squared_had_W_pT'].Fill(W_had_pt_diff / ( W_had_pt_sigma**2 ))
