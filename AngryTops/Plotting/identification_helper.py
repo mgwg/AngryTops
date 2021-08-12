@@ -48,8 +48,13 @@ def plot_hists(key, hist, outputdir):
     c1 = TCanvas()
     hist.Draw()
 
+    # Make semi-log plots:
+    if "semilog" in key:
+        c1.SetLogy()
+
     # Make log-log plots:
-    if "log" in key:
+    if "loglog" in key:
+        c1.SetLogx()
         c1.SetLogy()
 
     legend = TLatex()
