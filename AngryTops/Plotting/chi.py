@@ -12,6 +12,7 @@ import cPickle as pickle
 import numpy as np
 from AngryTops.Plotting.identification_helper import * 
 from scipy.stats import chi2
+from AngryTops.Plotting.PlottingHelper import Normalize
 
 ################################################################################
 # CONSTANTS
@@ -78,35 +79,6 @@ for obs in attributes:
 ################################################################################
 histograms = {}
 
-# Distribution of chi-squareds for individual variables
-histograms['chi_squared_had_W_phi'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
-histograms['chi_squared_had_W_phi'].SetTitle("#chi^{2} of had W #phi; #chi^{2}, Unitless; A.U.")
-histograms['chi_squared_had_W_eta'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
-histograms['chi_squared_had_W_eta'].SetTitle("#chi^{2} of had W #eta; #chi^{2}, Unitless; A.U.")
-histograms['chi_squared_had_W_pT'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
-histograms['chi_squared_had_W_pT'].SetTitle("#chi^{2} of had W p_{T}; #chi^{2}, Unitless; A.U.")
-
-histograms['chi_squared_lep_W_phi'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
-histograms['chi_squared_lep_W_phi'].SetTitle("#chi^{2} of lep W #phi; #chi^{2}, Unitless; A.U.")
-histograms['chi_squared_lep_W_eta'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
-histograms['chi_squared_lep_W_eta'].SetTitle("#chi^{2} of lep W #eta; #chi^{2}, Unitless; A.U.")
-histograms['chi_squared_lep_W_pT'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
-histograms['chi_squared_lep_W_pT'].SetTitle("#chi^{2} of lep W p_{T}; #chi^{2}, Unitless; A.U.")
-
-histograms['chi_squared_had_b_phi'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
-histograms['chi_squared_had_b_phi'].SetTitle("#chi^{2} of had b #phi; #chi^{2}, Unitless; A.U.")
-histograms['chi_squared_had_b_eta'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
-histograms['chi_squared_had_b_eta'].SetTitle("#chi^{2} of had b #eta; #chi^{2}, Unitless; A.U.")
-histograms['chi_squared_had_b_pT'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
-histograms['chi_squared_had_b_pT'].SetTitle("#chi^{2} of had b p_{T}; #chi^{2}, Unitless; A.U.")
-
-histograms['chi_squared_lep_b_phi'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
-histograms['chi_squared_lep_b_phi'].SetTitle("#chi^{2} of of lep b #phi; #chi^{2}, Unitless; A.U.")
-histograms['chi_squared_lep_b_eta'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
-histograms['chi_squared_lep_b_eta'].SetTitle("#chi^{2} of lep b #eta; #chi^{2}, Unitless; A.U.")
-histograms['chi_squared_lep_b_pT'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 20.)
-histograms['chi_squared_lep_b_pT'].SetTitle("#chi^{2} of lep b p_{T}; #chi^{2}, Unitless; A.U.")
-
 # Distribution of chi-squareds summing number_of_variables variables
 histograms['chi_squared_all'] = TH1F("#chi^{2}",  ";Unitless", 100, 0., 50.)
 histograms['chi_squared_all'].SetTitle("#chi^{2} of all events; #chi^{2}, Unitless; A.U.")
@@ -114,7 +86,7 @@ histograms['chi_squared_all_NDF'] = TH1F("#chi^{2}/NDF",  ";Unitless", 100, 0., 
 histograms['chi_squared_all_NDF'].SetTitle("#chi^{2}/NDF of all events; #chi^{2}, Unitless; A.U.")
 
 # Distribution of p-values
-histograms['p-values'] = TH1F("p-values",  ";Unitless", 100, 0., 1.)
+histograms['p-values'] = TH1F("p-values",  ";Unitless", 100, 0., 0.01)
 histograms['p-values'].SetTitle("p-value distribution of #chi^{2} statistics; p-values, Unitless; A.U.")
 histograms['p-values_semilog'] = TH1F("p-values",  ";Unitless", 100, 0., 1.)
 histograms['p-values_semilog'].SetTitle("p-value distribution of #chi^{2} statistics; p-values, Unitless; A.U.")
@@ -216,7 +188,6 @@ b_lep_phi_sum = 0.
 b_lep_rapidity_sum = 0.
 b_lep_pt_sum = 0.
 
-
 # Iterate through all events
 for i in range(n_events):
     if ( n_events < 10 ) or ( (i+1) % int(float(n_events)/10.)  == 0 ):
@@ -303,19 +274,6 @@ for i in range(n_events):
     p_value = chi2.sf(chi22, number_of_variables)
 
     # Populate the histograms:
-    histograms['chi_squared_had_W_phi'].Fill(W_had_phi_diff / ( W_had_phi_sigma**2 ))
-    histograms['chi_squared_had_W_eta'].Fill(W_had_rapidity_diff / ( W_had_rapidity_sigma**2 ))
-    histograms['chi_squared_had_W_pT'].Fill(W_had_pt_diff / ( W_had_pt_sigma**2 ))
-    histograms['chi_squared_lep_W_phi'].Fill(W_lep_phi_diff / ( W_lep_phi_sigma**2 ))
-    histograms['chi_squared_lep_W_eta'].Fill( W_lep_rapidity_diff / ( W_lep_rapidity_sigma**2 ))
-    histograms['chi_squared_lep_W_pT'].Fill(W_lep_pt_diff / ( W_lep_pt_sigma**2 )) 
-    histograms['chi_squared_had_b_phi'].Fill(b_had_phi_diff / ( b_had_phi_sigma**2 )) 
-    histograms['chi_squared_had_b_eta'].Fill(b_had_rapidity_diff / ( b_had_rapidity_sigma**2 )) 
-    histograms['chi_squared_had_b_pT'].Fill(b_had_pt_diff / ( b_had_pt_sigma**2 )) 
-    histograms['chi_squared_lep_b_phi'].Fill(b_lep_phi_diff / ( b_lep_phi_sigma**2 )) 
-    histograms['chi_squared_lep_b_eta'].Fill(b_lep_rapidity_diff / ( b_lep_rapidity_sigma**2 ))
-    histograms['chi_squared_lep_b_pT'].Fill(b_lep_pt_diff / ( b_lep_pt_sigma**2 ))
-
     histograms['chi_squared_all'].Fill(chi22)
     histograms['chi_squared_all_NDF'].Fill(chi22NDF)
     histograms['p-values'].Fill(p_value)
@@ -363,4 +321,5 @@ except Exception as e:
 
 # Plot histograms inside outputdir, a subdir of training_dir
 for key in histograms:
+    Normalize(histograms[key])
     plot_hists(key, histograms[key], training_dir+outputdir)
