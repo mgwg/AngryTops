@@ -12,7 +12,6 @@ import cPickle as pickle
 import numpy as np
 from AngryTops.Plotting.identification_helper import * 
 from scipy.stats import chi2
-from AngryTops.Plotting.PlottingHelper import Normalize
 
 ################################################################################
 # CONSTANTS
@@ -86,7 +85,7 @@ histograms['chi_squared_all_NDF'] = TH1F("#chi^{2}/NDF",  ";Unitless", 100, 0., 
 histograms['chi_squared_all_NDF'].SetTitle("#chi^{2}/NDF of all events; #chi^{2}, Unitless; A.U.")
 
 # Distribution of p-values
-histograms['p-values'] = TH1F("p-values",  ";Unitless", 100, 0., 0.01)
+histograms['p-values'] = TH1F("p-values",  ";Unitless", 100, 0., 1.)
 histograms['p-values'].SetTitle("p-value distribution of #chi^{2} statistics; p-values, Unitless; A.U.")
 histograms['p-values_semilog'] = TH1F("p-values",  ";Unitless", 100, 0., 1.)
 histograms['p-values_semilog'].SetTitle("p-value distribution of #chi^{2} statistics; p-values, Unitless; A.U.")
