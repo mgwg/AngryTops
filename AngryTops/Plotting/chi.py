@@ -188,6 +188,8 @@ b_lep_phi_sum = 0.
 b_lep_rapidity_sum = 0.
 b_lep_pt_sum = 0.
 
+count = 0.
+
 # Iterate through all events
 for i in range(n_events):
     if ( n_events < 10 ) or ( (i+1) % int(float(n_events)/10.)  == 0 ):
@@ -280,6 +282,9 @@ for i in range(n_events):
     histograms['p-values_semilog'].Fill(p_value)
     histograms['p-values_loglog'].Fill(p_value)
 
+    if p_value == 0.00:
+        count += 1.
+
 # Normalize sums of squares by standard deviations and number of events
 W_had_phi_chi2NDF = W_had_phi_sum / n_events / ( W_had_phi_sigma**2 )
 W_had_rapidity_chi2NDF = W_had_rapidity_sum / n_events / ( W_had_rapidity_sigma**2 )
@@ -323,3 +328,5 @@ except Exception as e:
 for key in histograms:
     Normalize(histograms[key])
     plot_hists(key, histograms[key], training_dir+outputdir)
+
+print(count/n_events)
