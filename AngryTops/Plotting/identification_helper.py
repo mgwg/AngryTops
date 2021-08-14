@@ -99,3 +99,12 @@ def getFwhm(hist):
     sigma = fwhm/2.3548
 
     return fwhm, sigma
+
+# Normalize a histogram
+def Normalize( h, sf=1.0 ):
+    if h == None: return
+    # Calculate area of histogram
+    Area = h.Integral()
+    if Area == 0.: return
+    # Multiply all bars of histogram by sf/Area, usually < 1.
+    h.Scale( sf / Area, "nosw2") # Need "nosw2" option to retain correct histogram style.
