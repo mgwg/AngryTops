@@ -26,8 +26,9 @@ if len(sys.argv) > 3:
         plot_cuts = True
         
 input_csv = 'Feb9.csv'
-output_csv = '{}.csv'.format(date)
-subdir = "../../csv/training_closejets_cuts_{}/".format(date)
+good_output_csv = 'Jul26_good.csv'
+bad_output_csv = 'Jul26_bad.csv'
+subdir = "/../../csv/training_closejets_cuts{}/".format(date)
 m_t = 172.5
 m_W = 80.4
 m_b = 4.95
@@ -221,8 +222,9 @@ def make_histograms():
 
     good_event = 0.
     
-    # List of indices corresponding to bad events to remove from the original csv.
-    indices_to_cut = []
+    # Lists of indices corresponding to good and bad events to remove from the original csv.
+    good_indices = []
+    bad_indices = []
 
     for i in event_index: # loop through every event
         if ( n_events < 10 ) or ( (i+1) % int(float(n_events)/10.)  == 0 ):
@@ -381,13 +383,16 @@ def make_histograms():
         # Good events must pass cuts on all partons.
         good_event += (good_b_had and good_b_lep and good_W_had and good_W_lep)
 
-        if not (good_W_had and good_W_lep and good_b_had and good_b_lep):
-            indices_to_cut.append(i)
+        # Append indices to appropriate list.
+        if good_W_had and good_W_lep and good_b_had and good_b_lep:
+            good_indices.append(i)
+        else:
+            bad_indices.append(i)
 
         ################################################# populate histograms #################################################
 
         # Populate histograms if all events are to be plotted or we are only dealing with a good event 
-        if (not plot_cuts) or (plot_cuts and (good_b_had and good_b_lep and good_W_had and good_W_lep)):
+        if (not plot_cuts) or (plot_cuts and (good_W_had and good_W_lep and good_b_had and good_b_lep)):
 
             # Leptonic b
             hists['lep_b_dist_true_v_obs'].Fill(np.float(b_lep_dist))
@@ -525,7 +530,7 @@ def make_histograms():
     print("Events satisfying cut all cut criteria for all partons")
     print('{}%, {} events'.format(100.*good_event/n_events, int(good_event)))
 
-    return indices_to_cut
+    return (good_indices, bad_indices)
 
 
 # Helper function to output and save the correlation plots
@@ -581,7 +586,7 @@ if __name__ == "__main__":
     except Exception as e:
         print("Overwriting existing files")
         
-    indices_to_cut = make_histograms()
+    good_indices, bad_indices = make_histograms()
 
     # plot histograms and correlation plots
     hists_key = []
@@ -606,13 +611,23 @@ if __name__ == "__main__":
         plot_corr(key, hists[key], outputdir+subdir)
 
 
-    # Read in again and slice original pandas dataframe to remove the bad event indices.
+    # Read in again and slice original pandas dataframe to remove the event indices 
+    #  not corresponding to the appropriate filter.
     
     # Load jets, leptons and output columns of the correct representation
     input_csv = "../csv/{}".format(input_csv)
     df = pd.read_csv(input_csv, names=column_names)
-    df = df.drop(labels = indices_to_cut, axis =0)
-    print(df.shape)
-    print(indices_to_cut[0:100])
-    print(df.index.tolist()[0:100])
-    df.to_csv("../csv/{}".format(output_csv), header = False, index = False)
+
+    # Create csv of reconstructable events
+    good_df = df.drop(labels = bad_indices, axis =0)
+    print(good_df.shape)
+    print(bad_indices[0:100])
+    print(good_df.index.tolist()[0:100])
+    good_df.to_csv("../csv/{}".format(good_output_csv), header = False, index = False)
+
+    # Create csv of unreconstructable events
+    bad_df = df.drop(labels = good_indices, axis =0)
+    print(bad_df.shape)
+    print(good_indices[0:100])
+    print(bad_df.index.tolist()[0:100])
+    bad_df.to_csv("../csv/{}".format(bad_output_csv), header = False, index = False)
