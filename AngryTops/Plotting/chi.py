@@ -40,13 +40,16 @@ infilename_good = root_dir + good_dir + "/fitted.root"
 print("Training directory filename: {0}".format(infilename_good))
 
 # data of bad events from unfiltered sample
-if len(sys.argv) > 3:
-    bad_dir = sys.argv[3]
-    infilename_bad = root_dir + bad_dir + "/fitted_bad.root"
-    print("Bad events training directory filename: {0}".format(infilename_bad))
+bad_dir = sys.argv[3]
+infilename_bad = root_dir + bad_dir + "/fitted.root"
+print("Bad events training directory filename: {0}".format(infilename_bad))
+
+# specifies the events in the second hist as 'all events' or 'unreconstructable'
+legend = sys.argv[4]
+print("type of events: {}".format(legend))
 
 # output directory
-outputdir = root_dir + sigma_dir + "/img_chi_test/"
+outputdir = root_dir + sigma_dir + "/img_chi_pval/"
 infiles = {good_dir: infilename_good, bad_dir: infilename_bad}
 
 ################################################################################
@@ -107,30 +110,30 @@ print("b_lep_pt_sigma: {0}\n".format(b_lep_pt_sigma))
 
 histograms = {}
 # good events
-histograms['chi_squared_all' + good_dir] = TH1F("#chi^{2} reconstructable",  ";Unitless", 100, 0., 50.)
-histograms['chi_squared_all' + good_dir].SetTitle("#chi^{2} of all reconstructable events; #chi^{2}, Unitless; A.U.")
-histograms['chi_squared_all_NDF' + good_dir] = TH1F("#chi^{2}/NDF reconstructable",  ";Unitless", 100, 0., 20.)
-histograms['chi_squared_all_NDF' + good_dir].SetTitle("#chi^{2}/NDF of all reconstructable events; #chi^{2}, Unitless; A.U.")
+histograms['chi_squared_all_' + good_dir] = TH1F("#chi^{2} reconstructable",  ";Unitless", 100, 0., 50.)
+histograms['chi_squared_all_' + good_dir].SetTitle("#chi^{2} of all reconstructable events; #chi^{2}, Unitless; A.U.")
+histograms['chi_squared_all_NDF_' + good_dir] = TH1F("#chi^{2}/NDF reconstructable",  ";Unitless", 100, 0., 20.)
+histograms['chi_squared_all_NDF_' + good_dir].SetTitle("#chi^{2}/NDF of all reconstructable events; #chi^{2}, Unitless; A.U.")
 
-histograms['p-values' + good_dir] = TH1F("p-values reconstructable",  ";Unitless", 100, 0., 1.)
-histograms['p-values' + good_dir].SetTitle("p-value distribution of #chi^{2} statistics for reconstructable events; p-values, Unitless; A.U.")
-histograms['p-values_semilog' + good_dir] = TH1F("p-values reconstructable",  ";Unitless", 100, 0., 1.)
-histograms['p-values_semilog' + good_dir].SetTitle("p-value distribution of #chi^{2} statistics for reconstructable events; p-values, Unitless; A.U.")
-histograms['p-values_loglog' + good_dir] = TH1F("p-values reconstructable",  ";Unitless", 100, 0., 1.)
-histograms['p-values_loglog' + good_dir].SetTitle("p-value distribution of #chi^{2} statistics for reconstructable events; p-values, Unitless; A.U.")
+histograms['p-values_' + good_dir] = TH1F("p-values reconstructable",  ";Unitless", 100, 0., 1.)
+histograms['p-values_' + good_dir].SetTitle("p-value distribution of #chi^{2} statistics for reconstructable events; p-values, Unitless; A.U.")
+histograms['p-values_semilog_' + good_dir] = TH1F("p-values reconstructable",  ";Unitless", 100, 0., 1.)
+histograms['p-values_semilog_' + good_dir].SetTitle("p-value distribution of #chi^{2} statistics for reconstructable events; p-values, Unitless; A.U.")
+histograms['p-values_loglog_' + good_dir] = TH1F("p-values reconstructable",  ";Unitless", 100, 0., 1.)
+histograms['p-values_loglog_' + good_dir].SetTitle("p-value distribution of #chi^{2} statistics for reconstructable events; p-values, Unitless; A.U.")
 
 # bad events
-histograms['chi_squared_all' + bad_dir] = TH1F("#chi^{2} un-reconstructable",  ";Unitless", 100, 0., 50.)
-histograms['chi_squared_all' + bad_dir].SetTitle("#chi^{2} of all un-reconstructable events; #chi^{2}, Unitless; A.U.")
-histograms['chi_squared_all_NDF' + bad_dir] = TH1F("#chi^{2}/NDF un-reconstructable",  ";Unitless", 100, 0., 20.)
-histograms['chi_squared_all_NDF' + bad_dir].SetTitle("#chi^{2}/NDF of all un-reconstructable events; #chi^{2}, Unitless; A.U.")
+histograms['chi_squared_all_' + bad_dir] = TH1F("#chi^{2} un-reconstructable",  ";Unitless", 100, 0., 50.)
+histograms['chi_squared_all_' + bad_dir].SetTitle("#chi^{2} of all un-reconstructable events; #chi^{2}, Unitless; A.U.")
+histograms['chi_squared_all_NDF_' + bad_dir] = TH1F("#chi^{2}/NDF un-reconstructable",  ";Unitless", 100, 0., 20.)
+histograms['chi_squared_all_NDF_' + bad_dir].SetTitle("#chi^{2}/NDF of all un-reconstructable events; #chi^{2}, Unitless; A.U.")
 
-histograms['p-values' + bad_dir] = TH1F("p-values un-reconstructable",  ";Unitless", 100, 0., 1.)
-histograms['p-values' + bad_dir].SetTitle("p-value distribution of #chi^{2} statistics for un-reconstructable events; p-values, Unitless; A.U.")
-histograms['p-values_semilog' + bad_dir] = TH1F("p-values un-reconstructable",  ";Unitless", 100, 0., 1.)
-histograms['p-values_semilog' + bad_dir].SetTitle("p-value distribution of #chi^{2} statistics for un-reconstructable events; p-values, Unitless; A.U.")
-histograms['p-values_loglog' + bad_dir] = TH1F("p-values un-reconstructable",  ";Unitless", 100, 0., 1.)
-histograms['p-values_loglog' + bad_dir].SetTitle("p-value distribution of #chi^{2} statistics for un-reconstructable events; p-values, Unitless; A.U.")
+histograms['p-values_' + bad_dir] = TH1F("p-values un-reconstructable",  ";Unitless", 100, 0., 1.)
+histograms['p-values_' + bad_dir].SetTitle("p-value distribution of #chi^{2} statistics for un-reconstructable events; p-values, Unitless; A.U.")
+histograms['p-values_semilog_' + bad_dir] = TH1F("p-values un-reconstructable",  ";Unitless", 100, 0., 1.)
+histograms['p-values_semilog_' + bad_dir].SetTitle("p-value distribution of #chi^{2} statistics for un-reconstructable events; p-values, Unitless; A.U.")
+histograms['p-values_loglog_' + bad_dir] = TH1F("p-values un-reconstructable",  ";Unitless", 100, 0., 1.)
+histograms['p-values_loglog_' + bad_dir].SetTitle("p-value distribution of #chi^{2} statistics for un-reconstructable events; p-values, Unitless; A.U.")
 
 ################################################################################
 for subdir in infiles:
@@ -242,11 +245,11 @@ for subdir in infiles:
         p_value = chi2.sf(chi22, ndf)
 
         # Populate the histograms:
-        histograms['chi_squared_all' + subdir].Fill(chi22)
-        histograms['chi_squared_all_NDF' + subdir].Fill(chi22NDF)
-        histograms['p-values' + subdir].Fill(p_value)
-        histograms['p-values_semilog' + subdir].Fill(p_value)
-        histograms['p-values_loglog' + subdir].Fill(p_value)
+        histograms['chi_squared_all_' + subdir].Fill(chi22)
+        histograms['chi_squared_all_NDF_' + subdir].Fill(chi22NDF)
+        histograms['p-values_' + subdir].Fill(p_value)
+        histograms['p-values_semilog_' + subdir].Fill(p_value)
+        histograms['p-values_loglog_' + subdir].Fill(p_value)
 
         if p_value <= pval_cut:
             count += 1.
@@ -376,7 +379,7 @@ def plot_observables(h_good, h_bad, caption):
     leg.SetTextFont(42)
     leg.SetTextSize(0.04)
     leg.AddEntry( h_good, "reconstructable", "f" )
-    leg.AddEntry( h_bad, "un-reconstructable", "f" )
+    leg.AddEntry( h_bad, legend, "f" )
     leg.SetY1( leg.GetY1() - 0.05 * leg.GetNRows() )
     leg.Draw()
 
@@ -410,5 +413,5 @@ def plot_observables(h_good, h_bad, caption):
     c.Close()
 
 
-plot_observables(histograms['chi_squared_all_NDF' + good_dir], histograms['chi_squared_all_NDF' + bad_dir], 'chi-squared')
-plot_observables(histograms['p-values_semilog' + good_dir], histograms['p-values_semilog' + bad_dir], 'pvalues_semilog')
+plot_observables(histograms['chi_squared_all_NDF_' + good_dir], histograms['chi_squared_all_NDF_' + bad_dir], 'chi-squared')
+plot_observables(histograms['p-values_semilog_' + good_dir], histograms['p-values_semilog_' + bad_dir], 'pvalues_semilog')
