@@ -26,8 +26,8 @@ if len(sys.argv) > 3:
         plot_cuts = True
         
 input_csv = 'Feb9.csv'
-output_csv = 'Jul26.csv'
-subdir = "../../csv/training_closejets_cuts{}/".format(date)
+output_csv = '{}.csv'.format(date)
+subdir = "../../csv/training_closejets_cuts_{}/".format(date)
 m_t = 172.5
 m_W = 80.4
 m_b = 4.95

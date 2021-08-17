@@ -281,7 +281,7 @@ for i in range(n_events):
     histograms['p-values_semilog'].Fill(p_value)
     histograms['p-values_loglog'].Fill(p_value)
 
-    if p_value == 0.00:
+    if p_value == 0:
         count += 1.
 
 # Normalize sums of squares by standard deviations and number of events
@@ -328,4 +328,4 @@ for key in histograms:
     Normalize(histograms[key])
     plot_hists(key, histograms[key], training_dir+outputdir)
 
-print(count/n_events)
+print("number of events with p-value 0: {}".format(count/n_events))

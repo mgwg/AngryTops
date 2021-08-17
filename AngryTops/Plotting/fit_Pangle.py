@@ -31,6 +31,7 @@ ofilename = "{}/histograms_P_angle".format(training_dir)
 print(infilename)
 
 if caption == "None": caption = None
+if logyaxis == "False": logyaxis = False
 
 np.set_printoptions(precision=3, suppress=True, linewidth=250)
 model_filename  = "{}/simple_model.h5".format(training_dir)
