@@ -26,8 +26,8 @@ if len(sys.argv) > 3:
         plot_cuts = True
         
 input_csv = 'Feb9.csv'
-good_output_csv = 'Jul26_good.csv'
-bad_output_csv = 'Jul26_bad.csv'
+good_output_csv = '{}_good.csv'.format(date)
+bad_output_csv = '{}_bad.csv'.format(date)
 subdir = "/../../csv/training_closejets_cuts{}/".format(date)
 m_t = 172.5
 m_W = 80.4

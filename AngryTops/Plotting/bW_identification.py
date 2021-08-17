@@ -776,23 +776,23 @@ if __name__ == "__main__":
         print("Overwriting existing files")
     make_histograms()
 
-    # hists_key = []
-    # corr_key = []
-    # for key in hists:
-    #     if 'corr' not in key:
-    #         hists_key.append(key)
-    #     else:
-    #         corr_key.append(key)
+    hists_key = []
+    corr_key = []
+    for key in hists:
+        if 'corr' not in key:
+            hists_key.append(key)
+        else:
+            corr_key.append(key)
 
-    # for key in hists_key:
-    #     plot_hists(key, hists[key], outputdir+subdir)
+    for key in hists_key:
+        plot_hists(key, hists[key], outputdir+subdir)
 
-    # # The following few lines must be run only once for all correlation plots, 
-    # #  so the correlation plots must be separated out from the other histograms.   
-    # from AngryTops.features import *
-    # from AngryTops.Plotting.PlottingHelper import *
-    # gStyle.SetPalette(kGreyScale)
-    # gROOT.GetColor(52).InvertPalette()
+    # The following few lines must be run only once for all correlation plots, 
+    #  so the correlation plots must be separated out from the other histograms.   
+    from AngryTops.features import *
+    from AngryTops.Plotting.PlottingHelper import *
+    gStyle.SetPalette(kGreyScale)
+    gROOT.GetColor(52).InvertPalette()
 
-    # for key in corr_key:
-    #     plot_corr(key, hists[key], outputdir+subdir)
+    for key in corr_key:
+        plot_corr(key, hists[key], outputdir+subdir)
