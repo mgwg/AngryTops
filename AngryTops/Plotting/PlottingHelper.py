@@ -76,6 +76,7 @@ def MakeCanvas(npads = 1, side = 800, split = 0.25, padding = 0.00):
     pad0.cd()
     return c, pad0, pad1
 
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def MakeUncertaintyBand( prediction ):
@@ -215,6 +216,25 @@ def MakeCanvas2( npads = 1, side = 800, padding = 0.00 ):
 
     pad0.cd()
     return c, pad0
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+def MakeCanvas3(npads = 1, side = 1000):
+    # assume that if pads=1 => square plot
+    # padding used to be 0.05
+
+    c = TCanvas( "PredictionData", "PREDICT/MC", side, side )
+    c.SetFrameFillStyle(4000)
+    c.SetFillColor(0)
+
+    pad0 = TPad( "pad0","pad0",0, 1,1,0,0,0,0 )
+    pad0.SetFillColor(0)
+    pad0.SetFillStyle(4000)
+    pad0.Draw()
+
+    return c, pad0
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def ChiSquared(h_mc, h_pred):
     """

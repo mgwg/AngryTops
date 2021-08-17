@@ -19,6 +19,7 @@ m_t = 172.5
 m_W = 80.4
 m_b = 4.95
 
+pval_cut = 0.01
 # Number of variables to add to chi-squared that is calculated for each event:
 ndf = 12
 root_dir = '../CheckPoints/'
@@ -247,7 +248,7 @@ for subdir in infiles:
         histograms['p-values_semilog' + subdir].Fill(p_value)
         histograms['p-values_loglog' + subdir].Fill(p_value)
 
-        if p_value <= 0.01:
+        if p_value <= pval_cut:
             count += 1.
 
     # Normalize sums of squares by standard deviations and number of events
@@ -284,10 +285,49 @@ for subdir in infiles:
     print("b_lep_rapidity_chi2NDF: {0}".format(b_lep_rapidity_chi2NDF))
     print("b_lep_pt_chi2NDF: {0}\n".format(b_lep_pt_chi2NDF))
 
+    print("events with p-value less than {}: {}".format(pval_cut, count))
+
 try:
     os.mkdir(outputdir)
 except Exception as e:
     print("Overwriting existing files")
+
+
+# THIS CODE USED TO SAVE HISTOGRAMS TO FILE FOR EASIER PLOTTING
+# # Open output file
+# ofilename = "../CheckPoints/{}/chi.root".format(sigma_dir)
+# ofile = TFile.Open( ofilename, "recreate" )
+# ofile.cd()
+
+# for histname in histograms:
+#     histograms[histname].Write(histname)
+
+# ofile.Write()
+# ofile.Close()
+
+# root_dir = '../CheckPoints/'
+
+# # first directory is the directory containing the difference plots whose sigma 
+# # will be used to calculate the Chi-Squareds. Plots are also outputted to this directory.
+# sigma_dir = sys.argv[1]
+# good_dir = sys.argv[2]
+# bad_dir = sys.argv[3]
+
+# # output directory
+# outputdir = root_dir + sigma_dir + "/img_chi_test/"
+
+# infilename = "../CheckPoints/{}/chi.root".format(sigma_dir)
+# infile = TFile.Open(infilename)
+
+# hists = ['chi_squared_all' + good_dir, 'chi_squared_all_NDF' + good_dir, 'p-values' + good_dir, 'p-values_semilog' + good_dir, \
+#         'p-values_loglog' + good_dir, 'chi_squared_all' + bad_dir, 'chi_squared_all_NDF' + bad_dir, 'p-values' + bad_dir, \
+#         'p-values_semilog' + bad_dir, 'p-values_loglog' + bad_dir]
+
+# histograms = {}
+
+# print(infilename)
+# for histname in hists:
+#     histograms[histname] = infile.Get(histname)
 
 # Plot each histogram in histograms
 for key in histograms:
@@ -311,7 +351,7 @@ def plot_observables(h_good, h_bad, caption):
     SetTH1FStyle( h_good,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
     SetTH1FStyle( h_bad, color=kBlack, markersize=0, markerstyle=20, linewidth=3 )
 
-    c, pad0, pad1 = MakeCanvas()
+    c, pad0 = MakeCanvas3()
     pad0.cd()
     gStyle.SetOptTitle(0)
 
@@ -323,20 +363,18 @@ def plot_observables(h_good, h_bad, caption):
 
     if "semilog" in caption:
         pad0.SetLogy()
-        pad1.SetLogy()
 
     if "loglog" in caption:
         pad0.SetLogx()
         pad0.SetLogy()
-        pad1.SetLogx()
-        pad1.SetLogy()
 
-    leg = TLegend( 0.20, 0.80, 0.50, 0.90 )
+    leg = TLegend( 0.15, 0.85, 0.40, 0.90 )
+    # leg = TLegend( 0.55, 0.85, 0.80, 0.90 ) # legend on left
     leg.SetFillColor(0)
     leg.SetFillStyle(0)
     leg.SetBorderSize(0)
     leg.SetTextFont(42)
-    leg.SetTextSize(0.05)
+    leg.SetTextSize(0.04)
     leg.AddEntry( h_good, "reconstructable", "f" )
     leg.AddEntry( h_bad, "un-reconstructable", "f" )
     leg.SetY1( leg.GetY1() - 0.05 * leg.GetNRows() )
@@ -347,7 +385,9 @@ def plot_observables(h_good, h_bad, caption):
     l.SetNDC()
     l.SetTextFont(42)
     l.SetTextColor(kBlack)
-    l.DrawLatex( 0.65, 0.80, "Bin Width: %.2f GeV" % binWidth )
+    l.SetTextSize(0.04)
+    l.DrawLatex( 0.65, 0.80, "Bin Width: %.2f" % binWidth )
+    # l.DrawLatex( 0.56, 0.70, "Bin Width: %.2f" % binWidth ) # legend on left
 
     gPad.RedrawAxis()
     if caption is not None:
@@ -356,7 +396,7 @@ def plot_observables(h_good, h_bad, caption):
         newpad.Draw()
         newpad.cd()
         if 'chi' in caption:
-            title = TPaveLabel(0.1,0.94,0.9,0.99, "#chi^2/NDF")
+            title = TPaveLabel(0.1,0.94,0.9,0.99, "#chi^{2}/NDF")
         else:
             title = TPaveLabel(0.1,0.94,0.9,0.99, "p-values")
         title.SetFillColor(16)
@@ -365,18 +405,8 @@ def plot_observables(h_good, h_bad, caption):
 
         gPad.RedrawAxis()
 
-    pad1.cd()
-
-    yrange = [0.4, 1.6]
-    frame, tot_unc, ratio = DrawRatio(h_good, h_bad, xtitle, yrange)
-
-    gPad.RedrawAxis()
-
-    c.cd()
-
     c.SaveAs("{0}/{1}.png".format(outputdir, caption))
     pad0.Close()
-    pad1.Close()
     c.Close()
 
 
