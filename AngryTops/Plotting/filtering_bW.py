@@ -288,10 +288,11 @@ def make_histograms():
         b_lep_dist_cut = (b_lep_dist_true <= b_lep_dist_cutoff[1]) 
         good_b_lep = (b_lep_pT_cut and b_lep_dist_cut)
 
-        if not (good_b_had and good_b_lep and good_W_had and good_W_lep):
-            # Good events must pass cuts on all partons.
-            bad_event += 1.0
+        if (good_b_had and good_b_lep and good_W_had and good_W_lep):
+            # drop all good events
             drop.append(i)
+        else:
+            bad_event += 1.0
 
     # Print data regarding percentage of each class of event
     print('Total number of events: {} \n'.format(n_events))
