@@ -127,6 +127,7 @@ def make_histograms():
 
     # store number of events as a separate variable for clarity
     n_events = true.shape[0]
+    event_index = range(n_events)
 
     bad_event = 0.
     drop = []
@@ -314,7 +315,7 @@ def make_histograms():
 
 # Run the two helper functions above   
 if __name__ == "__main__":
-    # make_histograms()
+    make_histograms()
     ################################################################################
     np.set_printoptions(precision=3, suppress=True, linewidth=250)
     model_filename  = "{}/simple_model.h5".format(outputdir)
