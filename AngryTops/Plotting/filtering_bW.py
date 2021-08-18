@@ -1,3 +1,7 @@
+# For accessing predicted data of unreconstructable events. 
+#  Filters post-training dataset for only unreconstructable events and then saves them in the same format as
+#  the output files read by the plotting scripts.
+
 import os, sys, time
 import argparse
 import numpy as np
