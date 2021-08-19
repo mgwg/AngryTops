@@ -19,6 +19,7 @@ m_t = 172.5
 m_W = 80.4
 m_b = 4.95
 
+# Cut below which we reject poorly-reconstructed events.
 pval_cut = 0.01
 # Number of variables to add to chi-squared that is calculated for each event:
 ndf = 12
@@ -414,4 +415,4 @@ def plot_observables(h_good, h_bad, caption):
 
 
 plot_observables(histograms['chi_squared_all_NDF_' + good_dir], histograms['chi_squared_all_NDF_' + bad_dir], 'chi-squared')
-plot_observables(histograms['p-values_semilog_' + good_dir], histograms['p-values_semilog_' + bad_dir], 'pvalues_semilog')
+plot_observables(histograms['p-values_semilog_' + good_dir], histograms['p-values_semilog_' + bad_dir], 'p-values_semilog')
