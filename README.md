@@ -1,4 +1,6 @@
 INSTALLATION
+
+NOTE: This README does not contain commands needed to run newer scripts as of August 2021. For the updated files, please refer to the appendices of our report.
 ======================================================================
 
 Setup the environment
