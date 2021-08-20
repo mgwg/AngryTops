@@ -9,6 +9,7 @@ from numpy.linalg import norm
 import sklearn.preprocessing
 from AngryTops.features import *
 from AngryTops.Plotting.PlottingHelper import *
+from AngryTops.Plotting.kinematicsHelper import *
 
 # To create histograms of the angle between the t momentum and the vector sum of the W and b momenta. 
 #  Also, to create histograms of the "projection" of the vector sum onto the t momentum. 
@@ -36,14 +37,14 @@ if logyaxis == "False": logyaxis = False
 np.set_printoptions(precision=3, suppress=True, linewidth=250)
 model_filename  = "{}/simple_model.h5".format(training_dir)
 
-# ################################################################################
-# # HELPER FUNCTIONS
-# def PrintOut( p4_true, p4_fitted, label ):
-#   print("%s :: true=( %4.1f, %3.2f, %3.2f, %4.1f ; %3.1f ) \
-#         :: fitted=( %4.1f, %3.2f, %3.2f, %4.1f ; %3.1f )" % \
-#         (label, p4_true.Pt(), p4_true.Rapidity(), p4_true.Phi(), p4_true.E(), p4_true.M(),\
-#         p4_fitted.Pt(), p4_fitted.Rapidity(), p4_fitted.Phi(), p4_fitted.E(), p4_fitted.M()
-#         ))
+################################################################################
+# HELPER FUNCTIONS
+def PrintOut( p4_true, p4_fitted, label ):
+  print("%s :: true=( %4.1f, %3.2f, %3.2f, %4.1f ; %3.1f ) \
+        :: fitted=( %4.1f, %3.2f, %3.2f, %4.1f ; %3.1f )" % \
+        (label, p4_true.Pt(), p4_true.Rapidity(), p4_true.Phi(), p4_true.E(), p4_true.M(),\
+        p4_fitted.Pt(), p4_fitted.Rapidity(), p4_fitted.Phi(), p4_fitted.E(), p4_fitted.M()
+        ))
 
 ################################################################################
 # Read in input file
@@ -139,7 +140,7 @@ for i in range(n_events):
 
     except Exception as e:
         print("WARNING: invalid, skipping event ( rn=%-10i en=%-10i )" % ( tree.runNumber, tree.eventNumber ))
-        # PrintOut( t_lep_true, t_lep_fitted, "Leptonic top" )
+        PrintOut( t_lep_true, t_lep_fitted, "Leptonic top" )
         print(e)
         continue
 

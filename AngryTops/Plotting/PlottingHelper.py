@@ -256,3 +256,32 @@ def ChiSquared(h_mc, h_pred):
         if chi == chi:
             chi2 += chi
     return chi2 / (nbins - 1)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+def getFwhm(hist):
+    """
+    Calculates the fwhm of hist.
+    @Parameters:
+    hist: TH1 Class
+    """
+
+    #fwhm
+    halfMax = hist.GetMaximum()/2.0
+    nMax = hist.GetMaximumBin()
+    
+    nbins = hist.GetNbinsX()
+    bin1 = 0
+    bin2 = nbins
+    for i in range(1, nbins + 1):
+        y = hist.GetBinContent(i)
+        # find the greatest bin index left of max with bin content <= to half-max, and get its centre
+        if (i < nMax and y <= halfMax) and (i > bin1):
+            bin1 = hist.GetBinCenter(i)
+        # find the smallest bin index right of max with bin content <= to half-max, and get its centre
+        if (i > nMax and y <= halfMax) and (i < bin2):
+            bin2 = hist.GetBinCenter(i)
+    fwhm = bin2 - bin1
+    sigma = fwhm/2.3548
+
+    return fwhm, sigma
