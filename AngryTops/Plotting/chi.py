@@ -19,7 +19,7 @@ m_t = 172.5
 m_W = 80.4
 m_b = 4.95
 
-pval_cut = [0.01, 0.05, 0.1, 1]
+pval_cut = [0.0, 0.01, 0.05, 0.1]
 # Number of variables to add to chi-squared that is calculated for each event:
 ndf = 12
 root_dir = '../CheckPoints/'
@@ -49,7 +49,7 @@ legend = sys.argv[4]
 print("type of events: {}".format(legend))
 
 # output directory
-outputdir = root_dir + sigma_dir + "/img_chi_pval/"
+outputdir = root_dir + sigma_dir + "/img_chi_pval2/"
 infiles = {good_dir: infilename_good, bad_dir: infilename_bad}
 
 ################################################################################
@@ -135,9 +135,12 @@ histograms['p-values_semilog_' + bad_dir].SetTitle("p-value distribution of #chi
 histograms['p-values_loglog_' + bad_dir] = TH1F("p-values un-reconstructable",  ";Unitless", 100, 0., 1.)
 histograms['p-values_loglog_' + bad_dir].SetTitle("p-value distribution of #chi^{2} statistics for un-reconstructable events; p-values, Unitless; A.U.")
 
+recon_count = [0., 0., 0., 0.]
+all_count = [0., 0., 0., 0.]
+
 ################################################################################
 for subdir in infiles:
-    print("PRINTING VALUES FOR: ".format(subdir))
+    print("PRINTING VALUES FOR: {}".format(subdir))
 
     infilename = infiles[subdir]
     # Read in input file from training directory, contains truth and fitted data
@@ -156,9 +159,6 @@ for subdir in infiles:
     W_lep_phi_sum, W_lep_rapidity_sum, W_lep_pt_sum = 0., 0., 0.
     b_had_phi_sum, b_had_rapidity_sum, b_had_pt_sum = 0., 0., 0.
     b_lep_phi_sum, b_lep_rapidity_sum, b_lep_pt_sum = 0., 0., 0.
-
-    recon_count = [0., 0., 0., 0.]
-    all_count = [0., 0., 0., 0.]
 
     # Iterate through all events
     for i in range(n_events):
@@ -310,10 +310,10 @@ for subdir in infiles:
         print("events with p-value greater than {}: {}, {}%".format(pval_cut[3], all_count[3], all_count[3]/n_events*100))
 
 print("Reconstructable events that pass cuts as a fraction of all reconstructable events" )
-print("p-val {} : {}%".format(pval_cut[0], recon_count[0]/all_count[0]*100))
-print("p-val {} : {}%".format(pval_cut[1], recon_count[1]/all_count[1]*100))
-print("p-val {} : {}%".format(pval_cut[2], recon_count[2]/all_count[2]*100))
-print("p-val {} : {}%".format(pval_cut[3], recon_count[3]/all_count[3]*100))
+print("p-val {} : {}%".format(pval_cut[0], recon_count[0]/all_count[0]*100.0))
+print("p-val {} : {}%".format(pval_cut[1], recon_count[1]/all_count[1]*100.0))
+print("p-val {} : {}%".format(pval_cut[2], recon_count[2]/all_count[2]*100.0))
+print("p-val {} : {}%".format(pval_cut[3], recon_count[3]/all_count[3]*100.0))
 
 
 try:
