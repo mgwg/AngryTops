@@ -1,5 +1,5 @@
-"""Use this script to read in the panda array, seperate input and output, and
-seperate test / training data from each other
+"""Use this script to read in the panda array, separate input and output, and
+separate test / training data from each other
 Meant to be run from the parent directory
 """
 import pandas as pd
