@@ -19,7 +19,7 @@ m_t = 172.5
 m_W = 80.4
 m_b = 4.95
 
-pval_cut = 0.01
+pval_cut = [0.001, 0.01, 0.05, 0.1]
 # Number of variables to add to chi-squared that is calculated for each event:
 ndf = 12
 root_dir = '../CheckPoints/'
@@ -157,7 +157,7 @@ for subdir in infiles:
     b_had_phi_sum, b_had_rapidity_sum, b_had_pt_sum = 0., 0., 0.
     b_lep_phi_sum, b_lep_rapidity_sum, b_lep_pt_sum = 0., 0., 0.
 
-    count = 0.
+    count = [0., 0., 0., 0.]
 
     # Iterate through all events
     for i in range(n_events):
@@ -251,8 +251,10 @@ for subdir in infiles:
         histograms['p-values_semilog_' + subdir].Fill(p_value)
         histograms['p-values_loglog_' + subdir].Fill(p_value)
 
-        if p_value <= pval_cut:
-            count += 1.
+        count[0] += p_value <= pval_cut[0]
+        count[1] += p_value <= pval_cut[1]
+        count[2] += p_value <= pval_cut[2]
+        count[3] += p_value <= pval_cut[3]
 
     # Normalize sums of squares by standard deviations and number of events
     W_had_phi_chi2NDF = W_had_phi_sum / n_events / ( W_had_phi_sigma**2 )
@@ -288,7 +290,10 @@ for subdir in infiles:
     print("b_lep_rapidity_chi2NDF: {0}".format(b_lep_rapidity_chi2NDF))
     print("b_lep_pt_chi2NDF: {0}\n".format(b_lep_pt_chi2NDF))
 
-    print("events with p-value less than {}: {}".format(pval_cut, count))
+    print("events with p-value less than {}: {}".format(pval_cut[0], count[0]))
+    print("events with p-value less than {}: {}".format(pval_cut[1], count[1]))
+    print("events with p-value less than {}: {}".format(pval_cut[2], count[2]))
+    print("events with p-value less than {}: {}".format(pval_cut[3], count[3]))
 
 try:
     os.mkdir(outputdir)
