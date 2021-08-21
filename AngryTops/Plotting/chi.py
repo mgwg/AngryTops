@@ -19,8 +19,8 @@ m_t = 172.5
 m_W = 80.4
 m_b = 4.95
 
-# Cut below which we reject poorly-reconstructed events.
-pval_cut = 0.01
+# Up to four p-value cuts allowed.
+pval_cut = [0.0, 0.01, 0.05, 0.1]
 # Number of variables to add to chi-squared that is calculated for each event:
 ndf = 12
 root_dir = '../CheckPoints/'
@@ -50,7 +50,7 @@ legend = sys.argv[4]
 print("type of events: {}".format(legend))
 
 # output directory
-outputdir = root_dir + sigma_dir + "/img_chi_pval/"
+outputdir = root_dir + sigma_dir + "/img_chi_pval2/"
 infiles = {good_dir: infilename_good, bad_dir: infilename_bad}
 
 ################################################################################
@@ -136,9 +136,13 @@ histograms['p-values_semilog_' + bad_dir].SetTitle("p-value distribution of #chi
 histograms['p-values_loglog_' + bad_dir] = TH1F("p-values un-reconstructable",  ";Unitless", 100, 0., 1.)
 histograms['p-values_loglog_' + bad_dir].SetTitle("p-value distribution of #chi^{2} statistics for un-reconstructable events; p-values, Unitless; A.U.")
 
+# Initialize list of counters for number of events that pass p-value cuts. 
+recon_count = [0., 0., 0., 0.]
+all_count = [0., 0., 0., 0.]
+
 ################################################################################
 for subdir in infiles:
-    print(subdir)
+    print("PRINTING VALUES FOR: {}".format(subdir))
 
     infilename = infiles[subdir]
     # Read in input file from training directory, contains truth and fitted data
@@ -157,8 +161,6 @@ for subdir in infiles:
     W_lep_phi_sum, W_lep_rapidity_sum, W_lep_pt_sum = 0., 0., 0.
     b_had_phi_sum, b_had_rapidity_sum, b_had_pt_sum = 0., 0., 0.
     b_lep_phi_sum, b_lep_rapidity_sum, b_lep_pt_sum = 0., 0., 0.
-
-    count = 0.
 
     # Iterate through all events
     for i in range(n_events):
@@ -252,8 +254,17 @@ for subdir in infiles:
         histograms['p-values_semilog_' + subdir].Fill(p_value)
         histograms['p-values_loglog_' + subdir].Fill(p_value)
 
-        if p_value <= pval_cut:
-            count += 1.
+        # Augment counters for number of events that pass p-value cuts.
+        if subdir == good_dir:
+            recon_count[0] += (p_value >= pval_cut[0])
+            recon_count[1] += (p_value >= pval_cut[1])
+            recon_count[2] += (p_value >= pval_cut[2])
+            recon_count[3] += (p_value >= pval_cut[3])
+        elif subdir == bad_dir:
+            all_count[0] += (p_value >= pval_cut[0])
+            all_count[1] += (p_value >= pval_cut[1])
+            all_count[2] += (p_value >= pval_cut[2])
+            all_count[3] += (p_value >= pval_cut[3])
 
     # Normalize sums of squares by standard deviations and number of events
     W_had_phi_chi2NDF = W_had_phi_sum / n_events / ( W_had_phi_sigma**2 )
@@ -289,49 +300,30 @@ for subdir in infiles:
     print("b_lep_rapidity_chi2NDF: {0}".format(b_lep_rapidity_chi2NDF))
     print("b_lep_pt_chi2NDF: {0}\n".format(b_lep_pt_chi2NDF))
 
-    print("events with p-value less than {}: {}".format(pval_cut, count))
+    # Print event information
+    if subdir == good_dir:
+        print("Reconstructable events with p-value greater than {}: {}, {}%".format(pval_cut[0], recon_count[0], recon_count[0]/n_events*100))
+        print("Reconstructable events with p-value greater than {}: {}, {}%".format(pval_cut[1], recon_count[1], recon_count[1]/n_events*100))
+        print("Reconstructable events with p-value greater than {}: {}, {}%".format(pval_cut[2], recon_count[2], recon_count[2]/n_events*100))
+        print("Reconstructable events with p-value greater than {}: {}, {}%\n".format(pval_cut[3], recon_count[3], recon_count[3]/n_events*100))
+    if subdir == bad_dir:
+        print("Total events with p-value greater than {}: {}, {}%".format(pval_cut[0], all_count[0], all_count[0]/n_events*100))
+        print("Total events with p-value greater than {}: {}, {}%".format(pval_cut[1], all_count[1], all_count[1]/n_events*100))
+        print("Total events with p-value greater than {}: {}, {}%".format(pval_cut[2], all_count[2], all_count[2]/n_events*100))
+        print("Total events with p-value greater than {}: {}, {}%\n".format(pval_cut[3], all_count[3], all_count[3]/n_events*100))
+
+print("Reconstructable events that pass p-value cuts as a fraction of all reconstructable events" )
+print("p-val {} : {}%".format(pval_cut[0], recon_count[0]/all_count[0]*100.0))
+print("p-val {} : {}%".format(pval_cut[1], recon_count[1]/all_count[1]*100.0))
+print("p-val {} : {}%".format(pval_cut[2], recon_count[2]/all_count[2]*100.0))
+print("p-val {} : {}%".format(pval_cut[3], recon_count[3]/all_count[3]*100.0))
+
 
 try:
     os.mkdir(outputdir)
 except Exception as e:
     print("Overwriting existing files")
 
-
-# THIS CODE USED TO SAVE HISTOGRAMS TO FILE FOR EASIER PLOTTING
-# # Open output file
-# ofilename = "../CheckPoints/{}/chi.root".format(sigma_dir)
-# ofile = TFile.Open( ofilename, "recreate" )
-# ofile.cd()
-
-# for histname in histograms:
-#     histograms[histname].Write(histname)
-
-# ofile.Write()
-# ofile.Close()
-
-# root_dir = '../CheckPoints/'
-
-# # first directory is the directory containing the difference plots whose sigma 
-# # will be used to calculate the Chi-Squareds. Plots are also outputted to this directory.
-# sigma_dir = sys.argv[1]
-# good_dir = sys.argv[2]
-# bad_dir = sys.argv[3]
-
-# # output directory
-# outputdir = root_dir + sigma_dir + "/img_chi_test/"
-
-# infilename = "../CheckPoints/{}/chi.root".format(sigma_dir)
-# infile = TFile.Open(infilename)
-
-# hists = ['chi_squared_all' + good_dir, 'chi_squared_all_NDF' + good_dir, 'p-values' + good_dir, 'p-values_semilog' + good_dir, \
-#         'p-values_loglog' + good_dir, 'chi_squared_all' + bad_dir, 'chi_squared_all_NDF' + bad_dir, 'p-values' + bad_dir, \
-#         'p-values_semilog' + bad_dir, 'p-values_loglog' + bad_dir]
-
-# histograms = {}
-
-# print(infilename)
-# for histname in hists:
-#     histograms[histname] = infile.Get(histname)
 
 # Plot each histogram in histograms
 for key in histograms:
@@ -415,4 +407,4 @@ def plot_observables(h_good, h_bad, caption):
 
 
 plot_observables(histograms['chi_squared_all_NDF_' + good_dir], histograms['chi_squared_all_NDF_' + bad_dir], 'chi-squared')
-plot_observables(histograms['p-values_semilog_' + good_dir], histograms['p-values_semilog_' + bad_dir], 'p-values_semilog')
+plot_observables(histograms['p-values_semilog_' + good_dir], histograms['p-values_semilog_' + bad_dir], 'pvalues_semilog')
