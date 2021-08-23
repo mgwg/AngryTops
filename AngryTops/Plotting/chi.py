@@ -137,6 +137,8 @@ histograms['p-values_loglog_' + bad_dir].SetTitle("p-value distribution of #chi^
 
 recon_count = [0., 0., 0., 0.]
 all_count = [0., 0., 0., 0.]
+efficiency = [0., 0., 0., 0.] # efficiency = percent reconstructable events passing cut
+rejection_fact = [0., 0., 0., 0.] # rejection factor = 1/ percent all events passing cut
 
 ################################################################################
 for subdir in infiles:
@@ -299,22 +301,22 @@ for subdir in infiles:
     print("b_lep_pt_chi2NDF: {0}\n".format(b_lep_pt_chi2NDF))
 
     if subdir == good_dir:
-        print("events with p-value greater than {}: {}, {}%".format(pval_cut[0], recon_count[0], recon_count[0]/n_events*100))
-        print("events with p-value greater than {}: {}, {}%".format(pval_cut[1], recon_count[1], recon_count[1]/n_events*100))
-        print("events with p-value greater than {}: {}, {}%".format(pval_cut[2], recon_count[2], recon_count[2]/n_events*100))
-        print("events with p-value greater than {}: {}, {}%".format(pval_cut[3], recon_count[3], recon_count[3]/n_events*100))
+        for i in range(len(efficiency)):
+            efficiency[i] = recon_count[i]/n_events
+            print("events with p-value greater than {}: {}, {}%".format(pval_cut[i], recon_count[i], recon_count[i]/n_events*100))
+
     if subdir == bad_dir:
-        print("events with p-value greater than {}: {}, {}%".format(pval_cut[0], all_count[0], all_count[0]/n_events*100))
-        print("events with p-value greater than {}: {}, {}%".format(pval_cut[1], all_count[1], all_count[1]/n_events*100))
-        print("events with p-value greater than {}: {}, {}%".format(pval_cut[2], all_count[2], all_count[2]/n_events*100))
-        print("events with p-value greater than {}: {}, {}%".format(pval_cut[3], all_count[3], all_count[3]/n_events*100))
+        for i in range(len(efficiency)):
+            rejection_fact[i] = all_count[i]/n_events
+            print("events with p-value greater than {}: {}, {}%".format(pval_cut[i], all_count[i], all_count[i]/n_events*100))
 
-print("Reconstructable events that pass cuts as a fraction of all reconstructable events" )
-print("p-val {} : {}%".format(pval_cut[0], recon_count[0]/all_count[0]*100.0))
-print("p-val {} : {}%".format(pval_cut[1], recon_count[1]/all_count[1]*100.0))
-print("p-val {} : {}%".format(pval_cut[2], recon_count[2]/all_count[2]*100.0))
-print("p-val {} : {}%".format(pval_cut[3], recon_count[3]/all_count[3]*100.0))
+print("Reconstructable events that pass p-value cuts as a fraction of all events that pass p-value cuts" )
+for i in range(len(pval_cut)):
+    print("p-val {} : {}%".format(pval_cut[i], recon_count[i]/all_count[i]*100.0))
 
+print("Efficiency x rejection factor (percent reconstructable events / percent all events that pass p-value cuts" )
+for i in range(len(pval_cut)):
+    print("p-val {} : {}%".format(pval_cut[i], efficiency[i]/rejection_fact[i]))
 
 try:
     os.mkdir(outputdir)
