@@ -300,15 +300,16 @@ for subdir in infiles:
     print("b_lep_rapidity_chi2NDF: {0}".format(b_lep_rapidity_chi2NDF))
     print("b_lep_pt_chi2NDF: {0}\n".format(b_lep_pt_chi2NDF))
 
+    # Print percentages of events that pass p-value cuts.
     if subdir == good_dir:
         for i in range(len(efficiency)):
             efficiency[i] = recon_count[i]/n_events
-            print("events with p-value greater than {}: {}, {}%".format(pval_cut[i], recon_count[i], recon_count[i]/n_events*100))
+            print("Reconstructable events with p-value greater than {}: {}, {}%".format(pval_cut[i], recon_count[i], recon_count[i]/n_events*100))
 
     if subdir == bad_dir:
         for i in range(len(efficiency)):
             rejection_fact[i] = all_count[i]/n_events
-            print("events with p-value greater than {}: {}, {}%".format(pval_cut[i], all_count[i], all_count[i]/n_events*100))
+            print("Total events with p-value greater than {}: {}, {}%".format(pval_cut[i], all_count[i], all_count[i]/n_events*100))
 
 print("Reconstructable events that pass p-value cuts as a fraction of all events that pass p-value cuts" )
 for i in range(len(pval_cut)):
