@@ -312,7 +312,7 @@ for subdir in infiles:
         print("Total events with p-value greater than {}: {}, {}%".format(pval_cut[2], all_count[2], all_count[2]/n_events*100))
         print("Total events with p-value greater than {}: {}, {}%\n".format(pval_cut[3], all_count[3], all_count[3]/n_events*100))
 
-print("Reconstructable events that pass p-value cuts as a fraction of all reconstructable events" )
+print("Reconstructable events that pass p-value cuts as a fraction of all events that pass p-value cuts" )
 print("p-val {} : {}%".format(pval_cut[0], recon_count[0]/all_count[0]*100.0))
 print("p-val {} : {}%".format(pval_cut[1], recon_count[1]/all_count[1]*100.0))
 print("p-val {} : {}%".format(pval_cut[2], recon_count[2]/all_count[2]*100.0))
