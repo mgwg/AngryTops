@@ -9,7 +9,7 @@ from numpy.linalg import norm
 import sklearn.preprocessing
 from AngryTops.features import *
 from AngryTops.Plotting.PlottingHelper import *
-from AngryTops.Plotting.kinematicsHelper import *
+from AngryTops.Plotting.identification_helper import *
 
 # To create histograms of the angle between the t momentum and the vector sum of the W and b momenta. 
 #  Also, to create histograms of the "projection" of the vector sum onto the t momentum. 
@@ -77,6 +77,16 @@ histograms['Wbt_had_proj_fitted'] = TH1F( "Wbt_had_proj_fitted",\
 histograms['Wbt_lep_proj_fitted'] = TH1F( "Wbt_lep_proj_fitted",\
        ";Leptonic #frac{(#vec{p}_{W}+#vec{p}_{b}) #upoint #vec{p}_{top}}{#vec{p}_{top} #upoint #vec{p}_{top}}", 80, -3, 5)
 
+#diff
+histograms['Wbt_had_angle_diff'] = TH1F( "Wbt_had_angle_diff",  ";Hadronic Angle [Rad]", 500, -3.2, 3.2)
+histograms['Wbt_lep_angle_diff'] = TH1F( "Wbt_lep_angle_diff",  ";Leptonic Angle [Rad]", 500, -3.2, 3.2)
+histograms['Wbt_had_proj_diff'] = TH1F( "Wbt_had_proj_diff",  \
+                                        ";Hadronic #frac{(#vec{p}_{W}+#vec{p}_{b}) #upoint #vec{p}_{top}}{#vec{p}_{top} #upoint #vec{p}_{top}}",\
+                                         500, -3.2, 3.2)
+histograms['Wbt_lep_proj_diff'] = TH1F( "Wbt_lep_proj_diff",  \
+                                        ";Leptonic #frac{(#vec{p}_{W}+#vec{p}_{b}) #upoint #vec{p}_{top}}{#vec{p}_{top} #upoint #vec{p}_{top}}", \
+                                        500, -3.2, 3.2)
+
 ################################################################################
 # FORMAT HISTOGRAMS
 for hname, h in histograms.iteritems():
@@ -138,6 +148,11 @@ for i in range(n_events):
         Wbt_had_proj_fitted = np.dot(Wb_had_fitted, t_had_fitted) / np.dot(t_had_fitted, t_had_fitted)
         Wbt_lep_proj_fitted = np.dot(Wb_lep_fitted, t_lep_fitted) / np.dot(t_lep_fitted, t_lep_fitted)
 
+        Wbt_had_angle_diff = Wbt_had_angle_fitted - Wbt_had_angle_true
+        Wbt_lep_angle_diff = Wbt_lep_angle_fitted - Wbt_lep_angle_true
+        Wbt_had_proj_diff = Wbt_had_proj_fitted - Wbt_had_proj_true
+        Wbt_lep_proj_diff = Wbt_lep_proj_fitted - Wbt_lep_proj_true
+
     except Exception as e:
         print("WARNING: invalid, skipping event ( rn=%-10i en=%-10i )" % ( tree.runNumber, tree.eventNumber ))
         PrintOut( t_lep_true, t_lep_fitted, "Leptonic top" )
@@ -156,6 +171,11 @@ for i in range(n_events):
     histograms['Wbt_lep_proj_true'].Fill(  Wbt_lep_proj_true,  w )
     histograms['Wbt_had_proj_fitted'].Fill(  Wbt_had_proj_fitted,  w )
     histograms['Wbt_lep_proj_fitted'].Fill(  Wbt_lep_proj_fitted,  w )
+
+    histograms['Wbt_had_angle_diff'].Fill( Wbt_had_angle_diff, w)
+    histograms['Wbt_lep_angle_diff'].Fill( Wbt_lep_angle_diff, w)
+    histograms['Wbt_had_proj_diff'].Fill( Wbt_had_proj_diff, w)
+    histograms['Wbt_lep_proj_diff'].Fill( Wbt_lep_proj_diff, w)
 
     n_good += 1
 
@@ -213,7 +233,7 @@ def plot_observables(obs):
     # h_true.SetMinimum( 0. ) # Don't set minimum value to 0 for a log scale to work
 
     # If logyaxis is true, then make y-axis have a log scale
-    if logyaxis == 'logyaxis=True':
+    if logyaxis:
         pad0.SetLogy()
         pad1.SetLogy()
 
@@ -261,13 +281,71 @@ def plot_observables(obs):
     c.cd()
 
     # Save histograms as png files with titles depending on whether or not y-axis is logarithmic.
-    if logyaxis == 'logyaxis=True':
+    if logyaxis:
         c.SaveAs("{0}/P_angle/{1}_log.png".format(training_dir, obs))
     else:
         c.SaveAs("{0}/P_angle/{1}.png".format(training_dir, obs))
 
     pad0.Close()
     pad1.Close()
+    c.Close()
+
+def plot_residuals(obs):
+    hist_name = "{0}_diff".format(obs)
+
+    # True and fitted leaf
+    hist = infile_plot.Get(hist_name)
+    if hist == None:
+        print ("ERROR: invalid histogram for", obs)
+
+    #Normalize(hist)
+    if hist.Class() == TH2F.Class():
+        hist = hist.ProfileX("hist_pfx")
+
+    fwhm, sigma = getFwhm( hist )
+
+    SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=2, markersize=1 )
+
+    c, pad0 = MakeCanvas2()
+
+    pad0.cd()
+    hist.GetXaxis().SetNdivisions(508)
+    #hist.GetXaxis().SetLabelSize( 0.015 )
+    #hist.GetXaxis().SetTitleSize(0.015)
+    #hist.GetYaxis().SetLabelSize( 0.015 )
+    hist.Draw()
+
+    hmax = 1.25 * max( [ hist.GetMaximum(), hist.GetMaximum() ] )
+    hmin = 1.25 * min([ hist.GetMaximum(), hist.GetMaximum() ])
+    hist.SetMaximum(hmax)
+    hist.SetMinimum(hmin)
+
+    # if logyaxis:
+    #     pad0.SetLogy()
+
+    l = TLatex()
+    l.SetNDC()
+    l.SetTextFont(42)
+    l.SetTextColor(kBlack)
+    l.DrawLatex( 0.7, 0.80, "fwhm: %.2f" % fwhm )
+    l.DrawLatex( 0.7, 0.75, "sigma: %.2f" % sigma )
+
+    gPad.RedrawAxis()
+
+    if caption is not None:
+        newpad = TPad("newpad","a caption",0.1,0,1,1)
+        newpad.SetFillStyle(4000)
+        newpad.Draw()
+        newpad.cd()
+        title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
+        title.SetFillColor(16)
+        title.SetTextFont(52)
+        title.Draw()
+
+    c.cd()
+
+    c.SaveAs("{0}/P_angle/diff_{1}.png".format(training_dir,obs))
+    pad0.Close()
     c.Close()
 
 ################################################################################
@@ -285,3 +363,4 @@ if __name__==   "__main__":
     # Make a plot for each observable
     for obs in attributes:
         plot_observables(obs)
+        plot_residuals(obs)

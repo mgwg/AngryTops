@@ -73,6 +73,8 @@ def make_histograms():
     histograms['corr_tt_had_E']        = TH2F( "corr_tt_had_E",   ";True Hadronic t E [GeV];True Hadronic W+b E [GeV]", 50, 150., 500., 50, 150., 500. )
     histograms['corr_tt_lep_E']        = TH2F( "corr_tt_lep_E",    ";True Leptonic t E [GeV];True Leptonic W+b E [GeV]", 50, 150., 500., 50, 150., 500. )
 
+    histograms['Wbt_had_E_fitted_diff']        = TH1F( "Wbt_had_E_fitted_diff",   ";Hadronic W+b-t E [GeV]", 50, -500., 500. )
+    histograms['Wbt_lep_E_fitted_diff']        = TH1F( "Wbt_lep_E_fitted_diff",   ";Leptonic W+b-t E [GeV]", 50, -500., 500. )
     ################################################################################
     # POPULATE HISTOGRAMS
     n_events = tree.GetEntries()
@@ -133,6 +135,8 @@ def make_histograms():
         histograms['corr_tt_had_E'].Fill( t_had_true.E(), Wb_had_E_true, w )
         histograms['corr_tt_lep_E'].Fill( t_lep_true.E(), Wb_lep_E_true, w )
 
+        histograms['Wbt_had_E_fitted_diff'].Fill(Wb_had_E_fitted - t_had_fitted.E(), w)
+        histograms['Wbt_lep_E_fitted_diff'].Fill(Wb_lep_E_fitted - t_lep_fitted.E(), w)
         n_good += 1
 
     for histname in histograms:
@@ -308,6 +312,62 @@ def plot_correlations(hist_name):
     pad0.Close()
     c.Close()
 
+def plot_residuals(obs):
+    hist_name = "{0}_diff".format(obs)
+
+    # True and fitted leaf
+    hist = infile_plot.Get(hist_name)
+    if hist == None:
+        print ("ERROR: invalid histogram for", obs)
+
+    #Normalize(hist)
+    if hist.Class() == TH2F.Class():
+        hist = hist.ProfileX("hist_pfx")
+
+    fwhm, sigma = getFwhm( hist )
+
+    SetTH1FStyle( hist,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=2, markersize=1 )
+
+    c, pad0 = MakeCanvas2()
+
+    pad0.cd()
+    hist.GetXaxis().SetNdivisions(508)
+    #hist.GetXaxis().SetLabelSize( 0.015 )
+    #hist.GetXaxis().SetTitleSize(0.015)
+    #hist.GetYaxis().SetLabelSize( 0.015 )
+    hist.Draw()
+
+    hmax = 1.25 * max( [ hist.GetMaximum(), hist.GetMaximum() ] )
+    hmin = 1.25 * min([ hist.GetMaximum(), hist.GetMaximum() ])
+    hist.SetMaximum(hmax)
+    hist.SetMinimum(hmin)
+
+
+    l = TLatex()
+    l.SetNDC()
+    l.SetTextFont(42)
+    l.SetTextColor(kBlack)
+    l.DrawLatex( 0.7, 0.80, "fwhm: %.2f" % fwhm )
+    l.DrawLatex( 0.7, 0.75, "sigma: %.2f" % sigma )
+
+    gPad.RedrawAxis()
+
+    if caption is not None:
+        newpad = TPad("newpad","a caption",0.1,0,1,1)
+        newpad.SetFillStyle(4000)
+        newpad.Draw()
+        newpad.cd()
+        title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
+        title.SetFillColor(16)
+        title.SetTextFont(52)
+        title.Draw()
+
+    c.cd()
+
+    c.SaveAs("{0}/E_fit/diff_{1}.png".format(training_dir,obs))
+    pad0.Close()
+    c.Close()
+
 ################################################################################
 if __name__==   "__main__":
     try:
@@ -330,3 +390,6 @@ if __name__==   "__main__":
     corr_2d = ["corr_tp_had_E", "corr_tp_lep_E", "corr_pp_had_E", "corr_pp_lep_E", "corr_tt_had_E", "corr_tt_lep_E"]
     for corr in corr_2d:
         plot_correlations(corr)
+
+    plot_residuals('Wbt_had_E_fitted')
+    plot_residuals('Wbt_lep_E_fitted')
