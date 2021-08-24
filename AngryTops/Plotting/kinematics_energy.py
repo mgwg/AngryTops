@@ -73,8 +73,8 @@ def make_histograms():
     histograms['corr_tt_had_E']        = TH2F( "corr_tt_had_E",   ";True Hadronic t E [GeV];True Hadronic W+b E [GeV]", 50, 150., 500., 50, 150., 500. )
     histograms['corr_tt_lep_E']        = TH2F( "corr_tt_lep_E",    ";True Leptonic t E [GeV];True Leptonic W+b E [GeV]", 50, 150., 500., 50, 150., 500. )
 
-    histograms['Wbt_had_E_fitted_diff']        = TH1F( "Wbt_had_E_fitted_diff",   ";Hadronic W+b-t E [GeV]", 50, -500., 500. )
-    histograms['Wbt_lep_E_fitted_diff']        = TH1F( "Wbt_lep_E_fitted_diff",   ";Leptonic W+b-t E [GeV]", 50, -500., 500. )
+    histograms['Wbt_had_E_fitted_diff']        = TH1F( "Wbt_had_E_fitted_diff",   ";Hadronic W+b-t E [GeV]", 500, -500., 500. )
+    histograms['Wbt_lep_E_fitted_diff']        = TH1F( "Wbt_lep_E_fitted_diff",   ";Leptonic W+b-t E [GeV]", 500, -500., 500. )
     ################################################################################
     # POPULATE HISTOGRAMS
     n_events = tree.GetEntries()
