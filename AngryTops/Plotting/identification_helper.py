@@ -111,8 +111,6 @@ def Normalize( h, sf=1.0 ):
 
 def plot_corr(key, hist, outputdir):
 
-    SetTH1FStyle(hist,  color=kGray+2, fillstyle=6)
-
     c = TCanvas()
     c.cd()
 

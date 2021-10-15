@@ -131,7 +131,7 @@ print("INFO ...done")
 
 ################################################################################
 # CREATE OUTPUT TREE/FILE
-ofilename = "{}/fitted_{}.root".format(training_dir, event_type)
+ofilename = "{}/tree_fitted_{}.root".format(training_dir, event_type)
 ofile = TFile.Open( ofilename, "recreate" )
 ofile.cd()
 

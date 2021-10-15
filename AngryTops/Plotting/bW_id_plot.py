@@ -19,12 +19,12 @@ m_t = 172.5
 m_W = 80.4
 m_b = 4.95
 
-################################################################################
+###############################################################################
 # Read in input file
-# infilename = "{}/fitted_{}.root".format(training_dir, plot_type)
-# infile = TFile.Open( infilename )
-# print(infilename)
-# tree   = infile.Get( "nominal")
+infilename = "{}/tree_fitted_{}.root".format(training_dir, plot_type)
+infile = TFile.Open( infilename )
+print(infilename)
+tree   = infile.Get( "nominal")
 
 ofilename = "{}/histograms_{}.root".format(training_dir, plot_type)
 ofile = TFile.Open( ofilename, "recreate" )
@@ -200,201 +200,225 @@ hists['had_t_corr_dist_true_v_obs_mass'] = TH2F("t Hadronic #eta-#phi Distances 
 hists['had_t_corr_pT_diff_true_v_obs_mass'] = TH2F("t Hadronic p_{T} Diffs vs. Invariant Mass", ";t Hadronic Invariant Mass [GeV]; t Hadronic p_{T} Diff, True - Observed [GeV]", 50, 0, 300, 50, -400, 400)
 hists['had_t_corr_pT_diff_dist_true_v_obs'] = TH2F("t Hadronic p_{T} Diffs vs. #eta-#phi Distances", ";t Hadronic #eta-#phi Distances, True vs Observed; t Hadronic p_{T} Diff [GeV]", 50, 0, 3.2, 50, -400, 400)
 
-# ################################################################################
-# # POPULATE HISTOGRAMS
+################################################################################
+# POPULATE HISTOGRAMS
 
-# n_events = tree.GetEntries()
+n_events = tree.GetEntries()
 
-# print("INFO: starting event loop. Found %i events" % n_events)
+print("INFO: starting event loop. Found %i events" % n_events)
 
-# for i in range(n_events): # loop through every event
-#     if ( n_events < 10 ) or ( (i+1) % int(float(n_events)/10.)  == 0 ):
-#         perc = 100. * i / float(n_events)
-#         print("INFO: Event %-9i  (%3.0f %%)" % ( i, perc ))
+for i in range(n_events): # loop through every event
+    if ( n_events < 10 ) or ( (i+1) % int(float(n_events)/10.)  == 0 ):
+        perc = 100. * i / float(n_events)
+        print("INFO: Event %-9i  (%3.0f %%)" % ( i, perc ))
     
-#     tree.GetEntry(i)
+    tree.GetEntry(i)
 
-#     w = tree.weight_mc
+    w = tree.weight_mc
 
-#     W_had_true = TLorentzVector(tree.W_had_px_true, tree.W_had_py_true, tree.W_had_pz_true, tree.W_had_E_true)
-#     b_had_true = TLorentzVector(tree.b_had_px_true, tree.b_had_py_true, tree.b_had_pz_true, tree.b_had_E_true)
-#     t_had_true = TLorentzVector(tree.t_had_px_true, tree.t_had_py_true, tree.t_had_pz_true, tree.t_had_E_true)
-#     W_lep_true = TLorentzVector(tree.W_lep_px_true, tree.W_lep_py_true, tree.W_lep_pz_true, tree.W_lep_E_true)
-#     b_lep_true = TLorentzVector(tree.b_lep_px_true, tree.b_lep_py_true, tree.b_lep_pz_true, tree.b_lep_E_true)
-#     t_lep_true = TLorentzVector(tree.t_lep_px_true, tree.t_lep_py_true, tree.t_lep_pz_true, tree.t_lep_E_true)
-#     W_had_fitted = TLorentzVector(tree.W_had_px_fitted, tree.W_had_py_fitted, tree.W_had_pz_fitted, tree.W_had_E_fitted)
-#     b_had_fitted = TLorentzVector(tree.b_had_px_fitted, tree.b_had_py_fitted, tree.b_had_pz_fitted, tree.b_had_E_fitted)
-#     t_had_fitted = TLorentzVector(tree.t_had_px_fitted, tree.t_had_py_fitted, tree.t_had_pz_fitted, tree.t_had_E_fitted)
-#     W_lep_fitted = TLorentzVector(tree.W_lep_px_fitted, tree.W_lep_py_fitted, tree.W_lep_pz_fitted, tree.W_lep_E_fitted)
-#     b_lep_fitted = TLorentzVector(tree.b_lep_px_fitted, tree.b_lep_py_fitted, tree.b_lep_pz_fitted, tree.b_lep_E_fitted)
-#     t_lep_fitted = TLorentzVector(tree.t_lep_px_fitted, tree.t_lep_py_fitted, tree.t_lep_pz_fitted, tree.t_lep_E_fitted)
+    W_had_true = TLorentzVector(tree.W_had_px_true, tree.W_had_py_true, tree.W_had_pz_true, tree.W_had_E_true)
+    b_had_true = TLorentzVector(tree.b_had_px_true, tree.b_had_py_true, tree.b_had_pz_true, tree.b_had_E_true)
+    t_had_true = TLorentzVector(tree.t_had_px_true, tree.t_had_py_true, tree.t_had_pz_true, tree.t_had_E_true)
+    W_lep_true = TLorentzVector(tree.W_lep_px_true, tree.W_lep_py_true, tree.W_lep_pz_true, tree.W_lep_E_true)
+    b_lep_true = TLorentzVector(tree.b_lep_px_true, tree.b_lep_py_true, tree.b_lep_pz_true, tree.b_lep_E_true)
+    t_lep_true = TLorentzVector(tree.t_lep_px_true, tree.t_lep_py_true, tree.t_lep_pz_true, tree.t_lep_E_true)
+    W_had_fitted = TLorentzVector(tree.W_had_px_fitted, tree.W_had_py_fitted, tree.W_had_pz_fitted, tree.W_had_E_fitted)
+    b_had_fitted = TLorentzVector(tree.b_had_px_fitted, tree.b_had_py_fitted, tree.b_had_pz_fitted, tree.b_had_E_fitted)
+    t_had_fitted = TLorentzVector(tree.t_had_px_fitted, tree.t_had_py_fitted, tree.t_had_pz_fitted, tree.t_had_E_fitted)
+    W_lep_fitted = TLorentzVector(tree.W_lep_px_fitted, tree.W_lep_py_fitted, tree.W_lep_pz_fitted, tree.W_lep_E_fitted)
+    b_lep_fitted = TLorentzVector(tree.b_lep_px_fitted, tree.b_lep_py_fitted, tree.b_lep_pz_fitted, tree.b_lep_E_fitted)
+    t_lep_fitted = TLorentzVector(tree.t_lep_px_fitted, tree.t_lep_py_fitted, tree.t_lep_pz_fitted, tree.t_lep_E_fitted)
 
-#     W_had_obs = TLorentzVector(tree.W_had_px_obs , tree.W_had_py_obs , tree.W_had_pz_obs , tree.W_had_E_obs )
-#     b_had_obs = TLorentzVector(tree.b_had_px_obs , tree.b_had_py_obs , tree.b_had_pz_obs , tree.b_had_E_obs )
-#     t_had_obs = TLorentzVector(tree.t_had_px_obs , tree.t_had_py_obs , tree.t_had_pz_obs , tree.t_had_E_obs )
-#     b_lep_obs = TLorentzVector(tree.b_lep_px_obs , tree.b_lep_py_obs , tree.b_lep_pz_obs , tree.b_lep_E_obs)
-#     W_lep_px_obs   = tree.W_lep_px_obs
-#     W_lep_py_obs   = tree.W_lep_py_obs
-#     W_lep_Et_obs  = tree.W_lep_Et_obs
-#     W_lep_phi_obs  = tree.W_lep_phi_obs 
-#     t_lep_px_obs   = tree.t_lep_px_obs
-#     t_lep_py_obs   = tree.t_lep_py_obs
-#     t_lep_pt_obs  = tree.t_lep_pt_obs
-#     t_lep_phi_obs  = tree.t_lep_phi_obs    
+    W_had_obs = TLorentzVector(tree.W_had_px_obs , tree.W_had_py_obs , tree.W_had_pz_obs , tree.W_had_E_obs )
+    b_had_obs = TLorentzVector(tree.b_had_px_obs , tree.b_had_py_obs , tree.b_had_pz_obs , tree.b_had_E_obs )
+    t_had_obs = TLorentzVector(tree.t_had_px_obs , tree.t_had_py_obs , tree.t_had_pz_obs , tree.t_had_E_obs )
+    b_lep_obs = TLorentzVector(tree.b_lep_px_obs , tree.b_lep_py_obs , tree.b_lep_pz_obs , tree.b_lep_E_obs)
+    W_lep_px_obs   = tree.W_lep_px_obs
+    W_lep_py_obs   = tree.W_lep_py_obs
+    W_lep_Et_obs  = tree.W_lep_Et_obs
+    W_lep_phi_obs  = tree.W_lep_phi_obs 
+    t_lep_px_obs   = tree.t_lep_px_obs
+    t_lep_py_obs   = tree.t_lep_py_obs
+    t_lep_pt_obs  = tree.t_lep_pt_obs
+    t_lep_phi_obs  = tree.t_lep_phi_obs    
 
-#     num_jets = tree.W_had_num_jets#s
+    num_jets = tree.W_had_num_jets#s
 
 
-#     ################################################# true vs observed ################################################# 
+    ################################################# true vs observed ################################################# 
 
-#     b_had_dist = find_dist(b_had_true, b_had_obs)
-#     b_lep_dist = find_dist(b_lep_true, b_lep_obs)
+    b_had_dist = find_dist(b_had_true, b_had_obs)
+    b_lep_dist = find_dist(b_lep_true, b_lep_obs)
     
-#     W_had_pT_diff = W_had_true.Pt() - W_had_obs.Pt()
-#     W_had_dist = find_dist(W_had_true, W_had_obs)
+    W_had_pT_diff = W_had_true.Pt() - W_had_obs.Pt()
+    W_had_dist = find_dist(W_had_true, W_had_obs)
     
-#     W_lep_dist = np.abs( min( np.abs(W_lep_true.Phi()-W_lep_phi_obs), 2*np.pi-np.abs(W_lep_true.Phi()-W_lep_phi_obs) ) )
-#     # Calculate transverse energy assuming daughter particles are massless
-#     W_lep_ET_observed = np.sqrt( W_lep_px_obs**2 + W_lep_py_obs**2)
-#     W_lep_ET_diff = W_lep_true.Et() - W_lep_ET_observed
+    W_lep_dist = np.abs( min( np.abs(W_lep_true.Phi()-W_lep_phi_obs), 2*np.pi-np.abs(W_lep_true.Phi()-W_lep_phi_obs) ) )
+    # Calculate transverse energy assuming daughter particles are massless
+    W_lep_ET_observed = np.sqrt( W_lep_px_obs**2 + W_lep_py_obs**2)
+    W_lep_ET_diff = W_lep_true.Et() - W_lep_ET_observed
 
-#     t_had_dist = find_dist(t_had_true, t_had_obs)
-#     t_had_pT_diff = t_had_true.Pt() - t_had_obs.Pt()
+    t_had_dist = find_dist(t_had_true, t_had_obs)
+    t_had_pT_diff = t_had_true.Pt() - t_had_obs.Pt()
 
-#     t_lep_dist = np.abs( min( np.abs(t_lep_true.Phi()-t_lep_phi_obs), 2*np.pi-np.abs(t_lep_true.Phi() - t_lep_phi_obs) ) )
-#     t_lep_pT_diff = t_lep_true.Et() - t_lep_pt_obs
+    t_lep_dist = np.abs( min( np.abs(t_lep_true.Phi()-t_lep_phi_obs), 2*np.pi-np.abs(t_lep_true.Phi() - t_lep_phi_obs) ) )
+    t_lep_pT_diff = t_lep_true.Et() - t_lep_pt_obs
 
-#     # b quark calculations
-#     b_had_pT_diff = b_had_true.Pt() - b_lep_obs.Pt()
-#     b_lep_pT_diff = b_lep_true.Pt() - b_lep_obs.Pt()
+    # b quark calculations
+    b_had_pT_diff = b_had_true.Pt() - b_lep_obs.Pt()
+    b_lep_pT_diff = b_lep_true.Pt() - b_lep_obs.Pt()
 
-#     ################################################# predicted vs observed #################################################
+    ################################################# predicted vs observed #################################################
 
-#     # Once the optimal jets have been matched in the previous section, 
-#     #  the eta-phi distances can be calculated between the predicted and observed variables
-#     #  with no further work.
+    # Once the optimal jets have been matched in the previous section, 
+    #  the eta-phi distances can be calculated between the predicted and observed variables
+    #  with no further work.
 
-#     # Leptonic W
-#     # Calculate the distance between predicted and observed phi. 
-#     # No eta distance for comparison with truth vs. obs and pred vs. true
-#     W_lep_dphi_po = np.abs( min( np.abs(W_lep_fitted.Phi()-W_lep_phi_obs), 2*np.pi-np.abs(W_lep_fitted.Phi()-W_lep_phi_obs) ) )
-#     W_lep_R_po = np.sqrt(W_lep_dphi_po**2)
-#     # Hadronic W
-#     W_had_R_po = find_dist( W_had_fitted, W_had_obs )
+    # Leptonic W
+    # Calculate the distance between predicted and observed phi. 
+    # No eta distance for comparison with truth vs. obs and pred vs. true
+    W_lep_dphi_po = np.abs( min( np.abs(W_lep_fitted.Phi()-W_lep_phi_obs), 2*np.pi-np.abs(W_lep_fitted.Phi()-W_lep_phi_obs) ) )
+    W_lep_R_po = np.sqrt(W_lep_dphi_po**2)
+    # Hadronic W
+    W_had_R_po = find_dist( W_had_fitted, W_had_obs )
 
-#     # Leptonic b
-#     b_lep_R_po = find_dist( b_lep_fitted, b_lep_obs )
-#     # Hadronic b
-#     b_had_R_po = find_dist( b_had_fitted, b_lep_obs )
+    # Leptonic b
+    b_lep_R_po = find_dist( b_lep_fitted, b_lep_obs )
+    # Hadronic b
+    b_had_R_po = find_dist( b_had_fitted, b_lep_obs )
 
-#     # Leptonic t
-#     t_lep_dphi_po = min(np.abs(t_lep_fitted.Phi()-t_lep_phi_obs), 2*np.pi-np.abs(t_lep_fitted.Phi()-t_lep_phi_obs))
-#     t_lep_R_po = np.sqrt(t_lep_dphi_po**2) # Again, no eta
-#     # Hadronic t
-#     t_had_R_po = find_dist( t_had_fitted, t_had_obs )
+    # Leptonic t
+    t_lep_dphi_po = min(np.abs(t_lep_fitted.Phi()-t_lep_phi_obs), 2*np.pi-np.abs(t_lep_fitted.Phi()-t_lep_phi_obs))
+    t_lep_R_po = np.sqrt(t_lep_dphi_po**2) # Again, no eta
+    # Hadronic t
+    t_had_R_po = find_dist( t_had_fitted, t_had_obs )
 
-#     ################################################# populate histograms #################################################
+    ################################################# predicted vs true #################################################
 
-#     # Leptonic b
-#     hists['lep_b_dist_true_v_obs'].Fill(np.float(b_lep_dist))
-#     hists['lep_b_dist_pred_v_obs'].Fill(np.float(b_lep_R_po))
-#     # Invariant mass:
-#     hists['lep_b_obs_mass'].Fill(b_lep_obs.M())
-#     # Jet matching criteria correlation plots
-#     hists['lep_b_corr_dist_true_v_obs_mass'].Fill(b_lep_obs.M(), b_lep_dist) 
-#     hists['lep_b_corr_pT_diff_true_v_obs_mass'].Fill(b_lep_obs.M(), b_lep_pT_diff) 
-#     hists['lep_b_corr_pT_diff_dist_true_v_obs'].Fill(b_lep_dist, b_lep_pT_diff)
-#     # Closest PT difference vs. PT
-#     hists['lep_b_true_obs_pT'].Fill(b_lep_obs.Pt())
-#     hists['lep_b_true_obs_pT_diff'].Fill(b_lep_pT_diff)
-#     hists['lep_b_corr_pT_diff_pT_obs'].Fill(b_lep_obs.Pt(), b_lep_pT_diff) 
+    W_lep_R_pt = find_dist( W_lep_fitted, W_lep_true )
+    W_had_R_pt = find_dist( W_had_fitted, W_had_true )
+    b_lep_R_pt = find_dist( b_lep_fitted, b_lep_true )
+    b_had_R_pt = find_dist( b_had_fitted, b_had_true )
+    t_lep_R_pt = find_dist( t_lep_fitted, t_lep_true )
+    t_had_R_pt = find_dist( t_had_fitted, t_had_true )
 
-#     # Hadronic b
-#     hists['had_b_dist_true_v_obs'].Fill(np.float(b_had_dist))
-#     hists['had_b_dist_pred_v_obs'].Fill(np.float(b_had_R_po))
-#     # Invariant mass:
-#     hists['had_b_obs_mass'].Fill(b_had_obs.M())
-#     # Jet matching criteria correlation plots
-#     hists['had_b_corr_dist_true_v_obs_mass'].Fill(b_had_obs.M(), b_had_dist) 
-#     hists['had_b_corr_pT_diff_true_v_obs_mass'].Fill(b_had_obs.M(), b_had_pT_diff) 
-#     hists['had_b_corr_pT_diff_dist_true_v_obs'].Fill(b_had_dist, b_had_pT_diff)
-#     # Closest PT difference vs. PT
-#     hists['had_b_true_obs_pT'].Fill(b_had_obs.Pt())
-#     hists['had_b_true_obs_pT_diff'].Fill(b_had_pT_diff)
-#     hists['had_b_corr_pT_diff_pT_obs'].Fill(b_had_obs.Pt(), b_had_pT_diff) 
+    ################################################# populate histograms #################################################
 
-#     # Leptonic t
-#     hists['lep_t_dist_true_v_obs'].Fill(np.float(t_lep_dist))
-#     hists['lep_t_dist_pred_v_obs'].Fill(np.float(t_lep_R_po))
-#     hists['lep_t_transverse_energy_diff'].Fill(np.float(t_lep_pT_diff))
-#     hists['lep_t_corr_ET_diff_dist_true_v_obs'].Fill(t_lep_dist, t_lep_pT_diff)
-#     # Hadronic t
-#     hists['had_t_dist_true_v_obs'].Fill(np.float(t_had_dist))
-#     hists['had_t_dist_pred_v_obs'].Fill(np.float(t_had_R_po))
-#     hists['had_t_obs_mass'].Fill(t_had_obs.M())
-#     hists['had_t_true_obs_pT_diff'].Fill(t_had_pT_diff)
-#     hists['had_t_corr_dist_true_v_obs_mass'].Fill(t_had_obs.M(), t_had_dist)
-#     hists['had_t_corr_pT_diff_true_v_obs_mass'].Fill(t_had_obs.M(), t_had_pT_diff)
-#     hists['had_t_corr_pT_diff_dist_true_v_obs'].Fill(t_had_dist, t_had_pT_diff)
+    # Leptonic b
+    hists['lep_b_dist_true_v_obs'].Fill(np.float(b_lep_dist))
+    hists['lep_b_dist_pred_v_obs'].Fill(np.float(b_lep_R_po))
+    hists['lep_b_dist_pred_v_true'].Fill(np.float(b_lep_R_pt))
+    # Invariant mass:
+    hists['lep_b_obs_mass'].Fill(b_lep_obs.M())
+    # Jet matching criteria correlation plots
+    hists['lep_b_corr_dist_true_v_obs_mass'].Fill(b_lep_obs.M(), b_lep_dist) 
+    hists['lep_b_corr_pT_diff_true_v_obs_mass'].Fill(b_lep_obs.M(), b_lep_pT_diff) 
+    hists['lep_b_corr_pT_diff_dist_true_v_obs'].Fill(b_lep_dist, b_lep_pT_diff)
+    # Closest PT difference vs. PT
+    hists['lep_b_true_obs_pT'].Fill(b_lep_obs.Pt())
+    hists['lep_b_true_obs_pT_diff'].Fill(b_lep_pT_diff)
+    hists['lep_b_corr_pT_diff_pT_obs'].Fill(b_lep_obs.Pt(), b_lep_pT_diff) 
 
-#     # Leptonic W
-#     hists['lep_W_dist_true_v_obs'].Fill(np.float(W_lep_dist))
-#     hists['lep_W_dist_pred_v_obs'].Fill(np.float(W_lep_R_po))
-#     # Closest ET difference vs. ET
-#     hists['lep_W_transverse_energy_obs'].Fill(np.float(W_lep_ET_observed))
-#     hists['lep_W_transverse_energy_diff'].Fill(np.float(W_lep_ET_diff))
-#     hists['lep_W_corr_ET_diff_ET_obs'].Fill(W_lep_ET_observed, W_lep_ET_diff)
-#     hists['lep_W_corr_ET_diff_dist_true_v_obs'].Fill(W_lep_dist, W_lep_ET_diff) 
+    # Hadronic b
+    hists['had_b_dist_true_v_obs'].Fill(np.float(b_had_dist))
+    hists['had_b_dist_pred_v_obs'].Fill(np.float(b_had_R_po))
+    hists['had_b_dist_pred_v_true'].Fill(np.float(b_had_R_pt))
+    # Invariant mass:
+    hists['had_b_obs_mass'].Fill(b_had_obs.M())
+    # Jet matching criteria correlation plots
+    hists['had_b_corr_dist_true_v_obs_mass'].Fill(b_had_obs.M(), b_had_dist) 
+    hists['had_b_corr_pT_diff_true_v_obs_mass'].Fill(b_had_obs.M(), b_had_pT_diff) 
+    hists['had_b_corr_pT_diff_dist_true_v_obs'].Fill(b_had_dist, b_had_pT_diff)
+    # Closest PT difference vs. PT
+    hists['had_b_true_obs_pT'].Fill(b_had_obs.Pt())
+    hists['had_b_true_obs_pT_diff'].Fill(b_had_pT_diff)
+    hists['had_b_corr_pT_diff_pT_obs'].Fill(b_had_obs.Pt(), b_had_pT_diff) 
 
-#     # Hadronic W
-#     hists['had_W_dist_true_v_obs'].Fill(np.float(W_had_dist))
-#     hists['had_W_dist_pred_v_obs'].Fill(np.float(W_had_R_po))
-#     # Invariant mass:
-#     hists['had_W_obs_mass'].Fill(W_had_obs.M())
-#     # Jet matching criteria correlation plots
-#     hists['had_W_corr_mass_dist_true_v_obs'].Fill(W_had_obs.M(), W_had_dist) 
-#     hists['had_W_corr_mass_Pt_true_v_obs'].Fill(W_had_obs.M(), W_had_pT_diff) 
-#     hists['had_W_corr_dist_Pt_true_v_obs'].Fill(W_had_dist, W_had_pT_diff)  
-#     # Closest pT difference vs. pT
-#     hists['had_W_true_obs_pT'].Fill(np.float(W_had_obs.Pt()))
-#     hists['had_W_true_obs_pT_diff'].Fill(np.float(W_had_pT_diff))
-#     # Plots that depend on whether a 1,2, or 3-jet sum is the best match to truth:
-#     if num_jets == 0:
-#         hists['had_W_true_1_pT_diff'].Fill(np.float(W_had_pT_diff))
-#         hists['had_W_obs_1_mass'].Fill(W_had_obs.M())
-#         hists['had_W_obs_1_mass_log'].Fill(W_had_obs.M())
-#         hists['had_W_corr_1_mass_dist_true_v_obs'].Fill(W_had_obs.M(), W_had_dist)
-#         hists['had_W_corr_1_mass_Pt_true_v_obs'].Fill(W_had_obs.M(), W_had_pT_diff)
-#         hists['had_W_corr_1_dist_Pt_true_v_obs'].Fill(W_had_dist, W_had_pT_diff)
-#         hists['had_W_1_dist'].Fill(np.float(W_had_dist))
-#     elif num_jets == 1:
-#         hists['had_W_true_2_pT_diff'].Fill(np.float(W_had_pT_diff))
-#         hists['had_W_obs_2_mass'].Fill(W_had_obs.M())
-#         hists['had_W_corr_2_mass_dist_true_v_obs'].Fill(W_had_obs.M(), W_had_dist)
-#         hists['had_W_corr_2_mass_Pt_true_v_obs'].Fill(W_had_obs.M(), W_had_pT_diff)
-#         hists['had_W_corr_2_dist_Pt_true_v_obs'].Fill(W_had_dist, W_had_pT_diff)
-#         hists['had_W_2_dist'].Fill(np.float(W_had_dist))
-#     elif num_jets == 2:
-#         hists['had_W_true_3_pT_diff'].Fill(np.float(W_had_pT_diff))
-#         hists['had_W_obs_3_mass'].Fill(W_had_obs.M())
-#         hists['had_W_corr_3_mass_dist_true_v_obs'].Fill(W_had_obs.M(), W_had_dist)
-#         hists['had_W_corr_3_mass_Pt_true_v_obs'].Fill(W_had_obs.M(), W_had_pT_diff)
-#         hists['had_W_corr_3_dist_Pt_true_v_obs'].Fill(W_had_dist, W_had_pT_diff)
-#         hists['had_W_3_dist'].Fill(np.float(W_had_dist))
+    # Leptonic t
+    hists['lep_t_dist_true_v_obs'].Fill(np.float(t_lep_dist))
+    hists['lep_t_dist_pred_v_obs'].Fill(np.float(t_lep_R_po))
+    hists['lep_t_dist_pred_v_true'].Fill(np.float(t_lep_R_pt))
+    hists['lep_t_transverse_energy_diff'].Fill(np.float(t_lep_pT_diff))
+    hists['lep_t_corr_ET_diff_dist_true_v_obs'].Fill(t_lep_dist, t_lep_pT_diff)
+    # Hadronic t
+    hists['had_t_dist_true_v_obs'].Fill(np.float(t_had_dist))
+    hists['had_t_dist_pred_v_obs'].Fill(np.float(t_had_R_po))
+    hists['had_t_dist_pred_v_true'].Fill(np.float(t_had_R_pt))
+    hists['had_t_obs_mass'].Fill(t_had_obs.M())
+    hists['had_t_true_obs_pT_diff'].Fill(t_had_pT_diff)
+    hists['had_t_corr_dist_true_v_obs_mass'].Fill(t_had_obs.M(), t_had_dist)
+    hists['had_t_corr_pT_diff_true_v_obs_mass'].Fill(t_had_obs.M(), t_had_pT_diff)
+    hists['had_t_corr_pT_diff_dist_true_v_obs'].Fill(t_had_dist, t_had_pT_diff)
 
-# for histname in hists:
-#     hists[histname].Write(histname)
-# print("Finished. Saved output file:", ofilename)
+    # Leptonic W
+    hists['lep_W_dist_true_v_obs'].Fill(np.float(W_lep_dist))
+    hists['lep_W_dist_pred_v_obs'].Fill(np.float(W_lep_R_po))
+    hists['lep_W_dist_pred_v_true'].Fill(np.float(W_lep_R_pt))
+    # Closest ET difference vs. ET
+    hists['lep_W_transverse_energy_obs'].Fill(np.float(W_lep_ET_observed))
+    hists['lep_W_transverse_energy_diff'].Fill(np.float(W_lep_ET_diff))
+    hists['lep_W_corr_ET_diff_ET_obs'].Fill(W_lep_ET_observed, W_lep_ET_diff)
+    hists['lep_W_corr_ET_diff_dist_true_v_obs'].Fill(W_lep_dist, W_lep_ET_diff) 
+
+    # Hadronic W
+    hists['had_W_dist_true_v_obs'].Fill(np.float(W_had_dist))
+    hists['had_W_dist_pred_v_obs'].Fill(np.float(W_had_R_po))
+    hists['had_W_dist_pred_v_true'].Fill(np.float(W_had_R_pt))
+    # Invariant mass:
+    hists['had_W_obs_mass'].Fill(W_had_obs.M())
+    # Jet matching criteria correlation plots
+    hists['had_W_corr_mass_dist_true_v_obs'].Fill(W_had_obs.M(), W_had_dist) 
+    hists['had_W_corr_mass_Pt_true_v_obs'].Fill(W_had_obs.M(), W_had_pT_diff) 
+    hists['had_W_corr_dist_Pt_true_v_obs'].Fill(W_had_dist, W_had_pT_diff)  
+    # Closest pT difference vs. pT
+    hists['had_W_true_obs_pT'].Fill(np.float(W_had_obs.Pt()))
+    hists['had_W_true_obs_pT_diff'].Fill(np.float(W_had_pT_diff))
+    # Plots that depend on whether a 1,2, or 3-jet sum is the best match to truth:
+    if num_jets == 0:
+        hists['had_W_true_1_pT_diff'].Fill(np.float(W_had_pT_diff))
+        hists['had_W_obs_1_mass'].Fill(W_had_obs.M())
+        hists['had_W_obs_1_mass_log'].Fill(W_had_obs.M())
+        hists['had_W_corr_1_mass_dist_true_v_obs'].Fill(W_had_obs.M(), W_had_dist)
+        hists['had_W_corr_1_mass_Pt_true_v_obs'].Fill(W_had_obs.M(), W_had_pT_diff)
+        hists['had_W_corr_1_dist_Pt_true_v_obs'].Fill(W_had_dist, W_had_pT_diff)
+        hists['had_W_1_dist'].Fill(np.float(W_had_dist))
+    elif num_jets == 1:
+        hists['had_W_true_2_pT_diff'].Fill(np.float(W_had_pT_diff))
+        hists['had_W_obs_2_mass'].Fill(W_had_obs.M())
+        hists['had_W_corr_2_mass_dist_true_v_obs'].Fill(W_had_obs.M(), W_had_dist)
+        hists['had_W_corr_2_mass_Pt_true_v_obs'].Fill(W_had_obs.M(), W_had_pT_diff)
+        hists['had_W_corr_2_dist_Pt_true_v_obs'].Fill(W_had_dist, W_had_pT_diff)
+        hists['had_W_2_dist'].Fill(np.float(W_had_dist))
+    elif num_jets == 2:
+        hists['had_W_true_3_pT_diff'].Fill(np.float(W_had_pT_diff))
+        hists['had_W_obs_3_mass'].Fill(W_had_obs.M())
+        hists['had_W_corr_3_mass_dist_true_v_obs'].Fill(W_had_obs.M(), W_had_dist)
+        hists['had_W_corr_3_mass_Pt_true_v_obs'].Fill(W_had_obs.M(), W_had_pT_diff)
+        hists['had_W_corr_3_dist_Pt_true_v_obs'].Fill(W_had_dist, W_had_pT_diff)
+        hists['had_W_3_dist'].Fill(np.float(W_had_dist))
+
+for histname in hists:
+    hists[histname].Write(histname)
+
+ofile.Write()
+ofile.Close()
+
+print("Finished. Saved output file:", ofilename)
 
 ################################################################################
 # PLOT
 # reopen outfile to plot
 ofile = TFile.Open(ofilename)
 
+try:
+    os.mkdir('{}/closejets_img'.format(training_dir))
+except Exception as e:
+    print("Overwriting existing files")
+
 for key in hists:
     if 'corr' not in key:
-        ofile.Get(key)
-        plot_hists(key, hists[key], training_dir+subdir)
+        hist = ofile.Get(key)
+        plot_hists(key, hist, training_dir+subdir)
 
 # The following few lines must be run only once for all correlation plots, 
 #  so the correlation plots must be separated out from the other histograms.   
@@ -405,5 +429,5 @@ gROOT.GetColor(52).InvertPalette()
 
 for key in hists:
     if 'corr' in key:
-        ofile.Get(key)
-        plot_corr(key, hists[key], outputdir+subdir)
+        hist = ofile.Get(key)
+        plot_corr(key, hist, training_dir+subdir)
