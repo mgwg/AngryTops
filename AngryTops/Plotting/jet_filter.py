@@ -4,11 +4,12 @@ from ROOT import *
 import pickle
 from AngryTops.Plotting.identification_helper import MakeP4
 from AngryTops.features import *
+from array import array
 
 ################################################################################
 # CONSTANTS
-infilename = "../May21/predictions_May21.root"
 output_dir = sys.argv[2]
+infilename = "{}/predictions_{}.root".format(output_dir, sys.argv[1])
 representation = sys.argv[3]
 scaling = True              # whether the dataset has been passed through a scaling function or not
 
@@ -16,51 +17,42 @@ m_t = 172.5
 m_W = 80.4
 m_b = 4.95
 
-b_tagging = NONE   
-
 # t = TFile.Open(infilename)
-infile = Tfile(infilename, "READ")
+infile = TFile(infilename, "READ")
 t = infile.Get("nominal")
 
 ################################################################################
 # MAKE ROOT FILE FOR HISTS
 
-ofilename = "{}/jet_filter_hists".format(output_dir)
+ofilename = "{}/jet_filter_hists.root".format(output_dir)
 # Open output file
 ofile = TFile.Open( ofilename, "recreate" )
 ofile.cd()
 
 ################################################################################
 # POPULATE TREE
-
-print("INFO: starting event loop. Found %i events" % n_events)
-
-jet1pt = t.AsMatrix(["b_jet1_pt_obs"])
-jet2pt = t.AsMatrix(["b_jet2_pt_obs"])
-jet3pt = t.AsMatrix(["b_jet3_pt_obs"])
-jet4pt = t.AsMatrix(["b_jet4_pt_obs"])
-jet5pt = t.AsMatrix(["b_jet5_pt_obs"])
-jet1btag = t.AsMatrix(["b_jet1_btag_obs"])
-jet2btag = t.AsMatrix(["b_jet2_btag_obs"])
-jet3btag = t.AsMatrix(["b_jet3_btag_obs"])
-jet4btag = t.AsMatrix(["b_jet4_btag_obs"])
-jet5btag = t.AsMatrix(["b_jet5_btag_obs"])
-hadWpt = t.AsMatrix(["b_W_had_pt_true"])
+jet1pt = t.AsMatrix(["jet1_pt_obs"]).flatten()
+jet2pt = t.AsMatrix(["jet2_pt_obs"]).flatten()
+jet3pt = t.AsMatrix(["jet3_pt_obs"]).flatten()
+jet4pt = t.AsMatrix(["jet4_pt_obs"]).flatten()
+jet5pt = t.AsMatrix(["jet5_pt_obs"]).flatten()
+jet1btag = t.AsMatrix(["jet1_btag_obs"]).flatten()
+jet2btag = t.AsMatrix(["jet2_btag_obs"]).flatten()
+jet3btag = t.AsMatrix(["jet3_btag_obs"]).flatten()
+jet4btag = t.AsMatrix(["jet4_btag_obs"]).flatten()
+jet5btag = t.AsMatrix(["jet5_btag_obs"]).flatten()
+hadWpt = t.AsMatrix(["W_had_pt_true"]).flatten()
+hadbpt = t.AsMatrix(["b_had_pt_true"]).flatten()
+lepbpt = t.AsMatrix(["b_lep_pt_true"]).flatten()
 
 n_events = t.GetEntries()
 
 ################################################################################
 # HISTOGRAMS
 hists = {}
-t.Draw("b_W_had_pt_true >> had_W_Pt(50,0,500)")
-t.Draw("b_b_had_pt_true >> had_b_Pt(50,0,500)")
-t.Draw("b_b_lep_pt_true >> lep_W_Pt(50,0,500)")
-had_W_Pt = gROOT.FindObject ("had_W_Pt")
-had_b_Pt = gROOT.FindObject ("had_b_Pt")
-lep_b_Pt = gROOT.FindObject ("lep_b_Pt")
-hists['had_W_Pt'] = htemp.Clone("had_W_Pt")
-hists['had_b_Pt'] = htemp.Clone("had_b_Pt")
-hists['lep_b_Pt'] = htemp.Clone("lep_b_Pt")
+hists['had_W_Pt'] = TH1F("had_W_Pt","p_{T} (GeV)", 50, 0, 500)
+hists['had_b_Pt'] = TH1F("had_b_Pt","p_{T} (GeV)", 50, 0, 500)
+hists['lep_b_Pt'] = TH1F("lep_b_Pt","p_{T} (GeV)", 50, 0, 500)
 
 for i in range(5):
     hists['max_jet_{}_Pt'.format(i)] = TH1F("max_jet_{}_Pt'.format(i)","p_{T} (GeV)", 50, 0, 500)
@@ -72,32 +64,36 @@ for i in range(5):
     hists['b_max_jet_{}_Pt'.format(i)] = TH1F("max_jet_{}_Pt'.format(i)","p_{T} (GeV)", 50, 0, 500)
     hists['b_max_jet_{}_Pt'.format(i)].SetTitle("{} leading jet pT".format(i+1))
 
-# each row corresponds to an event
+# each row corresponds to an event, one array for non-btagged jets and btagged jets
 jets_Pt = np.stack([jet1pt, jet2pt, jet3pt, jet4pt, jet5pt], axis = 1)
+jets_b_Pt = np.stack([jet1pt, jet2pt, jet3pt, jet4pt, jet5pt], axis = 1)
 # btagging mask
 jets_btag = np.stack([jet1btag, jet2btag, jet3btag, jet4btag, jet5btag], axis = 1)
 
-# only keep jets that are NOT btagged
-jets_notb_Pt[jets_btag == 0] = 0
-# remove events where all jets are btagged
-jets_notb_Pt[~np.all(jets_notb_Pt==0, axis =1)]
-
+# only keep jets that are NOT btagged; set btagged jets to 0
+jets_Pt[jets_btag != 0] = 0
 # find btagged jets
-jets_b_Pt[jets_btag != 0] = 0
-jets_b_Pt[~np.all(jets_b_Pt==0, axis =1)]
+jets_b_Pt[jets_btag == 0] = 0
 
 # sort jets from smallest to largest
-jets_notb_Pt = np.sort(jets_notb_Pt)
+jets_Pt = np.sort(jets_Pt)
 jets_b_Pt = np.sort(jets_b_Pt)
 # reverse array order to list jets from largest to smallest to match order of leading jet (i.e. 0th is the largest, etc.)
+jets_Pt = np.flip(jets_Pt, axis = 1)
 jets_b_Pt = np.flip(jets_b_Pt, axis = 1)
 
 for i in range(5): 
-    jets_Pt_max = jets_Pt[:,i] 
-    hists['max_jet_{}_Pt'.format(i)].FillN(len(jets_Pt_max), jets_Pt_max)
-    hists['jet_{}_had_W_Pt_diff'.format(i)].FillN(len(jets_Pt_max), jets_Pt_max - hadWpt)
+    jets_Pt_max = jets_Pt[:,i].flatten()
+    jets_b_Pt_max = jets_b_Pt[:,i].flatten()
 
-    hists['b_max_jet_{}_Pt'.format(i)].FillN(len(jets_Pt_max), jets_Pt_max)
+    for j in jets_Pt_max.nonzero()[0]: # skip events where the leading jet has 0 pT
+        hists['jet_{}_had_W_Pt_diff'.format(i)].Fill( jets_Pt_max[j] - hadWpt[j] )
+        hists['max_jet_{}_Pt'.format(i)].Fill( jets_Pt_max[j] )
+        hists['had_W_Pt'].Fill( hadWpt[j] )
+    for j in jets_b_Pt_max.nonzero()[0]:
+        hists['b_max_jet_{}_Pt'.format(i)].Fill(jets_b_Pt_max[j])
+        hists['had_b_Pt'].Fill( hadbpt[j] )
+        hists['lep_b_Pt'].Fill( lepbpt[j] )
 
 for histname in hists:
     hists[histname].Write(histname)
@@ -121,7 +117,17 @@ def plot_hist(h, obs, caption):
     # pad0.Close()
     c.Close()
 
-def plot_observables(h_jet, h_quark, obs, caption):
+def plot_observables(h_jet, h_quark, i, wb):
+
+    if wb == "W":
+        label = "Hadronic W"
+    elif wb == "had_b":
+        label = "Hadronic b"
+    elif wb == "lep_b":
+        label = "Leptonic b"
+
+    caption = str(i+1)+' Leading Jet p_{T} vs ' + label + ' p_{T}'
+    obs = 'jet_{}_v_{}_Pt'.format(wb, label)
 
     # Axis titles
     xtitle = h_jet.GetXaxis().GetTitle()
@@ -156,7 +162,7 @@ def plot_observables(h_jet, h_quark, obs, caption):
     leg.SetTextFont(42)
     leg.SetTextSize(0.05)
     leg.AddEntry( h_jet, "Leading Jet", "f" )
-    leg.AddEntry( h_quark, "Hadronic W", "f" )
+    leg.AddEntry( h_quark, label, "f" )
     leg.SetY1( leg.GetY1() - 0.05 * leg.GetNRows() )
     leg.Draw()
 
@@ -274,6 +280,6 @@ for i in range(5):
     hist_jet_b = infile.Get('b_max_jet_{}_Pt'.format(i))
     Normalize(hist_jet)
     Normalize(hist_jet_b)
-    plot_observables(hist_jet, hist_W, 'jet_{}_v_W_Pt'.format(i), str(i+1)+' Leading Jet p_{T} vs Hadronic W p_{T}')
-    plot_observables(hist_jet, hist_b_had, 'jet_{}_v_had_b_Pt'.format(i), str(i+1)+' Leading Jet p_{T} vs Hadronic b p_{T}')
-    plot_observables(hist_jet, hist_b_lep, 'jet_{}_v_lep_b_Pt'.format(i), str(i+1)+' Leading Jet p_{T} vs Leptonic b p_{T}')
+    plot_observables(hist_jet, hist_W, i, 'W')
+    plot_observables(hist_jet, hist_b_had, i, 'had_b')
+    plot_observables(hist_jet, hist_b_lep, i, 'lep_b')
