@@ -30,7 +30,7 @@ ofile = TFile.Open( ofilename, "recreate" )
 ofile.cd()
 
 ################################################################################
-# POPULATE TREE
+# GET VALUES FROM TREE
 jet1pt = t.AsMatrix(["jet1_pt_obs"]).flatten()
 jet2pt = t.AsMatrix(["jet2_pt_obs"]).flatten()
 jet3pt = t.AsMatrix(["jet3_pt_obs"]).flatten()

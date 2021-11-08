@@ -186,6 +186,48 @@ b_t_lep_py_obs   = array( 'f', [ -1.] )
 b_t_lep_pt_obs   = array( 'f', [ -1.] )
 b_t_lep_phi_obs  = array( 'f', [ -1.] )
 
+b_jet1_px_obs   = array( 'f', [ -1.] )
+b_jet1_py_obs   = array( 'f', [ -1.] )
+b_jet1_pz_obs   = array( 'f', [ -1.] )
+b_jet1_pt_obs   = array( 'f', [ -1.] )
+b_jet1_E_obs    = array( 'f', [ -1.] )
+b_jet1_m_obs    = array( 'f', [ -1.] )
+b_jet1_btag_obs   = array( 'f', [ -1.] )
+b_jet2_px_obs   = array( 'f', [ -1.] )
+b_jet2_py_obs   = array( 'f', [ -1.] )
+b_jet2_pz_obs   = array( 'f', [ -1.] )
+b_jet2_pt_obs   = array( 'f', [ -1.] )
+b_jet2_E_obs    = array( 'f', [ -1.] )
+b_jet2_m_obs    = array( 'f', [ -1.] )
+b_jet2_btag_obs   = array( 'f', [ -1.] )
+b_jet3_px_obs   = array( 'f', [ -1.] )
+b_jet3_py_obs   = array( 'f', [ -1.] )
+b_jet3_pz_obs   = array( 'f', [ -1.] )
+b_jet3_pt_obs   = array( 'f', [ -1.] )
+b_jet3_E_obs    = array( 'f', [ -1.] )
+b_jet3_m_obs    = array( 'f', [ -1.] )
+b_jet3_btag_obs   = array( 'f', [ -1.] )
+b_jet4_px_obs   = array( 'f', [ -1.] )
+b_jet4_py_obs   = array( 'f', [ -1.] )
+b_jet4_pz_obs   = array( 'f', [ -1.] )
+b_jet4_pt_obs   = array( 'f', [ -1.] )
+b_jet4_E_obs    = array( 'f', [ -1.] )
+b_jet4_m_obs    = array( 'f', [ -1.] )
+b_jet4_btag_obs   = array( 'f', [ -1.] )
+b_jet5_px_obs   = array( 'f', [ -1.] )
+b_jet5_py_obs   = array( 'f', [ -1.] )
+b_jet5_pz_obs   = array( 'f', [ -1.] )
+b_jet5_pt_obs   = array( 'f', [ -1.] )
+b_jet5_E_obs    = array( 'f', [ -1.] )
+b_jet5_m_obs    = array( 'f', [ -1.] )
+b_jet5_btag_obs   = array( 'f', [ -1.] )
+b_jetmu_px_obs   = array( 'f', [ -1.] )
+b_jetmu_py_obs   = array( 'f', [ -1.] )
+b_jetmu_pz_obs   = array( 'f', [ -1.] )
+b_jetmu_T0_obs    = array( 'f', [ -1.] )
+b_jetlep_ET_obs    = array( 'f', [ -1.] )
+b_jetlep_phi_obs   = array( 'f', [ -1.] )
+
 b_W_had_px_true   = array( 'f', [ -1.] )
 b_W_had_py_true   = array( 'f', [ -1.] )
 b_W_had_pz_true   = array( 'f', [ -1.] )
@@ -332,6 +374,48 @@ tree.Branch( 't_lep_py_obs',   b_t_lep_py_obs,   't_lep_py_obs/F' )
 tree.Branch( 't_lep_pt_obs',   b_t_lep_pt_obs,   't_lep_pt_obs/F' )
 tree.Branch( 't_lep_phi_obs',  b_t_lep_phi_obs,  't_lep_phi_true/F' )
 
+tree.Branch( 'jet1_px_obs', b_jet1_px_obs, 'jet1_px_obs/F')
+tree.Branch( 'jet1_py_obs', b_jet1_py_obs, 'jet1_py_obs/F')
+tree.Branch( 'jet1_pz_obs', b_jet1_pz_obs, 'jet1_pz_obs/F')
+tree.Branch( 'jet1_pt_obs', b_jet1_pt_obs, 'jet1_pt_obs/F')
+tree.Branch( 'jet1_E_obs', b_jet1_E_obs, 'jet1_E_obs/F')
+tree.Branch( 'jet1_m_obs', b_jet1_m_obs, 'jet1_m_obs/F')
+tree.Branch( 'jet1_btag_obs', b_jet1_btag_obs, 'jet1_btag_obs/F')
+tree.Branch( 'jet2_px_obs', b_jet2_px_obs, 'jet2_px_obs/F')
+tree.Branch( 'jet2_py_obs', b_jet2_py_obs, 'jet2_py_obs/F')
+tree.Branch( 'jet2_pz_obs', b_jet2_pz_obs, 'jet2_pz_obs/F')
+tree.Branch( 'jet2_pt_obs', b_jet2_pt_obs, 'jet2_pt_obs/F')
+tree.Branch( 'jet2_E_obs', b_jet2_E_obs, 'jet2_E_obs/F')
+tree.Branch( 'jet2_m_obs', b_jet2_m_obs, 'jet2_m_obs/F')
+tree.Branch( 'jet2_btag_obs', b_jet2_btag_obs, 'jet2_btag_obs/F')
+tree.Branch( 'jet3_px_obs', b_jet3_px_obs, 'jet3_px_obs/F')
+tree.Branch( 'jet3_py_obs', b_jet3_py_obs, 'jet3_py_obs/F')
+tree.Branch( 'jet3_pz_obs', b_jet3_pz_obs, 'jet3_pz_obs/F')
+tree.Branch( 'jet3_pt_obs', b_jet3_pt_obs, 'jet3_pt_obs/F')
+tree.Branch( 'jet3_E_obs', b_jet3_E_obs, 'jet3_E_obs/F')
+tree.Branch( 'jet3_m_obs', b_jet3_m_obs, 'jet3_m_obs/F')
+tree.Branch( 'jet3_btag_obs', b_jet3_btag_obs, 'jet3_btag_obs/F')
+tree.Branch( 'jet4_px_obs', b_jet4_px_obs, 'jet4_px_obs/F')
+tree.Branch( 'jet4_py_obs', b_jet4_py_obs, 'jet4_py_obs/F')
+tree.Branch( 'jet4_pz_obs', b_jet4_pz_obs, 'jet4_pz_obs/F')
+tree.Branch( 'jet4_pt_obs', b_jet4_pt_obs, 'jet4_pt_obs/F')
+tree.Branch( 'jet4_E_obs', b_jet4_E_obs, 'jet4_E_obs/F')
+tree.Branch( 'jet4_m_obs', b_jet4_m_obs, 'jet4_m_obs/F')
+tree.Branch( 'jet4_btag_obs', b_jet4_btag_obs, 'jet4_btag_obs/F')
+tree.Branch( 'jet5_px_obs', b_jet5_px_obs, 'jet5_px_obs/F')
+tree.Branch( 'jet5_py_obs', b_jet5_py_obs, 'jet5_py_obs/F')
+tree.Branch( 'jet5_pz_obs', b_jet5_pz_obs, 'jet5_pz_obs/F')
+tree.Branch( 'jet5_pt_obs', b_jet5_pt_obs, 'jet5_pt_obs/F')
+tree.Branch( 'jet5_E_obs', b_jet5_E_obs, 'jet5_E_obs/F')
+tree.Branch( 'jet5_m_obs', b_jet5_m_obs, 'jet5_m_obs/F')
+tree.Branch( 'jet5_btag_obs', b_jet5_btag_obs, 'jet5_btag_obs/F')
+tree.Branch( 'jetmu_px_obs', b_jetmu_px_obs, 'jetmu_px_obs/F')
+tree.Branch( 'jetmu_py_obs', b_jetmu_py_obs, 'jetmu_py_obs/F')
+tree.Branch( 'jetmu_pz_obs', b_jetmu_pz_obs, 'jetmu_py_obs/F')
+tree.Branch( 'jetmu_T0_obs', b_jetmu_T0_obs, 'jetmu_T0_obs/F')
+tree.Branch( 'jelep5_ET_obs', b_jetlep_ET_obs, 'jetlep_ET_obs/F')
+tree.Branch( 'jetlep_phi_obs', b_jetlep_phi_obs, 'jetlep_phi_obs/F')
+
 tree.Branch( 'W_had_px_true',   b_W_had_px_true,   'W_had_px_true/F' )
 tree.Branch( 'W_had_py_true',   b_W_had_py_true,   'W_had_py_true/F' )
 tree.Branch( 'W_had_pz_true',   b_W_had_pz_true,   'W_had_pz_true/F' )
@@ -441,7 +525,7 @@ W_lep_total_cuts, W_lep_ET_cuts, W_lep_dist_cuts = 0., 0., 0.
 b_had_pT_cuts, b_had_dist_cuts, b_had_total_cuts = 0., 0., 0.
 b_lep_pT_cuts, b_lep_dist_cuts, b_lep_total_cuts = 0., 0., 0.
 
-good_event = 0.
+good_events = 0.
 
 ################################################################################
 # POPULATE TREE
@@ -649,7 +733,8 @@ for i in range(n_events):
     b_lep_dist_cuts += b_lep_dist_cut
 
     # Good events must pass cuts on all partons.
-    good_event += (good_b_had and good_b_lep and good_W_had and good_W_lep)
+    good_event = (good_b_had and good_b_lep and good_W_had and good_W_lep)
+    good_events += good_event
 
     ################################################# fill branches #################################################
 
@@ -703,6 +788,50 @@ for i in range(n_events):
         b_t_lep_py_obs[0]   = t_lep_y
         b_t_lep_pt_obs [0]  = t_lep_pT_observed
         b_t_lep_phi_obs[0]  = obs_t_phi
+
+
+        b_jet1_px_obs[0]   = jet_1_vect.Px()
+        b_jet1_py_obs[0]   = jet_1_vect.Py()
+        b_jet1_pz_obs[0]   = jet_1_vect.Pz()
+        b_jet1_pt_obs[0]   = jet_1_vect.Pt()
+        b_jet1_E_obs [0]   = jet_1_vect.E()
+        b_jet1_m_obs [0]   = jet_1_vect.M()
+        b_jet1_btag_obs[0]   = jet_1[i][5]
+        b_jet2_px_obs[0]   = jet_2_vect.Px()
+        b_jet2_py_obs[0]   = jet_2_vect.Py()
+        b_jet2_pz_obs[0]   = jet_2_vect.Pz()
+        b_jet2_pt_obs[0]   = jet_2_vect.Pt()
+        b_jet2_E_obs [0]   = jet_2_vect.E()
+        b_jet2_m_obs [0]   = jet_2_vect.M()
+        b_jet2_btag_obs[0]   = jet_2[i][5]
+        b_jet3_px_obs[0]   = jet_3_vect.Px()
+        b_jet3_py_obs[0]   = jet_3_vect.Py()
+        b_jet3_pz_obs[0]   = jet_3_vect.Pz()
+        b_jet3_pt_obs[0]   = jet_3_vect.Pt()
+        b_jet3_E_obs [0]   = jet_3_vect.E()
+        b_jet3_m_obs [0]   = jet_3_vect.M()
+        b_jet3_btag_obs[0]   = jet_3[i][5]
+        b_jet4_px_obs[0]   = jet_4_vect.Px()
+        b_jet4_py_obs[0]   = jet_4_vect.Py()
+        b_jet4_pz_obs[0]   = jet_4_vect.Pz()
+        b_jet4_pt_obs[0]   = jet_4_vect.Pt()
+        b_jet4_E_obs [0]   = jet_4_vect.E()
+        b_jet4_m_obs [0]   = jet_4_vect.M()
+        b_jet4_btag_obs[0]   = jet_4[i][5]
+        b_jet5_px_obs[0]   = jet_5_vect.Px()
+        b_jet5_py_obs[0]   = jet_5_vect.Py()
+        b_jet5_pz_obs[0]   = jet_5_vect.Pz()
+        b_jet5_pt_obs[0]   = jet_5_vect.Pt()
+        b_jet5_E_obs [0]   = jet_5_vect.E()
+        b_jet5_m_obs [0]   = jet_5_vect.M()
+        b_jet5_btag_obs[0]   = jet_5[i][5]
+        b_jetmu_px_obs[0]   = jet_mu[i][0]
+        b_jetmu_py_obs[0]   = jet_mu[i][1]
+        b_jetmu_pz_obs[0]   = jet_mu[i][2]
+        b_jetmu_T0_obs [0]   = jet_mu[i][3]
+        b_jetlep_ET_obs [0]   = jet_mu[i][4]
+        b_jetlep_phi_obs[0]   = jet_mu[i][5]
+
 
         # true
 
@@ -888,4 +1017,4 @@ if event_type == "good":
     print('{}%, {} events'.format(100.*b_lep_dist_cuts/n_events, int(b_lep_dist_cuts)))
     print('\n==================================================================\n')
     print("Events satisfying cut all cut criteria for all partons")
-    print('{}%, {} events\n\n'.format(100.*good_event/n_events, int(good_event)))
+    print('{}%, {} events\n\n'.format(100.*good_events/n_events, int(good_events)))

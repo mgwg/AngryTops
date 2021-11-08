@@ -69,7 +69,6 @@ def plot_hists(key, hist, outputdir):
         fwhm, sigma = getFwhm(hist)
         legend.DrawLatex( 0.65, 0.65, "FWHM: %.2f" % fwhm )
 
-    
     c1.SaveAs(outputdir + key +'.png')
     c1.Close()
 
