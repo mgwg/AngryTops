@@ -121,6 +121,14 @@ btag1 = len(np.where(num_btag==1)[0])
 btag2 = len(np.where(num_btag==2)[0])
 btag3 = len(np.where(num_btag==3)[0])
 
+# print("jets_btag array:", jets_btag[0:50])
+# print("num_btag array:", num_btag[0:50])
+# print("0 btag:", np.where(num_btag==0)[0])
+# print("1 btag:", np.where(num_btag==1)[0])
+# print("2 btag:", np.where(num_btag==2)[0])
+# print("0 btag:", len(np.where(num_btag==0)[0]))
+# print("1 btag:", len(np.where(num_btag==1)[0]))
+# print("2 btag:", len(np.where(num_btag==2)[0]))
 print("number of events: {} \n 2 b-tagged jets: {}, {}% \n 1 b-tagged jets: {}, {}% \n 0 b-tagged jets: {}, {}% \n 3 or more b-tagged jets: {}, {}%".format(
         n_events, btag2, (float(btag2)/n_events)*100.0, btag1, (float(btag1)/n_events)*100.0, btag0, (float(btag0)/n_events)*100.0, btag3, (float(btag3)/n_events)*100.0
 ))
