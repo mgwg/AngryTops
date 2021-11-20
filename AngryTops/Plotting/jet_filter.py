@@ -54,22 +54,25 @@ hists['had_W_Pt'] = TH1F("had_W_Pt","p_{T} (GeV)", 50, 0, 500)
 hists['had_b_Pt'] = TH1F("had_b_Pt","p_{T} (GeV)", 50, 0, 500)
 hists['lep_b_Pt'] = TH1F("lep_b_Pt","p_{T} (GeV)", 50, 0, 500)
 
-for i in range(5):
-    # non-b tagged jets
-    hists['max_jet_{}_Pt'.format(i)] = TH1F("max_jet_{}_Pt'.format(i)","p_{T} (GeV)", 50, 0, 500)
-    hists['jet_{}_had_W_Pt_diff'.format(i)] = TH1F("jet_{}_had_W_Pt_diff".format(i),"p_{T} (GeV)", 50, -300, 300)
-    hists['jet_{}_had_W_Pt_diff'.format(i)].SetTitle("Leading Jet p_{T} - Had W p_{T}; p_{T} (GeV);A.U.")
-    # b tagged jets
-    hists['b_max_jet_{}_Pt'.format(i)] = TH1F("max_jet_{}_Pt'.format(i)","p_{T} (GeV)", 50, 0, 500)
+hists['jet12_had_W_Pt_diff'] = TH1F("jet12_had_W_Pt_diff","p_{T} (GeV)", 50, -300, 300)
+hists['jet12_had_W_Pt_diff'].SetTitle("1+2 Leading Jet p_{T} - Had W p_{T}; p_{T} (GeV);A.U.")
 
-    # b-tagging categories
-    # had_W_Pt_3 includes events with 3 or more b-tagged jets
-    for j in range(4):
-        hists['max_jet_{}_Pt_{}'.format(i, j)] = TH1F("max_jet_{}_Pt_{}'.format(i, j)","p_{T} (GeV)", 50, 0, 500)
-        hists['jet_{}_had_W_Pt_{}_diff'.format(i, j)] = TH1F("jet_{}_had_W_Pt_{}_diff".format(i, j),"p_{T} (GeV)", 50, -300, 300)
-        hists['jet_{}_had_W_Pt_{}_diff'.format(i, j)].SetTitle("Leading Jet p_{T} - Had W p_{T}, " + "{} b-tagged jets".format(j) + "; p_{T} (GeV);A.U.")
-        if i == 0:
-            hists['had_W_Pt_{}'.format(j)] = TH1F("had_W_Pt_{}".format(j),"p_{T} (GeV)", 50, 0, 500)
+hists['jet12_Pt'] = TH1F("jet12_Pt","p_{T} (GeV)", 50, 0, 500)
+hists['jet12_Pt'].SetTitle("1+2 Leading Jet p_{T}; p_{T} (GeV);A.U.")
+
+# leading b tagged jet
+hists['jet1_b_Pt'] = TH1F("jet1_b_Pt","p_{T} (GeV)", 50, 0, 500)
+
+# b-tagging categories
+# had_W_Pt_3 includes events with 3 or more b-tagged jets
+for j in range(4):
+    hists['had_W_Pt_{}'.format(j)] = TH1F("had_W_Pt_{}".format(j),"p_{T} (GeV)", 50, 0, 500)
+    
+    hists['jet12_Pt_{}'.format(j)] = TH1F("jet12_Pt_{}".format(j),"p_{T} (GeV)", 50, 0, 500)
+    hists['jet12_Pt_{}'.format(j)].SetTitle("1+2 Leading Jet p_{T}, " + "{} b-tagged jets".format(j) + "; p_{T} (GeV);A.U.")
+
+    hists['jet12_had_W_Pt_{}_diff'.format(j)] = TH1F("jet12_had_W_Pt_{}_diff".format(j),"p_{T} (GeV)", 50, -300, 300)
+    hists['jet12_had_W_Pt_{}_diff'.format(j)].SetTitle("1+2 Leading Jet p_{T} - Had W p_{T}, " + "{} b-tagged jets".format(j) + "; p_{T} (GeV);A.U.")
 
 # each row corresponds to an event, one array for non-btagged jets and btagged jets
 jets_Pt = np.stack([jet1pt, jet2pt, jet3pt, jet4pt, jet5pt], axis = 1)
@@ -89,30 +92,30 @@ jets_b_Pt = np.sort(jets_b_Pt)
 jets_Pt = np.flip(jets_Pt, axis = 1)
 jets_b_Pt = np.flip(jets_b_Pt, axis = 1)
 
-for i in range(5): 
-    jets_Pt_max = jets_Pt[:,i].flatten()
-    jets_b_Pt_max = jets_b_Pt[:,i].flatten()
+################################################################################
+# FILL HISTOGRAMS
+jet12_Pt = jets_Pt[:,0].flatten() + jets_Pt[:,1].flatten()
+jet1_b_Pt = jets_b_Pt[:,0].flatten()
 
-    for j in jets_Pt_max.nonzero()[0]: # skip events where the leading jet has 0 pT
+# Fill b quark histograms
+for i in jet1_b_Pt.nonzero()[0]:
+    hists['had_b_Pt'].Fill( hadbpt[i] )
+    hists['lep_b_Pt'].Fill( lepbpt[i] )
+    hists['jet1_b_Pt'].Fill(jet1_b_Pt[i])
 
-        b_tag_type = int(sum(jets_btag[j]))
-        if b_tag_type >= 3: # set to 3 if greater or equal to 3 for easier indexing 
-            b_tag_type = 3
+for i in jet12_Pt.nonzero()[0]: # skip events where the leading jet has 0 pT
+    b_tag_type = int(sum(jets_btag[i]))
+    if b_tag_type >= 3: # set to 3 if greater or equal to 3 for easier indexing 
+        b_tag_type = 3
 
-        hists['jet_{}_had_W_Pt_diff'.format(i)].Fill( jets_Pt_max[j] - hadWpt[j] )
-        hists['max_jet_{}_Pt'.format(i)].Fill( jets_Pt_max[j] )
+    hists['jet12_had_W_Pt_diff'].Fill( jet12_Pt[i] - hadWpt[i] )
+    hists['jet12_had_W_Pt_{}_diff'.format(b_tag_type)].Fill( jet12_Pt[i] - hadWpt[i] )
+    
+    hists['jet12_Pt'].Fill( jet12_Pt[i] )
+    hists['jet12_Pt_{}'.format(b_tag_type)].Fill( jet12_Pt[i] )
 
-        hists['jet_{}_had_W_Pt_{}_diff'.format(i, b_tag_type)].Fill( jets_Pt_max[j] - hadWpt[j] )
-        hists['max_jet_{}_Pt_{}'.format(i, b_tag_type)].Fill( jets_Pt_max[j] )
-
-        if i == 0: #only fill once to avoid quintuble filling histograms not sorted by leading jets
-            hists['had_W_Pt'].Fill( hadWpt[j] )
-            hists['had_W_Pt_{}'.format(b_tag_type)].Fill( hadWpt[j] )
-
-    for j in jets_b_Pt_max.nonzero()[0]:
-        hists['b_max_jet_{}_Pt'.format(i)].Fill(jets_b_Pt_max[j])
-        hists['had_b_Pt'].Fill( hadbpt[j] )
-        hists['lep_b_Pt'].Fill( lepbpt[j] )
+    hists['had_W_Pt'].Fill( hadWpt[i] )
+    hists['had_W_Pt_{}'.format(b_tag_type)].Fill( hadWpt[i] )
 
 # get number of events in each b-tagging category
 num_btag = np.sum(jets_btag, axis = 1)
@@ -121,14 +124,6 @@ btag1 = len(np.where(num_btag==1)[0])
 btag2 = len(np.where(num_btag==2)[0])
 btag3 = len(np.where(num_btag==3)[0])
 
-# print("jets_btag array:", jets_btag[0:50])
-# print("num_btag array:", num_btag[0:50])
-# print("0 btag:", np.where(num_btag==0)[0])
-# print("1 btag:", np.where(num_btag==1)[0])
-# print("2 btag:", np.where(num_btag==2)[0])
-# print("0 btag:", len(np.where(num_btag==0)[0]))
-# print("1 btag:", len(np.where(num_btag==1)[0]))
-# print("2 btag:", len(np.where(num_btag==2)[0]))
 print("number of events: {} \n 2 b-tagged jets: {}, {}% \n 1 b-tagged jets: {}, {}% \n 0 b-tagged jets: {}, {}% \n 3 or more b-tagged jets: {}, {}%".format(
         n_events, btag2, (float(btag2)/n_events)*100.0, btag1, (float(btag1)/n_events)*100.0, btag0, (float(btag0)/n_events)*100.0, btag3, (float(btag3)/n_events)*100.0
 ))
@@ -155,19 +150,23 @@ def plot_hist(h, obs, caption):
     # pad0.Close()
     c.Close()
 
-def plot_observables(h_jet, h_quark, i, wb, j="NA"):
+def plot_observables(h_jet, h_quark, wb, j=0, i=""):
     # i is the ith order leading jet, j is the number of b-tagged jets
 
     if wb == "W":
         label = "Hadronic W"
+        caption = '1+ 2 Leading jet p_{T} vs Hadronic W p_{T}'
+        obs = 'jet_v_{}_Pt'.format(wb)
     elif wb == "had_b":
         label = "Hadronic b"
+        caption = 'Leading jet p_{T} vs Hadronic b p_{T}'
+        obs = 'jet_v_{}_Pt'.format(wb)
     elif wb == "lep_b":
         label = "Leptonic b"
+        caption = 'Leading jet p_{T} vs Leptonic b p_{T}'
+        obs = 'jet_v_{}_Pt'.format(wb)
 
-    caption = str(i+1)+' Leading jet p_{T} vs ' + label + ' p_{T}'
-    obs = 'jet_{}_v_{}_Pt'.format(i, wb)
-    if j != "NA":
+    if j:
         caption += " for {} b-tagged jets".format(j)
         obs += "_{}_btag".format(j)
 
@@ -203,7 +202,7 @@ def plot_observables(h_jet, h_quark, i, wb, j="NA"):
     leg.SetBorderSize(0)
     leg.SetTextFont(42)
     leg.SetTextSize(0.05)
-    leg.AddEntry( h_jet, "Leading Jet", "f" )
+    leg.AddEntry( h_jet, "Jet", "f" )
     leg.AddEntry( h_quark, label, "f" )
     leg.SetY1( leg.GetY1() - 0.05 * leg.GetNRows() )
     leg.Draw()
@@ -308,32 +307,33 @@ hist_b_had = infile.Get('had_b_Pt')
 hist_b_lep = infile.Get('lep_b_Pt')
 
 gStyle.SetOptStat("emr")#;
-for i in range(5):
-    hist_pt_diff = infile.Get('jet_{}_had_W_Pt_diff'.format(i))
-    plot_hist(hist_pt_diff, 'jet_{}_W_Pt_diff'.format(i), str(i+1)+' Leading Jet p_{T} - Hadronic W p_{T}')
-    for j in range(4):
-        hist_pt_diff = infile.Get('jet_{}_had_W_Pt_{}_diff'.format(i, j))
-        plot_hist(hist_pt_diff, 'jet_{}_W_Pt_{}_diff'.format(i, j), str(i+1)+' Leading Jet p_{T} - Hadronic W p_{T}')
+
+hist_pt_diff = infile.Get('jet12_had_W_Pt_diff')
+plot_hist(hist_pt_diff, 'jet12_had_W_Pt_diff', '1+2 Leading Jet p_{T} - Hadronic W p_{T}')
+for j in range(4):
+    hist_pt_diff = infile.Get('jet12_had_W_Pt_{}_diff'.format(j))
+    plot_hist(hist_pt_diff, 'jet12_had_W_Pt_{}_diff'.format(j), '1+2 Leading Jet p_{T} - Hadronic W p_{T}')
 
 # plot in a separate loop because the style changes and I haven't figured out how to reverse it yet
 from AngryTops.Plotting.PlottingHelper import *
+
+hist_jet12 = infile.Get('jet12_Pt')
+hist_jet_b = infile.Get('jet1_b_Pt')
+Normalize(hist_jet12)
+Normalize(hist_jet_b)
 Normalize(hist_W)
 Normalize(hist_b_had)
 Normalize(hist_b_lep)
-for i in range(5):
-    hist_jet = infile.Get('max_jet_{}_Pt'.format(i))
-    hist_jet_b = infile.Get('b_max_jet_{}_Pt'.format(i))
-    Normalize(hist_jet)
-    Normalize(hist_jet_b)
-    plot_observables(hist_jet, hist_W, i, 'W')
-    plot_observables(hist_jet, hist_b_had, i, 'had_b')
-    plot_observables(hist_jet, hist_b_lep, i, 'lep_b')
 
-    for j in range(4):
-        hist_jet_btag = infile.Get('max_jet_{}_Pt_{}'.format(i, j))
-        hist_W_btag = infile.Get('had_W_Pt_{}'.format(j))
-        Normalize(hist_jet_btag)
-        Normalize(hist_W_btag)
-        plot_observables(hist_jet_btag, hist_W_btag, i, 'W', j)
+plot_observables(hist_jet12, hist_W, 'W')
+plot_observables(hist_jet_b, hist_b_had, 'had_b')
+plot_observables(hist_jet_b, hist_b_lep, 'lep_b')
+
+for j in range(4):
+    hist_jet12_btag = infile.Get('jet12_Pt_{}'.format(j))
+    hist_W_btag = infile.Get('had_W_Pt_{}'.format(j))
+    Normalize(hist_jet12_btag)
+    Normalize(hist_W_btag)
+    plot_observables(hist_jet12_btag, hist_W_btag, 'W', j)
 
 
