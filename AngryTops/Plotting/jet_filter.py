@@ -8,8 +8,8 @@ from array import array
 
 ################################################################################
 # CONSTANTS
+infilename = sys.argv[1]
 output_dir = sys.argv[2]
-infilename = "{}/predictions_{}.root".format(output_dir, sys.argv[1])
 representation = sys.argv[3]
 scaling = True              # whether the dataset has been passed through a scaling function or not
 
@@ -60,6 +60,12 @@ hists['jet12_had_W_Pt_diff'].SetTitle("1+2 Leading Jet p_{T} - Had W p_{T}; p_{T
 hists['jet12_Pt'] = TH1F("jet12_Pt","p_{T} (GeV)", 50, 0, 500)
 hists['jet12_Pt'].SetTitle("1+2 Leading Jet p_{T}; p_{T} (GeV);A.U.")
 
+hists['jet13_Pt'] = TH1F("jet13_Pt","p_{T} (GeV)", 50, 0, 500)
+hists['jet13_Pt'].SetTitle("1+3 Leading Jet p_{T}; p_{T} (GeV);A.U.")
+
+hists['jet23_Pt'] = TH1F("jet23_Pt","p_{T} (GeV)", 50, 0, 500)
+hists['jet23_Pt'].SetTitle("2+3 Leading Jet p_{T}; p_{T} (GeV);A.U.")
+
 # leading b tagged jet
 hists['jet1_b_Pt'] = TH1F("jet1_b_Pt","p_{T} (GeV)", 50, 0, 500)
 
@@ -95,6 +101,8 @@ jets_b_Pt = np.flip(jets_b_Pt, axis = 1)
 ################################################################################
 # FILL HISTOGRAMS
 jet12_Pt = jets_Pt[:,0].flatten() + jets_Pt[:,1].flatten()
+jet13_Pt = jets_Pt[:,0].flatten() + jets_Pt[:,2].flatten()
+jet23_Pt = jets_Pt[:,1].flatten() + jets_Pt[:,2].flatten()
 jet1_b_Pt = jets_b_Pt[:,0].flatten()
 
 # Fill b quark histograms
@@ -113,6 +121,9 @@ for i in jet12_Pt.nonzero()[0]: # skip events where the leading jet has 0 pT
     
     hists['jet12_Pt'].Fill( jet12_Pt[i] )
     hists['jet12_Pt_{}'.format(b_tag_type)].Fill( jet12_Pt[i] )
+    
+    hists['jet13_Pt'].Fill( jet13_Pt[i] )
+    hists['jet23_Pt'].Fill( jet23_Pt[i] )
 
     hists['had_W_Pt'].Fill( hadWpt[i] )
     hists['had_W_Pt_{}'.format(b_tag_type)].Fill( hadWpt[i] )
@@ -150,13 +161,13 @@ def plot_hist(h, obs, caption):
     # pad0.Close()
     c.Close()
 
-def plot_observables(h_jet, h_quark, wb, j=0, i=""):
+def plot_observables(h_jet, h_quark, wb, j=0, i = "12"):
     # i is the ith order leading jet, j is the number of b-tagged jets
 
     if wb == "W":
         label = "Hadronic W"
-        caption = '1+ 2 Leading jet p_{T} vs Hadronic W p_{T}'
-        obs = 'jet_v_{}_Pt'.format(wb)
+        caption = '{}+{}'.format(i[0], i[1])+ ' Leading jet p_{T} vs Hadronic W p_{T}'
+        obs = 'jet_v_{}_{}_Pt'.format(wb, i)
     elif wb == "had_b":
         label = "Hadronic b"
         caption = 'Leading jet p_{T} vs Hadronic b p_{T}'
@@ -318,14 +329,20 @@ for j in range(4):
 from AngryTops.Plotting.PlottingHelper import *
 
 hist_jet12 = infile.Get('jet12_Pt')
+hist_jet13 = infile.Get('jet13_Pt')
+hist_jet23 = infile.Get('jet23_Pt')
 hist_jet_b = infile.Get('jet1_b_Pt')
 Normalize(hist_jet12)
+Normalize(hist_jet13)
+Normalize(hist_jet23)
 Normalize(hist_jet_b)
 Normalize(hist_W)
 Normalize(hist_b_had)
 Normalize(hist_b_lep)
 
 plot_observables(hist_jet12, hist_W, 'W')
+plot_observables(hist_jet13, hist_W, 'W', j=0, i="13")
+plot_observables(hist_jet23, hist_W, 'W', j=0, i="23")
 plot_observables(hist_jet_b, hist_b_had, 'had_b')
 plot_observables(hist_jet_b, hist_b_lep, 'lep_b')
 
@@ -334,6 +351,6 @@ for j in range(4):
     hist_W_btag = infile.Get('had_W_Pt_{}'.format(j))
     Normalize(hist_jet12_btag)
     Normalize(hist_W_btag)
-    plot_observables(hist_jet12_btag, hist_W_btag, 'W', j)
+    plot_observables(hist_jet12_btag, hist_W_btag, 'W', str(j))
 
 
