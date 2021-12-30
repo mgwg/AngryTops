@@ -4,7 +4,7 @@ import numpy as np
 from AngryTops.features import *
 import array
 import pickle
-from AngryTops.Plotting.identification_helper import MakeP4
+from AngryTops.Plotting.identification_helper import MakeP4, undo_scaling
 
 # write to tree file
 
@@ -42,30 +42,9 @@ if scaling:
         jets_scalar = pickle.load(file_scaler)
         lep_scalar = pickle.load(file_scaler)
         output_scalar = pickle.load(file_scaler)
-        # Rescale the truth array
-        true = true.reshape(true.shape[0], true.shape[1]*true.shape[2])
-        true = output_scalar.inverse_transform(true)
-        true = true.reshape(true.shape[0], particles_shape[0], particles_shape[1])
-        # Rescale the fitted array
-        fitted = fitted.reshape(fitted.shape[0], fitted.shape[1]*fitted.shape[2])
-        fitted = output_scalar.inverse_transform(fitted)
-        fitted = fitted.reshape(fitted.shape[0], particles_shape[0], particles_shape[1])
-        # Rescale the jets array
-        jets_lep = jets[:,:6]
-        jets_jets = jets[:,6:] # remove muon column
-        jets_jets = jets_jets.reshape((jets_jets.shape[0],5,6)) # reshape to 5 x 6 array
 
-        # Remove the b-tagging states and put them into a new array to be re-appended later.
-        b_tags = jets_jets[:,:,5]
-        jets_jets = np.delete(jets_jets, 5, 2) # delete the b-tagging states
+    jets_jets, jets_lep, true, fitted = undo_scaling(jets_scalar, lep_scalar, output_scalar, jets, true, fitted)
 
-        jets_jets = jets_jets.reshape((jets_jets.shape[0], 25)) # reshape into 25 element long array
-        jets_lep = lep_scalar.inverse_transform(jets_lep)
-        jets_jets = jets_scalar.inverse_transform(jets_jets) # scale values ... ?
-        #I think this is the final 6x6 array the arxiv paper was talking about - 5 x 5 array containing jets (1 per row) and corresponding px, py, pz, E, m
-        jets_jets = jets_jets.reshape((jets_jets.shape[0],5,5))
-        # Re-append the b-tagging states as a column at the end of jets_jets 
-        jets_jets = np.append(jets_jets, np.expand_dims(b_tags, 2), 2)
 
 if not scaling:
     jets_lep = jets[:,:6]
@@ -111,6 +90,7 @@ ofilename = "{}/predictions_May21.root".format(output_dir)
 ofile = TFile.Open( ofilename, "recreate" )
 ofile.cd()
 
+b_jet1 = array.array('')
 b_jet1_px_obs   = array.array( 'f', [ -1.] )
 b_jet1_py_obs   = array.array( 'f', [ -1.] )
 b_jet1_pz_obs   = array.array( 'f', [ -1.] )
