@@ -2,7 +2,7 @@ import os, sys
 import numpy as np
 from ROOT import *
 import pickle
-from AngryTops.Plotting.identification_helper import MakeP4, plot_corr
+from AngryTops.Plotting.identification_helper import MakeP4
 from AngryTops.features import *
 from array import array
 
@@ -66,35 +66,6 @@ for j in range(4):
     hists['jet12_had_W_Pt_{}_diff'.format(j)] = TH1F("jet12_had_W_Pt_{}_diff".format(j),"p_{T} (GeV)", 50, -300, 300)
     hists['jet12_had_W_Pt_{}_diff'.format(j)].SetTitle("1+2 Leading Jet p_{T} - Had W p_{T}, " + "{} b-tagged jets".format(j) + "; p_{T} (GeV);A.U.")
 
-hists['corr_W_had_pt']    = TH2F( "corr_W_had_pt",      ";True Hadronic W p_{T} [GeV];Predicted Hadronic W p_{T} [GeV]", 50, 0., 300., 50, 0., 300. )
-hists['corr_W_had_px']    = TH2F( "corr_W_had_px",      ";True Hadronic W p_{x} [GeV];Predicted Hadronic W p_{x} [GeV]", 50, -300., 300., 50, -300., 300. )
-hists['corr_W_had_py']    = TH2F( "corr_W_had_py",      ";True Hadronic W p_{y} [GeV];Predicted Hadronic W p_{y} [GeV]", 50, -300., 300., 50, -300., 300. )
-hists['corr_W_had_pz']    = TH2F( "corr_W_had_pz",      ";True Hadronic W p_{z} [GeV];Predicted Hadronic W p_{z} [GeV]", 50, -400., 400., 50, -400., 400. )
-hists['corr_W_had_y']     = TH2F( "corr_W_had_y",       ";True Hadronic W y;Predicted Hadronic top y", 25, -5., 5., 25, -5., 5. )
-hists['corr_W_had_phi']   = TH2F( "corr_W_had_phi",     ";True Hadronic W #phi;Predicted Hadronic top #phi", 16, -3.2, 3.2, 16, -3.2, 3.2 )
-hists['corr_W_had_E']     = TH2F( "corr_W_had_E",       ";True Hadronic W E [GeV];Predicted Hadronic top E [GeV]", 50, 70., 400., 50, 70., 400. )
-hists['corr_W_had_m']     = TH2F( "corr_W_had_m",       ";True Hadronic W m [GeV];Predicted Hadronic top m [GeV]", 25, 170., 175., 20, 150., 250. )
-
-hists['corr_W_had_pt_1']    = TH2F( "corr_W_had_pt_1",      ";True Hadronic W p_{T} 1-btag jet [GeV];Predicted Hadronic W p_{T} [GeV]", 50, 0., 300., 50, 0., 300. )
-hists['corr_W_had_y_1']     = TH2F( "corr_W_had_y_1",       ";True Hadronic W y 1-btag jet;Predicted Hadronic top y", 25, -5., 5., 25, -5., 5. )
-hists['corr_W_had_phi_1']   = TH2F( "corr_W_had_phi_1",     ";True Hadronic W #phi 1-btag jet ;Predicted Hadronic top #phi", 16, -3.2, 3.2, 16, -3.2, 3.2 )
-hists['corr_W_had_E_1']     = TH2F( "corr_W_had_E_1",       ";True Hadronic W E 1-btag jet [GeV];Predicted Hadronic top E [GeV]", 50, 70., 400., 50, 70., 400. )
-
-hists['corr_W_had_pt_2']    = TH2F( "corr_W_had_pt_2",      ";True Hadronic W p_{T} 2-btag jets [GeV];Predicted Hadronic W p_{T} [GeV]", 50, 0., 300., 50, 0., 300. )
-hists['corr_W_had_y_2']     = TH2F( "corr_W_had_y_2",       ";True Hadronic W y 2-btag jets ;Predicted Hadronic top y", 25, -5., 5., 25, -5., 5. )
-hists['corr_W_had_phi_2']   = TH2F( "corr_W_had_phi_2",     ";True Hadronic W #phi 2-btag jets ;Predicted Hadronic top #phi", 16, -3.2, 3.2, 16, -3.2, 3.2 )
-hists['corr_W_had_E_2']     = TH2F( "corr_W_had_E_2",       ";True Hadronic W E 2-btag jets [GeV];Predicted Hadronic top E [GeV]", 50, 70., 400., 50, 70., 400. )
-
-hists['corr_W_had_pt_0']    = TH2F( "corr_W_had_pt_0",      ";True Hadronic W p_{T} 0-btag jet [GeV];Predicted Hadronic W p_{T} [GeV]", 50, 0., 300., 50, 0., 300. )
-hists['corr_W_had_y_0']     = TH2F( "corr_W_had_y_0",       ";True Hadronic W y 0-btag jet ;Predicted Hadronic top y", 25, -5., 5., 25, -5., 5. )
-hists['corr_W_had_phi_0']   = TH2F( "corr_W_had_phi_0",     ";True Hadronic W #phi 0-btag jet ;Predicted Hadronic top #phi", 16, -3.2, 3.2, 16, -3.2, 3.2 )
-hists['corr_W_had_E_0']     = TH2F( "corr_W_had_E_0",       ";True Hadronic W E 0-btag jet [GeV];Predicted Hadronic top E [GeV]", 50, 70., 400., 50, 70., 400. )
-
-hists['corr_W_had_pt_3']    = TH2F( "corr_W_had_pt_3",      ";True Hadronic W p_{T} 3-btag jets [GeV];Predicted Hadronic W p_{T} [GeV]", 50, 0., 300., 50, 0., 300. )
-hists['corr_W_had_y_3']     = TH2F( "corr_W_had_y_3",       ";True Hadronic W y 3-btag jets ;Predicted Hadronic top y", 25, -5., 5., 25, -5., 5. )
-hists['corr_W_had_phi_3']   = TH2F( "corr_W_had_phi_3",     ";True Hadronic W #phi 3-btag jets ;Predicted Hadronic top #phi", 16, -3.2, 3.2, 16, -3.2, 3.2 )
-hists['corr_W_had_E_3']     = TH2F( "corr_W_had_E_3",       ";True Hadronic W E 3-btag jets [GeV];Predicted Hadronic top E [GeV]", 50, 70., 400., 50, 70., 400. )
-
 ################################################################################
 # GET VALUES FROM TREE
 jet1px = t.AsMatrix(["jet1_px_obs"]).flatten()
@@ -114,12 +85,6 @@ jet2pz = t.AsMatrix(["jet2_pz_obs"]).flatten()
 jet3pz = t.AsMatrix(["jet3_pz_obs"]).flatten()
 jet4pz = t.AsMatrix(["jet4_pz_obs"]).flatten()
 jet5pz = t.AsMatrix(["jet5_pz_obs"]).flatten()
-
-jet1pt = t.AsMatrix(["jet1_pt_obs"]).flatten()
-jet2pt = t.AsMatrix(["jet2_pt_obs"]).flatten()
-jet3pt = t.AsMatrix(["jet3_pt_obs"]).flatten()
-jet4pt = t.AsMatrix(["jet4_pt_obs"]).flatten()
-jet5pt = t.AsMatrix(["jet5_pt_obs"]).flatten()
 
 jet1p = np.stack([jet1px, jet1py, jet1pz], axis=1)
 jet2p = np.stack([jet2px, jet2py, jet2pz], axis=1)
@@ -143,23 +108,6 @@ hadWpt = t.AsMatrix(["W_had_pt_true"]).flatten()
 hadbpt = t.AsMatrix(["b_had_pt_true"]).flatten()
 lepbpt = t.AsMatrix(["b_lep_pt_true"]).flatten()
 
-hadWpx = t.AsMatrix(["W_had_px_true"]).flatten()
-hadWpy = t.AsMatrix(["W_had_py_true"]).flatten()
-hadWpz = t.AsMatrix(['W_had_pz_true']).flatten()
-hadWE = t.AsMatrix(['W_had_E_true']).flatten()
-hadWm = t.AsMatrix(['W_had_m_true']).flatten()
-hadWy = t.AsMatrix(['W_had_y_true']).flatten()
-hadWphi = t.AsMatrix(['W_had_phi_true']).flatten()
-
-hadWpx_fit = t.AsMatrix(["W_had_px_fitted"]).flatten()
-hadWpy_fit = t.AsMatrix(["W_had_py_fitted"]).flatten()
-hadWpz_fit = t.AsMatrix(['W_had_pz_fitted']).flatten()
-hadWE_fit = t.AsMatrix(['W_had_E_fitted']).flatten()
-hadWpt_fit = t.AsMatrix(['W_had_pt_fitted']).flatten()
-hadWm_fit = t.AsMatrix(['W_had_m_fitted']).flatten()
-hadWy_fit = t.AsMatrix(['W_had_y_fitted']).flatten()
-hadWphi_fit = t.AsMatrix(['W_had_phi_fitted']).flatten()
-
 n_events = t.GetEntries()
 
 jets = []
@@ -170,36 +118,25 @@ for i in range(n_events):
     jet4 = MakeP4(jet4p[i], jet4m[i], representation)
     jet5 = MakeP4(jet5p[i], jet5m[i], representation)
     jets.append([jet1, jet2, jet3, jet4, jet5])
+jets = np.array(jets)
 
 jets_btag = np.stack([jet1btag, jet2btag, jet3btag, jet4btag, jet5btag], axis = 1)
 
 ################################################################################
-# FIND B-TAGGED AND NON B-TAGGED ROWS
+# FILL HISTS WITH LEADING B-TAGGED AND NON B-TAGGED JETS 
 
 # jet1,2,3,4,5 are already sorted in order of leading jet based on how the jets were stored when data was generated
 # jet1 is first leading jet, jet2 the second, etc...
-
-# as a check, run:
-# np.where(jet1pt < jet2pt)
-# np.where(jet2pt < jet3pt)
-# np.where(jet3pt < jet4pt)
-# np.where(jet4pt < jet5pt)
-
-# get arrays of b-tagged and non-b-tagged jets
-jets_nonb = np.array(jets)
-jets_b = np.array(jets)
 
 for i in range(n_events):
     if ((i+1) % int(float(n_events)/10.)  == 0 ):
         perc = 100. * i / float(n_events)
         print("INFO: Event %-9i  (%3.0f %%)" % ( i, perc ))
 
+    # get arrays of b-tagged and non-b-tagged jets
     # remove 0 entries in both arrays
-    nonbtag_jets = np.delete(jets_nonb[i], np.where(jets_btag[i] != 0))
-    btag_jets = np.delete(jets_b[i], np.where(jets_btag[i] == 0))
-
-    # leading jet = nonbtag_jets[0]
-    # second leading jet = nonbtag_jets[1]
+    nonbtag_jets = np.delete(jets[i], np.where(jets_btag[i] != 0))
+    btag_jets = np.delete(jets[i], np.where(jets_btag[i] == 0))
 
     if btag_jets.size and btag_jets[0].Pt() != 0: # skip events where the leading jet has 0 pT
         hists['had_b_Pt'].Fill( hadbpt[i] )
@@ -208,15 +145,21 @@ for i in range(n_events):
         hists['jet1_b_m'].Fill(btag_jets[0].M())
 
     if nonbtag_jets.size and nonbtag_jets[0].Pt() != 0: 
+        # add first and second leading jet if there are 2 or more non-btagged jets
         if nonbtag_jets.size > 1:
             jet12_Pt = (nonbtag_jets[0] + nonbtag_jets[1]).Pt()
             jet12_m = (nonbtag_jets[0] + nonbtag_jets[1]).M()
+        # otherwise, just use the Pt and mass fo the leading jet
         else:
             jet12_Pt = nonbtag_jets[0].Pt()
             jet12_m = nonbtag_jets[0].M()
 
+        # first look at events with 2 btagged jets, then 1, then 0... 
+
+
+        # store the b-tag type
         b_tag_type = int(sum(jets_btag[i]))
-        if b_tag_type >= 3: # set to 3 if greater or equal to 3 for easier indexing 
+        if b_tag_type >= 3:
             b_tag_type = 3
 
         hadW_Pt = hadWpt[i]
@@ -232,23 +175,6 @@ for i in range(n_events):
 
         hists['had_W_Pt'].Fill( hadW_Pt )
         hists['had_W_Pt_{}'.format(b_tag_type)].Fill( hadW_Pt )
-
-        # plot predicted
-        # if jet12_m > W_had_m_cutoff[0] and jet12_m < W_had_m_cutoff[1]:
-        w = 1
-        hists['corr_W_had_pt'].Fill(  hadWpt[i],  hadWpt_fit[i], w)
-        hists['corr_W_had_px'].Fill(  hadWpx[i],  hadWpx_fit[i], w)
-        hists['corr_W_had_py'].Fill(  hadWpy[i],  hadWpy_fit[i],  w )
-        hists['corr_W_had_pz'].Fill(  hadWpz[i],  hadWpz_fit[i],  w )
-        hists['corr_W_had_y'].Fill(   hadWy[i],  hadWy_fit[i], w )
-        hists['corr_W_had_phi'].Fill( hadWphi[i],  hadWphi_fit[i], w )
-        hists['corr_W_had_E'].Fill(   hadWE[i],  hadWE_fit[i],   w )
-        hists['corr_W_had_m'].Fill(   hadWm[i],  hadWm_fit[i],   w )
-
-        hists['corr_W_had_pt_{}'.format(b_tag_type)].Fill(  hadWpt[i],  hadWpt_fit[i], w)
-        hists['corr_W_had_y_{}'.format(b_tag_type)].Fill(   hadWy[i],  hadWy_fit[i], w )
-        hists['corr_W_had_phi_{}'.format(b_tag_type)].Fill( hadWphi[i],  hadWphi_fit[i], w )
-        hists['corr_W_had_E_{}'.format(b_tag_type)].Fill(   hadWE[i],  hadWE_fit[i],   w )
 
 ################################################################################
 
@@ -380,54 +306,6 @@ def plot_observables(h_jet, h_quark, wb, j=0, i = "12"):
     pad1.Close()
     c.Close()
 
-def plot_correlations(hist_name, caption):
-
-    hist = hists['corr_max_jet_v_had_W_Pt']
-    if hist == None:
-        print ("ERROR: invalid histogram for", hist_name)
-
-    SetTH1FStyle(hist,  color=kGray+2, fillstyle=6)
-
-    c = TCanvas()
-    c.cd()
-
-    pad0 = TPad( "pad0","pad0",0, 0,1,1,0,0,0 )
-    pad0.SetLeftMargin( 0.18 ) #0.16
-    pad0.SetRightMargin( 0.05 )
-    pad0.SetBottomMargin( 0.18 )
-    pad0.SetTopMargin( 0.07 ) #0.05
-    pad0.SetFillColor(0)
-    pad0.SetFillStyle(4000)
-    pad0.Draw()
-    pad0.cd()
-
-    hist.Draw("colz")
-
-    corr = hist.GetCorrelationFactor()
-    l = TLatex()
-    l.SetNDC()
-    l.SetTextFont(42)
-    l.SetTextColor(kBlack)
-    l.DrawLatex( 0.2, 0.8, "Corr Coeff: %.2f" % corr )
-
-    gPad.RedrawAxis()
-
-    if caption is not None:
-        newpad = TPad("newpad","a caption",0.1,0,1,1)
-        newpad.SetFillStyle(4000)
-        newpad.Draw()
-        newpad.cd()
-        title = TPaveLabel(0.1,0.94,0.9,0.99,caption)
-        title.SetFillColor(16)
-        title.SetTextFont(52)
-        title.Draw()
-
-    c.cd()
-
-    c.SaveAs("{0}/img/{1}.png".format(output_dir, hist_name))
-    pad0.Close()
-    c.Close()
-
 try:
     os.mkdir('{}/img'.format(output_dir))
 except Exception as e:
@@ -480,11 +358,3 @@ for j in range(4):
     Normalize(hist_jet12_btag)
     Normalize(hist_W_btag)
     plot_observables(hist_jet12_btag, hist_W_btag, 'W', str(j))
-
-gStyle.SetPalette(kGreyScale)
-gROOT.GetColor(52).InvertPalette()
-
-for name in hists:
-    if 'corr' in name:
-        corr = infile.Get(name)
-        plot_corr(name, corr, output_dir+"/img/")

@@ -8,7 +8,7 @@ from array import array
 
 ################################################################################
 # CONSTANTS
-infilename = "../CheckPoints/Nov06/predictions_May21.root"
+infilename = "../CheckPoints/Fall/Nov06/predictions_May21.root"
 representation = "pxpypzEM"
 scaling = True              # whether the dataset has been passed through a scaling function or not
 
