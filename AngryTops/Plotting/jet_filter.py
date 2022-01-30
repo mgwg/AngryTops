@@ -38,18 +38,18 @@ hists['had_W_Pt'] = TH1F("had_W_Pt","p_{T} (GeV)", 50, 0, 500)
 hists['had_b_Pt'] = TH1F("had_b_Pt","p_{T} (GeV)", 50, 0, 500)
 hists['lep_b_Pt'] = TH1F("lep_b_Pt","p_{T} (GeV)", 50, 0, 500)
 
-hists['jet12_had_W_Pt_diff'] = TH1F("jet12_had_W_Pt_diff","p_{T} (GeV)", 50, -300, 300)
-hists['jet12_had_W_Pt_diff'].SetTitle("1+2 Leading Jet p_{T} - Had W p_{T}; p_{T} (GeV);A.U.")
+hists['obs_jet_had_W_Pt_diff'] = TH1F("obs_jet_had_W_Pt_diff","p_{T} (GeV)", 50, -300, 300)
+hists['obs_jet_had_W_Pt_diff'].SetTitle("Leading Jets p_{T} - Had W p_{T}; p_{T} (GeV);A.U.")
 
-hists['jet12_Pt'] = TH1F("jet12_Pt","p_{T} (GeV)", 50, 0, 500)
-hists['jet12_Pt'].SetTitle("1+2 Leading Jet p_{T}; p_{T} (GeV);A.U.")
+hists['obs_jet_Pt'] = TH1F("obs_jet_Pt","p_{T} (GeV)", 50, 0, 500)
+hists['obs_jet_Pt'].SetTitle("Leading Jets p_{T}; p_{T} (GeV);A.U.")
 
-hists['jet12_m'] = TH1F("jet12_m","mass (GeV)", 50, 0, 250)
-hists['jet12_m'].SetTitle("1+2 Leading Jet mass; mass (GeV);A.U.")
+hists['obs_jet_m'] = TH1F("obs_jet_m","mass (GeV)", 50, 0, 250)
+hists['obs_jet_m'].SetTitle("Leading Jets mass; mass (GeV);A.U.")
 
 # leading b tagged jet
 hists['jet1_b_Pt'] = TH1F("jet1_b_Pt","p_{T} (GeV)", 50, 0, 500)
-hists['jet1_b_m'] = TH1F("jet1_b_m","mass (GeV)", 50, 0, 50)
+hists['jet1_b_m'] = TH1F("jet1_b_m","mass (GeV)", 50, 0, 250)
 hists['jet1_b_m'].SetTitle("1 b-tagged Leading Jet mass;mass (GeV);A.U.")
 
 # b-tagging categories
@@ -57,14 +57,14 @@ hists['jet1_b_m'].SetTitle("1 b-tagged Leading Jet mass;mass (GeV);A.U.")
 for j in range(4):
     hists['had_W_Pt_{}'.format(j)] = TH1F("had_W_Pt_{}".format(j),"p_{T} (GeV)", 50, 0, 500)
     
-    hists['jet12_Pt_{}'.format(j)] = TH1F("jet12_Pt_{}".format(j),"p_{T} (GeV)", 50, 0, 500)
-    hists['jet12_Pt_{}'.format(j)].SetTitle("1+2 Leading Jet p_{T}, " + "{} b-tagged jets".format(j) + "; p_{T} (GeV);A.U.")
+    hists['obs_jet_Pt_{}'.format(j)] = TH1F("obs_jet_Pt_{}".format(j),"p_{T} (GeV)", 50, 0, 500)
+    hists['obs_jet_Pt_{}'.format(j)].SetTitle("Leading Jets p_{T}, " + "{} b-tagged jets".format(j) + "; p_{T} (GeV);A.U.")
     
-    hists['jet12_m_{}'.format(j)] = TH1F("jet12_m_{}".format(j),"m (GeV)", 50, 0, 250)
-    hists['jet12_m_{}'.format(j)].SetTitle("1+2 Leading Jet mass, " + "{} b-tagged jets".format(j) + "; mass (GeV);A.U.")
+    hists['obs_jet_m_{}'.format(j)] = TH1F("obs_jet_m_{}".format(j),"m (GeV)", 50, 0, 250)
+    hists['obs_jet_m_{}'.format(j)].SetTitle("Leading Jets mass, " + "{} b-tagged jets".format(j) + "; mass (GeV);A.U.")
 
-    hists['jet12_had_W_Pt_{}_diff'.format(j)] = TH1F("jet12_had_W_Pt_{}_diff".format(j),"p_{T} (GeV)", 50, -300, 300)
-    hists['jet12_had_W_Pt_{}_diff'.format(j)].SetTitle("1+2 Leading Jet p_{T} - Had W p_{T}, " + "{} b-tagged jets".format(j) + "; p_{T} (GeV);A.U.")
+    hists['obs_jet_had_W_Pt_{}_diff'.format(j)] = TH1F("obs_jet_had_W_Pt_{}_diff".format(j),"p_{T} (GeV)", 50, -300, 300)
+    hists['obs_jet_had_W_Pt_{}_diff'.format(j)].SetTitle("Leading Jets p_{T} - Had W p_{T}, " + "{} b-tagged jets".format(j) + "; p_{T} (GeV);A.U.")
 
 ################################################################################
 # GET VALUES FROM TREE
@@ -128,6 +128,10 @@ jets_btag = np.stack([jet1btag, jet2btag, jet3btag, jet4btag, jet5btag], axis = 
 # jet1,2,3,4,5 are already sorted in order of leading jet based on how the jets were stored when data was generated
 # jet1 is first leading jet, jet2 the second, etc...
 
+# btag type: 0,1,2,3
+# 12, 13, 23, 1
+matches = [[0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]]
+
 for i in range(n_events):
     if ((i+1) % int(float(n_events)/10.)  == 0 ):
         perc = 100. * i / float(n_events)
@@ -144,34 +148,46 @@ for i in range(n_events):
         hists['jet1_b_Pt'].Fill(btag_jets[0].Pt())
         hists['jet1_b_m'].Fill(btag_jets[0].M())
 
-    if nonbtag_jets.size and nonbtag_jets[0].Pt() != 0: 
+    b_tag_type = int(sum(jets_btag[i]))
+    if b_tag_type >= 3:
+        b_tag_type = 3
+
+    # first look at 1+2 leading jets, then 1+3 or 2+3
+    # and condition comes first so there isn't an error when trying to index nonbtag_jets[0]
+    if nonbtag_jets.size and (nonbtag_jets[0].Pt() != 0): 
         # add first and second leading jet if there are 2 or more non-btagged jets
         if nonbtag_jets.size > 1:
-            jet12_Pt = (nonbtag_jets[0] + nonbtag_jets[1]).Pt()
-            jet12_m = (nonbtag_jets[0] + nonbtag_jets[1]).M()
+            obs_jet_Pt = (nonbtag_jets[0] + nonbtag_jets[1]).Pt()
+            obs_jet_m = (nonbtag_jets[0] + nonbtag_jets[1]).M()
+            match = 0
         # otherwise, just use the Pt and mass fo the leading jet
         else:
-            jet12_Pt = nonbtag_jets[0].Pt()
-            jet12_m = nonbtag_jets[0].M()
+            obs_jet_Pt = nonbtag_jets[0].Pt()
+            obs_jet_m = nonbtag_jets[0].M()
+            match = 3
 
-        # first look at events with 2 btagged jets, then 1, then 0... 
+        if (nonbtag_jets.size > 2) and (nonbtag_jets[2].Pt() != 0): # implies Pt of [0] and [1] are also non zero
+            if (obs_jet_m < W_had_m_cutoff[0]) or (obs_jet_m > W_had_m_cutoff[1]):
+                obs_jet_Pt = (nonbtag_jets[0] + nonbtag_jets[2]).Pt()
+                obs_jet_m = (nonbtag_jets[0] + nonbtag_jets[2]).M()
+                match = 1
 
-
-        # store the b-tag type
-        b_tag_type = int(sum(jets_btag[i]))
-        if b_tag_type >= 3:
-            b_tag_type = 3
+            if (obs_jet_m < W_had_m_cutoff[0]) or (obs_jet_m > W_had_m_cutoff[1]):
+                obs_jet_Pt = (nonbtag_jets[1] + nonbtag_jets[2]).Pt()
+                obs_jet_m = (nonbtag_jets[1] + nonbtag_jets[2]).M()
+                match = 2
 
         hadW_Pt = hadWpt[i]
+        matches[b_tag_type][match] +=1
 
-        # if jet12_m > W_had_m_cutoff[0] and jet12_m < W_had_m_cutoff[1]:
-        hists['jet12_had_W_Pt_diff'].Fill( jet12_Pt - hadW_Pt )
-        hists['jet12_had_W_Pt_{}_diff'.format(b_tag_type)].Fill( jet12_Pt - hadW_Pt )
+        # if obs_jet_m > W_had_m_cutoff[0] and obs_jet_m < W_had_m_cutoff[1]:
+        hists['obs_jet_had_W_Pt_diff'].Fill( obs_jet_Pt - hadW_Pt )
+        hists['obs_jet_had_W_Pt_{}_diff'.format(b_tag_type)].Fill( obs_jet_Pt - hadW_Pt )
         
-        hists['jet12_Pt'].Fill( jet12_Pt )
-        hists['jet12_Pt_{}'.format(b_tag_type)].Fill( jet12_Pt )
-        hists['jet12_m'].Fill( jet12_m )
-        hists['jet12_m_{}'.format(b_tag_type)].Fill( jet12_m )
+        hists['obs_jet_Pt'].Fill( obs_jet_Pt )
+        hists['obs_jet_Pt_{}'.format(b_tag_type)].Fill( obs_jet_Pt )
+        hists['obs_jet_m'].Fill( obs_jet_m )
+        hists['obs_jet_m_{}'.format(b_tag_type)].Fill( obs_jet_m )
 
         hists['had_W_Pt'].Fill( hadW_Pt )
         hists['had_W_Pt_{}'.format(b_tag_type)].Fill( hadW_Pt )
@@ -188,6 +204,19 @@ btag3 = len(np.where(num_btag==3)[0])
 print("number of events: {} \n 2 b-tagged jets: {}, {}% \n 1 b-tagged jets: {}, {}% \n 0 b-tagged jets: {}, {}% \n 3 or more b-tagged jets: {}, {}%".format(
         n_events, btag2, (float(btag2)/n_events)*100.0, btag1, (float(btag1)/n_events)*100.0, btag0, (float(btag0)/n_events)*100.0, btag3, (float(btag3)/n_events)*100.0
 ))
+
+for i in range(len(matches)):
+    print('btag jets: {}'.format(i))
+    for j in range(len(matches[i])):
+        if j == 0:
+            match_type = '12'    
+        elif j == 1:
+            math_type = '13'
+        elif j == 2:
+            match_type = '23'
+        elif j == 3:
+            match_type = '1'
+        print("num {} jet matches: {}, {}% of total 2 b-tagged jet events".format(match_type, matches[i][j], float(matches[i][j])/float(sum(matches[i]))*100.0 ))
 
 for histname in hists:
     hists[histname].Write(histname)
@@ -327,34 +356,34 @@ gStyle.SetOptStat("emr")#;
 jet1_b_m = infile.Get("jet1_b_m")
 plot_hist(jet1_b_m, "jet1_b_m")
 
-hist_pt_diff = infile.Get('jet12_had_W_Pt_diff')
-plot_hist(hist_pt_diff, 'jet12_had_W_Pt_diff')
-jet12_mass = infile.Get('jet12_m')
-plot_hist(jet12_mass, 'jet12_had_W_m')
+hist_pt_diff = infile.Get('obs_jet_had_W_Pt_diff')
+plot_hist(hist_pt_diff, 'obs_jet_had_W_Pt_diff')
+obs_jet_mass = infile.Get('obs_jet_m')
+plot_hist(obs_jet_mass, 'obs_jet_had_W_m')
 for j in range(4):
-    hist_pt_diff = infile.Get('jet12_had_W_Pt_{}_diff'.format(j))
-    plot_hist(hist_pt_diff, 'jet12_had_W_Pt_{}_diff'.format(j))
-    jet12_mass = infile.Get('jet12_m_{}'.format(j))
-    plot_hist(jet12_mass, 'jet12_had_W_m_{}'.format(j))
+    hist_pt_diff = infile.Get('obs_jet_had_W_Pt_{}_diff'.format(j))
+    plot_hist(hist_pt_diff, 'obs_jet_had_W_Pt_{}_diff'.format(j))
+    obs_jet_mass = infile.Get('obs_jet_m_{}'.format(j))
+    plot_hist(obs_jet_mass, 'obs_jet_had_W_m_{}'.format(j))
 
 # plot in a separate loop because the style changes and I haven't figured out how to reverse it yet
 from AngryTops.Plotting.PlottingHelper import *
 
-hist_jet12 = infile.Get('jet12_Pt')
+hist_obs_jet = infile.Get('obs_jet_Pt')
 hist_jet_b = infile.Get('jet1_b_Pt')
-Normalize(hist_jet12)
+Normalize(hist_obs_jet)
 Normalize(hist_jet_b)
 Normalize(hist_W)
 Normalize(hist_b_had)
 Normalize(hist_b_lep)
 
-plot_observables(hist_jet12, hist_W, 'W')
+plot_observables(hist_obs_jet, hist_W, 'W')
 plot_observables(hist_jet_b, hist_b_had, 'had_b')
 plot_observables(hist_jet_b, hist_b_lep, 'lep_b')
 
 for j in range(4):
-    hist_jet12_btag = infile.Get('jet12_Pt_{}'.format(j))
+    hist_obs_jet_btag = infile.Get('obs_jet_Pt_{}'.format(j))
     hist_W_btag = infile.Get('had_W_Pt_{}'.format(j))
-    Normalize(hist_jet12_btag)
+    Normalize(hist_obs_jet_btag)
     Normalize(hist_W_btag)
-    plot_observables(hist_jet12_btag, hist_W_btag, 'W', str(j))
+    plot_observables(hist_obs_jet_btag, hist_W_btag, 'W', str(j))
