@@ -35,11 +35,11 @@ ofile.cd()
 # HISTOGRAMS
 hists = {}
 
-hists['true_obs_had_t_m_diff'] = TH1F("true_obs_had_t_m_diff","(rad)", 50, 0, 250)
-hists['true_obs_had_t_m_diff'].SetTitle("True vs Observed Hadronic t Mass Diff;mass (GeV);A.U.")
-
 hists['obs_had_Wb_dist'] = TH1F("obs_had_Wb_dist","(rad)", 50, 0, 6)
 hists['obs_had_Wb_dist'].SetTitle("Observed Hadronic W and Closest b-tagged Jet dist; (rad);A.U.")
+
+hists['obs_had_W_m'] = TH1F("obs_had_W_m","mass (GeV)", 50, 0, 250)
+hists['obs_had_W_m'].SetTitle("Observed Hadronic W mass; mass (GeV);A.U.")
 
 # had b
 
@@ -147,6 +147,7 @@ jets_btag = np.stack([jet1btag, jet2btag, jet3btag, jet4btag, jet5btag], axis = 
 
 # counter 
 b_events = 0.0
+matches = [0.0,0.0,0.0,0.0]
 
 for i in range(n_events):
     if ((i+1) % int(float(n_events)/10.)  == 0 ):
@@ -167,51 +168,32 @@ for i in range(n_events):
     if nonbtag_jets.size and nonbtag_jets[0].Pt() != 0: 
         # add first and second leading jet if there are 2 or more non-btagged jets
         if nonbtag_jets.size > 1:
-            jet12_Pt = (nonbtag_jets[0] + nonbtag_jets[1]).Pt()
-            jet12_m = (nonbtag_jets[0] + nonbtag_jets[1]).M()
             hadW_obs = nonbtag_jets[0] + nonbtag_jets[1]
+            match = 0
         # otherwise, just use the Pt and mass fo the leading jet
         else:
-            jet12_Pt = nonbtag_jets[0].Pt()
-            jet12_m = nonbtag_jets[0].M()
             hadW_obs = nonbtag_jets[0]
+            match = 3
+
+        if (nonbtag_jets.size > 2) and (nonbtag_jets[2].Pt() != 0): # implies Pt of [0] and [1] are also non zero
+            if (hadW_obs.M() < W_had_m_cutoff[0]) or (hadW_obs.M() > W_had_m_cutoff[1]):
+                hadW_obs = nonbtag_jets[0] + nonbtag_jets[2]
+                match = 1
+
+            if (hadW_obs.M() < W_had_m_cutoff[0]) or (hadW_obs.M() > W_had_m_cutoff[1]):
+                hadW_obs = nonbtag_jets[1] + nonbtag_jets[2]
+                match = 2
+
+    matches[match] +=1.0
 
     # find hadronic b based on shortest eta-phi distance to had W
     bW_dist = [find_dist(hadW_obs, btag_jets[0]), find_dist(hadW_obs, btag_jets[1])]
     hadb_i = bW_dist.index(min(bW_dist))
     lepb_i = bW_dist.index(max(bW_dist))
 
-    if i<= 10:
-        print(hadb_i, lepb_i)
-
     hadb_obs = btag_jets[hadb_i]
     lepb_obs = btag_jets[lepb_i]
     hists['obs_had_Wb_dist'].Fill(min(bW_dist))
-
-    # dist = 1000
-    # for j in range(len(btag_jets)):
-    #     bjet = btag_jets[j]
-    #     obs_dist = find_dist(hadW_obs, bjet)
-    #     if obs_dist < dist:
-    #         dist = obs_dist
-    #         hadb_obs = bjet
-    #         bjet_ind = j
-
-    # lepb_obs = btag_jets[(len(btag_jets)-1)-bjet_ind]
-    # hists['obs_had_Wb_dist'].Fill(dist)
-
-    # match based on top quark mass
-    # diff = 1000
-    # for j in range(len(btag_jets)):
-    #     bjet = btag_jets[j]
-    #     obs_diff = np.abs(m_t - (hadW_obs + bjet).M())
-    #     if obs_diff < diff:
-    #         diff = obs_diff
-    #         hadb_obs = bjet
-    #         bjet_ind = j
-    # lepb_obs = btag_jets[(len(btag_jets)-1)-bjet_ind]
-
-    # hists['true_obs_had_t_m_diff'].Fill(diff)
 
     hadt_obs = (hadW_obs + hadb_obs)
     hadb_true = MakeP4([hadbpx[i], hadbpy[i], hadbpz[i]], hadbm[i], representation)
@@ -222,7 +204,8 @@ for i in range(n_events):
     lepb_dist = find_dist(lepb_true, lepb_obs)
     lepb_pt_diff = lepb_true.Pt() - lepb_obs.Pt()
 
-    hists['obs_had_t_m'].Fill(hadt_obs.M())
+    hists['obs_had_t_m'].Fill( hadt_obs.M() )
+    hists['obs_had_W_m'].Fill( hadW_obs.M() )
 
     hists['true_had_b_Pt'].Fill( hadbpt[i] )
     hists['obs_had_b_Pt'].Fill( hadb_obs.Pt() )
@@ -262,7 +245,7 @@ def plot_hist(h, filenames):
     legend.SetTextFont(42)
     legend.SetTextColor(kBlack) 
     
-    c.SaveAs("{0}/img/{1}.png".format(output_dir, filenames))
+    c.SaveAs("{0}/b_img/{1}.png".format(output_dir, filenames))
     # pad0.Close()
     c.Close()
 
@@ -329,13 +312,13 @@ def plot_observables(true, obs, hadlep):
 
     c.cd()
 
-    c.SaveAs("{0}/img/{1}.png".format(output_dir, fname))
+    c.SaveAs("{0}/b_img/{1}.png".format(output_dir, fname))
     pad0.Close()
     pad1.Close()
     c.Close()
 
 try:
-    os.mkdir('{}/img'.format(output_dir))
+    os.mkdir('{}/b_img'.format(output_dir))
 except Exception as e:
     print("Overwriting existing files")
 
@@ -345,6 +328,8 @@ obs_had_b_Pt = infile.Get('obs_had_b_Pt')
 true_lep_b_Pt = infile.Get('true_lep_b_Pt')
 obs_lep_b_Pt = infile.Get('obs_lep_b_Pt')
 
+obs_had_W_m = infile.Get('obs_had_W_m')
+
 gStyle.SetOptStat("emr")
 
 for histname in hists:
@@ -352,6 +337,7 @@ for histname in hists:
         hist = infile.Get(histname)
         # Normalize(hist)
         plot_hist(hist, histname)
+plot_hist(obs_had_W_m, 'obs_had_W_m')
 
 # plot in a separate loop because the style changes and I haven't figured out how to reverse it yet
 from AngryTops.Plotting.PlottingHelper import *

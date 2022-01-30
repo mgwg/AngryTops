@@ -180,7 +180,6 @@ for i in range(n_events):
         hadW_Pt = hadWpt[i]
         matches[b_tag_type][match] +=1
 
-        # if obs_jet_m > W_had_m_cutoff[0] and obs_jet_m < W_had_m_cutoff[1]:
         hists['obs_jet_had_W_Pt_diff'].Fill( obs_jet_Pt - hadW_Pt )
         hists['obs_jet_had_W_Pt_{}_diff'.format(b_tag_type)].Fill( obs_jet_Pt - hadW_Pt )
         
@@ -273,15 +272,15 @@ def plot_observables(h_jet, h_quark, wb, j=0, i = "12"):
         Normalize(h_quark)
 
     # Set Style
-    SetTH1FStyle( h_jet,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
-    SetTH1FStyle( h_quark, color=kBlack, markersize=0, markerstyle=20, linewidth=3 )
+    SetTH1FStyle( h_quark,  color=kGray+2, fillstyle=1001, fillcolor=kGray, linewidth=3, markersize=0 )
+    SetTH1FStyle( h_jet, color=kBlack, markersize=0, markerstyle=20, linewidth=3 )
 
     c, pad0, pad1 = MakeCanvas()
     pad0.cd()
     gStyle.SetOptTitle(0)
 
-    h_jet.Draw("h")
-    h_quark.Draw("h same")
+    h_quark.Draw("h")
+    h_jet.Draw("h same")
     hmax = 1.5 * max( [ h_jet.GetMaximum(), h_quark.GetMaximum() ] )
     h_quark.SetMaximum( hmax )
     h_jet.SetMaximum( hmax )
