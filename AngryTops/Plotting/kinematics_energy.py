@@ -123,10 +123,10 @@ def make_histograms():
         histograms['Wb_lep_E_true'].Fill(  Wb_lep_E_true,  w )
         histograms['Wb_had_E_fitted'].Fill(  Wb_had_E_fitted,  w )
         histograms['Wb_lep_E_fitted'].Fill(  Wb_lep_E_fitted,  w )
-        histograms['t_had_E_true'].Fill( t_had_true.E(), w)
-        histograms['t_lep_E_true'].Fill( t_lep_true.E(), w)
-        histograms['t_had_E_fitted'].Fill( t_had_fitted.E(), w)
-        histograms['t_lep_E_fitted'].Fill( t_lep_fitted.E(), w)
+        histograms['t_had_E_true'].Fill( t_had_true.E(), w )
+        histograms['t_lep_E_true'].Fill( t_lep_true.E(), w )
+        histograms['t_had_E_fitted'].Fill( t_had_fitted.E(), w )
+        histograms['t_lep_E_fitted'].Fill( t_lep_fitted.E(), w )
     
         histograms['corr_tp_had_E'].Fill( Wb_had_E_true, Wb_had_E_fitted, w )  
         histograms['corr_tp_lep_E'].Fill( Wb_lep_E_true, Wb_lep_E_fitted, w )
@@ -135,8 +135,8 @@ def make_histograms():
         histograms['corr_tt_had_E'].Fill( t_had_true.E(), Wb_had_E_true, w )
         histograms['corr_tt_lep_E'].Fill( t_lep_true.E(), Wb_lep_E_true, w )
 
-        histograms['Wbt_had_E_fitted_diff'].Fill(Wb_had_E_fitted - t_had_fitted.E(), w)
-        histograms['Wbt_lep_E_fitted_diff'].Fill(Wb_lep_E_fitted - t_lep_fitted.E(), w)
+        histograms['Wbt_had_E_fitted_diff'].Fill(Wb_had_E_fitted - t_had_fitted.E(), w )
+        histograms['Wbt_lep_E_fitted_diff'].Fill(Wb_lep_E_fitted - t_lep_fitted.E(), w )
         n_good += 1
 
     for histname in histograms:

@@ -10,8 +10,8 @@ from AngryTops.Plotting.identification_helper import MakeP4, undo_scaling
 
 ################################################################################
 # CONSTANTS
-training_dir = "../CheckPoints/May21/"
-output_dir = "../CheckPoints/Nov06"
+training_dir = "../CheckPoints/Summer/May21/"
+output_dir = "../CheckPoints/Summer/May21/"
 representation = "pxpypzEM"
 scaling = True              # whether the dataset has been passed through a scaling function or not
 
@@ -90,7 +90,6 @@ ofilename = "{}/predictions_May21.root".format(output_dir)
 ofile = TFile.Open( ofilename, "recreate" )
 ofile.cd()
 
-b_jet1 = array.array('')
 b_jet1_px_obs   = array.array( 'f', [ -1.] )
 b_jet1_py_obs   = array.array( 'f', [ -1.] )
 b_jet1_pz_obs   = array.array( 'f', [ -1.] )
@@ -273,9 +272,9 @@ tree.Branch( 'jet5_m_obs', b_jet5_m_obs, 'jet5_m_obs/F')
 tree.Branch( 'jet5_btag_obs', b_jet5_btag_obs, 'jet5_btag_obs/F')
 tree.Branch( 'jetmu_px_obs', b_jetmu_px_obs, 'jetmu_px_obs/F')
 tree.Branch( 'jetmu_py_obs', b_jetmu_py_obs, 'jetmu_py_obs/F')
-tree.Branch( 'jetmu_pz_obs', b_jetmu_pz_obs, 'jetmu_py_obs/F')
+tree.Branch( 'jetmu_pz_obs', b_jetmu_pz_obs, 'jetmu_pz_obs/F')
 tree.Branch( 'jetmu_T0_obs', b_jetmu_T0_obs, 'jetmu_T0_obs/F')
-tree.Branch( 'jelep5_ET_obs', b_jetlep_ET_obs, 'jetlep_ET_obs/F')
+tree.Branch( 'jetlep_ET_obs', b_jetlep_ET_obs, 'jetlep_ET_obs/F')
 tree.Branch( 'jetlep_phi_obs', b_jetlep_phi_obs, 'jetlep_phi_obs/F')
 
 tree.Branch( 'W_had_px_true',   b_W_had_px_true,   'W_had_px_true/F' )
