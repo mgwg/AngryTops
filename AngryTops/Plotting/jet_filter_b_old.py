@@ -17,7 +17,6 @@ scaling = True              # whether the dataset has been passed through a scal
 m_t = 172.5
 m_W = 80.4
 m_b = 4.95
-m_mu = 0.10566
 
 W_had_m_cutoff = (30, 130)
 
@@ -50,15 +49,15 @@ hists['h_obs_lep_b_Pt'] = TH1F("h_obs_lep_b_Pt", "p_{T} (GeV)", 50, 0, 500)
 hists['h_obs_lep_b_m'] = TH1F("h_obs_lep_b_m", "Observed Leptonic b Quark mass;mass (GeV);A.U.", 50, 0, 50)
 
 # leptonic matching
-hists['l_obs_had_b_Pt'] = TH1F("l_obs_had_b_Pt", "p_{T} (GeV)", 50, 0, 500)
-hists['l_obs_had_b_m'] = TH1F("l_obs_had_b_m", "Observed Hadronic b Quark mass;mass (GeV);A.U.", 50, 0, 50)
+# hists['l_obs_had_b_Pt'] = TH1F("l_obs_had_b_Pt", "p_{T} (GeV)", 50, 0, 500)
+# hists['l_obs_had_b_m'] = TH1F("l_obs_had_b_m", "Observed Hadronic b Quark mass;mass (GeV);A.U.", 50, 0, 50)
 
-hists['l_obs_lep_b_Pt'] = TH1F("l_obs_lep_b_Pt", "p_{T} (GeV)", 50, 0, 500)
-hists['l_obs_lep_b_m'] = TH1F("l_obs_lep_b_m", "Observed Leptonic b Quark mass;mass (GeV);A.U.", 50, 0, 50)
-hists['l_obs_lep_t_m'] = TH1F("l_obs_lep_t_m", "Observed Leptonic t Quark mass;mass (GeV);A.U.", 50, 0, 500)
+# hists['l_obs_lep_b_Pt'] = TH1F("l_obs_lep_b_Pt", "p_{T} (GeV)", 50, 0, 500)
+# hists['l_obs_lep_b_m'] = TH1F("l_obs_lep_b_m", "Observed Leptonic b Quark mass;mass (GeV);A.U.", 50, 0, 50)
+# hists['l_obs_lep_t_m'] = TH1F("l_obs_lep_t_m", "Observed Leptonic t Quark mass;mass (GeV);A.U.", 50, 0, 500)
 
 # correlations
-hists['corr_hadlep_obs_t'] = TH2F( "corr_had_lep_obs_t",   ";Observed Hadronic t mass [GeV];Observed Leptonic t mass [GeV]", 50, 50., 500., 50, 50., 500. )
+# hists['corr_hadlep_obs_t'] = TH2F( "corr_had_lep_obs_t",   ";Observed Hadronic t mass [GeV];Observed Leptonic t mass [GeV]", 50, 50., 500., 50, 50., 500. )
 
 ################################################################################
 # GET VALUES FROM TREE
@@ -122,6 +121,10 @@ lepbm = t.AsMatrix(['b_lep_m_true']).flatten()
 ################################################################################
 # FILL HISTS WITH LEADING B-TAGGED AND NON B-TAGGED JETS 
 
+# counter 
+b_events = 0.0
+matches = [0.0,0.0,0.0,0.0]
+
 for i in range(n_events):
     if ((i+1) % int(float(n_events)/10.)  == 0 ):
         perc = 100. * i / float(n_events)
@@ -132,15 +135,12 @@ for i in range(n_events):
     jet3 = MakeP4( [jet3px[i], jet3py[i], jet3pz[i]] , jet3m[i], representation)
     jet4 = MakeP4( [jet4px[i], jet4py[i], jet4pz[i]] , jet4m[i], representation)
     jet5 = MakeP4( [jet5px[i], jet5py[i], jet5pz[i]] , jet5m[i], representation)
-    
+    jets = [jet1, jet2, jet3, jet4, jet5]
     mu = MakeP4( [mupx[i], mupy[i], mupz[i]] , 0.10566, representation)#muT0[i], representation) 105.66 
     lep = MakeP4( [lepEt[i]*np.cos(lepphi[i]), lepEt[i]*np.sin(lepphi[i]), 0], 0 , representation)
-    
-    hadb_true = MakeP4( [hadbpx[i], hadbpy[i], hadbpz[i]] , hadbm[i], representation)
-    lepb_true = MakeP4( [lepbpx[i], lepbpy[i], lepbpz[i]] , lepbm[i], representation)
-
-    jets = [jet1, jet2, jet3, jet4, jet5]
     leptons = lep + mu
+    hadb_true = MakeP4([hadbpx[i], hadbpy[i], hadbpz[i]], hadbm[i], representation)
+    lepb_true = MakeP4([lepbpx[i], lepbpy[i], lepbpz[i]], lepbm[i], representation)
 
     # get arrays of b-tagged and non-b-tagged jets
     # remove 0 entries in both arrays
@@ -151,51 +151,84 @@ for i in range(n_events):
     b_tag_type = int(sum(jets_btag[i]))
     if b_tag_type != 2 :
         continue
-    # hadronic matching
+
     
-    # first match to Had W, first 2 jets are always non-zero, jet5 may be zero
-    hadW_obs = nonbtag_jets[0] + nonbtag_jets[1]
-    # check that the last jet is non-zero
-    if (nonbtag_jets[2].M() != 0):
+    # hadronic matching
+    # first match jets to Had W
+    # add first and second leading jet if there are 2 or more non-btagged jets
+    if nonbtag_jets.size > 1:
+        hadW_obs = nonbtag_jets[0] + nonbtag_jets[1]
+        match = 0
+    # otherwise, just use the Pt and mass fo the leading jet
+    else:
+        hadW_obs = nonbtag_jets[0]
+        match = 3
+    # check than 3rd leading jet is also non-zero
+    if (nonbtag_jets.size > 2) and (nonbtag_jets[2].Pt() != 0):
         if (hadW_obs.M() < W_had_m_cutoff[0]) or (hadW_obs.M() > W_had_m_cutoff[1]):
             hadW_obs = nonbtag_jets[0] + nonbtag_jets[2]
-        # match to 2+3 leading jet if first match is unsatisfactory
+            match = 1
+
         if (hadW_obs.M() < W_had_m_cutoff[0]) or (hadW_obs.M() > W_had_m_cutoff[1]):
             hadW_obs = nonbtag_jets[1] + nonbtag_jets[2]
-
+            match = 2
+    
+    # keep track of the number of each match type
+    matches[match] +=1.0
     # find hadronic b based on shortest eta-phi distance to had W
     bW_dist = [find_dist(hadW_obs, btag_jets[0]), find_dist(hadW_obs, btag_jets[1])]
-    h_hadb_i = bW_dist.index(min(bW_dist))
-    h_lepb_i = 1-h_hadb_i
-    h_hadb_obs = btag_jets[h_hadb_i]
-    h_lepb_obs = btag_jets[h_lepb_i]
-    h_hadt_obs = hadW_obs + h_hadb_obs
+    hadb_i = bW_dist.index(min(bW_dist))
+    lepb_i = 1-hadb_i
+    hadb_obs = btag_jets[hadb_i]
+    lepb_obs = btag_jets[lepb_i]
+    hadt_obs = hadW_obs + hadb_obs
 
-    hists['h_obs_had_t_m'].Fill( h_hadt_obs.M() )
-    hists['h_obs_had_b_Pt'].Fill( h_hadb_obs.Pt() )
-    hists['h_obs_had_b_m'].Fill( h_hadb_obs.M())
-    hists['h_obs_lep_b_Pt'].Fill( h_lepb_obs.Pt())
-    hists['h_obs_lep_b_m'].Fill( h_lepb_obs.M())
+    hists['h_obs_had_t_m'].Fill( hadt_obs.M() )
+    hists['h_obs_had_b_Pt'].Fill( hadb_obs.Pt() )
+    hists['h_obs_had_b_m'].Fill( hadb_obs.M())
+    hists['h_obs_lep_b_Pt'].Fill( lepb_obs.Pt())
+    hists['h_obs_lep_b_m'].Fill( lepb_obs.M())
 
+    
     # leptonic matching
     # find mass difference between top and leptons+b
+    '''
     lept_m_diff = [np.abs(m_t - (leptons + btag_jets[0]).M()) , np.abs(m_t - (leptons + btag_jets[1]).M())]
-    l_lepb_i = lept_m_diff.index(min(lept_m_diff))
-    l_hadb_i = 1-l_lepb_i
-    l_hadb_obs = btag_jets[l_hadb_i]
-    l_lepb_obs = btag_jets[l_lepb_i]
-    l_lept_obs = leptons + l_lepb_obs
+    lepb_i = lept_m_diff.index(min(lept_m_diff))
+    hadb_i = 1-lepb_i
+    hadb_obs = btag_jets[hadb_i]
+    lepb_obs = btag_jets[lepb_i]
+    lept_obs = leptons + lepb_obs
 
-    hists['l_obs_lep_t_m'].Fill( l_lept_obs.M() )
-    hists['l_obs_had_b_Pt'].Fill( l_hadb_obs.Pt() )
-    hists['l_obs_had_b_m'].Fill( l_hadb_obs.M())
-    hists['l_obs_lep_b_Pt'].Fill( l_lepb_obs.Pt())
-    hists['l_obs_lep_b_m'].Fill( l_lepb_obs.M())
-
-    hists['corr_hadlep_obs_t'].Fill( h_hadt_obs.M(), l_lept_obs.M(), 1.0 )
+    hists['l_obs_lep_t_m'].Fill( lept_obs.M() )
+    hists['l_obs_had_b_Pt'].Fill( hadb_obs.Pt() )
+    hists['l_obs_had_b_m'].Fill( hadb_obs.M())
+    hists['l_obs_lep_b_Pt'].Fill( lepb_obs.Pt())
+    hists['l_obs_lep_b_m'].Fill( lepb_obs.M())
+    '''
+    # hists['corr_hadlep_obs_t'].Fill( hadt_obs.M(), lept_obs.M(), 1.0 )
     # truth
     hists['true_lep_b_Pt'].Fill( lepbpt[i] )
     hists['true_had_b_Pt'].Fill( hadbpt[i] )
+    
+    # b_events += 1.0
+
+
+################################################################################
+
+print("number of events counted: {} out of {}, {} %".format(b_events, n_events, b_events/float(n_events)))
+
+for j in range(len(matches)):
+    if j == 0:
+        match_type = '12'    
+    elif j == 1:
+        math_type = '13'
+    elif j == 2:
+        match_type = '23'
+    elif j == 3:
+        match_type = '1'
+    # print("num {} jet matches to Hadronic W: {}, {}% of total 2 b-tagged jet events".format(match_type, matches[j], float(matches[j])/float(sum(matches))*100.0 ))
+print('testing')
 
 for histname in hists:
     hists[histname].Write(histname)
@@ -203,8 +236,14 @@ for histname in hists:
 ofile.Write()
 ofile.Close()
 
-hists = ['h_obs_had_b_m','h_obs_had_t_m','h_obs_lep_b_Pt','h_obs_had_b_m', 'l_obs_had_b_m','l_obs_lep_t_m']
+# output_dir = sys.argv[2]
+# ofilename = "{}/jet_filter_b_hists.root".format(output_dir)
+# list of histograms to be formatted in the first style
+hists = ['h_obs_had_b_m','h_obs_had_t_m','h_obs_lep_b_Pt']#,'l_obs_had_b_m', 'l_obs_had_b_m','l_obs_lep_t_m']
+
 infile = TFile.Open(ofilename)
+
+print(ofilename)
 
 def plot_hist(h, filenames):
 
@@ -342,10 +381,10 @@ true_lep_b_Pt = infile.Get('true_lep_b_Pt')
 h_obs_had_b_Pt = infile.Get('h_obs_had_b_Pt')
 h_obs_lep_b_Pt = infile.Get('h_obs_lep_b_Pt')
 
-l_obs_had_b_Pt = infile.Get('l_obs_had_b_Pt')
-l_obs_lep_b_Pt = infile.Get('l_obs_lep_b_Pt')
+# l_obs_had_b_Pt = infile.Get('l_obs_had_b_Pt')
+# l_obs_lep_b_Pt = infile.Get('l_obs_lep_b_Pt')
 
-corr_hadlep_obs_t = infile.Get('corr_hadlep_obs_t')
+# corr_hadlep_obs_t = infile.Get('corr_hadlep_obs_t')
 
 gStyle.SetOptStat("emr")
 
@@ -359,10 +398,12 @@ from AngryTops.Plotting.PlottingHelper import *
 
 plot_observables(true_had_b_Pt , h_obs_had_b_Pt, 'h_true_obs_had_b_Pt')
 plot_observables(true_lep_b_Pt , h_obs_lep_b_Pt, 'h_true_obs_lep_b_Pt')
-plot_observables(true_had_b_Pt , l_obs_had_b_Pt, 'l_true_obs_had_b_Pt')
-plot_observables(true_lep_b_Pt , l_obs_lep_b_Pt, 'l_true_obs_lep_b_Pt')
+# plot_observables(true_had_b_Pt , l_obs_had_b_Pt, 'l_true_obs_had_b_Pt')
+# plot_observables(true_lep_b_Pt , l_obs_lep_b_Pt, 'l_true_obs_lep_b_Pt')
 
 gStyle.SetPalette(kGreyScale)
 gROOT.GetColor(52).InvertPalette()
 
-plot_correlations(corr_hadlep_obs_t, 'corr_hadlep_obs_t')
+# plot_correlations(corr_hadlep_obs_t, 'corr_hadlep_obs_t')
+
+
