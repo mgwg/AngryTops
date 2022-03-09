@@ -57,6 +57,8 @@ hists['l_obs_lep_b_Pt'] = TH1F("l_obs_lep_b_Pt", "p_{T} (GeV)", 50, 0, 500)
 hists['l_obs_lep_b_m'] = TH1F("l_obs_lep_b_m", "Observed Leptonic b Quark mass;mass (GeV);A.U.", 50, 0, 50)
 hists['l_obs_lep_t_m'] = TH1F("l_obs_lep_t_m", "Observed Leptonic t Quark mass;mass (GeV);A.U.", 50, 0, 500)
 
+hists['obs_had_W_m'] = TH1F("obs_had_W_m","Observed Hadronic W mass; mass (GeV);A.U.", 50, 0, 250)
+
 # correlations
 hists['corr_hadlep_obs_t'] = TH2F( "corr_had_lep_obs_t",   ";Observed Hadronic t mass [GeV];Observed Leptonic t mass [GeV]", 50, 50., 500., 50, 50., 500. )
 
@@ -113,6 +115,10 @@ lepbpt = t.AsMatrix(["b_lep_pt_true"]).flatten()
 ################################################################################
 # FILL HISTS WITH LEADING B-TAGGED AND NON B-TAGGED JETS 
 
+# counter 
+b_events = 0.0
+matches = [0.0,0.0,0.0]
+
 for i in range(n_events):
     if ((i+1) % int(float(n_events)/10.)  == 0 ):
         perc = 100. * i / float(n_events)
@@ -143,13 +149,16 @@ for i in range(n_events):
     
     # first match to Had W, first 2 jets are always non-zero, jet5 may be zero
     hadW_obs = nonbtag_jets[0] + nonbtag_jets[1]
+    match = 0
     # check that the last jet is non-zero
     if (nonbtag_jets[2].M() != 0):
         if (hadW_obs.M() < W_had_m_cutoff[0]) or (hadW_obs.M() > W_had_m_cutoff[1]):
             hadW_obs = nonbtag_jets[0] + nonbtag_jets[2]
+            match = 1
         # match to 2+3 leading jet if first match is unsatisfactory
         if (hadW_obs.M() < W_had_m_cutoff[0]) or (hadW_obs.M() > W_had_m_cutoff[1]):
             hadW_obs = nonbtag_jets[1] + nonbtag_jets[2]
+            match = 2
 
     # find hadronic b based on shortest eta-phi distance to had W
     bW_dist = [find_dist(hadW_obs, btag_jets[0]), find_dist(hadW_obs, btag_jets[1])]
@@ -181,9 +190,25 @@ for i in range(n_events):
     hists['l_obs_lep_b_m'].Fill( l_lepb_obs.M())
 
     hists['corr_hadlep_obs_t'].Fill( h_hadt_obs.M(), l_lept_obs.M(), 1.0 )
+    hists['obs_had_W_m'].Fill(hadW_obs.M())
+
     # truth
     hists['true_lep_b_Pt'].Fill( lepbpt[i] )
     hists['true_had_b_Pt'].Fill( hadbpt[i] )
+
+    b_events += 1
+    matches[match] += 1
+
+print("number of events counted: {} out of {}, {} %".format(b_events, n_events, b_events/float(n_events)))
+
+for j in range(len(matches)):
+    if j == 0:
+        match_type = '12'    
+    elif j == 1:
+        match_type = '13'
+    elif j == 2:
+        match_type = '23'
+    print("num {} jet matches to Hadronic W: {}, {}% of total 2 b-tagged jet events".format(match_type, matches[j], float(matches[j])/float(sum(matches))*100.0 ))
 
 for histname in hists:
     hists[histname].Write(histname)
@@ -341,7 +366,7 @@ corr_hadlep_obs_t = infile.Get('corr_hadlep_obs_t')
 
 gStyle.SetOptStat("emr")
 
-hists = ['h_obs_had_t_m','l_obs_lep_t_m']
+hists = ['h_obs_had_t_m','l_obs_lep_t_m', 'obs_had_W_m']
 for histname in hists:
     hist = infile.Get(histname)
     plot_hist(hist, histname)

@@ -11,7 +11,7 @@ from array import array
 infilename = sys.argv[1]
 output_dir = sys.argv[2]
 representation = sys.argv[3]
-subdir = 'b_img'
+subdir = 'b_img_old'
 scaling = True              # whether the dataset has been passed through a scaling function or not
 
 m_t = 172.5
@@ -27,7 +27,7 @@ t = infile.Get("nominal")
 ################################################################################
 # MAKE ROOT FILE FOR HISTS
 
-ofilename = "{}/jet_filter_b_hists.root".format(output_dir)
+ofilename = "{}/jet_filter_b_hists_old.root".format(output_dir)
 # Open output file
 ofile = TFile.Open( ofilename, "recreate" )
 ofile.cd()
@@ -47,6 +47,9 @@ hists['h_obs_had_t_m'] = TH1F("h_obs_had_t_m", "Observed Hadronic t Quark mass;m
 
 hists['h_obs_lep_b_Pt'] = TH1F("h_obs_lep_b_Pt", "p_{T} (GeV)", 50, 0, 500)
 hists['h_obs_lep_b_m'] = TH1F("h_obs_lep_b_m", "Observed Leptonic b Quark mass;mass (GeV);A.U.", 50, 0, 50)
+
+hists['obs_had_W_m'] = TH1F("obs_had_W_m","mass (GeV)", 50, 0, 250)
+hists['obs_had_W_m'].SetTitle("Observed Hadronic W mass; mass (GeV);A.U.")
 
 # leptonic matching
 # hists['l_obs_had_b_Pt'] = TH1F("l_obs_had_b_Pt", "p_{T} (GeV)", 50, 0, 500)
@@ -152,10 +155,10 @@ for i in range(n_events):
     if b_tag_type != 2 :
         continue
 
-    
     # hadronic matching
     # first match jets to Had W
     # add first and second leading jet if there are 2 or more non-btagged jets
+    
     if nonbtag_jets.size > 1:
         hadW_obs = nonbtag_jets[0] + nonbtag_jets[1]
         match = 0
@@ -172,9 +175,9 @@ for i in range(n_events):
         if (hadW_obs.M() < W_had_m_cutoff[0]) or (hadW_obs.M() > W_had_m_cutoff[1]):
             hadW_obs = nonbtag_jets[1] + nonbtag_jets[2]
             match = 2
-    
+
     # keep track of the number of each match type
-    matches[match] +=1.0
+    # matches[match] +=1.0
     # find hadronic b based on shortest eta-phi distance to had W
     bW_dist = [find_dist(hadW_obs, btag_jets[0]), find_dist(hadW_obs, btag_jets[1])]
     hadb_i = bW_dist.index(min(bW_dist))
@@ -188,8 +191,8 @@ for i in range(n_events):
     hists['h_obs_had_b_m'].Fill( hadb_obs.M())
     hists['h_obs_lep_b_Pt'].Fill( lepb_obs.Pt())
     hists['h_obs_lep_b_m'].Fill( lepb_obs.M())
+    hists['obs_had_W_m'].Fill( hadW_obs.M() )
 
-    
     # leptonic matching
     # find mass difference between top and leptons+b
     '''
@@ -239,7 +242,7 @@ ofile.Close()
 # output_dir = sys.argv[2]
 # ofilename = "{}/jet_filter_b_hists.root".format(output_dir)
 # list of histograms to be formatted in the first style
-hists = ['h_obs_had_b_m','h_obs_had_t_m','h_obs_lep_b_Pt']#,'l_obs_had_b_m', 'l_obs_had_b_m','l_obs_lep_t_m']
+hists = ['h_obs_had_b_m','h_obs_had_t_m','h_obs_lep_b_Pt', 'obs_had_W_m']#,'l_obs_had_b_m', 'l_obs_had_b_m','l_obs_lep_t_m']
 
 infile = TFile.Open(ofilename)
 
@@ -255,7 +258,7 @@ def plot_hist(h, filenames):
     legend.SetTextFont(42)
     legend.SetTextColor(kBlack) 
     
-    c.SaveAs("{0}/b_img/{1}.png".format(output_dir, filenames))
+    c.SaveAs("{0}/{1}/{2}.png".format(output_dir, subdir, filenames))
     # pad0.Close()
     c.Close()
 
@@ -321,7 +324,7 @@ def plot_observables(true, obs, fname):
 
     c.cd()
 
-    c.SaveAs("{0}/b_img/{1}.png".format(output_dir, fname))
+    c.SaveAs("{0}/{1}/{2}.png".format(output_dir, subdir, fname))
     pad0.Close()
     pad1.Close()
     c.Close()
@@ -388,8 +391,10 @@ h_obs_lep_b_Pt = infile.Get('h_obs_lep_b_Pt')
 
 gStyle.SetOptStat("emr")
 
+print(hists)
 for histname in hists:
     hist = infile.Get(histname)
+    print(histname, hist)
     # Normalize(hist)
     plot_hist(hist, histname)
 
