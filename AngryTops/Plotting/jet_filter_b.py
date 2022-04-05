@@ -70,9 +70,44 @@ hists['obs_had_W_m'] = TH1F("obs_had_W_m","Observed Hadronic W mass; mass (GeV);
 hists['corr_had_t'] = TH2F( "corr_had_t",   ";Observed Had t mass (had matching) [GeV];Observed Had t mass (lep matching) [GeV]", 50, 50., 500., 50, 50., 500. )
 hists['corr_lep_t'] = TH2F( "corr_lep_t",   ";Observed Lep t mass (had matching) [GeV];Observed Lep t mass (lep matching) [GeV]", 50, 50., 500., 50, 50., 500. )
 
-hists['corr_had_b'] = TH2F( "corr_had_b",   ";Observed Had b mass (had matching) [GeV];Observed Had b mass (lep matching) [GeV]", 50, 0., 30., 50, 0., 30. )
-hists['corr_lep_b'] = TH2F( "corr_lep_b",   ";Observed Lep b mass (had matching) [GeV];Observed Lep b mass (lep matching) [GeV]", 50, 0., 30., 50, 0., 30. )
+# check radius plots
 
+# eta-phi plot above 2 rad for ALL cases (l_had_b, l_lep_b, h_lep_b, h_lep_b)
+# t_mass: correlation and regular
+# b_masses
+# b quark pred-true pt's
+hists['crop_l_obs_had_b_m'] = TH1F('crop_l_obs_had_b_m', "Observed Hadronic b Quark mass (lep matching);mass (GeV);A.U.", 50, 0, 500)
+hists['crop_l_obs_lep_b_m'] = TH1F('crop_l_obs_lep_b_m', "Observed Leptonic b Quark mass (lep matching);mass (GeV);A.U.", 50, 0, 500)
+hists['crop_h_obs_had_b_m'] = TH1F('crop_h_obs_had_b_m', "Observed Hadronic b Quark mass (had matching);mass (GeV);A.U.", 50, 0, 500)
+hists['crop_h_obs_lep_b_m'] = TH1F('crop_h_obs_lep_b_m', "Observed Leptonic b Quark mass (had matching);mass (GeV);A.U.", 50, 0, 500)
+
+hists['crop_l_obs_had_b_r'] = TH1F('crop_l_obs_had_b_r', "True-Observed Hadronic b #eta-#phi distances (lep matching);rad;A.U.", 50, 0, 3.2)
+hists['crop_l_obs_lep_b_r'] = TH1F('crop_l_obs_lep_b_r', "True-Observed Leptonic b #eta-#phi distances (lep matching);rad;A.U.", 50, 0, 3.2)
+hists['crop_h_obs_had_b_r'] = TH1F('crop_h_obs_had_b_r', "True-Observed Hadronic b #eta-#phi distances (had matching);rad;A.U.", 50, 0, 3.2)
+hists['crop_h_obs_lep_b_r'] = TH1F('crop_h_obs_lep_b_r', "True-Observed Leptonic b #eta-#phi distances (had matching);rad;A.U.", 50, 0, 3.2)
+
+hists['crop_l_obs_had_b_Pt'] = TH1F('crop_l_obs_had_b_Pt', "Observed Hadronic b Quark p_{T} (lep matching);(GeV);A.U.", 50, 0, 500)
+hists['crop_l_obs_lep_b_Pt'] = TH1F('crop_l_obs_lep_b_Pt', "Observed Leptonic b Quark p_{T} (lep matching);(GeV);A.U.", 50, 0, 500)
+hists['crop_h_obs_had_b_Pt'] = TH1F('crop_h_obs_had_b_Pt', "Observed Hadronic b Quark p_{T} (lep matching);(GeV);A.U.", 50, 0, 500)
+hists['crop_h_obs_lep_b_Pt'] = TH1F('crop_h_obs_lep_b_Pt', "Observed Leptonic b Quark p_{T} (lep matching);(GeV);A.U.", 50, 0, 500)
+
+hists['crop_l_obs_had_t_m'] = TH1F('crop_l_obs_had_t_m', "Observed Hadronic t Quark mass (lep matching);mass (GeV);A.U.", 50, 0, 500)
+hists['crop_l_obs_lep_t_m'] = TH1F('crop_l_obs_lep_t_m', "Observed Leptonic t Quark mass (lep matching);mass (GeV);A.U.", 50, 0, 500)
+hists['crop_h_obs_had_t_m'] = TH1F('crop_h_obs_had_t_m', "Observed Hadronic t Quark mass (had matching);mass (GeV);A.U.", 50, 0, 500)
+hists['crop_h_obs_lep_t_m'] = TH1F('crop_h_obs_lep_t_m', "Observed Leptonic t Quark mass (had matching);mass (GeV);A.U.", 50, 0, 500)
+
+hists['crop_corr_had_t'] = TH2F('crop_corr_had_t', ";Observed Had t mass (had matching) [GeV];Observed Had t mass (lep matching) [GeV]", 50, 50., 500., 50, 50., 500. )
+hists['crop_corr_lep_t'] = TH2F('crop_corr_lep_t', ";Observed Lep t mass (had matching) [GeV];Observed Lep t mass (lep matching) [GeV]", 50, 50., 500., 50, 50., 500. )
+
+hists['crop_h_true_had_b_Pt'] = TH1F("crop_h_true_had_b_Pt", "p_{T} (GeV)", 50, 0, 500)
+hists['crop_h_true_lep_b_Pt'] = TH1F("crop_h_true_lep_b_Pt", "p_{T} (GeV)", 50, 0, 500)
+hists['crop_l_true_had_b_Pt'] = TH1F("crop_l_true_had_b_Pt", "p_{T} (GeV)", 50, 0, 500)
+hists['crop_l_true_lep_b_Pt'] = TH1F("crop_l_true_lep_b_Pt", "p_{T} (GeV)", 50, 0, 500)
+
+# hists['crop2_l_obs_had_t_m'] = TH1F('crop2_l_obs_had_t_m', "Observed Hadronic t Quark mass (lep matching);mass (GeV);A.U.", 50, 0, 500)
+# hists['crop2_l_obs_lep_t_m'] = TH1F('crop2_l_obs_lep_t_m', "Observed Leptonic t Quark mass (lep matching);mass (GeV);A.U.", 50, 0, 500)
+# hists['crop2_h_obs_had_t_m'] = TH1F('crop2_h_obs_had_t_m', "Observed Hadronic t Quark mass (had matching);mass (GeV);A.U.", 50, 0, 500)
+# hists['crop2_h_obs_lep_t_m'] = TH1F('crop2_h_obs_lep_t_m', "Observed Leptonic t Quark mass (had matching);mass (GeV);A.U.", 50, 0, 500)
 
 ################################################################################
 # GET VALUES FROM TREE
@@ -141,6 +176,8 @@ leptm = t.AsMatrix(["t_lep_m_true"]).flatten()
 # counter 
 b_events = 0.0
 matches = [0.0,0.0,0.0]
+cuts = {'h_had_b':0.0, 'h_lep_b':0.0, 'l_had_b':0.0, 'l_lep_b':0.0}
+r_cutoff = 2.0
 
 for i in range(n_events):
     if ((i+1) % int(float(n_events)/10.)  == 0 ):
@@ -193,14 +230,6 @@ for i in range(n_events):
     h_lepb_obs = btag_jets[h_lepb_i]
     h_hadt_obs = hadW_obs + h_hadb_obs
 
-    hists['h_obs_had_t_m'].Fill( h_hadt_obs.M() )
-    hists['h_obs_had_b_Pt'].Fill( h_hadb_obs.Pt() )
-    hists['h_obs_had_b_m'].Fill( h_hadb_obs.M())
-    hists['h_obs_lep_b_Pt'].Fill( h_lepb_obs.Pt())
-    hists['h_obs_lep_b_m'].Fill( h_lepb_obs.M())
-    hists['h_obs_had_b_r'].Fill( find_dist(h_hadb_obs, hadb_true) )
-    hists['h_obs_lep_b_r'].Fill( find_dist(h_lepb_obs, lepb_true) )
-
     # leptonic matching
     # find mass difference between top and leptons+b
     lept_m_diff = [np.abs(m_t - (leptons + btag_jets[0]).M()) , np.abs(m_t - (leptons + btag_jets[1]).M())]
@@ -210,18 +239,36 @@ for i in range(n_events):
     l_lepb_obs = btag_jets[l_lepb_i]
     l_lept_obs = leptons + l_lepb_obs
 
-    l_hadt_obs = hadW_obs + l_lepb_obs
+    l_hadt_obs = hadW_obs + l_hadb_obs
     h_lept_obs = leptons + h_lepb_obs
+
+    # find dist
+    h_obs_had_b_r = find_dist(h_hadb_obs, hadb_true)
+    h_obs_lep_b_r = find_dist(h_lepb_obs, lepb_true)
+    l_obs_had_b_r = find_dist(l_hadb_obs, hadb_true)
+    l_obs_lep_b_r = find_dist(l_lepb_obs, lepb_true)
+
+    # fill hists
+
+    hists['h_obs_had_t_m'].Fill( h_hadt_obs.M() )
+    hists['h_obs_had_b_Pt'].Fill( h_hadb_obs.Pt() )
+    hists['h_obs_had_b_m'].Fill( h_hadb_obs.M())
+    hists['h_obs_lep_b_Pt'].Fill( h_lepb_obs.Pt())
+    hists['h_obs_lep_b_m'].Fill( h_lepb_obs.M())
+    hists['h_obs_had_b_r'].Fill( h_obs_had_b_r )
+    hists['h_obs_lep_b_r'].Fill( h_obs_lep_b_r )
 
     hists['l_obs_lep_t_m'].Fill( l_lept_obs.M() )
     hists['l_obs_had_b_Pt'].Fill( l_hadb_obs.Pt() )
     hists['l_obs_had_b_m'].Fill( l_hadb_obs.M())
     hists['l_obs_lep_b_Pt'].Fill( l_lepb_obs.Pt())
     hists['l_obs_lep_b_m'].Fill( l_lepb_obs.M())
-    hists['l_obs_had_b_r'].Fill( find_dist(l_hadb_obs, hadb_true) )
-    hists['l_obs_lep_b_r'].Fill( find_dist(l_lepb_obs, lepb_true) )
+    hists['l_obs_had_b_r'].Fill( l_obs_had_b_r )
+    hists['l_obs_lep_b_r'].Fill( l_obs_lep_b_r )
 
     hists['obs_had_W_m'].Fill(hadW_obs.M())
+    hists['h_obs_lep_t_m'].Fill(h_lept_obs.M())
+    hists['l_obs_had_t_m'].Fill(l_hadt_obs.M())
 
     # truth
     hists['true_lep_b_Pt'].Fill( lepbpt[i] )
@@ -230,16 +277,59 @@ for i in range(n_events):
     # corr
     hists['corr_had_t'].Fill( h_hadt_obs.M(), h_lept_obs.M(), 1.0 )
     hists['corr_lep_t'].Fill( l_hadt_obs.M(), l_lept_obs.M(), 1.0 )
-    
-    hists['corr_had_b'].Fill( h_hadb_obs.M(), h_lepb_obs.M(), 1.0 )
-    hists['corr_lep_b'].Fill( l_hadb_obs.M(), l_lepb_obs.M(), 1.0 )
 
-    #
-    hists['h_obs_lep_t_m'].Fill(h_lept_obs.M())
-    hists['l_obs_had_t_m'].Fill(l_hadt_obs.M())
+    # cropped
 
-    b_events += 1
-    matches[match] += 1
+    # if distances are greater than the cutoff, try matching to the other 
+    if h_obs_had_b_r > r_cutoff:
+        h_hadt_obs = hadW_obs + h_hadb_obs
+    if h_obs_lep_b_r > r_cutoff:
+        h_lept_obs = leptons + h_lepb_obs
+    if l_obs_had_b_r > r_cutoff:
+        l_hadt_obs = hadW_obs + l_hadb_obs
+    if l_obs_lep_b_r > r_cutoff:
+        l_lept_obs = leptons + l_lepb_obs
+
+    if h_obs_had_b_r > r_cutoff:
+        hists['crop_h_obs_had_b_m'].Fill( h_hadb_obs.M() )
+        hists['crop_h_obs_had_b_r'].Fill( find_dist(h_hadb_obs, hadb_true) )
+        hists['crop_h_obs_had_b_Pt'].Fill( h_hadb_obs.Pt() )
+        hists['crop_h_obs_had_t_m'].Fill( h_hadt_obs.M() )
+        hists['crop_h_true_had_b_Pt'].Fill( hadbpt[i] )
+        cuts['h_had_b']+=1.0
+
+    if h_obs_lep_b_r > r_cutoff:
+        hists['crop_h_obs_lep_b_m'].Fill( h_lepb_obs.M() )
+        hists['crop_h_obs_lep_b_r'].Fill( find_dist(h_lepb_obs, lepb_true) )
+        hists['crop_h_obs_lep_b_Pt'].Fill( h_lepb_obs.Pt() )
+        hists['crop_h_obs_lep_t_m'].Fill( h_lept_obs.M() )
+        hists['crop_h_true_lep_b_Pt'].Fill( lepbpt[i] )
+        cuts['h_lep_b']+=1.0
+
+    if l_obs_had_b_r > r_cutoff:
+        hists['crop_l_obs_had_b_m'].Fill( l_hadb_obs.M() )
+        hists['crop_l_obs_had_b_r'].Fill( find_dist(l_hadb_obs, hadb_true) )
+        hists['crop_l_obs_had_b_Pt'].Fill( l_hadb_obs.Pt() )
+        hists['crop_l_obs_had_t_m'].Fill( l_hadt_obs.M() )
+        hists['crop_l_true_had_b_Pt'].Fill( hadbpt[i] )
+        cuts['l_had_b']+=1.0
+
+    if l_obs_lep_b_r > r_cutoff:
+        hists['crop_l_obs_lep_b_m'].Fill( l_lepb_obs.M() )
+        hists['crop_l_obs_lep_b_r'].Fill( find_dist(l_lepb_obs, lepb_true) )
+        hists['crop_l_obs_lep_b_Pt'].Fill( l_lepb_obs.Pt() )
+        hists['crop_l_obs_lep_t_m'].Fill( l_lept_obs.M() )
+        hists['crop_l_true_lep_b_Pt'].Fill( lepbpt[i] )
+        cuts['l_lep_b']+=1.0
+        
+    if (l_obs_lep_b_r < r_cutoff) or (l_obs_had_b_r < r_cutoff):
+        hists['crop_corr_lep_t'].Fill( l_hadt_obs.M(), l_lept_obs.M(), 1.0 )
+
+    if (h_obs_lep_b_r < r_cutoff) or (h_obs_had_b_r < r_cutoff):
+        hists['crop_corr_had_t'].Fill( h_hadt_obs.M(), h_lept_obs.M(), 1.0 )
+
+    b_events += 1.0
+    matches[match] += 1.0
 
 print("number of events counted: {} out of {}, {} %".format(b_events, n_events, b_events/float(n_events)))
 
@@ -251,6 +341,9 @@ for j in range(len(matches)):
     elif j == 2:
         match_type = '23'
     print("num {} jet matches to Hadronic W: {}, {}% of total 2 b-tagged jet events".format(match_type, matches[j], float(matches[j])/float(sum(matches))*100.0 ))
+
+for j in cuts:
+    print('{}: {}% of total matches'.format(j, cuts[j]/b_events))
 
 for histname in hists:
     hists[histname].Write(histname)
@@ -404,13 +497,23 @@ h_obs_lep_b_Pt = infile.Get('h_obs_lep_b_Pt')
 l_obs_had_b_Pt = infile.Get('l_obs_had_b_Pt')
 l_obs_lep_b_Pt = infile.Get('l_obs_lep_b_Pt')
 
+# crop
+crop_h_true_had_b_Pt = infile.Get('crop_h_true_had_b_Pt')
+crop_h_true_lep_b_Pt = infile.Get('crop_h_true_lep_b_Pt')
+crop_l_true_had_b_Pt = infile.Get('crop_l_true_had_b_Pt')
+crop_l_true_lep_b_Pt = infile.Get('crop_l_true_lep_b_Pt')
+
+crop_h_obs_had_b_Pt = infile.Get('crop_h_obs_had_b_Pt')
+crop_h_obs_lep_b_Pt = infile.Get('crop_h_obs_lep_b_Pt')
+crop_l_obs_had_b_Pt = infile.Get('crop_l_obs_had_b_Pt')
+crop_l_obs_lep_b_Pt = infile.Get('crop_l_obs_lep_b_Pt')
+
 gStyle.SetOptStat("emr")
 
 for histname in hists:
-    if ("t_m" in histname) or ("W_m" in hists) or ('_r'):
+    if ("t_m" in histname) or ("W_m" in histname) or ('_r' in histname):
         hist = infile.Get(histname)
         plot_hist(hist, histname)  
-
 
 # plot in a separate loop because the style changes and I haven't figured out how to reverse it yet
 from AngryTops.Plotting.PlottingHelper import *
@@ -421,6 +524,11 @@ plot_observables(true_had_b_Pt , h_obs_had_b_Pt, 'h_true_obs_had_b_Pt')
 plot_observables(true_lep_b_Pt , h_obs_lep_b_Pt, 'h_true_obs_lep_b_Pt')
 plot_observables(true_had_b_Pt , l_obs_had_b_Pt, 'l_true_obs_had_b_Pt')
 plot_observables(true_lep_b_Pt , l_obs_lep_b_Pt, 'l_true_obs_lep_b_Pt')
+
+plot_observables(crop_h_true_had_b_Pt , crop_h_obs_had_b_Pt, 'crop_h_true_obs_had_b_Pt')
+plot_observables(crop_h_true_lep_b_Pt , crop_h_obs_lep_b_Pt, 'crop_h_true_obs_lep_b_Pt')
+plot_observables(crop_l_true_had_b_Pt , crop_l_obs_had_b_Pt, 'crop_l_true_obs_had_b_Pt')
+plot_observables(crop_l_true_lep_b_Pt , crop_l_obs_lep_b_Pt, 'crop_l_true_obs_lep_b_Pt')
 
 gStyle.SetPalette(kGreyScale)
 gROOT.GetColor(52).InvertPalette()
