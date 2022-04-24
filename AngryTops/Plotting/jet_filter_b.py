@@ -20,7 +20,7 @@ m_b = 4.95
 m_mu = 0.10566
 
 W_had_m_cutoff = (30, 130)
-r_cutoff = 0.5
+r_cutoff = 0.5 # threshold for jet/b-quark matching
 
 # t = TFile.Open(infilename)
 infile = TFile(infilename, "READ")
@@ -170,11 +170,12 @@ leptm = t.AsMatrix(["t_lep_m_true"]).flatten()
 ################################################################################
 # FILL HISTS WITH LEADING B-TAGGED AND NON B-TAGGED JETS 
 
-# counter 
-b_events = 0.0
-matches = [0.0,0.0,0.0]
-cuts = {'h_had_b':0.0, 'h_lep_b':0.0, 'l_had_b':0.0, 'l_lep_b':0.0}
+# counters
+b_events = 0.0 # number of events
+cuts = {'h_had_b':0.0, 'h_lep_b':0.0, 'l_had_b':0.0, 'l_lep_b':0.0} # count number events that don't meet r_cutoff
 
+# count number of times the best match to the hadronic and leptonic b quark are the same or different
+# when matched using had W vs leptons
 overlap1 = 0.0
 overlap2 = 0.0
 overlap3 = 0.0
@@ -279,8 +280,6 @@ for i in range(n_events):
     hists['corr_had_t'].Fill( h_hadt_obs.M(), h_lept_obs.M(), 1.0 )
     hists['corr_lep_t'].Fill( l_hadt_obs.M(), l_lept_obs.M(), 1.0 )
 
-    # count number of times the best match to the hadronic and leptonic b quark are the same or different
-    # when matched using had W vs leptons
     if l_hadb_obs == h_lepb_obs:
         overlap1 += 1.0
     if l_lepb_obs == h_hadb_obs:
@@ -338,15 +337,6 @@ for i in range(n_events):
     hists['crop_obs_leptons_m'].Fill(leptons.M())
 
 print("number of events counted: {} out of {}, {} %".format(b_events, n_events, b_events/float(n_events)))
-
-for j in range(len(matches)):
-    if j == 0:
-        match_type = '12'    
-    elif j == 1:
-        match_type = '13'
-    elif j == 2:
-        match_type = '23'
-    print("num {} jet matches to Hadronic W: {}, {}% of total 2 b-tagged jet events".format(match_type, matches[j], float(matches[j])/float(sum(matches))*100.0 ))
 
 for j in cuts:
     print('{}: {}% of total matches'.format(j, cuts[j]/b_events*100.0))
