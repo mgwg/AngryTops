@@ -167,12 +167,14 @@ for i in range(n_events):
             match = 3
 
         if (nonbtag_jets.size > 2) and (nonbtag_jets[2].Pt() != 0): # implies Pt of [0] and [1] are also non zero
+            # if mass of matched jet combination is outside of specified range, match to first and third leading jet
             if (obs_jet_m < W_had_m_cutoff[0]) or (obs_jet_m > W_had_m_cutoff[1]):
                 obs_jet_Pt = (nonbtag_jets[0] + nonbtag_jets[2]).Pt()
                 obs_jet_m = (nonbtag_jets[0] + nonbtag_jets[2]).M()
                 match = 1
 
             if (obs_jet_m < W_had_m_cutoff[0]) or (obs_jet_m > W_had_m_cutoff[1]):
+                # repeat with second and third leading jets
                 obs_jet_Pt = (nonbtag_jets[1] + nonbtag_jets[2]).Pt()
                 obs_jet_m = (nonbtag_jets[1] + nonbtag_jets[2]).M()
                 match = 2
