@@ -71,12 +71,8 @@ hists['obs_had_W_m'] = TH1F("obs_had_W_m","Observed Hadronic W mass; mass (GeV);
 hists['corr_had_t'] = TH2F( "corr_had_t",   ";Observed Had t mass (had matching) [GeV];Observed Had t mass (lep matching) [GeV]", 50, 50., 500., 50, 50., 500. )
 hists['corr_lep_t'] = TH2F( "corr_lep_t",   ";Observed Lep t mass (had matching) [GeV];Observed Lep t mass (lep matching) [GeV]", 50, 50., 500., 50, 50., 500. )
 
-# check radius plots
-
-# eta-phi plot above 2 rad for ALL cases (l_had_b, l_lep_b, h_lep_b, h_lep_b)
-# t_mass: correlation and regular
-# b_masses
-# b quark pred-true pt's
+# events above threshold eta-phi distance for {l_had_b, l_lep_b, h_lep_b, h_lep_b}
+# e.g. crop_l_obs_had_b are events where the l_lep_b was poorly matched to true_lep_b, and matched to true_had_b instead
 hists['crop_l_obs_had_b_m'] = TH1F('crop_l_obs_had_b_m', "Observed Hadronic b Quark mass (lep matching);mass (GeV);A.U.", 50, 0, 20)
 hists['crop_l_obs_lep_b_m'] = TH1F('crop_l_obs_lep_b_m', "Observed Leptonic b Quark mass (lep matching);mass (GeV);A.U.", 50, 0, 20)
 hists['crop_h_obs_had_b_m'] = TH1F('crop_h_obs_had_b_m', "Observed Hadronic b Quark mass (had matching);mass (GeV);A.U.", 50, 0, 20)
@@ -101,10 +97,6 @@ hists['crop_h_true_had_b_Pt'] = TH1F("crop_h_true_had_b_Pt", "p_{T} (GeV)", 50, 
 hists['crop_h_true_lep_b_Pt'] = TH1F("crop_h_true_lep_b_Pt", "p_{T} (GeV)", 50, 0, 500)
 hists['crop_l_true_had_b_Pt'] = TH1F("crop_l_true_had_b_Pt", "p_{T} (GeV)", 50, 0, 500)
 hists['crop_l_true_lep_b_Pt'] = TH1F("crop_l_true_lep_b_Pt", "p_{T} (GeV)", 50, 0, 500)
-
-hists['crop_obs_leptons_m'] = TH1F('crop_obs_leptons_m', "Observed leptons mass (had matching);mass (GeV);A.U.", 50, 0, 250)
-hists['crop_l_obs_lep_t_Pt'] = TH1F('crop_l_obs_lep_t_Pt', "Observed Leptonic t Quark p_{T} (lep matching);(GeV);A.U.", 50, 0, 500)
-
 
 ################################################################################
 # GET VALUES FROM TREE
@@ -194,7 +186,7 @@ for i in range(n_events):
     hadb_true = MakeP4( [hadbpx[i], hadbpy[i], hadbpz[i]] , hadbm[i], representation)
     lepb_true = MakeP4( [lepbpx[i], lepbpy[i], lepbpz[i]] , lepbm[i], representation)
     
-    mu = MakeP4( [mupx[i], mupy[i], mupz[i]] , 0.10566, representation)#muT0[i], representation) 105.66 
+    mu = MakeP4( [mupx[i], mupy[i], mupz[i]] , 0.10566, representation) 
     lep = MakeP4( [lepEt[i]*np.cos(lepphi[i]), lepEt[i]*np.sin(lepphi[i]), 0], 0 , representation)
 
     jets = [jet1, jet2, jet3, jet4, jet5]
@@ -209,8 +201,8 @@ for i in range(n_events):
     b_tag_type = int(sum(jets_btag[i]))
     if b_tag_type != 2 :
         continue
-    # hadronic matching
     
+    # find observed had W from jets
     # first match to Had W, first 2 jets are always non-zero, jet5 may be zero
     hadW_obs = nonbtag_jets[0] + nonbtag_jets[1]
     match = 0
@@ -224,6 +216,7 @@ for i in range(n_events):
             hadW_obs = nonbtag_jets[1] + nonbtag_jets[2]
             match = 2
 
+    # hadronic matching
     # find hadronic b based on shortest eta-phi distance to had W
     bW_dist = [find_dist(hadW_obs, btag_jets[0]), find_dist(hadW_obs, btag_jets[1])]
     h_hadb_i = bW_dist.index(min(bW_dist))
@@ -235,6 +228,7 @@ for i in range(n_events):
     # leptonic matching
     # find mass difference between top and leptons (muon + missing E_T) +b
     lept_m_diff = [np.abs(m_t - (leptons + btag_jets[0]).M()) , np.abs(m_t - (leptons + btag_jets[1]).M())]
+    # take the jet with the lower mass difference to be the lep b
     l_lepb_i = lept_m_diff.index(min(lept_m_diff))
     l_hadb_i = 1-l_lepb_i
     l_hadb_obs = btag_jets[l_hadb_i]
@@ -280,15 +274,6 @@ for i in range(n_events):
     hists['corr_had_t'].Fill( h_hadt_obs.M(), h_lept_obs.M(), 1.0 )
     hists['corr_lep_t'].Fill( l_hadt_obs.M(), l_lept_obs.M(), 1.0 )
 
-    if l_hadb_obs == h_lepb_obs:
-        overlap1 += 1.0
-    if l_lepb_obs == h_hadb_obs:
-        overlap2 += 1.0
-    if l_hadb_obs == h_hadb_obs:
-        overlap3 += 1.0
-    if l_lepb_obs == h_lepb_obs:
-        overlap4 += 1.0
-
     # if distances are greater than the cutoff, try matching to the other b quark
     if h_obs_lep_b_r > r_cutoff: 
         ch_hadb_obs = h_lepb_obs
@@ -327,14 +312,18 @@ for i in range(n_events):
         hists['crop_l_obs_lep_b_r'].Fill( find_dist(cl_lepb_obs, lepb_true) )
         hists['crop_l_obs_lep_b_Pt'].Fill( cl_lepb_obs.Pt() )
         hists['crop_l_obs_lep_t_m'].Fill( cl_lept_obs.M() )
-        hists['crop_l_obs_lep_t_Pt'].Fill( cl_lept_obs.Pt() )
         hists['crop_l_true_lep_b_Pt'].Fill( lepbpt[i] )
         cuts['l_lep_b']+=1.0
 
     b_events += 1.0
-    matches[match] += 1.0
-
-    hists['crop_obs_leptons_m'].Fill(leptons.M())
+    if l_hadb_obs == h_lepb_obs:
+        overlap1 += 1.0
+    if l_lepb_obs == h_hadb_obs:
+        overlap2 += 1.0
+    if l_hadb_obs == h_hadb_obs:
+        overlap3 += 1.0
+    if l_lepb_obs == h_lepb_obs:
+        overlap4 += 1.0
 
 print("number of events counted: {} out of {}, {} %".format(b_events, n_events, b_events/float(n_events)))
 
@@ -512,7 +501,7 @@ crop_l_obs_lep_b_Pt = infile.Get('crop_l_obs_lep_b_Pt')
 gStyle.SetOptStat("emr")
 
 for histname in hists:
-    if ("t_m" in histname) or ("W_m" in histname) or ('_r' in histname) or ('b_m' in histname) or ('leptons_m'):
+    if ("t_m" in histname) or ("W_m" in histname) or ('_r' in histname) or ('b_m' in histname) or ('leptons_m' in histname):
         hist = infile.Get(histname)
         plot_hist(hist, histname)  
 
